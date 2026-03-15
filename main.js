@@ -14,6 +14,9 @@ const state = {
   cart: loadCart(),
 };
 
+const emptyCartPrompt = "Seleziona prodotti dal menu";
+const filledCartLabel = "Riepilogo ordine";
+
 const sectionNav = document.querySelector("#sectionNav");
 const menuSections = document.querySelector("#menuSections");
 const cartFab = document.querySelector("#cartFab");
@@ -469,7 +472,9 @@ function renderOptions(item) {
 
 function renderCart() {
   cartItems.innerHTML = "";
-  cartCount.textContent = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
+  const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
+  cartCount.textContent = cartQuantity;
+  syncOpenCartButton(cartQuantity);
 
   if (state.cart.length === 0) {
     cartEmpty.hidden = false;
@@ -503,6 +508,15 @@ function renderCart() {
 
   const total = state.cart.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
   cartTotal.textContent = formatPrice(total);
+}
+
+function syncOpenCartButton(cartQuantity) {
+  const hasItems = cartQuantity > 0;
+  openCartButton.textContent = hasItems ? filledCartLabel : emptyCartPrompt;
+  openCartButton.setAttribute(
+    "aria-label",
+    hasItems ? "Apri riepilogo ordine" : "Seleziona prodotti dal menu"
+  );
 }
 
 function updateQuantity(entryId, delta) {
