@@ -31,7 +31,7 @@ const cartEmpty = document.querySelector("#cartEmpty");
 const cartTotal = document.querySelector("#cartTotal");
 const copySummaryButton = document.querySelector("#copySummary");
 const clearCartButton = document.querySelector("#clearCart");
-const detailImage = document.querySelector("#detailImage");
+const detailPreview = document.querySelector("#detailPreview");
 const appLoader = document.querySelector("#appLoader");
 
 cartFab.addEventListener("click", openCart);
@@ -269,8 +269,8 @@ function renderItemCard(item) {
       aria-haspopup="dialog"
       aria-label="Apri dettagli per ${item.name}"
     >
-      <div class="item-card__visual">
-        <img src="${getItemImage(item)}" alt="${item.name}" loading="lazy" />
+      <div class="item-card__visual${hasCustomVisual(item) ? " item-card__visual--custom" : ""}">
+        ${renderItemVisual(item, "card")}
       </div>
       <div class="item-card__content">
         <div class="item-card__topline">
@@ -304,8 +304,8 @@ function openDetail(itemId) {
   detailCategory.textContent = item.category;
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
-  detailImage.src = getItemImage(item);
-  detailImage.alt = item.name;
+  detailPreview.className = `sheet-preview${hasCustomVisual(item) ? " sheet-preview--custom" : ""}`;
+  detailPreview.innerHTML = renderItemVisual(item, "detail");
   renderOptions(item);
   detailSheet.classList.add("is-open");
   detailSheet.setAttribute("aria-hidden", "false");
@@ -449,6 +449,49 @@ function formatOptionChip(option) {
   return displayLabel
     ? `${displayLabel} · ${formatPrice(option.price)}`
     : formatPrice(option.price);
+}
+
+function hasCustomVisual(item) {
+  return item.visual?.type === "brand-pill";
+}
+
+function renderItemVisual(item, context) {
+  if (item.visual?.type === "brand-pill") {
+    return renderBrandPillVisual(item.visual, context);
+  }
+
+  const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
+  return `
+    <img
+      class="${imageClass}"
+      src="${getItemImage(item)}"
+      alt="${item.name}"
+      loading="${context === "detail" ? "eager" : "lazy"}"
+    />
+  `;
+}
+
+function renderBrandPillVisual(visual, context) {
+  const classes = ["brand-pill"];
+  if (context === "detail") {
+    classes.push("brand-pill--detail");
+  }
+
+  return `
+    <div
+      class="${classes.join(" ")}"
+      style="
+        --brand-pill-start: ${visual.gradientStart};
+        --brand-pill-end: ${visual.gradientEnd};
+        --brand-script-color: ${visual.scriptColor || "#111111"};
+      "
+    >
+      <span class="brand-pill__script">${visual.script}</span>
+      <span class="brand-pill__shape">
+        <span class="brand-pill__label">${visual.label}</span>
+      </span>
+    </div>
+  `;
 }
 
 function getItemImage(item) {

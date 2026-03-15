@@ -630,11 +630,82 @@ a {
   background: linear-gradient(180deg, #f0ede8 0%, #f8f5f0 100%);
 }
 
-.item-card__visual img {
+.item-card__visual--custom,
+.sheet-preview--custom {
+  background: linear-gradient(180deg, #fffefb 0%, #fff8ef 100%);
+}
+
+.item-card__image {
   width: 100%;
   height: auto;
   transform: scale(1.08);
   transform-origin: center;
+}
+
+.brand-pill {
+  position: relative;
+  display: grid;
+  align-content: end;
+  justify-items: center;
+  width: min(100%, 308px);
+  min-height: 102px;
+  padding-top: 18px;
+}
+
+.brand-pill__script {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  z-index: 2;
+  font-family: var(--font-subtitle);
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  color: var(--brand-script-color, #111111);
+  white-space: nowrap;
+  transform: translateX(-36%) rotate(-5deg);
+}
+
+.brand-pill__shape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 78px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-pill-start), var(--brand-pill-end));
+  box-shadow: 0 16px 22px rgba(255, 120, 18, 0.22);
+}
+
+.brand-pill__label {
+  font-family: var(--font-display);
+  font-size: clamp(1.95rem, 8vw, 2.55rem);
+  font-weight: 700;
+  letter-spacing: -0.12em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #fffdf8;
+  transform: translateX(0.03em);
+}
+
+.brand-pill--detail {
+  width: min(100%, 360px);
+  min-height: 132px;
+  padding-top: 22px;
+}
+
+.brand-pill--detail .brand-pill__script {
+  font-size: clamp(2.3rem, 9vw, 3.3rem);
+}
+
+.brand-pill--detail .brand-pill__shape {
+  min-height: 94px;
+  padding: 0 28px;
+}
+
+.brand-pill--detail .brand-pill__label {
+  font-size: clamp(2.25rem, 9vw, 3rem);
 }
 
 .item-card__content {
@@ -824,7 +895,7 @@ a {
   background: linear-gradient(180deg, #f0ede8 0%, #f8f5f0 100%);
 }
 
-.sheet-preview img {
+.sheet-preview__image {
   width: 100%;
   height: auto;
   transform: scale(1.04);
