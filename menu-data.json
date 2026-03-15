@@ -129,8 +129,10 @@
           "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
-            "asset": "moretti-back.png",
-            "position": "center center"
+            "asset": "moretti-back-2.jpeg",
+            "position": "center center",
+            "size": "contain",
+            "backgroundColor": "#ffffff"
           },
           "sideVisual": {
             "type": "floating-bottle",

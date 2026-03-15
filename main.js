@@ -564,6 +564,8 @@ function renderPhotoPanelVisual(visual, context) {
       style="
         --photo-panel-image: url('${getVisualAsset(visual.asset)}');
         --photo-panel-position: ${visual.position || "center center"};
+        --photo-panel-size: ${visual.size || "cover"};
+        --photo-panel-bg: ${visual.backgroundColor || "transparent"};
       "
     ></div>
   `;
