@@ -204,6 +204,7 @@
           "page": 1,
           "name": "Spritz Aperol",
           "category": "Drink",
+          "showDetailHint": false,
           "description": "Classico spritz Aperol.",
           "visual": {
             "type": "beer-script",
@@ -240,6 +241,7 @@
           "page": 1,
           "name": "Spritz Campari",
           "category": "Drink",
+          "showDetailHint": false,
           "description": "Classico spritz Campari.",
           "options": [
             {
@@ -257,6 +259,7 @@
           "page": 1,
           "name": "Spritz Sarti",
           "category": "Drink",
+          "showDetailHint": false,
           "description": "Versione Sarti del classico spritz.",
           "options": [
             {
@@ -274,6 +277,7 @@
           "page": 1,
           "name": "Gin Tonic",
           "category": "Drink",
+          "showDetailHint": false,
           "description": "Gin tonic.",
           "options": [
             {
@@ -291,6 +295,7 @@
           "page": 1,
           "name": "Hugo",
           "category": "Drink",
+          "showDetailHint": false,
           "description": "Spritz Hugo.",
           "options": [
             {
