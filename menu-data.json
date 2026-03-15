@@ -337,8 +337,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-floating.png",
-            "width": "76px",
-            "height": "210px",
+            "width": "72px",
+            "height": "200px",
             "right": "10px",
             "bottom": "14px",
             "tilt": "0deg",
@@ -376,8 +376,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-floating.png",
-            "width": "76px",
-            "height": "210px",
+            "width": "72px",
+            "height": "200px",
             "right": "0px",
             "bottom": "14px",
             "tilt": "0deg",
