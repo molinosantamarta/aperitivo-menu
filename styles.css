@@ -855,6 +855,11 @@ a {
   background: rgba(17, 17, 17, 0.05);
 }
 
+.option-btn--price-only {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
 .option-btn.is-selected {
   color: #fff;
   background: #171717;
@@ -866,6 +871,10 @@ a {
 
 .option-price {
   font-weight: 800;
+}
+
+.option-price--solo {
+  font-size: 1rem;
 }
 
 .cart-items {

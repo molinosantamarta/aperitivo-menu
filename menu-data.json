@@ -16,7 +16,8 @@
           "description": "Blanche 4% vol.",
           "options": [
             {
-              "label": "1 bicchiere",
+              "label": "33 cl",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -32,7 +33,8 @@
           "description": "Marzen 6% vol.",
           "options": [
             {
-              "label": "1 bicchiere",
+              "label": "33 cl",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -48,7 +50,8 @@
           "description": "IPA gluten free 4,5% vol.",
           "options": [
             {
-              "label": "1 bicchiere",
+              "label": "33 cl",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -64,7 +67,8 @@
           "description": "German Ale 4,8% vol.",
           "options": [
             {
-              "label": "1 bicchiere",
+              "label": "33 cl",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -80,7 +84,8 @@
           "description": "In bottiglia, 33 cl.",
           "options": [
             {
-              "label": "1 bottiglia",
+              "label": "33 cl",
+              "displayLabel": "",
               "price": 4
             }
           ],
@@ -96,7 +101,8 @@
           "description": "Sonnenberg 4,8% vol. 0,4 L.",
           "options": [
             {
-              "label": "1 birra",
+              "label": "0,4 L",
+              "displayLabel": "",
               "price": 5
             }
           ],

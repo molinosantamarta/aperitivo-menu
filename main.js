@@ -283,7 +283,7 @@ function renderItemCard(item) {
           ${item.options
             .map(
               (option) => `
-                <span class="price-chip">${option.label} · ${formatPrice(option.price)}</span>
+                <span class="price-chip">${formatOptionChip(option)}</span>
               `
             )
             .join("")}
@@ -339,12 +339,20 @@ function renderOptions(item) {
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
+    const displayLabel = getOptionDisplayLabel(option);
+
     optionButton.type = "button";
-    optionButton.className = `option-btn${index === state.selectedOptionIndex ? " is-selected" : ""}`;
-    optionButton.innerHTML = `
-      <span class="option-label">${option.label}</span>
-      <span class="option-price">${formatPrice(option.price)}</span>
-    `;
+    optionButton.className = `option-btn${index === state.selectedOptionIndex ? " is-selected" : ""}${
+      displayLabel ? "" : " option-btn--price-only"
+    }`;
+    optionButton.innerHTML = displayLabel
+      ? `
+          <span class="option-label">${displayLabel}</span>
+          <span class="option-price">${formatPrice(option.price)}</span>
+        `
+      : `
+          <span class="option-price option-price--solo">${formatPrice(option.price)}</span>
+        `;
     optionButton.addEventListener("click", () => {
       state.selectedOptionIndex = index;
       renderOptions(item);
@@ -430,6 +438,17 @@ function persistCart() {
 
 function formatPrice(value) {
   return currency.format(value);
+}
+
+function getOptionDisplayLabel(option) {
+  return option.displayLabel ?? option.label;
+}
+
+function formatOptionChip(option) {
+  const displayLabel = getOptionDisplayLabel(option);
+  return displayLabel
+    ? `${displayLabel} · ${formatPrice(option.price)}`
+    : formatPrice(option.price);
 }
 
 function getItemImage(item) {
