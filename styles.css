@@ -864,9 +864,25 @@ a {
   filter: drop-shadow(0 18px 22px rgba(42, 31, 18, 0.18));
   mix-blend-mode: var(--side-visual-blend, normal);
   pointer-events: none;
-  transform: none;
+  opacity: 0;
+  transform: translate3d(24px, 0, 0);
   transform-origin: center bottom;
-  animation: none;
+  transition:
+    opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.item-card__side-visual--floating-bottle.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-card__side-visual--floating-bottle {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .item-card__topline {

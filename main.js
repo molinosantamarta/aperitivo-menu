@@ -5,6 +5,7 @@ const currency = new Intl.NumberFormat("it-IT", {
 
 let sections = [];
 let itemLookup = {};
+let sideVisualObserver;
 
 const state = {
   selectedItemId: null,
@@ -194,6 +195,41 @@ function renderSections() {
   menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
     button.addEventListener("click", () => openDetail(button.dataset.itemId));
   });
+
+  setupSideVisualAnimations();
+}
+
+function setupSideVisualAnimations() {
+  sideVisualObserver?.disconnect();
+
+  const sideVisuals = menuSections.querySelectorAll(".item-card__side-visual--floating-bottle");
+  if (!sideVisuals.length) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    sideVisuals.forEach((visual) => visual.classList.add("is-visible"));
+    return;
+  }
+
+  sideVisualObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        entry.target.classList.add("is-visible");
+        sideVisualObserver?.unobserve(entry.target);
+      });
+    },
+    {
+      threshold: 0.3,
+      rootMargin: "0px 0px -8% 0px",
+    }
+  );
+
+  sideVisuals.forEach((visual) => sideVisualObserver.observe(visual));
 }
 
 function renderSection(section) {
