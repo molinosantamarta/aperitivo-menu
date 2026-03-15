@@ -263,7 +263,7 @@ function renderSection(section) {
 function renderItemCard(item) {
   return `
     <button
-      class="item-card"
+      class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
@@ -272,7 +272,7 @@ function renderItemCard(item) {
       <div class="item-card__visual${hasCustomVisual(item) ? " item-card__visual--custom" : ""}">
         ${renderItemVisual(item, "card")}
       </div>
-      <div class="item-card__content">
+      <div class="item-card__content${hasSideVisual(item) ? " item-card__content--with-side-visual" : ""}">
         <div class="item-card__topline">
           <span class="item-card__label">${item.category}</span>
           <span class="item-card__hint">Tocca per dettagli</span>
@@ -288,6 +288,7 @@ function renderItemCard(item) {
             )
             .join("")}
         </div>
+        ${renderItemSideVisual(item)}
       </div>
     </button>
   `;
@@ -455,6 +456,10 @@ function hasCustomVisual(item) {
   return item.visual?.type === "brand-pill";
 }
 
+function hasSideVisual(item) {
+  return item.sideVisual?.type === "asset-right-crop";
+}
+
 function renderItemVisual(item, context) {
   if (item.visual?.type === "brand-pill") {
     return renderBrandPillVisual(item.visual, context);
@@ -468,6 +473,20 @@ function renderItemVisual(item, context) {
       alt="${item.name}"
       loading="${context === "detail" ? "eager" : "lazy"}"
     />
+  `;
+}
+
+function renderItemSideVisual(item) {
+  if (!hasSideVisual(item)) {
+    return "";
+  }
+
+  return `
+    <span
+      class="item-card__side-visual"
+      aria-hidden="true"
+      style="background-image: url('${getItemImage(item)}');"
+    ></span>
   `;
 }
 

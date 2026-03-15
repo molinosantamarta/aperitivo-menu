@@ -14,6 +14,9 @@
           "name": "Bianchina",
           "category": "Artigianali",
           "description": "Blanche 4% vol.",
+          "sideVisual": {
+            "type": "asset-right-crop"
+          },
           "options": [
             {
               "label": "33 cl",
@@ -31,6 +34,9 @@
           "name": "Ghe Sem",
           "category": "Artigianali",
           "description": "Marzen 6% vol.",
+          "sideVisual": {
+            "type": "asset-right-crop"
+          },
           "options": [
             {
               "label": "33 cl",
@@ -48,6 +54,9 @@
           "name": "Tel Chi",
           "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol.",
+          "sideVisual": {
+            "type": "asset-right-crop"
+          },
           "options": [
             {
               "label": "33 cl",
@@ -65,6 +74,9 @@
           "name": "Casciaball",
           "category": "Artigianali",
           "description": "German Ale 4,8% vol.",
+          "sideVisual": {
+            "type": "asset-right-crop"
+          },
           "options": [
             {
               "label": "33 cl",
