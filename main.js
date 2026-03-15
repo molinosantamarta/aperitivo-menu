@@ -94,9 +94,9 @@ copySummaryButton.addEventListener("click", async () => {
     return;
   }
 
+  closeCart();
   const saved = await saveSummary(summary);
   copySummaryButton.textContent = saved ? "Salvato" : "Continua";
-  closeCart();
   window.setTimeout(() => {
     copySummaryButton.textContent = saveSummaryLabel;
   }, 1600);
