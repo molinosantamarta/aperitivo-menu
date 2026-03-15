@@ -389,6 +389,8 @@ a {
   line-height: 1.08;
   font-family: var(--font-display);
   letter-spacing: var(--font-display-letter-spacing);
+  justify-self: center;
+  text-align: center;
   text-transform: uppercase;
 }
 
