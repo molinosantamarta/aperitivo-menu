@@ -315,8 +315,8 @@ function renderItemCard(item) {
       }">
         <div class="item-card__topline">
           <span class="item-card__label">${item.category}</span>
-          ${showDetailHint(item) ? '<span class="item-card__hint">Tocca per dettagli</span>' : ""}
         </div>
+        ${showDetailHint(item) ? '<p class="item-card__hint item-card__hint--below">Tocca per dettagli</p>' : ""}
         <h3>${item.name}</h3>
         <p>${item.description}</p>
         <div class="item-card__prices">
