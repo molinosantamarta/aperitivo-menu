@@ -840,6 +840,42 @@ a {
     inset 0 -16px 28px rgba(110, 30, 6, 0.14);
 }
 
+.beer-script-visual--display::before,
+.beer-script-visual--display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.beer-script-visual--display::before {
+  inset: -62%;
+  z-index: 0;
+  background:
+    conic-gradient(
+      from 0deg,
+      var(--beer-script-start) 0deg,
+      var(--beer-script-mid) 110deg,
+      var(--beer-script-end) 220deg,
+      var(--beer-script-mid) 300deg,
+      var(--beer-script-start) 360deg
+    );
+  opacity: 0.92;
+  filter: saturate(1.12) blur(3px);
+  transform-origin: center center;
+  animation: drink-gradient-spin 7.4s linear infinite;
+}
+
+.beer-script-visual--display::after {
+  z-index: 0;
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.34), transparent 20%),
+    linear-gradient(135deg, transparent 16%, rgba(255, 255, 255, 0.14) 42%, transparent 68%);
+  mix-blend-mode: screen;
+  opacity: 0.7;
+  animation: drink-gradient-sheen 3.2s ease-in-out infinite alternate;
+}
+
 .beer-script-visual--display .beer-script-visual__script {
   order: 1;
   align-self: center;
@@ -854,6 +890,28 @@ a {
 .beer-script-visual--display > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes drink-gradient-spin {
+  from {
+    transform: rotate(0deg) scale(1.08);
+  }
+
+  to {
+    transform: rotate(360deg) scale(1.08);
+  }
+}
+
+@keyframes drink-gradient-sheen {
+  from {
+    transform: translate3d(-8%, -4%, 0) scale(1);
+    opacity: 0.52;
+  }
+
+  to {
+    transform: translate3d(10%, 6%, 0) scale(1.12);
+    opacity: 0.85;
+  }
 }
 
 .sheet-preview--beer-script {
@@ -960,6 +1018,11 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .beer-script-visual--display::before,
+  .beer-script-visual--display::after {
+    animation: none;
+  }
+
   .item-card__side-visual--floating-bottle {
     opacity: 1;
     transform: rotate(var(--side-visual-tilt, 8deg));
