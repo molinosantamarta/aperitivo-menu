@@ -15,7 +15,7 @@
           "category": "Artigianali",
           "description": "Blanche 4% vol.",
           "sideVisual": {
-            "type": "asset-right-crop"
+            "type": "floating-bottle"
           },
           "options": [
             {

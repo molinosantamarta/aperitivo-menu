@@ -747,6 +747,31 @@ a {
   filter: drop-shadow(0 8px 12px rgba(42, 31, 18, 0.16));
 }
 
+.item-card--floating-bottle {
+  position: relative;
+}
+
+.item-card--floating-bottle .item-card__content {
+  padding-right: 58px;
+}
+
+.item-card__side-visual--floating-bottle {
+  top: 18px;
+  right: -2px;
+  z-index: 3;
+  width: 90px;
+  height: 186px;
+  background-position: right center;
+  background-size: auto 100%;
+  filter: drop-shadow(0 14px 18px rgba(42, 31, 18, 0.22));
+  mix-blend-mode: multiply;
+  transform: rotate(-14deg);
+  transform-origin: center bottom;
+  animation:
+    floating-bottle-entry 720ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    floating-bottle-idle 4.2s ease-in-out 720ms infinite;
+}
+
 .item-card__topline {
   display: flex;
   align-items: center;
@@ -981,6 +1006,29 @@ a {
 
 .option-price--solo {
   font-size: 1rem;
+}
+
+@keyframes floating-bottle-entry {
+  0% {
+    opacity: 0;
+    transform: translate3d(14px, 12px, 0) rotate(-21deg) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(-14deg) scale(1);
+  }
+}
+
+@keyframes floating-bottle-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-14deg);
+  }
+
+  50% {
+    transform: translateY(-4px) rotate(-12deg);
+  }
 }
 
 .cart-items {

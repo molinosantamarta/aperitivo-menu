@@ -263,7 +263,9 @@ function renderSection(section) {
 function renderItemCard(item) {
   return `
     <button
-      class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}"
+      class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}${
+        hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
+      }"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
@@ -272,7 +274,9 @@ function renderItemCard(item) {
       <div class="item-card__visual${hasCustomVisual(item) ? " item-card__visual--custom" : ""}">
         ${renderItemVisual(item, "card")}
       </div>
-      <div class="item-card__content${hasSideVisual(item) ? " item-card__content--with-side-visual" : ""}">
+      <div class="item-card__content${
+        hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : ""
+      }">
         <div class="item-card__topline">
           <span class="item-card__label">${item.category}</span>
           <span class="item-card__hint">Tocca per dettagli</span>
@@ -457,7 +461,11 @@ function hasCustomVisual(item) {
 }
 
 function hasSideVisual(item) {
-  return item.sideVisual?.type === "asset-right-crop";
+  return item.sideVisual?.type === "asset-right-crop" || item.sideVisual?.type === "floating-bottle";
+}
+
+function hasFloatingBottle(item) {
+  return item.sideVisual?.type === "floating-bottle";
 }
 
 function renderItemVisual(item, context) {
@@ -481,9 +489,13 @@ function renderItemSideVisual(item) {
     return "";
   }
 
+  const sideVisualClass = hasFloatingBottle(item)
+    ? "item-card__side-visual item-card__side-visual--floating-bottle"
+    : "item-card__side-visual";
+
   return `
     <span
-      class="item-card__side-visual"
+      class="${sideVisualClass}"
       aria-hidden="true"
       style="background-image: url('${getItemImage(item)}');"
     ></span>
