@@ -259,8 +259,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "campari-floating.png",
-            "width": "142px",
-            "height": "298px",
+            "width": "99px",
+            "height": "209px",
             "right": "-10px",
             "bottom": "14px",
             "tilt": "0deg",
@@ -298,8 +298,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "sarti-floating.png",
-            "width": "142px",
-            "height": "298px",
+            "width": "99px",
+            "height": "209px",
             "right": "-10px",
             "bottom": "14px",
             "tilt": "0deg",
