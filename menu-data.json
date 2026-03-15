@@ -615,6 +615,12 @@
           "name": "Agri-gelato km 0",
           "category": "Dolce freddo",
           "description": "Recati al carretto nel parco.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "agri-gelato-photo.jpeg",
+            "position": "center 72%",
+            "size": "cover"
+          },
           "options": [
             {
               "label": "1 gelato",
