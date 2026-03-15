@@ -217,10 +217,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "aperol-floating.png",
-            "width": "98px",
-            "height": "232px",
-            "right": "10px",
-            "bottom": "12px",
+            "width": "118px",
+            "height": "248px",
+            "right": "4px",
+            "bottom": "14px",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
