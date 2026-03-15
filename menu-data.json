@@ -128,14 +128,13 @@
           "description": "In bottiglia, 33 cl.",
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "moretti-33.jpg",
+            "asset": "moretti-33.png",
             "width": "88px",
             "height": "192px",
             "right": "10px",
             "bottom": "12px",
             "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "blendMode": "multiply"
+            "backgroundPosition": "center bottom"
           },
           "options": [
             {
