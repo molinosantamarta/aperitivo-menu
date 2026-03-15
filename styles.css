@@ -833,10 +833,13 @@ a {
   gap: 0;
   background:
     linear-gradient(132deg, var(--beer-script-start) 4%, var(--beer-script-mid) 46%, var(--beer-script-end) 92%);
+  background-size: 190% 190%;
+  background-position: 14% 18%;
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
     inset 0 12px 18px rgba(255, 255, 255, 0.08),
     inset 0 -16px 28px rgba(110, 30, 6, 0.14);
+  animation: drink-gradient-pour 19s cubic-bezier(0.42, 0.06, 0.18, 0.98) infinite alternate;
 }
 
 .beer-script-visual--display::before,
@@ -848,28 +851,28 @@ a {
 }
 
 .beer-script-visual--display::before {
-  inset: -22%;
+  inset: -18%;
   z-index: 0;
   background:
-    radial-gradient(ellipse at 18% 78%, var(--beer-script-start) 0%, transparent 48%),
-    radial-gradient(ellipse at 72% 32%, var(--beer-script-mid) 0%, transparent 52%),
-    radial-gradient(ellipse at 84% 82%, var(--beer-script-end) 0%, transparent 46%);
-  opacity: 0.58;
-  filter: blur(16px) saturate(1.08);
+    radial-gradient(ellipse at 16% 78%, var(--beer-script-start) 0%, transparent 50%),
+    radial-gradient(ellipse at 72% 28%, var(--beer-script-mid) 0%, transparent 54%),
+    radial-gradient(ellipse at 84% 82%, var(--beer-script-end) 0%, transparent 48%);
+  opacity: 0.4;
+  filter: blur(22px) saturate(1.04);
   mix-blend-mode: screen;
-  animation: drink-gradient-swirl 10s ease-in-out infinite alternate;
+  animation: drink-gradient-swirl 22s cubic-bezier(0.45, 0.08, 0.24, 0.96) infinite alternate;
 }
 
 .beer-script-visual--display::after {
   inset: -8%;
   z-index: 0;
   background:
-    radial-gradient(circle at 22% 22%, rgba(255, 255, 255, 0.2), transparent 22%),
-    linear-gradient(118deg, transparent 18%, rgba(255, 255, 255, 0.12) 38%, transparent 58%, rgba(255, 255, 255, 0.08) 78%, transparent 92%);
-  filter: blur(10px);
+    radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.16), transparent 24%),
+    linear-gradient(118deg, transparent 14%, rgba(255, 255, 255, 0.08) 32%, transparent 54%, rgba(255, 255, 255, 0.06) 76%, transparent 92%);
+  filter: blur(12px);
   mix-blend-mode: soft-light;
-  opacity: 0.62;
-  animation: drink-gradient-drift 8.4s cubic-bezier(0.45, 0.05, 0.2, 1) infinite alternate;
+  opacity: 0.34;
+  animation: drink-gradient-drift 24s cubic-bezier(0.42, 0.08, 0.2, 0.98) infinite alternate;
 }
 
 .beer-script-visual--display .beer-script-visual__script {
@@ -888,25 +891,48 @@ a {
   z-index: 1;
 }
 
-@keyframes drink-gradient-swirl {
+@keyframes drink-gradient-pour {
   from {
-    transform: translate3d(-4%, 3%, 0) scale(1.04) rotate(-3deg);
+    background-position: 14% 18%;
+  }
+
+  50% {
+    background-position: 52% 48%;
   }
 
   to {
-    transform: translate3d(5%, -4%, 0) scale(1.12) rotate(4deg);
+    background-position: 86% 82%;
+  }
+}
+
+@keyframes drink-gradient-swirl {
+  from {
+    transform: translate3d(-4%, 3%, 0) scale(1.02);
+  }
+
+  50% {
+    transform: translate3d(2%, -2%, 0) scale(1.06);
+  }
+
+  to {
+    transform: translate3d(5%, -4%, 0) scale(1.1);
   }
 }
 
 @keyframes drink-gradient-drift {
   from {
-    transform: translate3d(-6%, -3%, 0) scale(1);
-    opacity: 0.46;
+    transform: translate3d(-3%, -1%, 0) scale(1);
+    opacity: 0.28;
+  }
+
+  50% {
+    transform: translate3d(1%, 1%, 0) scale(1.03);
+    opacity: 0.38;
   }
 
   to {
-    transform: translate3d(8%, 5%, 0) scale(1.08);
-    opacity: 0.72;
+    transform: translate3d(4%, 3%, 0) scale(1.05);
+    opacity: 0.46;
   }
 }
 
@@ -1039,6 +1065,10 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .beer-script-visual--display {
+    animation: none;
+  }
+
   .beer-script-visual--display::before,
   .beer-script-visual--display::after {
     animation: none;
