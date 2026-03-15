@@ -4,7 +4,7 @@
       "id": "birre",
       "title": "Birre",
       "kicker": "Artigianali, classiche e alla spina",
-      "description": "Le etichette restano fedeli al menu originale, ma qui sono isolate e più leggibili su smartphone.",
+      "description": "Una selezione da gustare con calma nel parco, tra birre artigianali, classiche in bottiglia e spina fresca.",
       "accent": "#b98f1f",
       "accentSoft": "#f2e4b7",
       "items": [
@@ -109,8 +109,8 @@
     {
       "id": "drink",
       "title": "Drink",
-      "kicker": "Spritz e classici",
-      "description": "Ogni pillola viene mostrata da sola, con più respiro e una lettura verticale naturale.",
+      "kicker": "Spritz, classici e miscelati",
+      "description": "I grandi classici dell'aperitivo del Molino: freschi, immediati e perfetti da sorseggiare all'aperto.",
       "accent": "#d96b20",
       "accentSoft": "#ffd9be",
       "items": [
@@ -199,8 +199,8 @@
     {
       "id": "bottiglie",
       "title": "Bottiglie",
-      "kicker": "Vino, bollicine e zero",
-      "description": "Qui conviene leggere ogni etichetta come scheda singola, con dettaglio separato e prezzi chiari.",
+      "kicker": "Vino, bollicine e selezione zero",
+      "description": "Una piccola cantina da scegliere con calma, tra calici, bottiglie e proposte zero pensate per tutti.",
       "accent": "#315c93",
       "accentSoft": "#d8e2f3",
       "items": [
@@ -307,8 +307,8 @@
     {
       "id": "altre-bevande",
       "title": "Altre Bevande",
-      "kicker": "Acqua, bibite e kombucha",
-      "description": "Le voci più piccole guadagnano spazio e si leggono molto meglio in verticale.",
+      "kicker": "Acqua, bibite, caffè e kombucha",
+      "description": "Le proposte analcoliche e leggere del menu, per accompagnare l'aperitivo o concedersi qualcosa di semplice.",
       "accent": "#2349a0",
       "accentSoft": "#dbe5ff",
       "items": [
@@ -397,8 +397,8 @@
     {
       "id": "gelato",
       "title": "Agri-Gelato",
-      "kicker": "Il passaggio dolce",
-      "description": "Una scheda dedicata e leggibile per l'opzione gelato nel parco.",
+      "kicker": "Carretto, gusti e km zero",
+      "description": "Il momento più dolce della domenica: il carretto dell'agri-gelato con il nostro latte fresco e gusti da scoprire.",
       "accent": "#18a54b",
       "accentSoft": "#d7f2df",
       "items": [
@@ -423,8 +423,8 @@
     {
       "id": "taglieri",
       "title": "Taglieri",
-      "kicker": "Sfiziosità da condividere",
-      "description": "Le proposte da tavolo diventano card grandi, facili da leggere e da aggiungere al riepilogo.",
+      "kicker": "Taglieri, mezzi metri e sfiziosità",
+      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate per stare insieme.",
       "accent": "#c96f11",
       "accentSoft": "#ffe0ba",
       "items": [
