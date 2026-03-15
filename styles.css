@@ -412,10 +412,20 @@ a {
   padding: 20px 18px;
 }
 
-.promo-agri h2,
-.menu-section__header h2 {
+.promo-agri h2 {
   margin: 0;
   font-size: clamp(1.35rem, 4vw, 1.75rem);
+  line-height: 1.08;
+  font-family: var(--font-display);
+  letter-spacing: var(--font-display-letter-spacing);
+  justify-self: center;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.menu-section__header h2 {
+  margin: 0;
+  font-size: clamp(1.45rem, 4.25vw, 1.88rem);
   line-height: 1.08;
   font-family: var(--font-display);
   letter-spacing: var(--font-display-letter-spacing);
@@ -544,7 +554,8 @@ a {
   display: grid;
   gap: 10px;
   justify-items: center;
-  margin-bottom: 16px;
+  padding-top: 8px;
+  margin-bottom: 18px;
   text-align: center;
 }
 
