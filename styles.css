@@ -767,7 +767,7 @@ a {
   overflow: hidden;
   text-align: center;
   border-radius: 20px;
-  background: linear-gradient(135deg, var(--beer-script-start), var(--beer-script-end));
+  background: linear-gradient(135deg, var(--beer-script-start) 6%, var(--beer-script-mid) 52%, var(--beer-script-end) 94%);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
     inset 0 -12px 24px rgba(255, 255, 255, 0.08);

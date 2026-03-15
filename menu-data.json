@@ -45,8 +45,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Ghe Sem",
-            "gradientStart": "#8f2f2d",
-            "gradientEnd": "#c85749",
+            "gradientStart": "#8d1713",
+            "gradientMid": "#d9492a",
+            "gradientEnd": "#ff7b52",
             "labelColor": "#fff5ef"
           },
           "sideVisual": {
