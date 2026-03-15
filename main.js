@@ -6,6 +6,7 @@ const currency = new Intl.NumberFormat("it-IT", {
 let sections = [];
 let itemLookup = {};
 let sideVisualObserver;
+const loaderStartedAt = performance.now();
 
 const state = {
   selectedItemId: null,
@@ -117,7 +118,12 @@ init();
 
 async function init() {
   try {
-    const [menuData] = await Promise.all([loadMenuData(), waitForFonts()]);
+    const menuData = await loadMenuData();
+    await Promise.all([
+      waitForFonts(),
+      waitForCriticalAssets(menuData),
+      waitMinimumLoaderTime(1650),
+    ]);
     sections = menuData.sections;
     itemLookup = sections
       .flatMap((section) => section.items)
@@ -154,12 +160,69 @@ function waitForFonts() {
     document.fonts.load('700 1rem "Lulo Clean"'),
     document.fonts.load('400 1rem "Housky Demo"'),
     document.fonts.load('400 1rem "Factually Handwriting"'),
+    document.fonts.load('400 1rem "SignPainter"'),
   ];
 
   return Promise.race([
     Promise.all(fontLoads),
-    new Promise((resolve) => window.setTimeout(resolve, 2200)),
+    new Promise((resolve) => window.setTimeout(resolve, 2600)),
   ]);
+}
+
+function waitMinimumLoaderTime(duration) {
+  const elapsed = performance.now() - loaderStartedAt;
+  const remaining = Math.max(0, duration - elapsed);
+  return new Promise((resolve) => window.setTimeout(resolve, remaining));
+}
+
+async function waitForCriticalAssets(menuData) {
+  const criticalUrls = collectCriticalAssetUrls(menuData);
+  if (!criticalUrls.length) {
+    return;
+  }
+
+  await Promise.allSettled(criticalUrls.map((url) => preloadImage(url)));
+}
+
+function collectCriticalAssetUrls(menuData) {
+  const urls = new Set([new URL("./farfalla-bianca.gif", import.meta.url).href]);
+  const criticalSections = menuData.sections.slice(0, 3);
+
+  criticalSections.forEach((section) => {
+    section.items.slice(0, 4).forEach((item) => {
+      if (!hasCustomVisual(item)) {
+        urls.add(getItemImage(item));
+      }
+
+      if (item.visual?.type === "photo-panel" && item.visual.asset) {
+        urls.add(getVisualAsset(item.visual.asset));
+      }
+
+      if (item.sideVisual?.asset) {
+        urls.add(getSideVisualImage(item));
+      }
+    });
+  });
+
+  const gelatoItem = menuData.sections
+    .flatMap((section) => section.items)
+    .find((item) => item.id === "agri-gelato");
+
+  if (gelatoItem?.visual?.asset) {
+    urls.add(getVisualAsset(gelatoItem.visual.asset));
+  }
+
+  return Array.from(urls).slice(0, 14);
+}
+
+function preloadImage(url) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve();
+    image.onerror = () => resolve();
+    image.src = url;
+  });
 }
 
 function revealApp() {
