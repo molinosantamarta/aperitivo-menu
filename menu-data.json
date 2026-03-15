@@ -50,7 +50,8 @@
             "labelColor": "#fff5ef"
           },
           "sideVisual": {
-            "type": "asset-right-crop"
+            "type": "floating-bottle",
+            "asset": "ghe-sem-floating.png"
           },
           "options": [
             {
@@ -77,7 +78,8 @@
             "labelColor": "#f7fffd"
           },
           "sideVisual": {
-            "type": "asset-right-crop"
+            "type": "floating-bottle",
+            "asset": "tel-chi-floating.png"
           },
           "options": [
             {

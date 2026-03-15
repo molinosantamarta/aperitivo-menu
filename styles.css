@@ -753,9 +753,9 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 112px;
+  min-height: 94px;
   width: 100%;
-  padding: 12px 18px;
+  padding: 10px 18px;
   text-align: center;
   border-radius: 22px;
   background: linear-gradient(135deg, var(--beer-script-start), var(--beer-script-end));
@@ -766,11 +766,11 @@ a {
 
 .beer-script-visual__label {
   font-family: var(--font-beer-script);
-  font-size: clamp(3.5rem, 14vw, 5.6rem);
-  line-height: 0.88;
+  font-size: clamp(3.25rem, 12.5vw, 5rem);
+  line-height: 0.84;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  color: var(--beer-script-color, rgba(56, 39, 24, 0.9));
+  color: #fffdf8;
   text-wrap: balance;
 }
 
@@ -781,12 +781,12 @@ a {
 }
 
 .beer-script-visual--detail {
-  min-height: 148px;
-  padding: 16px 20px;
+  min-height: 128px;
+  padding: 14px 18px;
 }
 
 .beer-script-visual--detail .beer-script-visual__label {
-  font-size: clamp(4rem, 14vw, 6.2rem);
+  font-size: clamp(3.8rem, 13vw, 5.8rem);
 }
 
 .item-card__content {
