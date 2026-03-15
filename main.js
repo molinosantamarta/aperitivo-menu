@@ -479,7 +479,6 @@ function renderOptions(item) {
 
 function renderQuantityControl() {
   detailQuantity.innerHTML = `
-    <p class="detail-quantity__label">Quantita</p>
     <div class="detail-quantity__pill" aria-label="Seleziona quantita">
       <button
         class="qty-btn detail-quantity__btn"
