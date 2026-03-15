@@ -304,9 +304,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Gin",
-            "gradientStart": "#1e8f6d",
-            "gradientMid": "#34b18b",
-            "gradientEnd": "#98de62",
+            "gradientStart": "#d6b313",
+            "gradientMid": "#efcf38",
+            "gradientEnd": "#fff19a",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Tonic"
@@ -332,9 +332,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Gin",
-            "gradientStart": "#d3d94b",
-            "gradientMid": "#f0d84f",
-            "gradientEnd": "#fff1a1",
+            "gradientStart": "#c9a90f",
+            "gradientMid": "#efd23a",
+            "gradientEnd": "#fff3a6",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Lemon"
@@ -360,9 +360,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Hugo",
-            "gradientStart": "#4fae55",
-            "gradientMid": "#7fc95b",
-            "gradientEnd": "#d2ee74",
+            "gradientStart": "#2a70c9",
+            "gradientMid": "#4ea0ef",
+            "gradientEnd": "#99d5ff",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Spritz"
