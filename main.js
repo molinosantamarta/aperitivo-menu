@@ -17,6 +17,7 @@ const state = {
 
 const emptyCartPrompt = "Seleziona prodotti dal menu";
 const filledCartLabel = "Riepilogo ordine";
+const saveSummaryLabel = "Salva e continua";
 
 const sectionNav = document.querySelector("#sectionNav");
 const menuSections = document.querySelector("#menuSections");
@@ -95,14 +96,14 @@ copySummaryButton.addEventListener("click", async () => {
 
   try {
     await navigator.clipboard.writeText(summary);
-    copySummaryButton.textContent = "Riepilogo copiato";
+    copySummaryButton.textContent = "Salvato";
     window.setTimeout(() => {
-      copySummaryButton.textContent = "Copia riepilogo";
+      copySummaryButton.textContent = saveSummaryLabel;
     }, 1600);
   } catch (error) {
-    copySummaryButton.textContent = "Copia non riuscita";
+    copySummaryButton.textContent = "Salvataggio non riuscito";
     window.setTimeout(() => {
-      copySummaryButton.textContent = "Copia riepilogo";
+      copySummaryButton.textContent = saveSummaryLabel;
     }, 1600);
   }
 });
