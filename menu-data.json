@@ -137,6 +137,7 @@
           "options": [
             {
               "label": "1 drink",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -153,6 +154,7 @@
           "options": [
             {
               "label": "1 drink",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -169,6 +171,7 @@
           "options": [
             {
               "label": "1 drink",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -185,6 +188,7 @@
           "options": [
             {
               "label": "1 drink",
+              "displayLabel": "",
               "price": 6
             }
           ],
@@ -201,6 +205,7 @@
           "options": [
             {
               "label": "1 drink",
+              "displayLabel": "",
               "price": 6
             }
           ],
