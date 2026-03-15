@@ -3,35 +3,16 @@
     {
       "id": "birre",
       "title": "Birre",
-      "layout": "grouped",
-      "kicker": "Artigianali, bottiglia e spina",
+      "kicker": "Artigianali, classiche e alla spina",
       "description": "Le etichette restano fedeli al menu originale, ma qui sono isolate e più leggibili su smartphone.",
       "accent": "#b98f1f",
       "accentSoft": "#f2e4b7",
-      "groups": [
-        {
-          "id": "artigianali",
-          "label": "Artigianali",
-          "description": ""
-        },
-        {
-          "id": "bottiglia",
-          "label": "In bottiglia",
-          "description": ""
-        },
-        {
-          "id": "spina",
-          "label": "Alla spina",
-          "description": ""
-        }
-      ],
       "items": [
         {
           "id": "bianchina",
           "page": 1,
           "name": "Bianchina",
-          "category": "Birre artigianali",
-          "group": "artigianali",
+          "category": "Artigianali",
           "description": "Blanche 4% vol.",
           "options": [
             {
@@ -47,8 +28,7 @@
           "id": "ghe-sem",
           "page": 1,
           "name": "Ghe Sem",
-          "category": "Birre artigianali",
-          "group": "artigianali",
+          "category": "Artigianali",
           "description": "Marzen 6% vol.",
           "options": [
             {
@@ -64,8 +44,7 @@
           "id": "tel-chi",
           "page": 1,
           "name": "Tel Chi",
-          "category": "Birre artigianali",
-          "group": "artigianali",
+          "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol.",
           "options": [
             {
@@ -81,8 +60,7 @@
           "id": "casciaball",
           "page": 1,
           "name": "Casciaball",
-          "category": "Birre artigianali",
-          "group": "artigianali",
+          "category": "Artigianali",
           "description": "German Ale 4,8% vol.",
           "options": [
             {
@@ -98,8 +76,7 @@
           "id": "moretti",
           "page": 1,
           "name": "Moretti",
-          "category": "Birre",
-          "group": "bottiglia",
+          "category": "Classiche",
           "description": "In bottiglia, 33 cl.",
           "options": [
             {
@@ -115,8 +92,7 @@
           "id": "spina",
           "page": 1,
           "name": "Birra alla spina",
-          "category": "Birre",
-          "group": "spina",
+          "category": "Alla spina",
           "description": "Sonnenberg 4,8% vol. 0,4 L.",
           "options": [
             {
