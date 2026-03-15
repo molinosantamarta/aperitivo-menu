@@ -11,6 +11,7 @@ const loaderStartedAt = performance.now();
 const state = {
   selectedItemId: null,
   selectedOptionIndex: 0,
+  selectedQuantity: 1,
   cart: loadCart(),
 };
 
@@ -27,6 +28,7 @@ const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
 const detailOptions = document.querySelector("#detailOptions");
+const detailQuantity = document.querySelector("#detailQuantity");
 const addToCartButton = document.querySelector("#addToCart");
 const closeDetailButton = document.querySelector("#closeDetail");
 const closeCartButton = document.querySelector("#closeCart");
@@ -66,7 +68,7 @@ addToCartButton.addEventListener("click", () => {
   const existing = state.cart.find((entry) => entry.entryId === entryId);
 
   if (existing) {
-    existing.quantity += 1;
+    existing.quantity += state.selectedQuantity;
   } else {
     state.cart.push({
       entryId,
@@ -75,7 +77,7 @@ addToCartButton.addEventListener("click", () => {
       category: item.category,
       optionLabel: option.label,
       price: option.price,
-      quantity: 1,
+      quantity: state.selectedQuantity,
     });
   }
 
@@ -411,12 +413,14 @@ function openDetail(itemId) {
 
   state.selectedItemId = itemId;
   state.selectedOptionIndex = 0;
+  state.selectedQuantity = 1;
   detailCategory.textContent = item.category;
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
   detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}`;
   detailPreview.innerHTML = renderItemVisual(item, "detail");
   renderOptions(item);
+  renderQuantityControl();
   detailSheet.classList.add("is-open");
   detailSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -447,6 +451,13 @@ function closeCart() {
 function renderOptions(item) {
   detailOptions.innerHTML = "";
 
+  if (item.options.length === 1) {
+    detailOptions.hidden = true;
+    return;
+  }
+
+  detailOptions.hidden = false;
+
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
     const displayLabel = getOptionDisplayLabel(option);
@@ -469,6 +480,39 @@ function renderOptions(item) {
     });
     detailOptions.append(optionButton);
   });
+}
+
+function renderQuantityControl() {
+  detailQuantity.innerHTML = `
+    <p class="detail-quantity__label">Quantita</p>
+    <div class="detail-quantity__pill" aria-label="Seleziona quantita">
+      <button
+        class="qty-btn detail-quantity__btn"
+        type="button"
+        aria-label="Riduci quantita"
+        ${state.selectedQuantity <= 1 ? "disabled" : ""}
+      >
+        −
+      </button>
+      <span class="detail-quantity__value">${state.selectedQuantity}</span>
+      <button
+        class="qty-btn detail-quantity__btn"
+        type="button"
+        aria-label="Aumenta quantita"
+      >
+        +
+      </button>
+    </div>
+  `;
+
+  const [decreaseButton, increaseButton] = detailQuantity.querySelectorAll(".detail-quantity__btn");
+  decreaseButton?.addEventListener("click", () => updateSelectedQuantity(-1));
+  increaseButton?.addEventListener("click", () => updateSelectedQuantity(1));
+}
+
+function updateSelectedQuantity(delta) {
+  state.selectedQuantity = Math.max(1, state.selectedQuantity + delta);
+  renderQuantityControl();
 }
 
 function renderCart() {
