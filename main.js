@@ -541,7 +541,7 @@ function buildSummary() {
   const lines = state.cart.map(
     (entry) => `${entry.quantity}x ${entry.name} (${entry.optionLabel})`
   );
-  lines.push(`Totale indicativo: ${cartTotal.textContent}`);
+  lines.push(`Totale: ${cartTotal.textContent}`);
   return lines.join("\n");
 }
 
