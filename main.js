@@ -3,8 +3,9 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const MENU_DATA_URL = new URL("./data/menu-data.json", import.meta.url);
-const SHEET_CONFIG_URL = new URL("./data/sheet-config.json", import.meta.url);
+const APP_VERSION = "20260316b";
+const MENU_DATA_URL = createVersionedUrl("./data/menu-data.json");
+const SHEET_CONFIG_URL = createVersionedUrl("./data/sheet-config.json");
 
 let sections = [];
 let itemLookup = {};
@@ -124,11 +125,6 @@ init();
 async function init() {
   try {
     const menuData = await loadMenuData();
-    await Promise.all([
-      waitForFonts(),
-      waitForCriticalAssets(menuData),
-      waitMinimumLoaderTime(1650),
-    ]);
     sections = menuData.sections;
     itemLookup = sections.reduce((lookup, section) => {
       section.items.forEach((item) => {
@@ -146,6 +142,9 @@ async function init() {
     renderNavigation();
     renderSections();
     renderCart();
+
+    waitForCriticalAssets(menuData).catch(() => {});
+    await Promise.all([waitForFonts(), waitMinimumLoaderTime(1350)]);
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
     renderLoadError();
@@ -568,6 +567,12 @@ function promiseAllSettledCompat(promises) {
       )
     )
   );
+}
+
+function createVersionedUrl(path) {
+  const url = new URL(path, import.meta.url);
+  url.searchParams.set("v", APP_VERSION);
+  return url;
 }
 
 function revealApp() {
