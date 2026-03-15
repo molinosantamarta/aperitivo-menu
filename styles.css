@@ -24,6 +24,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "SignPainter";
+  src: url("./fonts/sign-painter.ttc") format("collection");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #f5f0ea;
   --bg-soft: rgba(255, 255, 255, 0.66);
@@ -39,6 +47,7 @@
   --font-display: "Lulo Clean", "Montserrat", sans-serif;
   --font-script: "Housky Demo", "Caveat", cursive;
   --font-subtitle: "Factually Handwriting", "Caveat", cursive;
+  --font-beer-script: "SignPainter", "Brush Script MT", "Segoe Script", cursive;
   --font-display-letter-spacing: -0.2em;
   --hero-logo-letter-spacing: -0.15em;
   --font-script-letter-spacing: 0;
@@ -652,6 +661,10 @@ a {
   background: transparent;
 }
 
+.item-card__visual--beer-script {
+  padding: 8px 10px;
+}
+
 .item-card__image {
   width: 100%;
   height: auto;
@@ -723,6 +736,37 @@ a {
 
 .brand-pill--detail .brand-pill__label {
   font-size: clamp(1.95rem, 8vw, 2.55rem);
+}
+
+.beer-script-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.beer-script-visual__label {
+  font-family: var(--font-beer-script);
+  font-size: clamp(2.2rem, 9vw, 3.1rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+  color: rgba(56, 39, 24, 0.9);
+  text-wrap: balance;
+}
+
+.sheet-preview--beer-script {
+  padding: 12px;
+}
+
+.beer-script-visual--detail {
+  min-height: 128px;
+}
+
+.beer-script-visual--detail .beer-script-visual__label {
+  font-size: clamp(2.7rem, 10vw, 3.8rem);
 }
 
 .item-card__content {

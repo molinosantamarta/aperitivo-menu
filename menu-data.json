@@ -14,6 +14,10 @@
           "name": "Bianchina",
           "category": "Artigianali",
           "description": "Blanche 4% vol.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Bianchina"
+          },
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "bianchina-floating.png"
@@ -35,6 +39,10 @@
           "name": "Ghe Sem",
           "category": "Artigianali",
           "description": "Marzen 6% vol.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Ghe Sem"
+          },
           "sideVisual": {
             "type": "asset-right-crop"
           },
@@ -55,6 +63,10 @@
           "name": "Tel Chi",
           "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Tel Chi"
+          },
           "sideVisual": {
             "type": "asset-right-crop"
           },
@@ -75,6 +87,10 @@
           "name": "Casciaball",
           "category": "Artigianali",
           "description": "German Ale 4,8% vol.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Casciaball"
+          },
           "sideVisual": {
             "type": "asset-right-crop"
           },

@@ -271,7 +271,7 @@ function renderItemCard(item) {
       aria-haspopup="dialog"
       aria-label="Apri dettagli per ${item.name}"
     >
-      <div class="item-card__visual${hasCustomVisual(item) ? " item-card__visual--custom" : ""}">
+      <div class="item-card__visual${getCardVisualClass(item)}">
         ${renderItemVisual(item, "card")}
       </div>
       <div class="item-card__content${
@@ -309,7 +309,7 @@ function openDetail(itemId) {
   detailCategory.textContent = item.category;
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
-  detailPreview.className = `sheet-preview${hasCustomVisual(item) ? " sheet-preview--custom" : ""}`;
+  detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}`;
   detailPreview.innerHTML = renderItemVisual(item, "detail");
   renderOptions(item);
   detailSheet.classList.add("is-open");
@@ -457,7 +457,31 @@ function formatOptionChip(option) {
 }
 
 function hasCustomVisual(item) {
-  return item.visual?.type === "brand-pill";
+  return item.visual?.type === "brand-pill" || item.visual?.type === "beer-script";
+}
+
+function getCardVisualClass(item) {
+  if (item.visual?.type === "brand-pill") {
+    return " item-card__visual--custom";
+  }
+
+  if (item.visual?.type === "beer-script") {
+    return " item-card__visual--beer-script";
+  }
+
+  return "";
+}
+
+function getDetailPreviewClass(item) {
+  if (item.visual?.type === "brand-pill") {
+    return " sheet-preview--custom";
+  }
+
+  if (item.visual?.type === "beer-script") {
+    return " sheet-preview--beer-script";
+  }
+
+  return "";
 }
 
 function hasSideVisual(item) {
@@ -473,6 +497,10 @@ function renderItemVisual(item, context) {
     return renderBrandPillVisual(item.visual, context);
   }
 
+  if (item.visual?.type === "beer-script") {
+    return renderBeerScriptVisual(item.visual, context);
+  }
+
   const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
   return `
     <img
@@ -481,6 +509,19 @@ function renderItemVisual(item, context) {
       alt="${item.name}"
       loading="${context === "detail" ? "eager" : "lazy"}"
     />
+  `;
+}
+
+function renderBeerScriptVisual(visual, context) {
+  const classes = ["beer-script-visual"];
+  if (context === "detail") {
+    classes.push("beer-script-visual--detail");
+  }
+
+  return `
+    <div class="${classes.join(" ")}">
+      <span class="beer-script-visual__label">${visual.label}</span>
+    </div>
   `;
 }
 
