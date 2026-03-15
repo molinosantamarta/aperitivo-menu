@@ -255,6 +255,17 @@
             "textStyle": "display",
             "script": "Spritz"
           },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "campari-floating.png",
+            "width": "138px",
+            "height": "294px",
+            "right": "-8px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
           "options": [
             {
               "label": "1 drink",
@@ -282,6 +293,17 @@
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Spritz"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "sarti-floating.png",
+            "width": "138px",
+            "height": "294px",
+            "right": "-8px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
           },
           "options": [
             {
