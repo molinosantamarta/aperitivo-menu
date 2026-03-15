@@ -780,6 +780,7 @@ a {
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: #fffdf8;
+  transform: translateY(0.06em);
   text-align: center;
   text-shadow:
     0 1px 0 rgba(70, 34, 18, 0.22),
