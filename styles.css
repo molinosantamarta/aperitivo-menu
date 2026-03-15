@@ -865,7 +865,7 @@ a {
   mix-blend-mode: var(--side-visual-blend, normal);
   pointer-events: none;
   opacity: 0;
-  transform: translate3d(24px, 0, 0) rotate(8deg);
+  transform: translate3d(24px, 0, 0) rotate(var(--side-visual-tilt, 8deg));
   transform-origin: center bottom;
   transition:
     opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -874,13 +874,13 @@ a {
 
 .item-card__side-visual--floating-bottle.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) rotate(8deg);
+  transform: translate3d(0, 0, 0) rotate(var(--side-visual-tilt, 8deg));
 }
 
 @media (prefers-reduced-motion: reduce) {
   .item-card__side-visual--floating-bottle {
     opacity: 1;
-    transform: rotate(8deg);
+    transform: rotate(var(--side-visual-tilt, 8deg));
     transition: none;
   }
 }

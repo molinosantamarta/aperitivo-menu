@@ -689,6 +689,9 @@ function buildSideVisualStyle(item) {
   if (sideVisual.blendMode) {
     styles.push(`--side-visual-blend: ${sideVisual.blendMode}`);
   }
+  if (sideVisual.tilt) {
+    styles.push(`--side-visual-tilt: ${sideVisual.tilt}`);
+  }
 
   return styles.join("; ");
 }
