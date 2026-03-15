@@ -324,6 +324,34 @@
           "cropPadding": [8, 12, 8, 10]
         },
         {
+          "id": "gin-lemon",
+          "page": 1,
+          "name": "Gin Lemon",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Gin lemon.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#d3d94b",
+            "gradientMid": "#f0d84f",
+            "gradientEnd": "#fff1a1",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Lemon"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [676, 868, 932, 982],
+          "cropRect": [700, 900, 930, 980],
+          "cropPadding": [8, 12, 8, 10]
+        },
+        {
           "id": "hugo",
           "page": 1,
           "name": "Hugo",
