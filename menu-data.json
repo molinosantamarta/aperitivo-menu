@@ -15,7 +15,8 @@
           "category": "Artigianali",
           "description": "Blanche 4% vol.",
           "sideVisual": {
-            "type": "floating-bottle"
+            "type": "floating-bottle",
+            "asset": "bianchina-floating.png"
           },
           "options": [
             {

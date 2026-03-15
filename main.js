@@ -497,7 +497,7 @@ function renderItemSideVisual(item) {
     <span
       class="${sideVisualClass}"
       aria-hidden="true"
-      style="background-image: url('${getItemImage(item)}');"
+      style="background-image: url('${getSideVisualImage(item)}');"
     ></span>
   `;
 }
@@ -527,4 +527,9 @@ function renderBrandPillVisual(visual, context) {
 
 function getItemImage(item) {
   return new URL(`./menu-assets/items/${item.id}.png`, import.meta.url).href;
+}
+
+function getSideVisualImage(item) {
+  const assetName = item.sideVisual?.asset || `${item.id}.png`;
+  return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
 }
