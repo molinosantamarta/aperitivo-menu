@@ -1499,6 +1499,30 @@ a {
   line-height: 1.25;
 }
 
+.load-error-card {
+  display: grid;
+  gap: 14px;
+  padding: 26px 20px;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 245, 0.97), rgba(250, 244, 232, 0.94)),
+    var(--paper);
+  border: 1px solid rgba(66, 48, 30, 0.1);
+  box-shadow: 0 20px 42px rgba(66, 48, 30, 0.1);
+  text-align: center;
+}
+
+.load-error-card h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3.9vw, 1.7rem);
+}
+
+.load-error-card p:last-of-type {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 @keyframes loader-slide {
   0% {
     transform: translateX(-110%);

@@ -130,12 +130,12 @@ async function init() {
       waitMinimumLoaderTime(1650),
     ]);
     sections = menuData.sections;
-    itemLookup = sections
-      .flatMap((section) => section.items)
-      .reduce((lookup, item) => {
+    itemLookup = sections.reduce((lookup, section) => {
+      section.items.forEach((item) => {
         lookup[item.id] = item;
-        return lookup;
-      }, {});
+      });
+      return lookup;
+    }, {});
     itemSectionLookup = sections.reduce((lookup, section) => {
       section.items.forEach((item) => {
         lookup[item.id] = section.title;
@@ -148,6 +148,7 @@ async function init() {
     renderCart();
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
+    renderLoadError();
   } finally {
     revealApp();
   }
@@ -161,7 +162,10 @@ async function loadMenuData() {
 
   const baseData = await response.json();
   const sheetConfig = await loadSheetConfig();
-  const sheetCsvUrl = sheetConfig.googleSheetCsvUrl?.trim();
+  const sheetCsvUrl =
+    sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string"
+      ? sheetConfig.googleSheetCsvUrl.trim()
+      : "";
 
   if (!sheetCsvUrl) {
     return baseData;
@@ -188,7 +192,7 @@ async function loadSheetConfig() {
     }
 
     return response.json();
-  } catch {
+  } catch (error) {
     return {};
   }
 }
@@ -259,7 +263,7 @@ function parseCsvRows(csvText) {
   return dataRows
     .map((cells) =>
       headers.reduce((entry, header, index) => {
-        entry[normalizeSheetHeader(header)] = (cells[index] ?? "").trim();
+        entry[normalizeSheetHeader(header)] = (cells[index] || "").trim();
         return entry;
       }, {})
     )
@@ -272,7 +276,10 @@ function normalizeSheetHeader(value) {
 
 function applySheetRowsToMenu(baseMenu, sheetRows) {
   const nextMenu = JSON.parse(JSON.stringify(baseMenu));
-  const sectionLookup = Object.fromEntries(nextMenu.sections.map((section) => [section.id, section]));
+  const sectionLookup = nextMenu.sections.reduce((lookup, section) => {
+    lookup[section.id] = section;
+    return lookup;
+  }, {});
   const rowLookup = new Map(sheetRows.map((row) => [row.id, row]));
 
   nextMenu.sections.forEach((section) => {
@@ -284,7 +291,7 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
       .map((item, index) => {
         const row = rowLookup.get(item.id);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
-        nextItem.__sheetPosition = parseSheetInteger(row?.position, index);
+        nextItem.__sheetPosition = parseSheetInteger(row ? row.position : null, index);
         return nextItem;
       });
   });
@@ -311,7 +318,7 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
 
   nextMenu.sections.forEach((section) => {
     section.items = section.items
-      .sort((left, right) => (left.__sheetPosition ?? 0) - (right.__sheetPosition ?? 0))
+      .sort((left, right) => getSheetPosition(left) - getSheetPosition(right))
       .map((item) => {
         delete item.__sheetPosition;
         return item;
@@ -334,7 +341,10 @@ function updateItemFromSheet(item, row, section) {
     nextItem.category = row.category;
   }
   if (row.show_detail_hint) {
-    nextItem.showDetailHint = parseSheetBoolean(row.show_detail_hint, nextItem.showDetailHint ?? true);
+    nextItem.showDetailHint = parseSheetBoolean(
+      row.show_detail_hint,
+      nextItem.showDetailHint == null ? true : nextItem.showDetailHint
+    );
   }
 
   const options = parseSheetOptions(row);
@@ -439,6 +449,10 @@ function parseSheetOptions(row) {
     .filter(Boolean);
 }
 
+function getSheetPosition(item) {
+  return item && item.__sheetPosition != null ? item.__sheetPosition : 0;
+}
+
 function parseSheetBoolean(value, fallbackValue) {
   if (!value) {
     return fallbackValue;
@@ -500,7 +514,7 @@ async function waitForCriticalAssets(menuData) {
     return;
   }
 
-  await Promise.allSettled(criticalUrls.map((url) => preloadImage(url)));
+  await promiseAllSettledCompat(criticalUrls.map((url) => preloadImage(url)));
 }
 
 function collectCriticalAssetUrls(menuData) {
@@ -513,7 +527,7 @@ function collectCriticalAssetUrls(menuData) {
         urls.add(getItemImage(item));
       }
 
-      if (item.visual?.type === "photo-panel" && item.visual.asset) {
+      if (getVisualType(item) === "photo-panel" && item.visual && item.visual.asset) {
         urls.add(getVisualAsset(item.visual.asset));
       }
 
@@ -525,11 +539,10 @@ function collectCriticalAssetUrls(menuData) {
     });
   });
 
-  const gelatoItem = menuData.sections
-    .flatMap((section) => section.items)
-    .find((item) => item.id === "agri-gelato");
+  const allItems = menuData.sections.reduce((items, section) => items.concat(section.items), []);
+  const gelatoItem = allItems.find((item) => item.id === "agri-gelato");
 
-  if (gelatoItem?.visual?.asset) {
+  if (gelatoItem && gelatoItem.visual && gelatoItem.visual.asset) {
     urls.add(getVisualAsset(gelatoItem.visual.asset));
   }
 
@@ -546,12 +559,27 @@ function preloadImage(url) {
   });
 }
 
+function promiseAllSettledCompat(promises) {
+  return Promise.all(
+    promises.map((promise) =>
+      Promise.resolve(promise).then(
+        (value) => ({ status: "fulfilled", value }),
+        (reason) => ({ status: "rejected", reason })
+      )
+    )
+  );
+}
+
 function revealApp() {
   document.body.classList.remove("is-loading");
-  appLoader?.classList.add("is-hidden");
+  if (appLoader) {
+    appLoader.classList.add("is-hidden");
+  }
 
   window.setTimeout(() => {
-    appLoader?.remove();
+    if (appLoader) {
+      appLoader.remove();
+    }
   }, 320);
 }
 
@@ -584,7 +612,9 @@ function renderSections() {
 }
 
 function setupSideVisualAnimations() {
-  sideVisualObserver?.disconnect();
+  if (sideVisualObserver) {
+    sideVisualObserver.disconnect();
+  }
 
   const sideVisuals = menuSections.querySelectorAll(".item-card__side-visual--floating");
   if (!sideVisuals.length) {
@@ -604,7 +634,9 @@ function setupSideVisualAnimations() {
         }
 
         entry.target.classList.add("is-visible");
-        sideVisualObserver?.unobserve(entry.target);
+        if (sideVisualObserver) {
+          sideVisualObserver.unobserve(entry.target);
+        }
       });
     },
     {
@@ -818,8 +850,12 @@ function renderQuantityControl() {
   `;
 
   const [decreaseButton, increaseButton] = detailQuantity.querySelectorAll(".detail-quantity__btn");
-  decreaseButton?.addEventListener("click", () => updateSelectedQuantity(-1));
-  increaseButton?.addEventListener("click", () => updateSelectedQuantity(1));
+  if (decreaseButton) {
+    decreaseButton.addEventListener("click", () => updateSelectedQuantity(-1));
+  }
+  if (increaseButton) {
+    increaseButton.addEventListener("click", () => updateSelectedQuantity(1));
+  }
 }
 
 function updateSelectedQuantity(delta) {
@@ -949,9 +985,9 @@ function formatCartBreakdown(entries) {
 
 function getCartSummaryBucket(entry) {
   const item = itemLookup[entry.itemId];
-  const category = (item?.category ?? entry.category ?? "").toLowerCase();
+  const category = getItemCategoryLabel(item, entry).toLowerCase();
   const sectionTitle = findSectionTitleForItem(entry.itemId).toLowerCase();
-  const optionLabel = (entry.optionLabel ?? "").toLowerCase();
+  const optionLabel = (entry.optionLabel || "").toLowerCase();
 
   if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
     return "ignored";
@@ -991,15 +1027,15 @@ function getCartSummaryBucket(entry) {
 }
 
 function findSectionTitleForItem(itemId) {
-  return itemSectionLookup[itemId] ?? "";
+  return itemSectionLookup[itemId] || "";
 }
 
 async function saveSummary(text) {
-  if (navigator.clipboard?.writeText && window.isSecureContext) {
+  if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
       return true;
-    } catch {
+    } catch (error) {
       // Continue with a fallback for browsers that block the first clipboard write.
     }
   }
@@ -1023,7 +1059,7 @@ function copyTextFallback(text) {
 
   try {
     copied = document.execCommand("copy");
-  } catch {
+  } catch (error) {
     copied = false;
   }
 
@@ -1035,13 +1071,17 @@ function loadCart() {
   try {
     const raw = window.localStorage.getItem("molino-cart");
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (error) {
     return [];
   }
 }
 
 function persistCart() {
-  window.localStorage.setItem("molino-cart", JSON.stringify(state.cart));
+  try {
+    window.localStorage.setItem("molino-cart", JSON.stringify(state.cart));
+  } catch (error) {
+    // Ignore storage failures on browsers with restricted storage access.
+  }
 }
 
 function formatPrice(value) {
@@ -1049,7 +1089,7 @@ function formatPrice(value) {
 }
 
 function getOptionDisplayLabel(option) {
-  return option.displayLabel ?? option.label;
+  return option.displayLabel != null ? option.displayLabel : option.label;
 }
 
 function pluralize(count, singular, plural) {
@@ -1068,28 +1108,31 @@ function showDetailHint(item) {
 }
 
 function hasCustomVisual(item) {
+  const visualType = getVisualType(item);
   return (
-    item.visual?.type === "brand-pill" ||
-    item.visual?.type === "beer-script" ||
-    item.visual?.type === "photo-panel" ||
-    item.visual?.type === "text-panel"
+    visualType === "brand-pill" ||
+    visualType === "beer-script" ||
+    visualType === "photo-panel" ||
+    visualType === "text-panel"
   );
 }
 
 function getCardVisualClass(item) {
-  if (item.visual?.type === "brand-pill") {
+  const visualType = getVisualType(item);
+
+  if (visualType === "brand-pill") {
     return " item-card__visual--custom";
   }
 
-  if (item.visual?.type === "beer-script") {
+  if (visualType === "beer-script") {
     return " item-card__visual--beer-script";
   }
 
-  if (item.visual?.type === "photo-panel") {
+  if (visualType === "photo-panel") {
     return " item-card__visual--photo-panel";
   }
 
-  if (item.visual?.type === "text-panel") {
+  if (visualType === "text-panel") {
     return " item-card__visual--custom";
   }
 
@@ -1097,19 +1140,21 @@ function getCardVisualClass(item) {
 }
 
 function getDetailPreviewClass(item) {
-  if (item.visual?.type === "brand-pill") {
+  const visualType = getVisualType(item);
+
+  if (visualType === "brand-pill") {
     return " sheet-preview--custom";
   }
 
-  if (item.visual?.type === "beer-script") {
+  if (visualType === "beer-script") {
     return " sheet-preview--beer-script";
   }
 
-  if (item.visual?.type === "photo-panel") {
+  if (visualType === "photo-panel") {
     return " sheet-preview--photo-panel";
   }
 
-  if (item.visual?.type === "text-panel") {
+  if (visualType === "text-panel") {
     return " sheet-preview--custom";
   }
 
@@ -1125,19 +1170,21 @@ function hasFloatingBottle(item) {
 }
 
 function renderItemVisual(item, context) {
-  if (item.visual?.type === "brand-pill") {
+  const visualType = getVisualType(item);
+
+  if (visualType === "brand-pill") {
     return renderBrandPillVisual(item.visual, context);
   }
 
-  if (item.visual?.type === "beer-script") {
+  if (visualType === "beer-script") {
     return renderBeerScriptVisual(item.visual, context);
   }
 
-  if (item.visual?.type === "photo-panel") {
+  if (visualType === "photo-panel") {
     return renderPhotoPanelVisual(item.visual, context);
   }
 
-  if (item.visual?.type === "text-panel") {
+  if (visualType === "text-panel") {
     return renderTextPanelVisual(item.visual, context);
   }
 
@@ -1270,8 +1317,46 @@ function getItemImage(item) {
 }
 
 function getSideVisualImage(visual) {
-  const assetName = visual?.asset;
+  const assetName = visual && visual.asset ? visual.asset : "";
   return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
+}
+
+function getVisualType(item) {
+  return item && item.visual ? item.visual.type : "";
+}
+
+function getItemCategoryLabel(item, entry) {
+  if (item && item.category) {
+    return item.category;
+  }
+
+  if (entry && entry.category) {
+    return entry.category;
+  }
+
+  return "";
+}
+
+function renderLoadError() {
+  sectionNav.innerHTML = "";
+  menuSections.innerHTML = `
+    <section class="load-error-card">
+      <p class="eyebrow">Connessione</p>
+      <h2>Il menu non si e caricato correttamente.</h2>
+      <p>
+        Riprova tra qualche secondo. Se sei su iPhone, prova anche ad aprire il link in una
+        nuova scheda o in navigazione privata.
+      </p>
+      <button class="utility-btn utility-btn--accent" id="retryLoad" type="button">
+        Ricarica il menu
+      </button>
+    </section>
+  `;
+
+  const retryButton = document.querySelector("#retryLoad");
+  if (retryButton) {
+    retryButton.addEventListener("click", () => window.location.reload());
+  }
 }
 
 function getVisualAsset(assetName) {
