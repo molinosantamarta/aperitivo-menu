@@ -206,12 +206,12 @@
           "category": "Drink",
           "description": "Classico spritz Aperol.",
           "visual": {
-            "type": "brand-pill",
-            "script": "Spritz",
+            "type": "beer-script",
             "label": "Aperol",
             "gradientStart": "#ff2d11",
             "gradientEnd": "#ff8b10",
-            "scriptColor": "#111111"
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
           },
           "options": [
             {

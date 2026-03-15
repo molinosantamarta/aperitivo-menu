@@ -788,6 +788,14 @@ a {
   text-wrap: balance;
 }
 
+.beer-script-visual--display .beer-script-visual__label {
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 8vw, 3.2rem);
+  line-height: 0.9;
+  letter-spacing: -0.14em;
+  transform: translateY(0.02em);
+}
+
 .sheet-preview--beer-script {
   padding: 0;
   overflow: visible;
@@ -801,6 +809,10 @@ a {
 
 .beer-script-visual--detail .beer-script-visual__label {
   font-size: clamp(4.1rem, 14vw, 6.3rem);
+}
+
+.beer-script-visual--display.beer-script-visual--detail .beer-script-visual__label {
+  font-size: clamp(2.5rem, 9vw, 3.8rem);
 }
 
 .photo-panel-visual {

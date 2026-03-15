@@ -573,6 +573,9 @@ function renderBeerScriptVisual(visual, context) {
   if (context === "detail") {
     classes.push("beer-script-visual--detail");
   }
+  if (visual.textStyle === "display") {
+    classes.push("beer-script-visual--display");
+  }
 
   return `
     <div
