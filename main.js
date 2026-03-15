@@ -633,6 +633,7 @@ function getCartSummaryBucket(entry) {
   const item = itemLookup[entry.itemId];
   const category = (item?.category ?? entry.category ?? "").toLowerCase();
   const sectionTitle = findSectionTitleForItem(entry.itemId).toLowerCase();
+  const optionLabel = (entry.optionLabel ?? "").toLowerCase();
 
   if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
     return "ignored";
@@ -648,6 +649,10 @@ function getCartSummaryBucket(entry) {
     category === "bollicine" ||
     category === "selezione zero"
   ) {
+    if (optionLabel.includes("calice")) {
+      return "bevande";
+    }
+
     return "bottiglie";
   }
 
