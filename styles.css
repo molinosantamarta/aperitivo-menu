@@ -451,6 +451,15 @@ a {
   text-align: center;
 }
 
+.promo-agri__eyebrow {
+  margin: 0 0 18px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #7d6250;
+}
+
 .promo-agri__chips {
   display: flex;
   flex-wrap: wrap;
