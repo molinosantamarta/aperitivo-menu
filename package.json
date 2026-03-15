@@ -6,6 +6,7 @@
   "scripts": {
     "extract": "python3 scripts/extract_ape_assets.py",
     "sheet:template": "node scripts/export_sheet_template.mjs",
+    "build:pages-runtime": "esbuild main.js --platform=browser --format=iife --target=safari11 --outfile=main.runtime.js",
     "dev": "vite --host 0.0.0.0 --port 4173",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4174"

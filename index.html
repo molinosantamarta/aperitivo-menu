@@ -249,6 +249,28 @@
       </section>
     </div>
 
-    <script type="module" src="./main.js?v=20260316c"></script>
+    <script>
+      (function () {
+        var host = window.location.hostname;
+        var isLocalHost =
+          host === "localhost" ||
+          host === "127.0.0.1" ||
+          host === "0.0.0.0" ||
+          host.indexOf("192.168.") === 0 ||
+          host.indexOf("10.") === 0 ||
+          /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+        var script = document.createElement("script");
+
+        script.defer = true;
+        if (isLocalHost) {
+          script.type = "module";
+          script.src = "./main.js?v=20260316d";
+        } else {
+          script.src = "./main.runtime.js?v=20260316d";
+        }
+
+        document.body.appendChild(script);
+      })();
+    </script>
   </body>
 </html>
