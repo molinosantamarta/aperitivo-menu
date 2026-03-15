@@ -545,7 +545,7 @@ function renderItemSideVisual(item) {
     <span
       class="${sideVisualClass}"
       aria-hidden="true"
-      style="background-image: url('${getSideVisualImage(item)}');"
+      style="${buildSideVisualStyle(item)}"
     ></span>
   `;
 }
@@ -580,4 +580,36 @@ function getItemImage(item) {
 function getSideVisualImage(item) {
   const assetName = item.sideVisual?.asset || `${item.id}.png`;
   return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
+}
+
+function buildSideVisualStyle(item) {
+  const styles = [`background-image: url('${getSideVisualImage(item)}')`];
+  const sideVisual = item.sideVisual || {};
+
+  if (sideVisual.width) {
+    styles.push(`--side-visual-width: ${sideVisual.width}`);
+  }
+  if (sideVisual.height) {
+    styles.push(`--side-visual-height: ${sideVisual.height}`);
+  }
+  if (sideVisual.right) {
+    styles.push(`--side-visual-right: ${sideVisual.right}`);
+  }
+  if (sideVisual.bottom) {
+    styles.push(`--side-visual-bottom: ${sideVisual.bottom}`);
+  }
+  if (sideVisual.top) {
+    styles.push(`--side-visual-top: ${sideVisual.top}`);
+  }
+  if (sideVisual.backgroundSize) {
+    styles.push(`--side-visual-size: ${sideVisual.backgroundSize}`);
+  }
+  if (sideVisual.backgroundPosition) {
+    styles.push(`--side-visual-position: ${sideVisual.backgroundPosition}`);
+  }
+  if (sideVisual.blendMode) {
+    styles.push(`--side-visual-blend: ${sideVisual.blendMode}`);
+  }
+
+  return styles.join("; ");
 }
