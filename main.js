@@ -97,6 +97,7 @@ copySummaryButton.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(summary);
     copySummaryButton.textContent = "Salvato";
+    closeCart();
     window.setTimeout(() => {
       copySummaryButton.textContent = saveSummaryLabel;
     }, 1600);
