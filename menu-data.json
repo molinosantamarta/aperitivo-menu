@@ -106,7 +106,8 @@
             "labelColor": "#fff6eb"
           },
           "sideVisual": {
-            "type": "asset-right-crop"
+            "type": "floating-bottle",
+            "asset": "casciaball-floating.png"
           },
           "options": [
             {
