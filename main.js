@@ -33,6 +33,7 @@ const closeCartButton = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const cartEmpty = document.querySelector("#cartEmpty");
+const cartFooter = document.querySelector("#cartFooter");
 const cartTotal = document.querySelector("#cartTotal");
 const copySummaryButton = document.querySelector("#copySummary");
 const clearCartButton = document.querySelector("#clearCart");
@@ -479,9 +480,11 @@ function renderCart() {
   if (state.cart.length === 0) {
     cartEmpty.hidden = false;
     cartItems.hidden = true;
+    cartFooter.hidden = true;
   } else {
     cartEmpty.hidden = true;
     cartItems.hidden = false;
+    cartFooter.hidden = false;
 
     state.cart.forEach((entry) => {
       const row = document.createElement("article");
