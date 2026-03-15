@@ -222,8 +222,7 @@
             "width": "118px",
             "height": "248px",
             "right": "-10px",
-            "top": "-6px",
-            "bottom": "auto",
+            "bottom": "14px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
