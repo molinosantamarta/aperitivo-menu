@@ -846,7 +846,7 @@ a {
   line-height: 0.88;
   letter-spacing: 0;
   text-align: center;
-  transform: none;
+  transform: translate(0.08em, 0.05em);
 }
 
 .beer-script-visual--display > * {
@@ -880,7 +880,7 @@ a {
   font-size: clamp(2.35rem, 8.8vw, 3.55rem);
   line-height: 0.88;
   letter-spacing: 0;
-  transform: none;
+  transform: translate(0.08em, 0.06em);
 }
 
 .photo-panel-visual {
