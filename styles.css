@@ -771,6 +771,9 @@ a {
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: #fffdf8;
+  text-shadow:
+    0 1px 0 rgba(70, 34, 18, 0.22),
+    0 3px 10px rgba(53, 24, 12, 0.26);
   text-wrap: balance;
 }
 
