@@ -214,6 +214,16 @@
             "textStyle": "display",
             "script": "Spritz"
           },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "aperol-floating.png",
+            "width": "98px",
+            "height": "232px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
           "options": [
             {
               "label": "1 drink",
