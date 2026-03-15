@@ -1254,6 +1254,10 @@ a {
   grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
 
+.sheet-panel--cart h2 {
+  font-size: 1.38rem;
+}
+
 .sheet-close {
   position: absolute;
   top: 14px;
