@@ -130,10 +130,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "moretti-33.png",
-            "width": "88px",
-            "height": "192px",
-            "right": "10px",
-            "bottom": "12px",
+            "width": "118px",
+            "height": "248px",
+            "right": "4px",
+            "bottom": "14px",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
@@ -163,10 +163,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "birra-spina.png",
-            "width": "84px",
-            "height": "180px",
-            "right": "10px",
-            "bottom": "10px",
+            "width": "118px",
+            "height": "248px",
+            "right": "4px",
+            "bottom": "14px",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
