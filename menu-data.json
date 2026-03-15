@@ -127,6 +127,11 @@
           "category": "Classiche",
           "description": "In bottiglia, 33 cl.",
           "showDetailHint": false,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "moretti-back.png",
+            "position": "center center"
+          },
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "moretti-33.png",
