@@ -198,9 +198,11 @@ function collectCriticalAssetUrls(menuData) {
         urls.add(getVisualAsset(item.visual.asset));
       }
 
-      if (item.sideVisual?.asset) {
-        urls.add(getSideVisualImage(item));
-      }
+      getAllSideVisuals(item).forEach((visual) => {
+        if (visual.asset) {
+          urls.add(getSideVisualImage(visual));
+        }
+      });
     });
   });
 
@@ -265,7 +267,7 @@ function renderSections() {
 function setupSideVisualAnimations() {
   sideVisualObserver?.disconnect();
 
-  const sideVisuals = menuSections.querySelectorAll(".item-card__side-visual--floating-bottle");
+  const sideVisuals = menuSections.querySelectorAll(".item-card__side-visual--floating");
   if (!sideVisuals.length) {
     return;
   }
@@ -600,11 +602,11 @@ function getDetailPreviewClass(item) {
 }
 
 function hasSideVisual(item) {
-  return item.sideVisual?.type === "asset-right-crop" || item.sideVisual?.type === "floating-bottle";
+  return getAllSideVisuals(item).length > 0;
 }
 
 function hasFloatingBottle(item) {
-  return item.sideVisual?.type === "floating-bottle";
+  return getAllSideVisuals(item).some((visual) => visual.type === "floating-bottle");
 }
 
 function renderItemVisual(item, context) {
@@ -676,21 +678,27 @@ function renderPhotoPanelVisual(visual, context) {
 }
 
 function renderItemSideVisual(item) {
-  if (!hasSideVisual(item)) {
+  const sideVisuals = getAllSideVisuals(item);
+  if (!sideVisuals.length) {
     return "";
   }
 
-  const sideVisualClass = hasFloatingBottle(item)
-    ? "item-card__side-visual item-card__side-visual--floating-bottle"
-    : "item-card__side-visual";
+  return sideVisuals
+    .map((visual) => {
+      const sideVisualClass =
+        visual.type === "floating-bottle"
+          ? "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-bottle"
+          : "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-accent";
 
-  return `
-    <span
-      class="${sideVisualClass}"
-      aria-hidden="true"
-      style="${buildSideVisualStyle(item)}"
-    ></span>
-  `;
+      return `
+        <span
+          class="${sideVisualClass}"
+          aria-hidden="true"
+          style="${buildSideVisualStyle(visual)}"
+        ></span>
+      `;
+    })
+    .join("");
 }
 
 function renderBrandPillVisual(visual, context) {
@@ -720,8 +728,8 @@ function getItemImage(item) {
   return new URL(`./menu-assets/items/${item.id}.png`, import.meta.url).href;
 }
 
-function getSideVisualImage(item) {
-  const assetName = item.sideVisual?.asset || `${item.id}.png`;
+function getSideVisualImage(visual) {
+  const assetName = visual?.asset;
   return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
 }
 
@@ -729,9 +737,8 @@ function getVisualAsset(assetName) {
   return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
 }
 
-function buildSideVisualStyle(item) {
-  const styles = [`background-image: url('${getSideVisualImage(item)}')`];
-  const sideVisual = item.sideVisual || {};
+function buildSideVisualStyle(sideVisual) {
+  const styles = [`background-image: url('${getSideVisualImage(sideVisual)}')`];
 
   if (sideVisual.width) {
     styles.push(`--side-visual-width: ${sideVisual.width}`);
@@ -762,4 +769,8 @@ function buildSideVisualStyle(item) {
   }
 
   return styles.join("; ");
+}
+
+function getAllSideVisuals(item) {
+  return [item.sideVisual, item.accentVisual].filter(Boolean);
 }

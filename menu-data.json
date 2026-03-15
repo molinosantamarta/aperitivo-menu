@@ -384,6 +384,17 @@
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
+          "accentVisual": {
+            "type": "floating-accent",
+            "asset": "lemon-floating.png",
+            "width": "72px",
+            "height": "66px",
+            "right": "44px",
+            "bottom": "58px",
+            "tilt": "-8deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center center"
+          },
           "options": [
             {
               "label": "1 drink",
