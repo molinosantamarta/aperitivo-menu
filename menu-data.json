@@ -153,6 +153,11 @@
           "name": "Birra alla spina",
           "category": "Alla spina",
           "description": "Sonnenberg 4,8% vol. 0,4 L.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "birra-spina-back.jpg",
+            "position": "center center"
+          },
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "birra-spina.png",

@@ -457,7 +457,11 @@ function formatOptionChip(option) {
 }
 
 function hasCustomVisual(item) {
-  return item.visual?.type === "brand-pill" || item.visual?.type === "beer-script";
+  return (
+    item.visual?.type === "brand-pill" ||
+    item.visual?.type === "beer-script" ||
+    item.visual?.type === "photo-panel"
+  );
 }
 
 function getCardVisualClass(item) {
@@ -467,6 +471,10 @@ function getCardVisualClass(item) {
 
   if (item.visual?.type === "beer-script") {
     return " item-card__visual--beer-script";
+  }
+
+  if (item.visual?.type === "photo-panel") {
+    return " item-card__visual--photo-panel";
   }
 
   return "";
@@ -479,6 +487,10 @@ function getDetailPreviewClass(item) {
 
   if (item.visual?.type === "beer-script") {
     return " sheet-preview--beer-script";
+  }
+
+  if (item.visual?.type === "photo-panel") {
+    return " sheet-preview--photo-panel";
   }
 
   return "";
@@ -499,6 +511,10 @@ function renderItemVisual(item, context) {
 
   if (item.visual?.type === "beer-script") {
     return renderBeerScriptVisual(item.visual, context);
+  }
+
+  if (item.visual?.type === "photo-panel") {
+    return renderPhotoPanelVisual(item.visual, context);
   }
 
   const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
@@ -529,6 +545,23 @@ function renderBeerScriptVisual(visual, context) {
     >
       <span class="beer-script-visual__label">${visual.label}</span>
     </div>
+  `;
+}
+
+function renderPhotoPanelVisual(visual, context) {
+  const classes = ["photo-panel-visual"];
+  if (context === "detail") {
+    classes.push("photo-panel-visual--detail");
+  }
+
+  return `
+    <div
+      class="${classes.join(" ")}"
+      style="
+        --photo-panel-image: url('${getVisualAsset(visual.asset)}');
+        --photo-panel-position: ${visual.position || "center center"};
+      "
+    ></div>
   `;
 }
 
@@ -579,6 +612,10 @@ function getItemImage(item) {
 
 function getSideVisualImage(item) {
   const assetName = item.sideVisual?.asset || `${item.id}.png`;
+  return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
+}
+
+function getVisualAsset(assetName) {
   return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
 }
 
