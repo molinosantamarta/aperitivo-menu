@@ -139,7 +139,7 @@
             "height": "248px",
             "right": "4px",
             "bottom": "14px",
-            "backgroundSize": "contain",
+            "backgroundSize": "170% auto",
             "backgroundPosition": "center bottom"
           },
           "options": [
