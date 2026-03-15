@@ -363,12 +363,25 @@ a {
   background: rgba(255, 255, 255, 0.92);
   box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.08);
   cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 .utility-btn--accent {
   color: #fff;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
   box-shadow: none;
+}
+
+.utility-btn--empty {
+  color: #111;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(17, 17, 17, 0.7),
+    0 8px 18px rgba(42, 31, 18, 0.05);
 }
 
 .utility-btn--instagram {

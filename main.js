@@ -513,6 +513,8 @@ function renderCart() {
 function syncOpenCartButton(cartQuantity) {
   const hasItems = cartQuantity > 0;
   openCartButton.textContent = hasItems ? filledCartLabel : emptyCartPrompt;
+  openCartButton.classList.toggle("utility-btn--accent", hasItems);
+  openCartButton.classList.toggle("utility-btn--empty", !hasItems);
   openCartButton.setAttribute(
     "aria-label",
     hasItems ? "Apri riepilogo ordine" : "Seleziona prodotti dal menu"
