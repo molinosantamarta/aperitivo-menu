@@ -210,20 +210,11 @@
             "type": "beer-script",
             "label": "Aperol",
             "gradientStart": "#ff120d",
+            "gradientMid": "#ff5b12",
             "gradientEnd": "#ff9e18",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Spritz"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "aperol-floating.png",
-            "width": "118px",
-            "height": "248px",
-            "right": "4px",
-            "bottom": "14px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
           },
           "options": [
             {
@@ -243,6 +234,16 @@
           "category": "Drink",
           "showDetailHint": false,
           "description": "Classico spritz Campari.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Campari",
+            "gradientStart": "#9c0f1e",
+            "gradientMid": "#d2272d",
+            "gradientEnd": "#ff6c3a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
           "options": [
             {
               "label": "1 drink",
@@ -261,6 +262,16 @@
           "category": "Drink",
           "showDetailHint": false,
           "description": "Versione Sarti del classico spritz.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Sarti",
+            "gradientStart": "#d61f5f",
+            "gradientMid": "#f2556f",
+            "gradientEnd": "#ff9a57",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
           "options": [
             {
               "label": "1 drink",
@@ -279,6 +290,16 @@
           "category": "Drink",
           "showDetailHint": false,
           "description": "Gin tonic.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#1e8f6d",
+            "gradientMid": "#34b18b",
+            "gradientEnd": "#98de62",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Tonic"
+          },
           "options": [
             {
               "label": "1 drink",
@@ -297,6 +318,16 @@
           "category": "Drink",
           "showDetailHint": false,
           "description": "Spritz Hugo.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Hugo",
+            "gradientStart": "#4fae55",
+            "gradientMid": "#7fc95b",
+            "gradientEnd": "#d2ee74",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
           "options": [
             {
               "label": "1 drink",

@@ -582,6 +582,7 @@ function renderBeerScriptVisual(visual, context) {
       class="${classes.join(" ")}"
       style="
         --beer-script-start: ${visual.gradientStart || "#f0ede8"};
+        --beer-script-mid: ${visual.gradientMid || visual.gradientEnd || "#f8f5f0"};
         --beer-script-end: ${visual.gradientEnd || "#f8f5f0"};
         --beer-script-color: ${visual.labelColor || "rgba(56, 39, 24, 0.9)"};
       "
