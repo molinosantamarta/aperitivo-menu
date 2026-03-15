@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Domenica al Molino | Menu digitale aperitivi</title>
+    <meta
+      name="description"
+      content="Versione digitale mobile del menu aperitivi Domenica al Molino, fedele al design APE26 e pronta per QR code, dettagli interattivi e riepilogo ordine."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Montserrat:wght@500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Menu digitale mobile</p>
+          <div class="hero-brand">
+            <h1 class="hero-logo" aria-label="Domenica al Molino">
+              <span class="hero-logo__line hero-logo__line--top">Domenica</span>
+              <span class="hero-logo__line hero-logo__line--bottom">
+                <span class="hero-logo__al">al</span>
+                <span class="hero-logo__word">Molino</span>
+              </span>
+            </h1>
+            <div class="hero-butterfly hero-butterfly--brand" aria-hidden="true">
+              <img
+                class="hero-butterfly__image"
+                src="./farfalla-bianca.gif"
+                alt=""
+              />
+            </div>
+            <p class="hero-logo__subtitle">agrigelato e aperitivo</p>
+          </div>
+          <p class="intro">
+            La Domenica al Molino è un invito a rallentare e stare bene:
+            aperitivi artigianali, taglieri da condividere, agri-gelato km zero
+            e tutta la semplicità autentica della campagna, tra convivialità,
+            natura e relax.
+          </p>
+        </div>
+        <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie"></nav>
+        <div class="toolbar">
+          <button class="utility-btn utility-btn--accent" id="openCart" type="button">
+            Apri riepilogo
+          </button>
+          <a
+            class="utility-btn"
+            href="https://molinosantamarta.it/agri-eventi"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Prenota online
+          </a>
+        </div>
+      </header>
+
+      <main class="menu-stack">
+        <section class="promo-agri">
+          <div class="promo-agri__content">
+            <p class="eyebrow">Agri-Eventi</p>
+            <h2>Il parco del Molino vive anche oltre l'aperitivo.</h2>
+            <p class="promo-agri__copy">
+              Aperitivi nel verde, picnic serviti all'aria aperta, barbecue,
+              cinema sotto le stelle e appuntamenti speciali: una piccola
+              pubblicità del mondo Agri-Eventi, pensata per chi vuole vivere il
+              Molino come esperienza, non solo come menu.
+            </p>
+            <div class="promo-agri__chips" aria-label="Esperienze Agri-Eventi">
+              <span class="promo-agri__chip">Aperitivo &amp; Agrigelato</span>
+              <span class="promo-agri__chip">Picnic nel parco</span>
+              <span class="promo-agri__chip">BBQ &amp; Country Party</span>
+              <span class="promo-agri__chip">Cinema all'aperto</span>
+            </div>
+            <div class="promo-agri__actions">
+              <a
+                class="utility-btn utility-btn--accent"
+                href="https://www.molinosantamarta.it/agri-eventi"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Scopri gli Agri-Eventi
+              </a>
+              <a
+                class="utility-btn"
+                href="https://www.molinosantamarta.it/agri-eventi"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Apri pagina ufficiale
+              </a>
+            </div>
+          </div>
+          <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
+            <div class="promo-agri__video-wrap">
+              <iframe
+                class="promo-agri__video"
+                src="https://www.youtube-nocookie.com/embed/ybJPaALHaHE"
+                title="Video Agri-Eventi"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <div class="promo-agri__note">
+              <strong>Esperienze autentiche all'aperto</strong>
+              <p>
+                Natura, gusto, calendario eventi e convivialità del territorio
+                in una sola pagina dedicata.
+              </p>
+            </div>
+          </aside>
+        </section>
+
+        <div class="menu-sections" id="menuSections"></div>
+
+        <figure class="promo-panel">
+          <img
+            src="./menu-assets/footer.png"
+            alt="Eventi e novità Agri Eventi 2026"
+          />
+        </figure>
+
+        <section class="info-card">
+          <div>
+            <p class="eyebrow">Info e prenotazioni</p>
+            <h2>Questa base è già pronta per QR code e futuri upgrade.</h2>
+            <p>
+              Possiamo aggiungere video, allergeni, descrizioni più ricche,
+              filtri per categorie e un flusso ordine ancora più completo.
+            </p>
+          </div>
+          <div class="info-actions">
+            <a
+              class="utility-btn utility-btn--accent"
+              href="https://molinosantamarta.it/agri-eventi"
+              target="_blank"
+              rel="noreferrer"
+            >
+              molinosantamarta.it/agri-eventi
+            </a>
+            <a class="utility-btn" href="mailto:eventi@molinosantamarta.it">
+              eventi@molinosantamarta.it
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine">
+      <span class="cart-fab__label">Riepilogo</span>
+      <span class="cart-fab__count" id="cartCount">0</span>
+    </button>
+
+    <div class="sheet-backdrop" id="detailSheet" aria-hidden="true">
+      <section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <button class="sheet-close" id="closeDetail" type="button" aria-label="Chiudi">
+          ✕
+        </button>
+        <p class="sheet-kicker" id="detailCategory"></p>
+        <div class="sheet-preview">
+          <img id="detailImage" src="" alt="" />
+        </div>
+        <h2 id="detailTitle"></h2>
+        <p class="sheet-description" id="detailDescription"></p>
+        <div class="option-list" id="detailOptions"></div>
+        <div class="sheet-actions">
+          <button class="utility-btn utility-btn--accent" id="addToCart" type="button">
+            Aggiungi al riepilogo
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="sheet-backdrop" id="cartSheet" aria-hidden="true">
+      <section
+        class="sheet-panel sheet-panel--cart"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cartTitle"
+      >
+        <button class="sheet-close" id="closeCart" type="button" aria-label="Chiudi">
+          ✕
+        </button>
+        <p class="sheet-kicker">Riepilogo virtuale</p>
+        <h2 id="cartTitle">Ordine da mostrare al cameriere</h2>
+        <div class="cart-empty" id="cartEmpty">
+          Non hai ancora aggiunto nulla. Tocca una voce del menu per iniziare.
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Totale indicativo</span>
+            <strong id="cartTotal">0,00 €</strong>
+          </div>
+          <button class="utility-btn utility-btn--accent" id="copySummary" type="button">
+            Copia riepilogo
+          </button>
+          <button class="utility-btn" id="clearCart" type="button">
+            Svuota
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

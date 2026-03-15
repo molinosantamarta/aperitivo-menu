@@ -1,0 +1,490 @@
+{
+  "sections": [
+    {
+      "id": "birre",
+      "title": "Birre",
+      "layout": "grouped",
+      "kicker": "Artigianali, bottiglia e spina",
+      "description": "Le etichette restano fedeli al menu originale, ma qui sono isolate e più leggibili su smartphone.",
+      "accent": "#b98f1f",
+      "accentSoft": "#f2e4b7",
+      "groups": [
+        {
+          "id": "artigianali",
+          "label": "Artigianali",
+          "description": ""
+        },
+        {
+          "id": "bottiglia",
+          "label": "In bottiglia",
+          "description": ""
+        },
+        {
+          "id": "spina",
+          "label": "Alla spina",
+          "description": ""
+        }
+      ],
+      "items": [
+        {
+          "id": "bianchina",
+          "page": 1,
+          "name": "Bianchina",
+          "category": "Birre artigianali",
+          "group": "artigianali",
+          "description": "Blanche 4% vol.",
+          "options": [
+            {
+              "label": "1 bicchiere",
+              "price": 6
+            }
+          ],
+          "rect": [68, 340, 312, 440],
+          "cropRect": [90, 360, 319, 437],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "ghe-sem",
+          "page": 1,
+          "name": "Ghe Sem",
+          "category": "Birre artigianali",
+          "group": "artigianali",
+          "description": "Marzen 6% vol.",
+          "options": [
+            {
+              "label": "1 bicchiere",
+              "price": 6
+            }
+          ],
+          "rect": [324, 340, 575, 440],
+          "cropRect": [345, 360, 578, 437],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "tel-chi",
+          "page": 1,
+          "name": "Tel Chi",
+          "category": "Birre artigianali",
+          "group": "artigianali",
+          "description": "IPA gluten free 4,5% vol.",
+          "options": [
+            {
+              "label": "1 bicchiere",
+              "price": 6
+            }
+          ],
+          "rect": [584, 340, 830, 440],
+          "cropRect": [603, 360, 838, 437],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "casciaball",
+          "page": 1,
+          "name": "Casciaball",
+          "category": "Birre artigianali",
+          "group": "artigianali",
+          "description": "German Ale 4,8% vol.",
+          "options": [
+            {
+              "label": "1 bicchiere",
+              "price": 6
+            }
+          ],
+          "rect": [840, 332, 1092, 440],
+          "cropRect": [858, 354, 1090, 437],
+          "cropPadding": [8, 12, 8, 10]
+        },
+        {
+          "id": "moretti",
+          "page": 1,
+          "name": "Moretti",
+          "category": "Birre",
+          "group": "bottiglia",
+          "description": "In bottiglia, 33 cl.",
+          "options": [
+            {
+              "label": "1 bottiglia",
+              "price": 4
+            }
+          ],
+          "rect": [34, 542, 430, 624],
+          "cropRect": [58, 556, 419, 622],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "spina",
+          "page": 1,
+          "name": "Birra alla spina",
+          "category": "Birre",
+          "group": "spina",
+          "description": "Sonnenberg 4,8% vol. 0,4 L.",
+          "options": [
+            {
+              "label": "1 birra",
+              "price": 5
+            }
+          ],
+          "rect": [34, 644, 790, 742],
+          "cropRect": [60, 664, 724, 739],
+          "cropPadding": [10, 12, 10, 14]
+        }
+      ]
+    },
+    {
+      "id": "drink",
+      "title": "Drink",
+      "kicker": "Spritz e classici",
+      "description": "Ogni pillola viene mostrata da sola, con più respiro e una lettura verticale naturale.",
+      "accent": "#d96b20",
+      "accentSoft": "#ffd9be",
+      "items": [
+        {
+          "id": "aperol",
+          "page": 1,
+          "name": "Spritz Aperol",
+          "category": "Drink",
+          "description": "Classico spritz Aperol.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 6
+            }
+          ],
+          "rect": [46, 874, 256, 982],
+          "cropRect": [96, 904, 274, 980],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "campari",
+          "page": 1,
+          "name": "Spritz Campari",
+          "category": "Drink",
+          "description": "Classico spritz Campari.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 6
+            }
+          ],
+          "rect": [262, 874, 480, 982],
+          "cropRect": [300, 904, 496, 980],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "sarti",
+          "page": 1,
+          "name": "Spritz Sarti",
+          "category": "Drink",
+          "description": "Versione Sarti del classico spritz.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 6
+            }
+          ],
+          "rect": [484, 874, 678, 982],
+          "cropRect": [516, 904, 682, 980],
+          "cropPadding": [8, 10, 8, 10]
+        },
+        {
+          "id": "gin-tonic",
+          "page": 1,
+          "name": "Gin Tonic",
+          "category": "Drink",
+          "description": "Gin tonic.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 6
+            }
+          ],
+          "rect": [676, 868, 932, 982],
+          "cropRect": [700, 900, 930, 980],
+          "cropPadding": [8, 12, 8, 10]
+        },
+        {
+          "id": "hugo",
+          "page": 1,
+          "name": "Hugo",
+          "category": "Drink",
+          "description": "Spritz Hugo.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 6
+            }
+          ],
+          "rect": [938, 874, 1116, 982],
+          "cropRect": [940, 904, 1088, 980],
+          "cropPadding": [8, 10, 8, 10]
+        }
+      ]
+    },
+    {
+      "id": "bottiglie",
+      "title": "Bottiglie",
+      "kicker": "Vino, bollicine e zero",
+      "description": "Qui conviene leggere ogni etichetta come scheda singola, con dettaglio separato e prezzi chiari.",
+      "accent": "#315c93",
+      "accentSoft": "#d8e2f3",
+      "items": [
+        {
+          "id": "oltrepo",
+          "page": 1,
+          "name": "Oltrepò Pavese",
+          "category": "Vino",
+          "description": "Bonarda, barbera, chardonnay, pinot grigio.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 12
+            },
+            {
+              "label": "Calice",
+              "price": 4
+            }
+          ],
+          "rect": [40, 1186, 356, 1348],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "pinot-extra-dry",
+          "page": 1,
+          "name": "Pinot, Extra Dry Metodo Charmat",
+          "category": "Bollicine",
+          "description": "Pinot extra dry, metodo charmat.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 16
+            },
+            {
+              "label": "Calice",
+              "price": 4.5
+            }
+          ],
+          "rect": [390, 1186, 746, 1348],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "glera-zero",
+          "page": 1,
+          "name": "Glera, Dry Borgo Molino Dealcolato",
+          "category": "Selezione Zero",
+          "description": "Glera dry dealcolato Borgo Molino.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 18
+            }
+          ],
+          "rect": [772, 1186, 1096, 1348],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "rosso-del-lupo",
+          "page": 1,
+          "name": "Rosso del Lupo",
+          "category": "Vino",
+          "description": "Valcalepio rosso DOC, bio.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 26
+            }
+          ],
+          "rect": [40, 1424, 356, 1582],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "quarantalune",
+          "page": 1,
+          "name": "Quarantalune",
+          "category": "Bollicine",
+          "description": "Brut metodo classico, 40 mesi, millesimato.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 35
+            }
+          ],
+          "rect": [390, 1424, 746, 1582],
+          "cropPadding": [10, 12, 10, 12]
+        },
+        {
+          "id": "rose-n5",
+          "page": 1,
+          "name": "Rosè n°5 Feral",
+          "category": "Bollicine",
+          "description": "Fermentazione ancestrale - 0°.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 25
+            }
+          ],
+          "rect": [772, 1424, 1096, 1582],
+          "cropPadding": [10, 12, 10, 12]
+        }
+      ]
+    },
+    {
+      "id": "altre-bevande",
+      "title": "Altre Bevande",
+      "kicker": "Acqua, bibite e kombucha",
+      "description": "Le voci più piccole guadagnano spazio e si leggono molto meglio in verticale.",
+      "accent": "#2349a0",
+      "accentSoft": "#dbe5ff",
+      "items": [
+        {
+          "id": "acqua",
+          "page": 2,
+          "name": "Acqua",
+          "category": "Altre bevande",
+          "description": "Bottiglia 50 cl.",
+          "options": [
+            {
+              "label": "1 bottiglia",
+              "price": 1.5
+            }
+          ],
+          "rect": [44, 136, 292, 226],
+          "cropRect": [92, 160, 258, 222],
+          "cropPadding": [10, 10, 10, 10]
+        },
+        {
+          "id": "caffe",
+          "page": 2,
+          "name": "Caffè",
+          "category": "Altre bevande",
+          "description": "Caffè.",
+          "options": [
+            {
+              "label": "1 caffè",
+              "price": 1.5
+            }
+          ],
+          "rect": [466, 136, 632, 226],
+          "cropRect": [490, 160, 624, 222],
+          "cropPadding": [10, 10, 10, 10]
+        },
+        {
+          "id": "bibite",
+          "page": 2,
+          "name": "Bibite",
+          "category": "Altre bevande",
+          "description": "Bibite analcoliche.",
+          "options": [
+            {
+              "label": "1 bibita",
+              "price": 4
+            }
+          ],
+          "rect": [42, 246, 276, 334],
+          "cropRect": [92, 268, 250, 330],
+          "cropPadding": [10, 10, 10, 10]
+        },
+        {
+          "id": "frutta-bio",
+          "page": 2,
+          "name": "Drink alla frutta bio",
+          "category": "Altre bevande",
+          "description": "Drink alla frutta bio.",
+          "options": [
+            {
+              "label": "1 drink",
+              "price": 5
+            }
+          ],
+          "rect": [44, 350, 490, 438],
+          "cropRect": [92, 372, 494, 435],
+          "cropPadding": [10, 10, 10, 10]
+        },
+        {
+          "id": "kombucha",
+          "page": 2,
+          "name": "Kombucha Limone",
+          "category": "Altre bevande",
+          "description": "Kombucha limone.",
+          "options": [
+            {
+              "label": "1 bottiglia",
+              "price": 4
+            }
+          ],
+          "rect": [48, 442, 470, 526],
+          "cropRect": [92, 462, 472, 526],
+          "cropPadding": [10, 10, 10, 10]
+        }
+      ]
+    },
+    {
+      "id": "gelato",
+      "title": "Agri-Gelato",
+      "kicker": "Il passaggio dolce",
+      "description": "Una scheda dedicata e leggibile per l'opzione gelato nel parco.",
+      "accent": "#18a54b",
+      "accentSoft": "#d7f2df",
+      "items": [
+        {
+          "id": "agri-gelato",
+          "page": 2,
+          "name": "Agri-gelato km 0",
+          "category": "Dolce freddo",
+          "description": "Recati al carretto nel parco.",
+          "options": [
+            {
+              "label": "1 gelato",
+              "price": 3
+            }
+          ],
+          "rect": [26, 520, 1164, 620],
+          "cropRect": [60, 548, 1112, 612],
+          "cropPadding": [10, 10, 10, 10]
+        }
+      ]
+    },
+    {
+      "id": "taglieri",
+      "title": "Taglieri",
+      "kicker": "Sfiziosità da condividere",
+      "description": "Le proposte da tavolo diventano card grandi, facili da leggere e da aggiungere al riepilogo.",
+      "accent": "#c96f11",
+      "accentSoft": "#ffe0ba",
+      "items": [
+        {
+          "id": "metro-del-molino",
+          "page": 2,
+          "name": "Metro del Molino",
+          "category": "Taglieri & sfiziosità",
+          "description": "Il tagliere da 1 m con salumi, affettati e sfiziosità da condividere.",
+          "options": [
+            {
+              "label": "1 metro",
+              "price": 18
+            }
+          ],
+          "rect": [48, 778, 942, 866],
+          "cropRect": [90, 820, 1110, 892],
+          "cropPadding": [10, 10, 10, 10]
+        },
+        {
+          "id": "mezzo-metro",
+          "page": 2,
+          "name": "1/2 Metro",
+          "category": "Taglieri & sfiziosità",
+          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del molino.",
+          "options": [
+            {
+              "label": "1 tagliere",
+              "price": 10
+            }
+          ],
+          "rect": [48, 894, 942, 984],
+          "cropRect": [90, 936, 1110, 1006],
+          "cropPadding": [10, 10, 10, 10]
+        }
+      ]
+    }
+  ]
+}

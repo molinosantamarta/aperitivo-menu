@@ -1,0 +1,15 @@
+{
+  "name": "menu-digitale-aperitivi",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "extract": "python3 scripts/extract_ape_assets.py",
+    "dev": "vite --host 0.0.0.0 --port 4173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4174"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
+  }
+}
