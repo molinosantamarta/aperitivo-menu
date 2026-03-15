@@ -3,9 +3,9 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316b";
-const MENU_DATA_URL = createVersionedUrl("./data/menu-data.json");
-const SHEET_CONFIG_URL = createVersionedUrl("./data/sheet-config.json");
+const APP_VERSION = "20260316c";
+const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
+const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 
 let sections = [];
 let itemLookup = {};
@@ -517,7 +517,7 @@ async function waitForCriticalAssets(menuData) {
 }
 
 function collectCriticalAssetUrls(menuData) {
-  const urls = new Set([new URL("./farfalla-bianca.gif", import.meta.url).href]);
+  const urls = new Set(["./farfalla-bianca.gif"]);
   const criticalSections = menuData.sections.slice(0, 3);
 
   criticalSections.forEach((section) => {
@@ -569,10 +569,8 @@ function promiseAllSettledCompat(promises) {
   );
 }
 
-function createVersionedUrl(path) {
-  const url = new URL(path, import.meta.url);
-  url.searchParams.set("v", APP_VERSION);
-  return url;
+function buildVersionedPath(path) {
+  return `${path}?v=${APP_VERSION}`;
 }
 
 function revealApp() {
@@ -1318,12 +1316,12 @@ function renderBrandPillVisual(visual, context) {
 }
 
 function getItemImage(item) {
-  return new URL(`./menu-assets/items/${item.id}.png`, import.meta.url).href;
+  return `./menu-assets/items/${item.id}.png`;
 }
 
 function getSideVisualImage(visual) {
   const assetName = visual && visual.asset ? visual.asset : "";
-  return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
+  return `./menu-assets/items/${assetName}`;
 }
 
 function getVisualType(item) {
@@ -1365,7 +1363,7 @@ function renderLoadError() {
 }
 
 function getVisualAsset(assetName) {
-  return new URL(`./menu-assets/items/${assetName}`, import.meta.url).href;
+  return `./menu-assets/items/${assetName}`;
 }
 
 function buildSideVisualStyle(sideVisual) {
