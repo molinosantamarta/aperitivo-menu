@@ -632,7 +632,11 @@ a {
 
 .item-card__visual--custom,
 .sheet-preview--custom {
-  background: linear-gradient(180deg, #fffefb 0%, #fff8ef 100%);
+  min-height: auto;
+  padding: 0;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
 }
 
 .item-card__image {
@@ -647,40 +651,41 @@ a {
   display: grid;
   align-content: end;
   justify-items: center;
-  width: min(100%, 308px);
-  min-height: 102px;
-  padding-top: 18px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 84px;
+  padding-top: 12px;
 }
 
 .brand-pill__script {
   position: absolute;
-  top: -4px;
+  top: 0;
   left: 50%;
   z-index: 2;
   font-family: var(--font-subtitle);
-  font-size: clamp(2rem, 8vw, 2.8rem);
+  font-size: clamp(1.75rem, 6.8vw, 2.35rem);
   line-height: 0.85;
   letter-spacing: -0.03em;
   color: var(--brand-script-color, #111111);
   white-space: nowrap;
-  transform: translateX(-36%) rotate(-5deg);
+  transform: translateX(-34%) rotate(-5deg);
 }
 
 .brand-pill__shape {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  min-height: 78px;
-  padding: 0 22px;
+  width: fit-content;
+  min-height: 62px;
+  padding: 0 18px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--brand-pill-start), var(--brand-pill-end));
-  box-shadow: 0 16px 22px rgba(255, 120, 18, 0.22);
+  box-shadow: 0 10px 16px rgba(255, 120, 18, 0.14);
 }
 
 .brand-pill__label {
   font-family: var(--font-display);
-  font-size: clamp(1.95rem, 8vw, 2.55rem);
+  font-size: clamp(1.65rem, 7vw, 2.15rem);
   font-weight: 700;
   letter-spacing: -0.12em;
   line-height: 0.9;
@@ -690,22 +695,21 @@ a {
 }
 
 .brand-pill--detail {
-  width: min(100%, 360px);
-  min-height: 132px;
-  padding-top: 22px;
+  min-height: 108px;
+  padding-top: 18px;
 }
 
 .brand-pill--detail .brand-pill__script {
-  font-size: clamp(2.3rem, 9vw, 3.3rem);
+  font-size: clamp(2rem, 8vw, 2.9rem);
 }
 
 .brand-pill--detail .brand-pill__shape {
-  min-height: 94px;
-  padding: 0 28px;
+  min-height: 78px;
+  padding: 0 22px;
 }
 
 .brand-pill--detail .brand-pill__label {
-  font-size: clamp(2.25rem, 9vw, 3rem);
+  font-size: clamp(1.95rem, 8vw, 2.55rem);
 }
 
 .item-card__content {
