@@ -805,16 +805,30 @@ a {
 }
 
 .beer-script-visual--display .beer-script-visual__label {
+  width: auto;
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 8vw, 3.2rem);
-  line-height: 0.9;
+  font-size: clamp(1.85rem, 7vw, 2.7rem);
+  line-height: 0.88;
   letter-spacing: -0.14em;
-  transform: translateY(-0.04em);
+  transform: none;
+}
+
+.beer-script-visual--display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
 
 .beer-script-visual--display .beer-script-visual__script {
-  font-size: clamp(1.85rem, 6vw, 2.5rem);
-  transform: translateY(0.18em) rotate(-4deg);
+  align-self: center;
+  margin: -0.18em 0 0;
+  font-size: clamp(1.4rem, 4.9vw, 1.95rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+  text-align: center;
+  transform: none;
 }
 
 .sheet-preview--beer-script {
@@ -833,12 +847,15 @@ a {
 }
 
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__label {
-  font-size: clamp(2.5rem, 9vw, 3.8rem);
+  font-size: clamp(2.15rem, 8vw, 3.25rem);
 }
 
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__script {
-  font-size: clamp(2.1rem, 7vw, 3rem);
-  transform: translateY(0.2em) rotate(-4deg);
+  margin-top: -0.2em;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+  transform: none;
 }
 
 .photo-panel-visual {
