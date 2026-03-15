@@ -208,8 +208,8 @@
           "visual": {
             "type": "beer-script",
             "label": "Aperol",
-            "gradientStart": "#ff2216",
-            "gradientEnd": "#ff7412",
+            "gradientStart": "#ff120d",
+            "gradientEnd": "#ff9e18",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Spritz"
