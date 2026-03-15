@@ -279,7 +279,7 @@ function renderItemCard(item) {
       }">
         <div class="item-card__topline">
           <span class="item-card__label">${item.category}</span>
-          <span class="item-card__hint">Tocca per dettagli</span>
+          ${showDetailHint(item) ? '<span class="item-card__hint">Tocca per dettagli</span>' : ""}
         </div>
         <h3>${item.name}</h3>
         <p>${item.description}</p>
@@ -454,6 +454,10 @@ function formatOptionChip(option) {
   return displayLabel
     ? `${displayLabel} · ${formatPrice(option.price)}`
     : formatPrice(option.price);
+}
+
+function showDetailHint(item) {
+  return item.showDetailHint !== false;
 }
 
 function hasCustomVisual(item) {

@@ -126,6 +126,7 @@
           "name": "Moretti",
           "category": "Classiche",
           "description": "In bottiglia, 33 cl.",
+          "showDetailHint": false,
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "moretti-33.png",
@@ -153,6 +154,7 @@
           "name": "Birra alla spina",
           "category": "Alla spina",
           "description": "Sonnenberg 4,8% vol. 0,4 L.",
+          "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
             "asset": "birra-spina-back.jpg",
