@@ -547,8 +547,7 @@ function renderCart() {
     });
   }
 
-  const total = state.cart.reduce((sum, entry) => sum + entry.price * entry.quantity, 0);
-  cartTotal.textContent = formatPrice(total);
+  cartTotal.textContent = formatCartBreakdown(state.cart);
 }
 
 function syncOpenCartButton(cartQuantity) {
@@ -582,8 +581,97 @@ function buildSummary() {
   const lines = state.cart.map(
     (entry) => `${entry.quantity}x ${entry.name} (${entry.optionLabel})`
   );
-  lines.push(`Totale: ${cartTotal.textContent}`);
+  lines.push(`Totale: ${formatCartBreakdown(state.cart)}`);
   return lines.join("\n");
+}
+
+function formatCartBreakdown(entries) {
+  const breakdown = entries.reduce(
+    (totals, entry) => {
+      const bucket = getCartSummaryBucket(entry);
+
+      if (bucket === "bevande") {
+        totals.bevande += entry.quantity;
+      } else if (bucket === "bottiglie") {
+        totals.bottiglie += entry.quantity;
+      } else if (bucket === "taglieri") {
+        totals.taglieri += entry.quantity;
+      } else if (bucket === "ignored") {
+        totals.ignored += entry.quantity;
+      } else {
+        totals.other += entry.quantity;
+      }
+
+      return totals;
+    },
+    { bevande: 0, bottiglie: 0, taglieri: 0, ignored: 0, other: 0 }
+  );
+
+  const parts = [];
+
+  if (breakdown.bevande > 0) {
+    parts.push(`${breakdown.bevande} ${pluralize(breakdown.bevande, "bevanda", "bevande")}`);
+  }
+
+  if (breakdown.bottiglie > 0) {
+    parts.push(`${breakdown.bottiglie} ${pluralize(breakdown.bottiglie, "bottiglia", "bottiglie")}`);
+  }
+
+  if (breakdown.taglieri > 0) {
+    parts.push(`${breakdown.taglieri} ${pluralize(breakdown.taglieri, "tagliere", "taglieri")}`);
+  }
+
+  if (parts.length > 0) {
+    return parts.join(" + ");
+  }
+
+  const fallbackCount = entries.reduce((sum, entry) => sum + entry.quantity, 0);
+  return `${fallbackCount} ${pluralize(fallbackCount, "prodotto", "prodotti")}`;
+}
+
+function getCartSummaryBucket(entry) {
+  const item = itemLookup[entry.itemId];
+  const category = (item?.category ?? entry.category ?? "").toLowerCase();
+  const sectionTitle = findSectionTitleForItem(entry.itemId).toLowerCase();
+
+  if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
+    return "ignored";
+  }
+
+  if (sectionTitle === "taglieri" || category.includes("taglieri")) {
+    return "taglieri";
+  }
+
+  if (
+    sectionTitle === "bottiglie" ||
+    category === "vino" ||
+    category === "bollicine" ||
+    category === "selezione zero"
+  ) {
+    return "bottiglie";
+  }
+
+  if (
+    sectionTitle === "birre" ||
+    sectionTitle === "drink" ||
+    sectionTitle === "altre bevande" ||
+    category === "drink" ||
+    category === "altre bevande" ||
+    category === "artigianali" ||
+    category === "classiche" ||
+    category === "alla spina"
+  ) {
+    return "bevande";
+  }
+
+  return "other";
+}
+
+function findSectionTitleForItem(itemId) {
+  const section = sections.find((sectionEntry) =>
+    sectionEntry.items?.some((item) => item.id === itemId)
+  );
+  return section?.title ?? "";
 }
 
 async function saveSummary(text) {
@@ -642,6 +730,10 @@ function formatPrice(value) {
 
 function getOptionDisplayLabel(option) {
   return option.displayLabel ?? option.label;
+}
+
+function pluralize(count, singular, plural) {
+  return count === 1 ? singular : plural;
 }
 
 function formatOptionChip(option) {
