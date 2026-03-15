@@ -519,7 +519,14 @@ function renderBeerScriptVisual(visual, context) {
   }
 
   return `
-    <div class="${classes.join(" ")}">
+    <div
+      class="${classes.join(" ")}"
+      style="
+        --beer-script-start: ${visual.gradientStart || "#f0ede8"};
+        --beer-script-end: ${visual.gradientEnd || "#f8f5f0"};
+        --beer-script-color: ${visual.labelColor || "rgba(56, 39, 24, 0.9)"};
+      "
+    >
       <span class="beer-script-visual__label">${visual.label}</span>
     </div>
   `;

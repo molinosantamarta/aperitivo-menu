@@ -16,7 +16,10 @@
           "description": "Blanche 4% vol.",
           "visual": {
             "type": "beer-script",
-            "label": "Bianchina"
+            "label": "Bianchina",
+            "gradientStart": "#f4e5cf",
+            "gradientEnd": "#e8d1ad",
+            "labelColor": "#6f5036"
           },
           "sideVisual": {
             "type": "floating-bottle",
@@ -41,7 +44,10 @@
           "description": "Marzen 6% vol.",
           "visual": {
             "type": "beer-script",
-            "label": "Ghe Sem"
+            "label": "Ghe Sem",
+            "gradientStart": "#8f2f2d",
+            "gradientEnd": "#c85749",
+            "labelColor": "#fff5ef"
           },
           "sideVisual": {
             "type": "asset-right-crop"
@@ -65,7 +71,10 @@
           "description": "IPA gluten free 4,5% vol.",
           "visual": {
             "type": "beer-script",
-            "label": "Tel Chi"
+            "label": "Tel Chi",
+            "gradientStart": "#3d8f8d",
+            "gradientEnd": "#7ec8c3",
+            "labelColor": "#f7fffd"
           },
           "sideVisual": {
             "type": "asset-right-crop"
@@ -89,7 +98,10 @@
           "description": "German Ale 4,8% vol.",
           "visual": {
             "type": "beer-script",
-            "label": "Casciaball"
+            "label": "Casciaball",
+            "gradientStart": "#b85a24",
+            "gradientEnd": "#e19742",
+            "labelColor": "#fff6eb"
           },
           "sideVisual": {
             "type": "asset-right-crop"
