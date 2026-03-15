@@ -5,6 +5,7 @@ const currency = new Intl.NumberFormat("it-IT", {
 
 let sections = [];
 let itemLookup = {};
+let itemSectionLookup = {};
 let sideVisualObserver;
 const loaderStartedAt = performance.now();
 
@@ -132,6 +133,12 @@ async function init() {
         lookup[item.id] = item;
         return lookup;
       }, {});
+    itemSectionLookup = sections.reduce((lookup, section) => {
+      section.items.forEach((item) => {
+        lookup[item.id] = section.title;
+      });
+      return lookup;
+    }, {});
 
     renderNavigation();
     renderSections();
@@ -144,9 +151,9 @@ async function init() {
 }
 
 async function loadMenuData() {
-  const response = await fetch(new URL("./menu-data.json", import.meta.url));
+  const response = await fetch(new URL("./data/menu-data.json", import.meta.url));
   if (!response.ok) {
-    throw new Error(`Impossibile caricare menu-data.json (${response.status})`);
+    throw new Error(`Impossibile caricare data/menu-data.json (${response.status})`);
   }
 
   return response.json();
@@ -673,10 +680,7 @@ function getCartSummaryBucket(entry) {
 }
 
 function findSectionTitleForItem(itemId) {
-  const section = sections.find((sectionEntry) =>
-    sectionEntry.items?.some((item) => item.id === itemId)
-  );
-  return section?.title ?? "";
+  return itemSectionLookup[itemId] ?? "";
 }
 
 async function saveSummary(text) {

@@ -9,8 +9,8 @@ from PIL import Image
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PDF_PATH = Path.home() / "Desktop" / "APE26.pdf"
-DATA_PATH = PROJECT_ROOT / "menu-data.json"
-ASSETS_DIR = PROJECT_ROOT / "public" / "menu-assets"
+DATA_PATH = PROJECT_ROOT / "data" / "menu-data.json"
+ASSETS_DIR = PROJECT_ROOT / "menu-assets"
 RENDER_SCALE = 2
 
 STATIC_ASSETS = {
