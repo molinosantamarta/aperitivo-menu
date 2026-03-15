@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Lulo Clean";
-  src: url("/fonts/lulo-clean-bold.ttf") format("truetype");
+  src: url("./fonts/lulo-clean-bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -9,7 +9,7 @@
 @font-face {
   font-family: "Housky Demo";
   src:
-    url("/fonts/housky-demo.ttf") format("truetype"),
+    url("./fonts/housky-demo.ttf") format("truetype"),
     local("Housky Demo");
   font-weight: 400;
   font-style: normal;
@@ -18,7 +18,7 @@
 
 @font-face {
   font-family: "Factually Handwriting";
-  src: url("/fonts/factually-handwriting.otf") format("opentype");
+  src: url("./fonts/factually-handwriting.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -65,6 +65,17 @@ body {
     linear-gradient(180deg, #fffaf3 0%, var(--bg) 100%);
 }
 
+body.is-loading {
+  overflow: hidden;
+}
+
+body.is-loading .page-shell,
+body.is-loading .cart-fab,
+body.is-loading .sheet-backdrop {
+  opacity: 0;
+  pointer-events: none;
+}
+
 body.modal-open {
   overflow: hidden;
 }
@@ -83,6 +94,73 @@ a {
   width: min(100%, 480px);
   margin: 0 auto;
   padding: 18px 14px 120px;
+  transition: opacity 0.24s ease;
+}
+
+.app-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 214, 126, 0.22), transparent 28%),
+    radial-gradient(circle at top right, rgba(164, 53, 55, 0.14), transparent 22%),
+    linear-gradient(180deg, #fffaf3 0%, var(--bg) 100%);
+  transition:
+    opacity 0.28s ease,
+    visibility 0.28s ease;
+}
+
+.app-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.app-loader__card {
+  width: min(100%, 320px);
+  padding: 24px 22px;
+  border-radius: 28px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.app-loader__eyebrow {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7d6250;
+}
+
+.app-loader__title {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+  color: #171717;
+}
+
+.app-loader__bar {
+  height: 7px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.08);
+}
+
+.app-loader__bar-fill {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  animation: loader-slide 1.2s ease-in-out infinite;
 }
 
 .hero-card,
@@ -440,6 +518,8 @@ a {
 }
 
 .menu-section__header {
+  display: grid;
+  gap: 10px;
   margin-bottom: 16px;
 }
 
@@ -451,16 +531,17 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  max-width: 100%;
+  width: fit-content;
   min-height: 34px;
-  padding: 9px 14px 7px;
+  padding: 9px 12px 7px;
   border-radius: 999px;
   font-family: var(--font-display);
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: -0.08em;
   line-height: 1;
   text-align: center;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--section-accent, #b98f1f);
   background: var(--section-accent-soft, rgba(255, 255, 255, 0.92));
@@ -857,6 +938,20 @@ a {
 
 .cart-total strong {
   font-size: 1.2rem;
+}
+
+@keyframes loader-slide {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  50% {
+    transform: translateX(140%);
+  }
+
+  100% {
+    transform: translateX(-110%);
+  }
 }
 
 @media (min-width: 640px) {

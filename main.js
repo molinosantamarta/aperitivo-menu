@@ -1,20 +1,10 @@
-import menuData from "./menu-data.json";
-
-const assetBase = import.meta.env.BASE_URL;
-
 const currency = new Intl.NumberFormat("it-IT", {
   style: "currency",
   currency: "EUR",
 });
 
-const sections = menuData.sections;
-
-const itemLookup = sections
-  .flatMap((section) => section.items)
-  .reduce((lookup, item) => {
-    lookup[item.id] = item;
-    return lookup;
-  }, {});
+let sections = [];
+let itemLookup = {};
 
 const state = {
   selectedItemId: null,
@@ -42,10 +32,7 @@ const cartTotal = document.querySelector("#cartTotal");
 const copySummaryButton = document.querySelector("#copySummary");
 const clearCartButton = document.querySelector("#clearCart");
 const detailImage = document.querySelector("#detailImage");
-
-renderNavigation();
-renderSections();
-renderCart();
+const appLoader = document.querySelector("#appLoader");
 
 cartFab.addEventListener("click", openCart);
 openCartButton.addEventListener("click", openCart);
@@ -124,6 +111,64 @@ document.addEventListener("keydown", (event) => {
     closeCart();
   }
 });
+
+init();
+
+async function init() {
+  try {
+    const [menuData] = await Promise.all([loadMenuData(), waitForFonts()]);
+    sections = menuData.sections;
+    itemLookup = sections
+      .flatMap((section) => section.items)
+      .reduce((lookup, item) => {
+        lookup[item.id] = item;
+        return lookup;
+      }, {});
+
+    renderNavigation();
+    renderSections();
+    renderCart();
+  } catch (error) {
+    console.error("Errore durante il caricamento del menu:", error);
+  } finally {
+    revealApp();
+  }
+}
+
+async function loadMenuData() {
+  const response = await fetch(new URL("./menu-data.json", import.meta.url));
+  if (!response.ok) {
+    throw new Error(`Impossibile caricare menu-data.json (${response.status})`);
+  }
+
+  return response.json();
+}
+
+function waitForFonts() {
+  if (!("fonts" in document)) {
+    return Promise.resolve();
+  }
+
+  const fontLoads = [
+    document.fonts.load('700 1rem "Lulo Clean"'),
+    document.fonts.load('400 1rem "Housky Demo"'),
+    document.fonts.load('400 1rem "Factually Handwriting"'),
+  ];
+
+  return Promise.race([
+    Promise.all(fontLoads),
+    new Promise((resolve) => window.setTimeout(resolve, 2200)),
+  ]);
+}
+
+function revealApp() {
+  document.body.classList.remove("is-loading");
+  appLoader?.classList.add("is-hidden");
+
+  window.setTimeout(() => {
+    appLoader?.remove();
+  }, 320);
+}
 
 function renderNavigation() {
   sectionNav.innerHTML = sections
@@ -204,8 +249,8 @@ function renderSection(section) {
       style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
     >
       <div class="menu-section__header">
-        <span class="menu-section__kicker">${section.kicker}</span>
         <h2>${section.title}</h2>
+        <span class="menu-section__kicker">${section.kicker}</span>
         <p>${section.description}</p>
       </div>
       <div class="menu-section__items">
@@ -388,5 +433,5 @@ function formatPrice(value) {
 }
 
 function getItemImage(item) {
-  return `${assetBase}menu-assets/items/${item.id}.png`;
+  return new URL(`./menu-assets/items/${item.id}.png`, import.meta.url).href;
 }
