@@ -437,6 +437,11 @@ a {
   gap: 14px;
 }
 
+.promo-agri__content .eyebrow {
+  justify-self: center;
+  text-align: center;
+}
+
 .promo-agri__chips {
   display: flex;
   flex-wrap: wrap;
