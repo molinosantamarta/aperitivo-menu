@@ -820,6 +820,8 @@ a {
   font-size: clamp(1.85rem, 7vw, 2.7rem);
   line-height: 0.88;
   letter-spacing: -0.14em;
+  white-space: nowrap;
+  text-wrap: nowrap;
   transform: none;
 }
 
