@@ -804,6 +804,12 @@ a {
   text-wrap: balance;
 }
 
+.beer-script-visual:not(.beer-script-visual--display) .beer-script-visual__label {
+  text-shadow:
+    0 1px 0 rgba(70, 34, 18, 0.28),
+    0 4px 12px rgba(53, 24, 12, 0.34);
+}
+
 .beer-script-visual--display .beer-script-visual__label {
   width: auto;
   font-family: var(--font-display);
