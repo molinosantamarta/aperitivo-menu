@@ -94,19 +94,12 @@ copySummaryButton.addEventListener("click", async () => {
     return;
   }
 
-  try {
-    await navigator.clipboard.writeText(summary);
-    copySummaryButton.textContent = "Salvato";
-    closeCart();
-    window.setTimeout(() => {
-      copySummaryButton.textContent = saveSummaryLabel;
-    }, 1600);
-  } catch (error) {
-    copySummaryButton.textContent = "Salvataggio non riuscito";
-    window.setTimeout(() => {
-      copySummaryButton.textContent = saveSummaryLabel;
-    }, 1600);
-  }
+  const saved = await saveSummary(summary);
+  copySummaryButton.textContent = saved ? "Salvato" : "Continua";
+  closeCart();
+  window.setTimeout(() => {
+    copySummaryButton.textContent = saveSummaryLabel;
+  }, 1600);
 });
 
 clearCartButton.addEventListener("click", () => {
@@ -592,6 +585,43 @@ function buildSummary() {
   );
   lines.push(`Totale: ${cartTotal.textContent}`);
   return lines.join("\n");
+}
+
+async function saveSummary(text) {
+  if (navigator.clipboard?.writeText && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Continue with a fallback for browsers that block the first clipboard write.
+    }
+  }
+
+  return copyTextFallback(text);
+}
+
+function copyTextFallback(text) {
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  textarea.style.left = "-9999px";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, text.length);
+
+  let copied = false;
+
+  try {
+    copied = document.execCommand("copy");
+  } catch {
+    copied = false;
+  }
+
+  textarea.remove();
+  return copied;
 }
 
 function loadCart() {
