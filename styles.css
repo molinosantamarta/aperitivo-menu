@@ -842,7 +842,7 @@ a {
   order: 1;
   align-self: center;
   margin: -0.16em 0 0;
-  font-size: clamp(1.85rem, 7vw, 2.7rem);
+  font-size: clamp(2.05rem, 7.7vw, 3rem);
   line-height: 0.88;
   letter-spacing: 0;
   text-align: center;
@@ -877,7 +877,7 @@ a {
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__script {
   order: 1;
   margin: -0.18em 0 0;
-  font-size: clamp(2.15rem, 8vw, 3.25rem);
+  font-size: clamp(2.35rem, 8.8vw, 3.55rem);
   line-height: 0.88;
   letter-spacing: 0;
   transform: none;
