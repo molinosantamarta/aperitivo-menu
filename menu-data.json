@@ -203,10 +203,10 @@
         {
           "id": "aperol",
           "page": 1,
-          "name": "Spritz Aperol",
+          "name": "Aperol Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Classico spritz Aperol.",
+          "description": "Classico Aperol Spritz.",
           "visual": {
             "type": "beer-script",
             "label": "Aperol",
@@ -242,10 +242,10 @@
         {
           "id": "campari",
           "page": 1,
-          "name": "Spritz Campari",
+          "name": "Campari Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Classico spritz Campari.",
+          "description": "Classico Campari Spritz.",
           "visual": {
             "type": "beer-script",
             "label": "Campari",
@@ -281,10 +281,10 @@
         {
           "id": "sarti",
           "page": 1,
-          "name": "Spritz Sarti",
+          "name": "Sarti Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Versione Sarti del classico spritz.",
+          "description": "Versione Sarti del classico Spritz.",
           "visual": {
             "type": "beer-script",
             "label": "Sarti",
@@ -409,10 +409,10 @@
         {
           "id": "hugo",
           "page": 1,
-          "name": "Hugo",
+          "name": "Hugo Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Spritz Hugo.",
+          "description": "Hugo Spritz.",
           "visual": {
             "type": "beer-script",
             "label": "Hugo",
