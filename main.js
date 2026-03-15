@@ -3,6 +3,9 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
+const MENU_DATA_URL = new URL("./data/menu-data.json", import.meta.url);
+const SHEET_CONFIG_URL = new URL("./data/sheet-config.json", import.meta.url);
+
 let sections = [];
 let itemLookup = {};
 let itemSectionLookup = {};
@@ -151,12 +154,320 @@ async function init() {
 }
 
 async function loadMenuData() {
-  const response = await fetch(new URL("./data/menu-data.json", import.meta.url));
+  const response = await fetch(MENU_DATA_URL);
   if (!response.ok) {
     throw new Error(`Impossibile caricare data/menu-data.json (${response.status})`);
   }
 
-  return response.json();
+  const baseData = await response.json();
+  const sheetConfig = await loadSheetConfig();
+  const sheetCsvUrl = sheetConfig.googleSheetCsvUrl?.trim();
+
+  if (!sheetCsvUrl) {
+    return baseData;
+  }
+
+  try {
+    const sheetRows = await loadSheetRows(sheetCsvUrl);
+    if (!sheetRows.length) {
+      return baseData;
+    }
+
+    return applySheetRowsToMenu(baseData, sheetRows);
+  } catch (error) {
+    console.warn("Impossibile caricare le override dal Google Sheet:", error);
+    return baseData;
+  }
+}
+
+async function loadSheetConfig() {
+  try {
+    const response = await fetch(SHEET_CONFIG_URL);
+    if (!response.ok) {
+      return {};
+    }
+
+    return response.json();
+  } catch {
+    return {};
+  }
+}
+
+async function loadSheetRows(sheetCsvUrl) {
+  const response = await fetch(sheetCsvUrl, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Impossibile caricare il CSV del Google Sheet (${response.status})`);
+  }
+
+  const csvText = await response.text();
+  return parseCsvRows(csvText);
+}
+
+function parseCsvRows(csvText) {
+  const rows = [];
+  let currentCell = "";
+  let currentRow = [];
+  let insideQuotes = false;
+
+  for (let index = 0; index < csvText.length; index += 1) {
+    const char = csvText[index];
+    const nextChar = csvText[index + 1];
+
+    if (char === '"') {
+      if (insideQuotes && nextChar === '"') {
+        currentCell += '"';
+        index += 1;
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !insideQuotes) {
+      currentRow.push(currentCell);
+      currentCell = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !insideQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        index += 1;
+      }
+
+      currentRow.push(currentCell);
+      currentCell = "";
+      if (currentRow.some((cell) => cell !== "")) {
+        rows.push(currentRow);
+      }
+      currentRow = [];
+      continue;
+    }
+
+    currentCell += char;
+  }
+
+  currentRow.push(currentCell);
+  if (currentRow.some((cell) => cell !== "")) {
+    rows.push(currentRow);
+  }
+
+  if (!rows.length) {
+    return [];
+  }
+
+  const [headers, ...dataRows] = rows;
+  return dataRows
+    .map((cells) =>
+      headers.reduce((entry, header, index) => {
+        entry[normalizeSheetHeader(header)] = (cells[index] ?? "").trim();
+        return entry;
+      }, {})
+    )
+    .filter((row) => row.id);
+}
+
+function normalizeSheetHeader(value) {
+  return value.trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+function applySheetRowsToMenu(baseMenu, sheetRows) {
+  const nextMenu = JSON.parse(JSON.stringify(baseMenu));
+  const sectionLookup = Object.fromEntries(nextMenu.sections.map((section) => [section.id, section]));
+  const rowLookup = new Map(sheetRows.map((row) => [row.id, row]));
+
+  nextMenu.sections.forEach((section) => {
+    section.items = section.items
+      .filter((item) => {
+        const row = rowLookup.get(item.id);
+        return row ? parseSheetBoolean(row.visible, true) : true;
+      })
+      .map((item, index) => {
+        const row = rowLookup.get(item.id);
+        const nextItem = row ? updateItemFromSheet(item, row, section) : item;
+        nextItem.__sheetPosition = parseSheetInteger(row?.position, index);
+        return nextItem;
+      });
+  });
+
+  sheetRows.forEach((row) => {
+    const exists = nextMenu.sections.some((section) => section.items.some((item) => item.id === row.id));
+    if (exists || !parseSheetBoolean(row.visible, true)) {
+      return;
+    }
+
+    const targetSection = sectionLookup[row.section_id];
+    if (!targetSection) {
+      return;
+    }
+
+    const newItem = createItemFromSheet(row, targetSection);
+    if (!newItem) {
+      return;
+    }
+
+    newItem.__sheetPosition = parseSheetInteger(row.position, targetSection.items.length);
+    targetSection.items.push(newItem);
+  });
+
+  nextMenu.sections.forEach((section) => {
+    section.items = section.items
+      .sort((left, right) => (left.__sheetPosition ?? 0) - (right.__sheetPosition ?? 0))
+      .map((item) => {
+        delete item.__sheetPosition;
+        return item;
+      });
+  });
+
+  return nextMenu;
+}
+
+function updateItemFromSheet(item, row, section) {
+  const nextItem = { ...item };
+
+  if (row.name) {
+    nextItem.name = row.name;
+  }
+  if (row.description) {
+    nextItem.description = row.description;
+  }
+  if (row.category) {
+    nextItem.category = row.category;
+  }
+  if (row.show_detail_hint) {
+    nextItem.showDetailHint = parseSheetBoolean(row.show_detail_hint, nextItem.showDetailHint ?? true);
+  }
+
+  const options = parseSheetOptions(row);
+  if (options.length) {
+    nextItem.options = options;
+  }
+
+  const visual = buildSheetVisual(row, section, nextItem.visual, nextItem.name);
+  if (visual) {
+    nextItem.visual = visual;
+  }
+
+  return nextItem;
+}
+
+function createItemFromSheet(row, section) {
+  const options = parseSheetOptions(row);
+  if (!options.length) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    page: 1,
+    name: row.name || row.visual_label || row.id,
+    category: row.category || section.title,
+    description: row.description || "",
+    showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
+    options,
+    visual: buildSheetVisual(row, section, null, row.name || row.id),
+  };
+}
+
+function buildSheetVisual(row, section, existingVisual, fallbackName) {
+  const visualMode = (row.visual_mode || "").toLowerCase();
+
+  if (!visualMode) {
+    if (existingVisual) {
+      return existingVisual;
+    }
+
+    return {
+      type: "text-panel",
+      label: row.visual_label || fallbackName,
+      script: row.visual_script || "",
+      gradientStart: row.visual_gradient_start || section.accent,
+      gradientEnd: row.visual_gradient_end || section.accentSoft,
+      labelColor: row.visual_label_color || "#fffdf8",
+      scriptColor: row.visual_script_color || "rgba(17, 17, 17, 0.72)",
+    };
+  }
+
+  if (visualMode === "inherit") {
+    return existingVisual;
+  }
+
+  if (visualMode === "beer-script") {
+    return {
+      type: "beer-script",
+      label: row.visual_label || fallbackName,
+      script: row.visual_script || "",
+      gradientStart: row.visual_gradient_start || section.accent,
+      gradientMid: row.visual_gradient_mid || row.visual_gradient_end || section.accentSoft,
+      gradientEnd: row.visual_gradient_end || section.accentSoft,
+      labelColor: row.visual_label_color || "#fffdf8",
+      textStyle: (row.visual_text_style || "").toLowerCase() === "display" ? "display" : undefined,
+    };
+  }
+
+  return {
+    type: "text-panel",
+    label: row.visual_label || fallbackName,
+    script: row.visual_script || "",
+    gradientStart: row.visual_gradient_start || section.accent,
+    gradientEnd: row.visual_gradient_end || section.accentSoft,
+    labelColor: row.visual_label_color || "#fffdf8",
+    scriptColor: row.visual_script_color || "rgba(17, 17, 17, 0.72)",
+  };
+}
+
+function parseSheetOptions(row) {
+  return [1, 2, 3]
+    .map((index) => {
+      const price = parseSheetNumber(row[`option_${index}_price`]);
+      const label = row[`option_${index}_label`] || "";
+      const displayLabel = row[`option_${index}_display_label`] || "";
+
+      if (price == null && !label && !displayLabel) {
+        return null;
+      }
+
+      if (price == null) {
+        return null;
+      }
+
+      return {
+        label: label || `Opzione ${index}`,
+        displayLabel,
+        price,
+      };
+    })
+    .filter(Boolean);
+}
+
+function parseSheetBoolean(value, fallbackValue) {
+  if (!value) {
+    return fallbackValue;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (["true", "1", "yes", "si", "sì", "y"].includes(normalized)) {
+    return true;
+  }
+  if (["false", "0", "no", "n"].includes(normalized)) {
+    return false;
+  }
+
+  return fallbackValue;
+}
+
+function parseSheetInteger(value, fallbackValue) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallbackValue;
+}
+
+function parseSheetNumber(value) {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  const normalized = String(value).replace(",", ".").trim();
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function waitForFonts() {
@@ -760,7 +1071,8 @@ function hasCustomVisual(item) {
   return (
     item.visual?.type === "brand-pill" ||
     item.visual?.type === "beer-script" ||
-    item.visual?.type === "photo-panel"
+    item.visual?.type === "photo-panel" ||
+    item.visual?.type === "text-panel"
   );
 }
 
@@ -777,6 +1089,10 @@ function getCardVisualClass(item) {
     return " item-card__visual--photo-panel";
   }
 
+  if (item.visual?.type === "text-panel") {
+    return " item-card__visual--custom";
+  }
+
   return "";
 }
 
@@ -791,6 +1107,10 @@ function getDetailPreviewClass(item) {
 
   if (item.visual?.type === "photo-panel") {
     return " sheet-preview--photo-panel";
+  }
+
+  if (item.visual?.type === "text-panel") {
+    return " sheet-preview--custom";
   }
 
   return "";
@@ -815,6 +1135,10 @@ function renderItemVisual(item, context) {
 
   if (item.visual?.type === "photo-panel") {
     return renderPhotoPanelVisual(item.visual, context);
+  }
+
+  if (item.visual?.type === "text-panel") {
+    return renderTextPanelVisual(item.visual, context);
   }
 
   const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
@@ -869,6 +1193,28 @@ function renderPhotoPanelVisual(visual, context) {
         --photo-panel-bg: ${visual.backgroundColor || "transparent"};
       "
     ></div>
+  `;
+}
+
+function renderTextPanelVisual(visual, context) {
+  const classes = ["text-panel-visual"];
+  if (context === "detail") {
+    classes.push("text-panel-visual--detail");
+  }
+
+  return `
+    <div
+      class="${classes.join(" ")}"
+      style="
+        --text-panel-start: ${visual.gradientStart || "#38281b"};
+        --text-panel-end: ${visual.gradientEnd || "#a67343"};
+        --text-panel-label: ${visual.labelColor || "#fffdf8"};
+        --text-panel-script: ${visual.scriptColor || "rgba(17, 17, 17, 0.72)"};
+      "
+    >
+      ${visual.script ? `<span class="text-panel-visual__script">${visual.script}</span>` : ""}
+      <span class="text-panel-visual__label">${visual.label}</span>
+    </div>
   `;
 }
 

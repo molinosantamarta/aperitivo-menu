@@ -7,7 +7,9 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 ```text
 .
 ├── data/
-│   └── menu-data.json
+│   ├── google-sheet-template.csv
+│   ├── menu-data.json
+│   └── sheet-config.json
 ├── fonts/
 ├── menu-assets/
 │   ├── footer.png
@@ -51,6 +53,39 @@ npm run extract
 ```
 
 Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `menu-assets/`.
+
+## Google Sheet opzionale
+
+Il progetto puo leggere override dinamici da un Google Sheet pubblicato come CSV.
+
+### Generare il template
+
+```bash
+npm run sheet:template
+```
+
+Questo aggiorna [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv) con tutti i prodotti attuali.
+
+### Flusso consigliato
+
+1. importa `data/google-sheet-template.csv` in Google Sheets
+2. modifica dal foglio:
+   - `visible` per mostrare/nascondere
+   - `name`, `description`, `category`
+   - `option_1_*`, `option_2_*`, `option_3_*` per i prezzi
+3. se vuoi aggiungere un nuovo prodotto, duplica una riga e cambia almeno:
+   - `id`
+   - `section_id`
+   - `name`
+   - almeno `option_1_label` e `option_1_price`
+4. pubblica il foglio come CSV
+5. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/sheet-config.json)
+
+### Note
+
+- se il foglio non e configurato o non risponde, il sito usa automaticamente `data/menu-data.json`
+- i nuovi prodotti creati dal foglio usano una card testuale pulita, senza bisogno immediato di immagini dedicate
+- per visual personalizzati complessi (bottiglie, gradienti speciali, asset fotografici) conviene ancora intervenire nel repository
 
 ## Deploy
 
