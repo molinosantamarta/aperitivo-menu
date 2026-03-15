@@ -586,6 +586,7 @@ function renderBeerScriptVisual(visual, context) {
         --beer-script-color: ${visual.labelColor || "rgba(56, 39, 24, 0.9)"};
       "
     >
+      ${visual.script ? `<span class="beer-script-visual__script">${visual.script}</span>` : ""}
       <span class="beer-script-visual__label">${visual.label}</span>
     </div>
   `;

@@ -770,7 +770,23 @@ a {
     inset 0 -12px 24px rgba(255, 255, 255, 0.08);
 }
 
+.beer-script-visual__script {
+  grid-area: 1 / 1;
+  z-index: 2;
+  align-self: end;
+  justify-self: center;
+  margin-bottom: -0.1em;
+  font-family: var(--font-subtitle);
+  font-size: clamp(1.6rem, 5.8vw, 2.2rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #111111;
+  transform: translateY(0.08em) rotate(-4deg);
+  pointer-events: none;
+}
+
 .beer-script-visual__label {
+  grid-area: 1 / 1;
   display: block;
   width: 100%;
   margin: 0 auto;
@@ -793,7 +809,12 @@ a {
   font-size: clamp(2.1rem, 8vw, 3.2rem);
   line-height: 0.9;
   letter-spacing: -0.14em;
-  transform: translateY(0.02em);
+  transform: translateY(-0.04em);
+}
+
+.beer-script-visual--display .beer-script-visual__script {
+  font-size: clamp(1.85rem, 6vw, 2.5rem);
+  transform: translateY(0.18em) rotate(-4deg);
 }
 
 .sheet-preview--beer-script {
@@ -813,6 +834,11 @@ a {
 
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__label {
   font-size: clamp(2.5rem, 9vw, 3.8rem);
+}
+
+.beer-script-visual--display.beer-script-visual--detail .beer-script-visual__script {
+  font-size: clamp(2.1rem, 7vw, 3rem);
+  transform: translateY(0.2em) rotate(-4deg);
 }
 
 .photo-panel-visual {

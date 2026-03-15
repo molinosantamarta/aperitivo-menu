@@ -211,7 +211,8 @@
             "gradientStart": "#ff2216",
             "gradientEnd": "#ff7412",
             "labelColor": "#fffdf8",
-            "textStyle": "display"
+            "textStyle": "display",
+            "script": "Spritz"
           },
           "options": [
             {
