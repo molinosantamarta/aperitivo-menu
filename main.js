@@ -734,39 +734,41 @@ function renderSection(section, isLeadSection) {
         id="section-${section.id}"
         style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
       >
-        <div class="menu-section__header menu-section__header--centered">
-          <h2>${section.title}</h2>
-          <div class="menu-section__group-pills" aria-label="Categorie ${section.title}">
+        <div class="menu-section__inner">
+          <div class="menu-section__header menu-section__header--centered">
+            <h2>${section.title}</h2>
+            <div class="menu-section__group-pills" aria-label="Categorie ${section.title}">
+              ${section.groups
+                .map(
+                  (group) => `
+                    <a class="menu-section__group-pill" href="#section-${section.id}-${group.id}">
+                      ${group.label}
+                    </a>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
+          <div class="menu-group-stack">
             ${section.groups
-              .map(
-                (group) => `
-                  <a class="menu-section__group-pill" href="#section-${section.id}-${group.id}">
-                    ${group.label}
-                  </a>
-                `
-              )
+              .map((group) => {
+                const items = section.items.filter((item) => item.group === group.id);
+                return `
+                  <section class="menu-group" id="section-${section.id}-${group.id}">
+                    <div class="menu-group__header">
+                      <span class="menu-group__pill">${group.label}</span>
+                      <p class="menu-group__description${group.description ? "" : " menu-group__description--empty"}">
+                        ${group.description || "&nbsp;"}
+                      </p>
+                    </div>
+                    <div class="menu-section__items">
+                      ${items.map((item) => renderItemCard(item)).join("")}
+                    </div>
+                  </section>
+                `;
+              })
               .join("")}
           </div>
-        </div>
-        <div class="menu-group-stack">
-          ${section.groups
-            .map((group) => {
-              const items = section.items.filter((item) => item.group === group.id);
-              return `
-                <section class="menu-group" id="section-${section.id}-${group.id}">
-                  <div class="menu-group__header">
-                    <span class="menu-group__pill">${group.label}</span>
-                    <p class="menu-group__description${group.description ? "" : " menu-group__description--empty"}">
-                      ${group.description || "&nbsp;"}
-                    </p>
-                  </div>
-                  <div class="menu-section__items">
-                    ${items.map((item) => renderItemCard(item)).join("")}
-                  </div>
-                </section>
-              `;
-            })
-            .join("")}
         </div>
       </section>
     `;
@@ -778,13 +780,15 @@ function renderSection(section, isLeadSection) {
       id="section-${section.id}"
       style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
     >
-      <div class="menu-section__header">
-        <h2>${section.title}</h2>
-        <span class="menu-section__kicker">${section.kicker}</span>
-        <p>${section.description}</p>
-      </div>
-      <div class="menu-section__items">
-        ${section.items.map((item) => renderItemCard(item)).join("")}
+      <div class="menu-section__inner">
+        <div class="menu-section__header">
+          <h2>${section.title}</h2>
+          <span class="menu-section__kicker">${section.kicker}</span>
+          <p>${section.description}</p>
+        </div>
+        <div class="menu-section__items">
+          ${section.items.map((item) => renderItemCard(item)).join("")}
+        </div>
       </div>
     </section>
   `;
