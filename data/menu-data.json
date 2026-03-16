@@ -462,9 +462,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Gin",
-            "gradientStart": "#d6b313",
-            "gradientMid": "#efcf38",
-            "gradientEnd": "#fff19a",
+            "gradientStart": "#d8c870",
+            "gradientMid": "#efe1a2",
+            "gradientEnd": "#fff9de",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Tonic"
