@@ -31,7 +31,7 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316w" />
+    <link rel="stylesheet" href="./styles.css?v=20260316x" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -39,8 +39,21 @@
         <p class="app-loader__eyebrow">Domenica al Molino</p>
         <p class="app-loader__title">Sto caricando il menu</p>
         <p class="app-loader__note">Un attimo, preparo il menu e l'atmosfera della domenica.</p>
-        <div class="app-loader__bar">
-          <span class="app-loader__bar-fill"></span>
+        <div class="app-loader__meta" aria-hidden="true">
+          <span class="app-loader__phase" id="appLoaderPhase">Avvio del menu</span>
+          <span class="app-loader__percent" id="appLoaderPercent">0%</span>
+        </div>
+        <div
+          class="app-loader__bar"
+          id="appLoaderBar"
+          role="progressbar"
+          aria-label="Avanzamento caricamento menu"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          aria-valuetext="Avvio del menu"
+        >
+          <span class="app-loader__bar-fill" id="appLoaderBarFill"></span>
         </div>
       </div>
     </div>
@@ -169,7 +182,7 @@
           aria-label="Apri Instagram Agri Eventi"
         >
           <img
-            src="./menu-assets/footer.png?v=20260316w"
+            src="./menu-assets/footer.png?v=20260316x"
             alt="Eventi e novità Agri Eventi 2026"
           />
         </a>
@@ -202,7 +215,7 @@
           aria-label="Apri il sito Molino Santa Marta"
         >
           <img
-            src="./menu-assets/sgb-molino-black.png?v=20260316w"
+            src="./menu-assets/sgb-molino-black.png?v=20260316x"
             alt="Agriturismo Molino Santa Marta"
           />
         </a>
@@ -286,9 +299,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316w";
+          script.src = "./main.js?v=20260316x";
         } else {
-          script.src = "./main.runtime.js?v=20260316w";
+          script.src = "./main.runtime.js?v=20260316x";
         }
 
         document.body.appendChild(script);

@@ -5,17 +5,25 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316w";
+const APP_VERSION = "20260316x";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+const LOADER_PROGRESS_WEIGHTS = {
+  boot: 6,
+  menuData: 32,
+  render: 22,
+  fonts: 24,
+  timeGate: 16,
+};
 
 let sections = [];
 let itemLookup = {};
 let itemSectionLookup = {};
 let sideVisualObserver;
 let deferredPhotoPanelObserver;
+let loaderProgressFrame = null;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
 let lastFocusedElement = null;
@@ -65,7 +73,18 @@ const copySummaryButton = document.querySelector("#copySummary");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const appLoader = document.querySelector("#appLoader");
+const appLoaderBar = document.querySelector("#appLoaderBar");
+const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
+const appLoaderPercent = document.querySelector("#appLoaderPercent");
+const appLoaderPhase = document.querySelector("#appLoaderPhase");
 const heroButterflyImage = document.querySelector(".hero-butterfly__image");
+const loaderProgressState = {
+  boot: 0,
+  menuData: 0,
+  render: 0,
+  fonts: 0,
+  timeGate: 0,
+};
 
 cartFab.addEventListener("click", openCart);
 closeDetailButton.addEventListener("click", closeDetail);
@@ -150,26 +169,126 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+initLoaderProgress();
 init();
 
 async function init() {
-  const menuDataPromise = loadMenuData();
-  const fontsReadyPromise = waitForRequiredFonts();
-  const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION);
+  const menuDataPromise = loadMenuData().then((menuData) => {
+    setLoaderTaskProgress("menuData", 1);
+    return menuData;
+  });
+  const fontsReadyPromise = waitForRequiredFonts().then(() => {
+    setLoaderTaskProgress("fonts", 1);
+  });
+  const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION).then(() => {
+    setLoaderTaskProgress("timeGate", 1);
+  });
 
   try {
     const menuData = await menuDataPromise;
     applyMenuData(menuData);
     await waitForMenuRender();
+    setLoaderTaskProgress("render", 1);
     await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
     revealApp();
     warmNonCriticalAssets(menuData);
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
     await promiseAllSettledCompat([fontsReadyPromise, minimumLoaderPromise]);
+    syncLoaderProgress("Menu non disponibile");
     renderMenuLoadingState("retry");
     revealApp();
   }
+}
+
+function initLoaderProgress() {
+  setLoaderTaskProgress("boot", 1);
+  startLoaderTimeProgress();
+}
+
+function startLoaderTimeProgress() {
+  const tick = () => {
+    if (appHasRevealed) {
+      loaderProgressFrame = null;
+      return;
+    }
+
+    const elapsed = performance.now() - loaderStartedAt;
+    const ratio = Math.max(0, Math.min(1, elapsed / LOADER_MIN_DURATION));
+    setLoaderTaskProgress("timeGate", ratio);
+
+    if (ratio < 1) {
+      loaderProgressFrame = window.requestAnimationFrame(tick);
+      return;
+    }
+
+    loaderProgressFrame = null;
+  };
+
+  loaderProgressFrame = window.requestAnimationFrame(tick);
+}
+
+function setLoaderTaskProgress(task, value) {
+  if (!Object.prototype.hasOwnProperty.call(loaderProgressState, task)) {
+    return;
+  }
+
+  const normalizedValue = Math.max(0, Math.min(1, value));
+  if (normalizedValue <= loaderProgressState[task]) {
+    return;
+  }
+
+  loaderProgressState[task] = normalizedValue;
+  syncLoaderProgress();
+}
+
+function syncLoaderProgress(phaseOverride) {
+  if (!appLoaderBarFill) {
+    return;
+  }
+
+  const percentage = Math.round(
+    Object.keys(LOADER_PROGRESS_WEIGHTS).reduce((sum, key) => {
+      return sum + LOADER_PROGRESS_WEIGHTS[key] * (loaderProgressState[key] || 0);
+    }, 0)
+  );
+  const phaseLabel = phaseOverride || resolveLoaderPhaseLabel();
+
+  appLoaderBarFill.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
+  if (appLoaderPercent) {
+    appLoaderPercent.textContent = `${Math.max(0, Math.min(100, percentage))}%`;
+  }
+  if (appLoaderPhase) {
+    appLoaderPhase.textContent = phaseLabel;
+  }
+  if (appLoaderBar) {
+    appLoaderBar.setAttribute("aria-valuenow", String(Math.max(0, Math.min(100, percentage))));
+    appLoaderBar.setAttribute("aria-valuetext", phaseLabel);
+  }
+}
+
+function resolveLoaderPhaseLabel() {
+  if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
+    return "Avvio del menu";
+  }
+
+  if (loaderProgressState.menuData < 1) {
+    return "Scarico categorie e prodotti";
+  }
+
+  if (loaderProgressState.render < 1) {
+    return "Compongo il menu";
+  }
+
+  if (loaderProgressState.fonts < 1) {
+    return "Carico i font";
+  }
+
+  if (loaderProgressState.timeGate < 1) {
+    return "Rifinisco il caricamento";
+  }
+
+  return "Menu pronto";
 }
 
 function applyMenuData(menuData) {
@@ -745,6 +864,17 @@ function revealApp() {
   if (appHasRevealed) {
     return;
   }
+
+  if (loaderProgressFrame != null && "cancelAnimationFrame" in window) {
+    window.cancelAnimationFrame(loaderProgressFrame);
+    loaderProgressFrame = null;
+  }
+
+  loaderProgressState.menuData = 1;
+  loaderProgressState.render = 1;
+  loaderProgressState.fonts = 1;
+  loaderProgressState.timeGate = 1;
+  syncLoaderProgress("Menu pronto");
 
   appHasRevealed = true;
   document.body.classList.remove("is-loading");
