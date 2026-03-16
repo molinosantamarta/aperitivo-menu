@@ -1210,7 +1210,7 @@
           "page": 2,
           "name": "Caffè",
           "category": "Altre bevande",
-          "description": "Classico, decaffeinato, macchiato o corretto.",
+          "description": "Normale, decaffeinato, macchiato o corretto.",
           "visual": {
             "type": "photo-panel",
             "asset": "caffe-back.webp",
@@ -1219,7 +1219,7 @@
           },
           "options": [
             {
-              "label": "Classico",
+              "label": "Normale",
               "price": 1.5
             },
             {
