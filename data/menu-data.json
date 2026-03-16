@@ -824,51 +824,6 @@
           ]
         },
         {
-          "id": "caffe",
-          "page": 2,
-          "name": "Caffè",
-          "category": "Altre bevande",
-          "description": "Caffè.",
-          "options": [
-            {
-              "label": "1 caffè",
-              "price": 1.5
-            }
-          ],
-          "rect": [
-            466,
-            136,
-            632,
-            226
-          ],
-          "cropRect": [
-            490,
-            160,
-            624,
-            222
-          ],
-          "cropPadding": [
-            10,
-            10,
-            10,
-            10
-          ]
-        },
-        {
-          "id": "grappe-amari",
-          "page": 2,
-          "name": "Grappe e amari",
-          "category": "Altre bevande",
-          "description": "Grappe, amari e liquori.",
-          "options": [
-            {
-              "label": "1 consumazione",
-              "displayLabel": "",
-              "price": 4
-            }
-          ]
-        },
-        {
           "id": "bibite",
           "page": 2,
           "name": "Bibite",
@@ -959,6 +914,51 @@
             10,
             10,
             10
+          ]
+        },
+        {
+          "id": "caffe",
+          "page": 2,
+          "name": "Caffè",
+          "category": "Altre bevande",
+          "description": "Caffè.",
+          "options": [
+            {
+              "label": "1 caffè",
+              "price": 1.5
+            }
+          ],
+          "rect": [
+            466,
+            136,
+            632,
+            226
+          ],
+          "cropRect": [
+            490,
+            160,
+            624,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "grappe-amari",
+          "page": 2,
+          "name": "Grappe e amari",
+          "category": "Altre bevande",
+          "description": "Grappe, amari e liquori.",
+          "options": [
+            {
+              "label": "1 consumazione",
+              "displayLabel": "",
+              "price": 4
+            }
           ]
         }
       ]
