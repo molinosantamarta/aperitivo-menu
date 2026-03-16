@@ -488,6 +488,15 @@ a {
     0 6px 14px rgba(42, 31, 18, 0.05);
 }
 
+.utility-btn--instagram .utility-btn__icon {
+  width: 13px;
+  height: 13px;
+}
+
+.utility-btn--instagram .utility-btn__icon img {
+  opacity: 0.78;
+}
+
 .menu-stack {
   margin-top: 10px;
   display: grid;
