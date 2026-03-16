@@ -16,9 +16,6 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 │   ├── instagram-logo.webp
 │   ├── sgb-molino-black.png
 │   └── items/
-├── references/
-│   ├── fonts/
-│   └── layout-slices/
 ├── scripts/
 │   ├── export_sheet_template.mjs
 │   ├── extract_ape_assets.py
@@ -35,7 +32,6 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 - `data/`: dati del menu usati dall'app.
 - `fonts/`: font effettivamente caricati dal sito.
 - `menu-assets/`: solo asset runtime realmente usati dall'interfaccia.
-- `references/`: materiali sorgente o legacy tenuti solo come archivio di lavoro.
 - `scripts/`: utility di estrazione, generazione template e preparazione deploy.
 
 ## Sviluppo locale
