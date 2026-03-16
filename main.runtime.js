@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316ad";
+  const APP_VERSION = "20260316af";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -298,33 +298,33 @@
   }
   function resolveLoaderPhaseLabel() {
     if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-      return "Stiamo sistemando i tavoli.";
+      return "sistemando i tavoli nel parco";
     }
     if (loaderProgressState.menuData < 1) {
-      return "Sto tagliando il prato.";
+      return "tagliando il prato";
     }
     if (loaderProgressState.render < 1) {
-      return "Sto caricando le bottiglie di bollicine.";
+      return "assaggiando lo spritz";
     }
     if (loaderProgressState.fonts < 1) {
-      return "I popcorn stanno gia scoppiettando.";
+      return "scoppiettando i popcorn";
     }
     if (loaderProgressState.deferredFonts < 1) {
-      return "Sto affettando il salame.";
+      return "affettando il salame";
     }
     if (loaderProgressState.shellAssets < 1) {
-      return "Sto infornando le sfiziosita.";
+      return "caricando le birre in frigo";
     }
     if (loaderProgressState.beerAssets < 1) {
-      return "Sto caricando le bottiglie di bollicine.";
+      return "caricando le birre in frigo";
     }
     if (loaderProgressState.drinkAssets < 1) {
-      return "Sto riempiendo il carretto del gelato.";
+      return "caricando i gelati nel carretto";
     }
     if (loaderProgressState.timeGate < 1) {
-      return "Sto dando un'ultima occhiata all'aperitivo.";
+      return "assaggiando lo spritz";
     }
-    return "Aperitivo servito.";
+    return "scoppiettando i popcorn";
   }
   function applyMenuData(menuData) {
     sections = menuData.sections;
