@@ -19,9 +19,9 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316g";
-  const LOADER_HARD_TIMEOUT = 3200;
-  const LOADER_MIN_DURATION = 720;
+  const APP_VERSION = "20260316h";
+  const LOADER_HARD_TIMEOUT = 2600;
+  const LOADER_MIN_DURATION = 560;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
   let sections = [];
@@ -62,6 +62,7 @@
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
   const appLoader = document.querySelector("#appLoader");
+  const heroButterflyImage = document.querySelector(".hero-butterfly__image");
   window.setTimeout(() => {
     revealApp();
   }, LOADER_HARD_TIMEOUT);
@@ -148,10 +149,11 @@
       renderNavigation();
       renderSections();
       renderCart();
-      await Promise.all([waitForFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
+      await Promise.all([waitForCoreFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
       revealApp();
-      waitForCriticalAssets(menuData).catch(() => {
-      });
+      warmSecondaryFonts();
+      loadDeferredHeroMedia();
+      scheduleNonCriticalWork(() => waitForCriticalAssets(menuData));
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
       renderLoadError();
@@ -425,20 +427,30 @@
     const parsed = Number.parseFloat(normalized);
     return Number.isFinite(parsed) ? parsed : null;
   }
-  function waitForFonts() {
+  function waitForCoreFonts() {
     if (!("fonts" in document)) {
       return Promise.resolve();
     }
     const fontLoads = [
       document.fonts.load('700 1rem "Lulo Clean"'),
-      document.fonts.load('400 1rem "Housky Demo"'),
-      document.fonts.load('400 1rem "Factually Handwriting"'),
-      document.fonts.load('400 1rem "SignPainter"')
+      document.fonts.load('400 1rem "Factually Handwriting"')
     ];
     return Promise.race([
       Promise.all(fontLoads),
-      new Promise((resolve) => window.setTimeout(resolve, 2600))
+      new Promise((resolve) => window.setTimeout(resolve, 1800))
     ]);
+  }
+  function warmSecondaryFonts() {
+    if (!("fonts" in document)) {
+      return;
+    }
+    scheduleNonCriticalWork(
+      () => Promise.all([
+        document.fonts.load('400 1rem "Housky Demo"'),
+        document.fonts.load('400 1rem "SignPainter"')
+      ]).catch(() => {
+      })
+    );
   }
   function waitMinimumLoaderTime(duration) {
     const elapsed = performance.now() - loaderStartedAt;
@@ -496,6 +508,20 @@
       )
     );
   }
+  function scheduleNonCriticalWork(task) {
+    const runTask = () => {
+      try {
+        Promise.resolve(task()).catch(() => {
+        });
+      } catch (error) {
+      }
+    };
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(runTask, { timeout: 1200 });
+      return;
+    }
+    window.setTimeout(runTask, 180);
+  }
   function promiseTimeout(promise, duration) {
     return Promise.race([
       promise,
@@ -521,6 +547,16 @@
         appLoader.remove();
       }
     }, 320);
+  }
+  function loadDeferredHeroMedia() {
+    if (!heroButterflyImage || heroButterflyImage.getAttribute("src")) {
+      return;
+    }
+    const deferredSrc = heroButterflyImage.getAttribute("data-src");
+    if (!deferredSrc) {
+      return;
+    }
+    heroButterflyImage.setAttribute("src", deferredSrc);
   }
   function renderNavigation() {
     sectionNav.innerHTML = sections.map(

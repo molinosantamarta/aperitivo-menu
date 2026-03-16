@@ -26,33 +26,12 @@
     />
     <link
       rel="preload"
-      href="./fonts/housky-demo.ttf"
-      as="font"
-      type="font/ttf"
-      crossorigin
-    />
-    <link
-      rel="preload"
       href="./fonts/factually-handwriting.otf"
       as="font"
       type="font/otf"
       crossorigin
     />
-    <link
-      rel="preload"
-      href="./fonts/sign-painter.ttc"
-      as="font"
-      type="font/collection"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="./farfalla-bianca.gif"
-      as="image"
-      type="image/gif"
-      fetchpriority="high"
-    />
-    <link rel="stylesheet" href="./styles.css?v=20260316g" />
+    <link rel="stylesheet" href="./styles.css?v=20260316h" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" aria-hidden="true">
@@ -79,9 +58,9 @@
             <div class="hero-butterfly hero-butterfly--brand" aria-hidden="true">
               <img
                 class="hero-butterfly__image"
-                src="./farfalla-bianca.gif"
+                data-src="./farfalla-bianca.gif"
                 alt=""
-                fetchpriority="high"
+                decoding="async"
               />
             </div>
             <p class="hero-logo__subtitle">agrigelato e aperitivo</p>
@@ -264,9 +243,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316g";
+          script.src = "./main.js?v=20260316h";
         } else {
-          script.src = "./main.runtime.js?v=20260316g";
+          script.src = "./main.runtime.js?v=20260316h";
         }
 
         document.body.appendChild(script);
