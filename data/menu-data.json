@@ -1129,9 +1129,9 @@
         {
           "id": "frutta-bio",
           "page": 2,
-          "name": "Drink alla frutta bio",
+          "name": "Drink alla frutta",
           "category": "Altre bevande",
-          "description": "Bevanda analcolica alla frutta biologica.",
+          "description": "Bevanda analcolica.",
           "options": [
             {
               "label": "1 drink",
