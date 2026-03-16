@@ -1,9 +1,9 @@
 const priceFormatter = new Intl.NumberFormat("it-IT", {
-  minimumFractionDigits: 0,
+  minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316n";
+const APP_VERSION = "20260316o";
 const LOADER_HARD_TIMEOUT = 4000;
 const LOADER_MIN_DURATION = 4000;
 const MENU_LOADING_SLOW_DELAY = 4200;
