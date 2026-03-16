@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316ah";
+const APP_VERSION = "20260316ai";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -17,8 +17,9 @@ const LOADER_PROGRESS_WEIGHTS = {
   fonts: 16,
   deferredFonts: 8,
   shellAssets: 8,
-  beerAssets: 10,
-  drinkAssets: 10,
+  beerAssets: 8,
+  drinkAssets: 8,
+  bottleAssets: 12,
   timeGate: 8,
 };
 const LOADER_SHELL_ASSET_URLS = [
@@ -106,6 +107,7 @@ const loaderProgressState = {
   shellAssets: 0,
   beerAssets: 0,
   drinkAssets: 0,
+  bottleAssets: 0,
   timeGate: 0,
 };
 
@@ -198,6 +200,7 @@ init();
 async function init() {
   let beerAssetsReadyPromise = Promise.resolve();
   let drinkAssetsReadyPromise = Promise.resolve();
+  let bottleAssetsReadyPromise = Promise.resolve();
   const menuDataPromise = loadMenuData().then((menuData) => {
     setLoaderTaskProgress("menuData", 1);
     return menuData;
@@ -223,6 +226,9 @@ async function init() {
     drinkAssetsReadyPromise = waitForDrinkAssets(menuData).then(() => {
       setLoaderTaskProgress("drinkAssets", 1);
     });
+    bottleAssetsReadyPromise = waitForBottleAssets(menuData).then(() => {
+      setLoaderTaskProgress("bottleAssets", 1);
+    });
     applyMenuData(menuData);
     await waitForMenuRender();
     setLoaderTaskProgress("render", 1);
@@ -232,6 +238,7 @@ async function init() {
       shellAssetsReadyPromise,
       beerAssetsReadyPromise,
       drinkAssetsReadyPromise,
+      bottleAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     revealApp();
@@ -244,6 +251,7 @@ async function init() {
       shellAssetsReadyPromise,
       beerAssetsReadyPromise,
       drinkAssetsReadyPromise,
+      bottleAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     syncLoaderProgress("Menu non disponibile");
@@ -795,6 +803,15 @@ function waitForDrinkAssets(menuData) {
   return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
 }
 
+function waitForBottleAssets(menuData) {
+  const assetUrls = collectSectionAssetUrls(menuData, "bottiglie");
+  if (!assetUrls.length) {
+    return Promise.resolve();
+  }
+
+  return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
+}
+
 function warmMenuVisualAssets(menuData) {
   const assetUrls = collectMenuVisualAssetUrls(menuData);
   if (!assetUrls.length) {
@@ -978,6 +995,7 @@ function revealApp() {
   loaderProgressState.shellAssets = 1;
   loaderProgressState.beerAssets = 1;
   loaderProgressState.drinkAssets = 1;
+  loaderProgressState.bottleAssets = 1;
   loaderProgressState.timeGate = 1;
   syncLoaderProgress("Menu pronto");
 
