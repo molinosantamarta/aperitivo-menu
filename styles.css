@@ -553,21 +553,25 @@ a {
 }
 
 .promo-agri__chips {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
+  width: 100%;
 }
 
 .promo-agri__chip {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
+  justify-content: center;
+  width: 100%;
+  min-height: 30px;
+  padding: 0 10px;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: #7c1c23;
   text-decoration: none;
+  white-space: nowrap;
   background: rgba(152, 30, 34, 0.09);
 }
 
