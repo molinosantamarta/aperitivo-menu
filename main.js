@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316af";
+const APP_VERSION = "20260316ag";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -26,6 +26,15 @@ const LOADER_SHELL_ASSET_URLS = [
   "./menu-assets/instagram-logo.webp",
   "./menu-assets/sgb-molino-black.png",
 ];
+const LOADER_MESSAGES = [
+  "sistemando i tavoli nel parco",
+  "tagliando il prato",
+  "caricando le birre in frigo",
+  "affettando il salame",
+  "assaggiando lo spritz",
+  "caricando i gelati nel carretto",
+  "scoppiettando i popcorn",
+];
 
 let sections = [];
 let itemLookup = {};
@@ -33,6 +42,7 @@ let itemSectionLookup = {};
 let sideVisualObserver;
 let deferredPhotoPanelObserver;
 let loaderProgressFrame = null;
+let loaderMessageIntervalId = null;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
 let lastFocusedElement = null;
@@ -243,8 +253,27 @@ async function init() {
 }
 
 function initLoaderProgress() {
+  startLoaderMessageRotation();
   setLoaderTaskProgress("boot", 1);
   startLoaderTimeProgress();
+}
+
+function startLoaderMessageRotation() {
+  if (!appLoaderMessage || !LOADER_MESSAGES.length) {
+    return;
+  }
+
+  let currentIndex = 0;
+  appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+
+  loaderMessageIntervalId = window.setInterval(() => {
+    if (appHasRevealed) {
+      return;
+    }
+
+    currentIndex = (currentIndex + 1) % LOADER_MESSAGES.length;
+    appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+  }, 1350);
 }
 
 function startLoaderTimeProgress() {
@@ -293,14 +322,11 @@ function syncLoaderProgress(phaseOverride) {
       return sum + LOADER_PROGRESS_WEIGHTS[key] * (loaderProgressState[key] || 0);
     }, 0)
   );
-  const phaseLabel = phaseOverride || resolveLoaderPhaseLabel();
+  const phaseLabel = phaseOverride || resolveLoaderPhaseLabel(percentage);
 
   appLoaderBarFill.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
   if (appLoaderPercent) {
     appLoaderPercent.textContent = `${Math.max(0, Math.min(100, percentage))}%`;
-  }
-  if (appLoaderMessage) {
-    appLoaderMessage.textContent = phaseLabel;
   }
   if (appLoaderBar) {
     appLoaderBar.setAttribute("aria-valuenow", String(Math.max(0, Math.min(100, percentage))));
@@ -308,44 +334,8 @@ function syncLoaderProgress(phaseOverride) {
   }
 }
 
-function resolveLoaderPhaseLabel() {
-  if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-    return "sistemando i tavoli nel parco";
-  }
-
-  if (loaderProgressState.menuData < 1) {
-    return "tagliando il prato";
-  }
-
-  if (loaderProgressState.render < 1) {
-    return "assaggiando lo spritz";
-  }
-
-  if (loaderProgressState.fonts < 1) {
-    return "scoppiettando i popcorn";
-  }
-
-  if (loaderProgressState.deferredFonts < 1) {
-    return "affettando il salame";
-  }
-
-  if (loaderProgressState.shellAssets < 1) {
-    return "caricando le birre in frigo";
-  }
-
-  if (loaderProgressState.beerAssets < 1) {
-    return "caricando le birre in frigo";
-  }
-
-  if (loaderProgressState.drinkAssets < 1) {
-    return "caricando i gelati nel carretto";
-  }
-
-  if (loaderProgressState.timeGate < 1) {
-    return "assaggiando lo spritz";
-  }
-
-  return "scoppiettando i popcorn";
+function resolveLoaderPhaseLabel(percentage) {
+  return `Caricamento menu ${Math.max(0, Math.min(100, percentage))}%`;
 }
 
 function applyMenuData(menuData) {
@@ -960,6 +950,11 @@ function waitWithTimeout(promise, duration) {
 function revealApp() {
   if (appHasRevealed) {
     return;
+  }
+
+  if (loaderMessageIntervalId != null) {
+    window.clearInterval(loaderMessageIntervalId);
+    loaderMessageIntervalId = null;
   }
 
   if (loaderProgressFrame != null && "cancelAnimationFrame" in window) {
