@@ -192,7 +192,7 @@
             "type": "photo-panel",
             "asset": "moretti-back.jpg",
             "position": "center center",
-            "size": "contain",
+            "size": "cover",
             "backgroundColor": "#ffffff"
           },
           "sideVisual": {
