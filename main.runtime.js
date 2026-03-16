@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316aa";
+  const APP_VERSION = "20260316ab";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -36,7 +36,8 @@
     fonts: 16,
     deferredFonts: 8,
     shellAssets: 8,
-    beerAssets: 12,
+    beerAssets: 10,
+    drinkAssets: 10,
     timeGate: 8
   };
   const LOADER_SHELL_ASSET_URLS = [
@@ -109,6 +110,7 @@
     deferredFonts: 0,
     shellAssets: 0,
     beerAssets: 0,
+    drinkAssets: 0,
     timeGate: 0
   };
   cartFab.addEventListener("click", openCart);
@@ -187,6 +189,7 @@
   init();
   async function init() {
     let beerAssetsReadyPromise = Promise.resolve();
+    let drinkAssetsReadyPromise = Promise.resolve();
     const menuDataPromise = loadMenuData().then((menuData) => {
       setLoaderTaskProgress("menuData", 1);
       return menuData;
@@ -208,6 +211,9 @@
       beerAssetsReadyPromise = waitForBeerAssets(menuData).then(() => {
         setLoaderTaskProgress("beerAssets", 1);
       });
+      drinkAssetsReadyPromise = waitForDrinkAssets(menuData).then(() => {
+        setLoaderTaskProgress("drinkAssets", 1);
+      });
       applyMenuData(menuData);
       await waitForMenuRender();
       setLoaderTaskProgress("render", 1);
@@ -216,6 +222,7 @@
         deferredFontsReadyPromise,
         shellAssetsReadyPromise,
         beerAssetsReadyPromise,
+        drinkAssetsReadyPromise,
         minimumLoaderPromise
       ]);
       revealApp();
@@ -227,6 +234,7 @@
         deferredFontsReadyPromise,
         shellAssetsReadyPromise,
         beerAssetsReadyPromise,
+        drinkAssetsReadyPromise,
         minimumLoaderPromise
       ]);
       syncLoaderProgress("Menu non disponibile");
@@ -309,6 +317,9 @@
     }
     if (loaderProgressState.beerAssets < 1) {
       return "Le birre stanno prendendo posto nel secchiello.";
+    }
+    if (loaderProgressState.drinkAssets < 1) {
+      return "Gli spritz si stanno mettendo in fila al bancone.";
     }
     if (loaderProgressState.timeGate < 1) {
       return "Verso l'aperitivo con calma, come si deve.";
@@ -671,6 +682,13 @@
     }
     return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14e3)));
   }
+  function waitForDrinkAssets(menuData) {
+    const assetUrls = collectSectionAssetUrls(menuData, "drink");
+    if (!assetUrls.length) {
+      return Promise.resolve();
+    }
+    return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14e3)));
+  }
   function warmMenuVisualAssets(menuData) {
     const assetUrls = collectMenuVisualAssetUrls(menuData);
     if (!assetUrls.length) {
@@ -692,8 +710,11 @@
     return Array.from(urls);
   }
   function collectBeerAssetUrls(menuData) {
+    return collectSectionAssetUrls(menuData, "birre");
+  }
+  function collectSectionAssetUrls(menuData, sectionId) {
     const urls = /* @__PURE__ */ new Set();
-    menuData.sections.filter((section) => normalizeLabel(section.id || section.title || "") === "birre").forEach((section) => {
+    menuData.sections.filter((section) => normalizeLabel(section.id || section.title || "") === normalizeLabel(sectionId)).forEach((section) => {
       section.items.forEach((item) => {
         collectVisualAssetUrls(item.visual, urls);
         getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
@@ -815,6 +836,7 @@
     loaderProgressState.deferredFonts = 1;
     loaderProgressState.shellAssets = 1;
     loaderProgressState.beerAssets = 1;
+    loaderProgressState.drinkAssets = 1;
     loaderProgressState.timeGate = 1;
     syncLoaderProgress("Menu pronto");
     appHasRevealed = true;

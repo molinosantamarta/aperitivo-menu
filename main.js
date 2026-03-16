@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316aa";
+const APP_VERSION = "20260316ab";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -17,7 +17,8 @@ const LOADER_PROGRESS_WEIGHTS = {
   fonts: 16,
   deferredFonts: 8,
   shellAssets: 8,
-  beerAssets: 12,
+  beerAssets: 10,
+  drinkAssets: 10,
   timeGate: 8,
 };
 const LOADER_SHELL_ASSET_URLS = [
@@ -94,6 +95,7 @@ const loaderProgressState = {
   deferredFonts: 0,
   shellAssets: 0,
   beerAssets: 0,
+  drinkAssets: 0,
   timeGate: 0,
 };
 
@@ -185,6 +187,7 @@ init();
 
 async function init() {
   let beerAssetsReadyPromise = Promise.resolve();
+  let drinkAssetsReadyPromise = Promise.resolve();
   const menuDataPromise = loadMenuData().then((menuData) => {
     setLoaderTaskProgress("menuData", 1);
     return menuData;
@@ -207,6 +210,9 @@ async function init() {
     beerAssetsReadyPromise = waitForBeerAssets(menuData).then(() => {
       setLoaderTaskProgress("beerAssets", 1);
     });
+    drinkAssetsReadyPromise = waitForDrinkAssets(menuData).then(() => {
+      setLoaderTaskProgress("drinkAssets", 1);
+    });
     applyMenuData(menuData);
     await waitForMenuRender();
     setLoaderTaskProgress("render", 1);
@@ -215,6 +221,7 @@ async function init() {
       deferredFontsReadyPromise,
       shellAssetsReadyPromise,
       beerAssetsReadyPromise,
+      drinkAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     revealApp();
@@ -226,6 +233,7 @@ async function init() {
       deferredFontsReadyPromise,
       shellAssetsReadyPromise,
       beerAssetsReadyPromise,
+      drinkAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     syncLoaderProgress("Menu non disponibile");
@@ -327,6 +335,10 @@ function resolveLoaderPhaseLabel() {
 
   if (loaderProgressState.beerAssets < 1) {
     return "Le birre stanno prendendo posto nel secchiello.";
+  }
+
+  if (loaderProgressState.drinkAssets < 1) {
+    return "Gli spritz si stanno mettendo in fila al bancone.";
   }
 
   if (loaderProgressState.timeGate < 1) {
@@ -775,6 +787,15 @@ function waitForBeerAssets(menuData) {
   return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
 }
 
+function waitForDrinkAssets(menuData) {
+  const assetUrls = collectSectionAssetUrls(menuData, "drink");
+  if (!assetUrls.length) {
+    return Promise.resolve();
+  }
+
+  return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
+}
+
 function warmMenuVisualAssets(menuData) {
   const assetUrls = collectMenuVisualAssetUrls(menuData);
   if (!assetUrls.length) {
@@ -802,10 +823,14 @@ function collectMenuVisualAssetUrls(menuData) {
 }
 
 function collectBeerAssetUrls(menuData) {
+  return collectSectionAssetUrls(menuData, "birre");
+}
+
+function collectSectionAssetUrls(menuData, sectionId) {
   const urls = new Set();
 
   menuData.sections
-    .filter((section) => normalizeLabel(section.id || section.title || "") === "birre")
+    .filter((section) => normalizeLabel(section.id || section.title || "") === normalizeLabel(sectionId))
     .forEach((section) => {
       section.items.forEach((item) => {
         collectVisualAssetUrls(item.visual, urls);
@@ -948,6 +973,7 @@ function revealApp() {
   loaderProgressState.deferredFonts = 1;
   loaderProgressState.shellAssets = 1;
   loaderProgressState.beerAssets = 1;
+  loaderProgressState.drinkAssets = 1;
   loaderProgressState.timeGate = 1;
   syncLoaderProgress("Menu pronto");
 
