@@ -1210,7 +1210,7 @@
           "page": 2,
           "name": "Caffè",
           "category": "Altre bevande",
-          "description": "Caffè.",
+          "description": "Caffè, decaffeinato, macchiato o corretto.",
           "visual": {
             "type": "photo-panel",
             "asset": "caffe-back.webp",
@@ -1219,8 +1219,21 @@
           },
           "options": [
             {
-              "label": "",
+              "label": "Caffè",
+              "displayLabel": "",
               "price": 1.5
+            },
+            {
+              "label": "Decaffeinato",
+              "price": 1.5
+            },
+            {
+              "label": "Macchiato",
+              "price": 1.5
+            },
+            {
+              "label": "Corretto",
+              "price": 2
             }
           ],
           "rect": [
