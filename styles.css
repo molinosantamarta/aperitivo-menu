@@ -1391,9 +1391,9 @@ a {
 
 .review-card {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   justify-items: center;
-  padding: 18px 16px 6px;
+  padding: 28px 18px 18px;
   text-align: center;
 }
 
