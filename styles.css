@@ -850,6 +850,10 @@ a {
   cursor: pointer;
 }
 
+.item-card--artisanal-beer {
+  padding: 10px;
+}
+
 .item-card__visual {
   display: flex;
   align-items: center;
@@ -977,6 +981,11 @@ a {
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
     inset 0 -12px 24px rgba(255, 255, 255, 0.08);
+}
+
+.item-card--artisanal-beer .beer-script-visual {
+  min-height: 74px;
+  padding: 5px 12px;
 }
 
 .beer-script-visual__script {
@@ -1245,6 +1254,10 @@ a {
   padding: 14px 4px 2px;
 }
 
+.item-card--artisanal-beer .item-card__content {
+  padding-top: 11px;
+}
+
 .item-card__content--with-side-visual {
   position: relative;
   min-height: 104px;
@@ -1270,6 +1283,11 @@ a {
 .item-card--floating-bottle .item-card__content {
   min-height: 156px;
   padding-right: 128px;
+}
+
+.item-card--artisanal-beer.item-card--floating-bottle .item-card__content {
+  min-height: 146px;
+  padding-right: 120px;
 }
 
 .item-card__side-visual--floating-bottle {
@@ -1374,6 +1392,10 @@ a {
   text-transform: uppercase;
 }
 
+.item-card--artisanal-beer h3 {
+  margin-top: 6px;
+}
+
 .item-card p {
   margin: 8px 0 0;
   color: var(--muted);
@@ -1381,11 +1403,20 @@ a {
   line-height: 1.45;
 }
 
+.item-card--artisanal-beer p {
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
 .item-card__prices {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+.item-card--artisanal-beer .item-card__prices {
+  margin-top: 10px;
 }
 
 .price-chip {
