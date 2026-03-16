@@ -31,7 +31,7 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316i" />
+    <link rel="stylesheet" href="./styles.css?v=20260316j" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" aria-hidden="true">
@@ -75,10 +75,11 @@
         <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie">
           <span class="section-nav__placeholder">Categorie in caricamento</span>
         </nav>
-        <div class="toolbar">
-          <button class="utility-btn utility-btn--empty" id="openCart" type="button">
-            Seleziona prodotti dal menu
-          </button>
+        <div class="hero-guide" aria-label="Come usare il menu">
+          <p>
+            Sfiora le categorie, tocca un prodotto per i dettagli e usa il riepilogo in basso
+            per comunicarlo al cameriere.
+          </p>
         </div>
       </header>
 
@@ -248,9 +249,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316i";
+          script.src = "./main.js?v=20260316j";
         } else {
-          script.src = "./main.runtime.js?v=20260316i";
+          script.src = "./main.runtime.js?v=20260316j";
         }
 
         document.body.appendChild(script);

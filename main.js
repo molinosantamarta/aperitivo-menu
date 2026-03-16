@@ -3,7 +3,7 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316i";
+const APP_VERSION = "20260316j";
 const LOADER_HARD_TIMEOUT = 2600;
 const LOADER_MIN_DURATION = 560;
 const MENU_LOADING_SLOW_DELAY = 4200;
@@ -24,14 +24,11 @@ const state = {
   cart: loadCart(),
 };
 
-const emptyCartPrompt = "Seleziona prodotti dal menu";
-const filledCartLabel = "Riepilogo ordine";
 const saveSummaryLabel = "Salva e continua";
 
 const sectionNav = document.querySelector("#sectionNav");
 const menuSections = document.querySelector("#menuSections");
 const cartFab = document.querySelector("#cartFab");
-const openCartButton = document.querySelector("#openCart");
 const detailSheet = document.querySelector("#detailSheet");
 const cartSheet = document.querySelector("#cartSheet");
 const detailCategory = document.querySelector("#detailCategory");
@@ -58,7 +55,6 @@ window.setTimeout(() => {
 }, LOADER_HARD_TIMEOUT);
 
 cartFab.addEventListener("click", openCart);
-openCartButton.addEventListener("click", openCart);
 closeDetailButton.addEventListener("click", closeDetail);
 closeCartButton.addEventListener("click", closeCart);
 detailSheet.addEventListener("click", (event) => {
@@ -953,7 +949,6 @@ function renderCart() {
   cartItems.innerHTML = "";
   const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
   cartCount.textContent = cartQuantity;
-  syncOpenCartButton(cartQuantity);
 
   if (state.cart.length === 0) {
     cartEmpty.hidden = false;
@@ -988,17 +983,6 @@ function renderCart() {
   }
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
-}
-
-function syncOpenCartButton(cartQuantity) {
-  const hasItems = cartQuantity > 0;
-  openCartButton.textContent = hasItems ? filledCartLabel : emptyCartPrompt;
-  openCartButton.classList.toggle("utility-btn--accent", hasItems);
-  openCartButton.classList.toggle("utility-btn--empty", !hasItems);
-  openCartButton.setAttribute(
-    "aria-label",
-    hasItems ? "Apri riepilogo ordine" : "Seleziona prodotti dal menu"
-  );
 }
 
 function updateQuantity(entryId, delta) {

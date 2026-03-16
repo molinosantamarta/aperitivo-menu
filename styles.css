@@ -325,7 +325,6 @@ a {
   margin: 22px auto 0;
 }
 
-.toolbar,
 .info-actions,
 .sheet-actions,
 .cart-footer {
@@ -333,8 +332,16 @@ a {
   gap: 10px;
 }
 
-.toolbar {
-  padding-top: 14px;
+.hero-guide {
+  padding: 12px 6px 0;
+}
+
+.hero-guide p {
+  max-width: 34ch;
+  margin: 0 auto;
+  color: rgba(103, 92, 83, 0.96);
+  font-size: 0.9rem;
+  line-height: 1.45;
 }
 
 .section-nav {

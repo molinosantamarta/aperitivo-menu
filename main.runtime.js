@@ -19,7 +19,7 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316i";
+  const APP_VERSION = "20260316j";
   const LOADER_HARD_TIMEOUT = 2600;
   const LOADER_MIN_DURATION = 560;
   const MENU_LOADING_SLOW_DELAY = 4200;
@@ -37,13 +37,10 @@
     selectedQuantity: 1,
     cart: loadCart()
   };
-  const emptyCartPrompt = "Seleziona prodotti dal menu";
-  const filledCartLabel = "Riepilogo ordine";
   const saveSummaryLabel = "Salva e continua";
   const sectionNav = document.querySelector("#sectionNav");
   const menuSections = document.querySelector("#menuSections");
   const cartFab = document.querySelector("#cartFab");
-  const openCartButton = document.querySelector("#openCart");
   const detailSheet = document.querySelector("#detailSheet");
   const cartSheet = document.querySelector("#cartSheet");
   const detailCategory = document.querySelector("#detailCategory");
@@ -68,7 +65,6 @@
     revealApp();
   }, LOADER_HARD_TIMEOUT);
   cartFab.addEventListener("click", openCart);
-  openCartButton.addEventListener("click", openCart);
   closeDetailButton.addEventListener("click", closeDetail);
   closeCartButton.addEventListener("click", closeCart);
   detailSheet.addEventListener("click", (event) => {
@@ -569,7 +565,7 @@
     ).join("");
   }
   function renderSections() {
-    menuSections.innerHTML = sections.map((section) => renderSection(section)).join("");
+    menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
     menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
       button.addEventListener("click", () => openDetail(button.dataset.itemId));
     });
@@ -606,16 +602,16 @@
     );
     sideVisuals.forEach((visual) => sideVisualObserver.observe(visual));
   }
-  function renderSection(section) {
+  function renderSection(section, isLeadSection) {
     if (section.layout === "grouped" && Array.isArray(section.groups)) {
-      return '\n      <section\n        class="menu-section menu-section--grouped"\n        id="section-'.concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n      >\n        <div class="menu-section__header menu-section__header--centered">\n          <h2>').concat(section.title, '</h2>\n          <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n            ').concat(section.groups.map(
+      return '\n      <section\n        class="menu-section menu-section--grouped'.concat(isLeadSection ? " menu-section--lead" : "", '"\n        id="section-').concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n      >\n        <div class="menu-section__header menu-section__header--centered">\n          ').concat(isLeadSection ? '<span class="menu-section__bridge">Menu Aperitivo</span>' : "", "\n          <h2>").concat(section.title, '</h2>\n          <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n            ').concat(section.groups.map(
         (group) => '\n                  <a class="menu-section__group-pill" href="#section-'.concat(section.id, "-").concat(group.id, '">\n                    ').concat(group.label, "\n                  </a>\n                ")
       ).join(""), '\n          </div>\n        </div>\n        <div class="menu-group-stack">\n          ').concat(section.groups.map((group) => {
         const items = section.items.filter((item) => item.group === group.id);
         return '\n                <section class="menu-group" id="section-'.concat(section.id, "-").concat(group.id, '">\n                  <div class="menu-group__header">\n                    <span class="menu-group__pill">').concat(group.label, '</span>\n                    <p class="menu-group__description').concat(group.description ? "" : " menu-group__description--empty", '">\n                      ').concat(group.description || "&nbsp;", '\n                    </p>\n                  </div>\n                  <div class="menu-section__items">\n                    ').concat(items.map((item) => renderItemCard(item)).join(""), "\n                  </div>\n                </section>\n              ");
       }).join(""), "\n        </div>\n      </section>\n    ");
     }
-    return '\n    <section\n      class="menu-section"\n      id="section-'.concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n    >\n      <div class="menu-section__header">\n        <h2>').concat(section.title, '</h2>\n        <span class="menu-section__kicker">').concat(section.kicker, "</span>\n        <p>").concat(section.description, '</p>\n      </div>\n      <div class="menu-section__items">\n        ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n      </div>\n    </section>\n  ");
+    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n    >\n      <div class="menu-section__header">\n        ').concat(isLeadSection ? '<span class="menu-section__bridge">Menu Aperitivo</span>' : "", "\n        <h2>").concat(section.title, '</h2>\n        <span class="menu-section__kicker">').concat(section.kicker, "</span>\n        <p>").concat(section.description, '</p>\n      </div>\n      <div class="menu-section__items">\n        ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n      </div>\n    </section>\n  ");
   }
   function renderItemCard(item) {
     return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="Apri dettagli per ').concat(item.name, '"\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(showDetailHint(item) ? '<p class="item-card__hint item-card__hint--below">Tocca per dettagli</p>' : "", "\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(item.options.map(
@@ -698,7 +694,6 @@
     cartItems.innerHTML = "";
     const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
     cartCount.textContent = cartQuantity;
-    syncOpenCartButton(cartQuantity);
     if (state.cart.length === 0) {
       cartEmpty.hidden = false;
       cartItems.hidden = true;
@@ -718,16 +713,6 @@
       });
     }
     cartTotal.textContent = formatCartBreakdown(state.cart);
-  }
-  function syncOpenCartButton(cartQuantity) {
-    const hasItems = cartQuantity > 0;
-    openCartButton.textContent = hasItems ? filledCartLabel : emptyCartPrompt;
-    openCartButton.classList.toggle("utility-btn--accent", hasItems);
-    openCartButton.classList.toggle("utility-btn--empty", !hasItems);
-    openCartButton.setAttribute(
-      "aria-label",
-      hasItems ? "Apri riepilogo ordine" : "Seleziona prodotti dal menu"
-    );
   }
   function updateQuantity(entryId, delta) {
     const entry = state.cart.find((cartEntry) => cartEntry.entryId === entryId);
