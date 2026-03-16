@@ -3,9 +3,10 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316h";
+const APP_VERSION = "20260316i";
 const LOADER_HARD_TIMEOUT = 2600;
 const LOADER_MIN_DURATION = 560;
+const MENU_LOADING_SLOW_DELAY = 4200;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 
@@ -131,36 +132,51 @@ document.addEventListener("keydown", (event) => {
 init();
 
 async function init() {
-  try {
-    const menuData = await promiseTimeout(loadMenuData(), 2800);
-    sections = menuData.sections;
-    itemLookup = sections.reduce((lookup, section) => {
-      section.items.forEach((item) => {
-        lookup[item.id] = item;
-      });
-      return lookup;
-    }, {});
-    itemSectionLookup = sections.reduce((lookup, section) => {
-      section.items.forEach((item) => {
-        lookup[item.id] = section.title;
-      });
-      return lookup;
-    }, {});
+  renderMenuLoadingState("loading");
+  const menuDataPromise = loadMenuData();
+  const slowLoadingTimer = window.setTimeout(() => {
+    if (!sections.length) {
+      renderMenuLoadingState("slow");
+    }
+  }, MENU_LOADING_SLOW_DELAY);
 
-    renderNavigation();
-    renderSections();
-    renderCart();
+  try {
     await Promise.all([waitForCoreFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
     revealApp();
-
     warmSecondaryFonts();
     loadDeferredHeroMedia();
+
+    const menuData = await menuDataPromise;
+    window.clearTimeout(slowLoadingTimer);
+    applyMenuData(menuData);
+
     scheduleNonCriticalWork(() => waitForCriticalAssets(menuData));
   } catch (error) {
+    window.clearTimeout(slowLoadingTimer);
     console.error("Errore durante il caricamento del menu:", error);
-    renderLoadError();
+    renderMenuLoadingState("retry");
     revealApp();
   }
+}
+
+function applyMenuData(menuData) {
+  sections = menuData.sections;
+  itemLookup = sections.reduce((lookup, section) => {
+    section.items.forEach((item) => {
+      lookup[item.id] = item;
+    });
+    return lookup;
+  }, {});
+  itemSectionLookup = sections.reduce((lookup, section) => {
+    section.items.forEach((item) => {
+      lookup[item.id] = section.title;
+    });
+    return lookup;
+  }, {});
+
+  renderNavigation();
+  renderSections();
+  renderCart();
 }
 
 async function loadMenuData() {
@@ -1405,19 +1421,47 @@ function getItemCategoryLabel(item, entry) {
   return "";
 }
 
-function renderLoadError() {
-  sectionNav.innerHTML = "";
+function renderMenuLoadingState(mode) {
+  const isSlow = mode === "slow";
+  const isRetry = mode === "retry";
+
+  sectionNav.innerHTML = `
+    <span class="section-nav__placeholder${isSlow || isRetry ? " section-nav__placeholder--slow" : ""}">
+      ${isRetry ? "Ricarico le categorie" : "Categorie in caricamento"}
+    </span>
+  `;
+
+  const eyebrow = isRetry ? "Connessione lenta" : "Menu in arrivo";
+  const title = isRetry
+    ? "Sto ancora preparando categorie e prodotti."
+    : isSlow
+      ? "Sto caricando le risorse rimanenti del menu."
+      : "Sto caricando categorie e prodotti.";
+  const description = isRetry
+    ? "Il resto dell'interfaccia e gia disponibile. Se vuoi, continua a scorrere la pagina mentre provo a completare il menu."
+    : isSlow
+      ? "Puoi continuare a leggere la pagina e le sezioni promo: intanto completo il caricamento del menu."
+      : "Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli Agri-Eventi: il menu si completa tra poco.";
+
   menuSections.innerHTML = `
-    <section class="load-error-card">
-      <p class="eyebrow">Connessione</p>
-      <h2>Il menu non si e caricato correttamente.</h2>
+    <section class="menu-loading-card${isSlow || isRetry ? " menu-loading-card--slow" : ""}" aria-live="polite">
+      <p class="eyebrow">${eyebrow}</p>
+      <h2>${title}</h2>
       <p>
-        Riprova tra qualche secondo. Se sei su iPhone, prova anche ad aprire il link in una
-        nuova scheda o in navigazione privata.
+        ${description}
       </p>
-      <button class="utility-btn utility-btn--accent" id="retryLoad" type="button">
-        Ricarica il menu
-      </button>
+      <div class="menu-loading-card__bar" aria-hidden="true">
+        <span class="menu-loading-card__fill"></span>
+      </div>
+      ${
+        isRetry
+          ? `
+            <button class="utility-btn utility-btn--accent menu-loading-card__action" id="retryLoad" type="button">
+              Ricarica il menu
+            </button>
+          `
+          : ""
+      }
     </section>
   `;
 

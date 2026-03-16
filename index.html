@@ -31,7 +31,7 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316h" />
+    <link rel="stylesheet" href="./styles.css?v=20260316i" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" aria-hidden="true">
@@ -72,7 +72,9 @@
             relax.
           </p>
         </div>
-        <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie"></nav>
+        <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie">
+          <span class="section-nav__placeholder">Categorie in caricamento</span>
+        </nav>
         <div class="toolbar">
           <button class="utility-btn utility-btn--empty" id="openCart" type="button">
             Seleziona prodotti dal menu
@@ -131,7 +133,19 @@
           </aside>
         </section>
 
-        <div class="menu-sections" id="menuSections"></div>
+        <div class="menu-sections" id="menuSections">
+          <section class="menu-loading-card" aria-live="polite">
+            <p class="eyebrow">Menu in arrivo</p>
+            <h2>Sto caricando categorie e prodotti.</h2>
+            <p>
+              Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli
+              Agri-Eventi: il menu si completa tra poco.
+            </p>
+            <div class="menu-loading-card__bar" aria-hidden="true">
+              <span class="menu-loading-card__fill"></span>
+            </div>
+          </section>
+        </div>
 
         <figure class="promo-panel">
           <img
@@ -243,9 +257,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316h";
+          script.src = "./main.js?v=20260316i";
         } else {
-          script.src = "./main.runtime.js?v=20260316h";
+          script.src = "./main.runtime.js?v=20260316i";
         }
 
         document.body.appendChild(script);
