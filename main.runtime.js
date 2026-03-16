@@ -19,7 +19,7 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316d";
+  const APP_VERSION = "20260316e";
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
   let sections = [];
@@ -27,6 +27,7 @@
   let itemSectionLookup = {};
   let sideVisualObserver;
   const loaderStartedAt = performance.now();
+  let appHasRevealed = false;
   const state = {
     selectedItemId: null,
     selectedOptionIndex: 0,
@@ -125,7 +126,7 @@
   init();
   async function init() {
     try {
-      const menuData = await loadMenuData();
+      const menuData = await promiseTimeout(loadMenuData(), 4500);
       sections = menuData.sections;
       itemLookup = sections.reduce((lookup, section) => {
         section.items.forEach((item) => {
@@ -142,13 +143,15 @@
       renderNavigation();
       renderSections();
       renderCart();
+      await waitMinimumLoaderTime(420);
+      revealApp();
       waitForCriticalAssets(menuData).catch(() => {
       });
-      await Promise.all([waitForFonts(), waitMinimumLoaderTime(1350)]);
+      waitForFonts().catch(() => {
+      });
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
       renderLoadError();
-    } finally {
       revealApp();
     }
   }
@@ -490,10 +493,22 @@
       )
     );
   }
+  function promiseTimeout(promise, duration) {
+    return Promise.race([
+      promise,
+      new Promise(
+        (_, reject) => window.setTimeout(() => reject(new Error("Tempo scaduto durante il caricamento del menu")), duration)
+      )
+    ]);
+  }
   function buildVersionedPath(path) {
     return "".concat(path, "?v=").concat(APP_VERSION);
   }
   function revealApp() {
+    if (appHasRevealed) {
+      return;
+    }
+    appHasRevealed = true;
     document.body.classList.remove("is-loading");
     if (appLoader) {
       appLoader.classList.add("is-hidden");
