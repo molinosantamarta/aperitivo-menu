@@ -1128,7 +1128,7 @@ function formatDetailCategoryLabel(item) {
       return sectionTitle;
     }
 
-    return `${sectionTitle} - ${categoryLabel}`;
+    return `${sectionTitle} ${categoryLabel}`;
   }
 
   return categoryLabel || sectionTitle;
