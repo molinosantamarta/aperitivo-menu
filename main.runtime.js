@@ -19,9 +19,9 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316k";
-  const LOADER_HARD_TIMEOUT = 2600;
-  const LOADER_MIN_DURATION = 560;
+  const APP_VERSION = "20260316l";
+  const LOADER_HARD_TIMEOUT = 4200;
+  const LOADER_MIN_DURATION = 3e3;
   const MENU_LOADING_SLOW_DELAY = 4200;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
