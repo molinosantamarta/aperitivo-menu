@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316ab";
+  const APP_VERSION = "20260316ac";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -298,33 +298,33 @@
   }
   function resolveLoaderPhaseLabel() {
     if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-      return "Stendo la tovaglia della domenica e arrivo.";
+      return "Spritz in fresco, taglieri in arrivo.";
     }
     if (loaderProgressState.menuData < 1) {
-      return "Sto radunando bottiglie, taglieri e buone idee.";
+      return "Sto chiamando a raccolta aperitivo, taglieri e buone idee.";
     }
     if (loaderProgressState.render < 1) {
-      return "Allineo i bicchieri, che qui si fa sul serio.";
+      return "Allineo i bicchieri: lo spritz vuole la sua entrata.";
     }
     if (loaderProgressState.fonts < 1) {
-      return "Do una pettinata elegante al menu.";
+      return "Do una sistemata elegante, che anche il menu vuole fare bella figura.";
     }
     if (loaderProgressState.deferredFonts < 1) {
-      return "Aggiungo quel tocco curato che fa scena.";
+      return "Metto il tocco finale, come il sale giusto sull'aperitivo.";
     }
     if (loaderProgressState.shellAssets < 1) {
-      return "Accendo le ultime luci nel parco.";
+      return "Accendo le luci: i popcorn iniziano gia a scoppiettare.";
     }
     if (loaderProgressState.beerAssets < 1) {
-      return "Le birre stanno prendendo posto nel secchiello.";
+      return "Le birre stanno prendendo posto, fredde al punto giusto.";
     }
     if (loaderProgressState.drinkAssets < 1) {
       return "Gli spritz si stanno mettendo in fila al bancone.";
     }
     if (loaderProgressState.timeGate < 1) {
-      return "Verso l'aperitivo con calma, come si deve.";
+      return "Un attimo ancora e anche l'agri-gelato arriva con stile.";
     }
-    return "Il menu \xE8 servito.";
+    return "Aperitivo servito, gelato compreso.";
   }
   function applyMenuData(menuData) {
     sections = menuData.sections;
