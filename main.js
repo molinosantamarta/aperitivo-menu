@@ -1445,6 +1445,16 @@ function getCardOptionsToDisplay(item) {
     return item?.options || [];
   }
 
+  if (typeof item.cardPriceOverride === "number") {
+    return [
+      {
+        label: "",
+        displayLabel: "",
+        price: item.cardPriceOverride,
+      },
+    ];
+  }
+
   const [firstOption, ...otherOptions] = item.options;
   const allSamePrice = otherOptions.every((option) => option.price === firstOption.price);
 

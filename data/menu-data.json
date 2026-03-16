@@ -1210,7 +1210,8 @@
           "page": 2,
           "name": "Caffè",
           "category": "Altre bevande",
-          "description": "Normale, decaffeinato, macchiato o corretto.",
+          "description": "Normale, lungo, orzo, decaffeinato, macchiato o corretto.",
+          "cardPriceOverride": 1.5,
           "visual": {
             "type": "photo-panel",
             "asset": "caffe-back.webp",
@@ -1220,6 +1221,14 @@
           "options": [
             {
               "label": "Normale",
+              "price": 1.5
+            },
+            {
+              "label": "Lungo",
+              "price": 1.5
+            },
+            {
+              "label": "Orzo",
               "price": 1.5
             },
             {
