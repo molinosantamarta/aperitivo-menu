@@ -190,7 +190,7 @@
           "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
-            "asset": "moretti-back-2.jpeg",
+            "asset": "moretti-back.jpg",
             "position": "center center",
             "size": "contain",
             "backgroundColor": "#ffffff"
