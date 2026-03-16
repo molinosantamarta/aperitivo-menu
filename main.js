@@ -10,6 +10,8 @@ const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+const LOADER_MESSAGE_INTERVAL = 1650;
+const LOADER_MESSAGE_FADE_DURATION = 280;
 const LOADER_PROGRESS_WEIGHTS = {
   boot: 6,
   menuData: 24,
@@ -289,8 +291,8 @@ function startLoaderMessageRotation() {
 
       appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
       appLoaderMessage.classList.remove("is-transitioning");
-    }, 220);
-  }, 1350);
+    }, LOADER_MESSAGE_FADE_DURATION);
+  }, LOADER_MESSAGE_INTERVAL);
 }
 
 function startLoaderTimeProgress() {
