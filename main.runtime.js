@@ -614,7 +614,7 @@
     return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n      </div>\n    </section>\n  ");
   }
   function renderItemCard(item) {
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="Apri dettagli per ').concat(item.name, '"\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(showDetailHint(item) ? '<p class="item-card__hint item-card__hint--below">Tocca per dettagli</p>' : "", "\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(item.options.map(
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="Apri dettagli per ').concat(item.name, '"\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(item.options.map(
       (option) => '\n                <span class="price-chip">'.concat(formatOptionChip(option), "</span>\n              ")
     ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }
@@ -850,9 +850,6 @@
   function formatOptionChip(option) {
     const displayLabel = getOptionDisplayLabel(option);
     return displayLabel ? "".concat(displayLabel, " \xB7 ").concat(formatPrice(option.price)) : formatPrice(option.price);
-  }
-  function showDetailHint(item) {
-    return item.showDetailHint !== false;
   }
   function hasCustomVisual(item) {
     const visualType = getVisualType(item);
