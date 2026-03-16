@@ -21,8 +21,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316p";
-  const LOADER_HARD_TIMEOUT = 4e3;
+  const APP_VERSION = "20260316q";
   const LOADER_MIN_DURATION = 4e3;
   const MENU_LOADING_SLOW_DELAY = 4200;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -33,6 +32,15 @@
   let sideVisualObserver;
   const loaderStartedAt = performance.now();
   let appHasRevealed = false;
+  const REQUIRED_FONT_DESCRIPTORS = [
+    '700 1rem "Lulo Clean"',
+    '400 1rem "Housky Demo"',
+    '400 1rem "Factually Handwriting"',
+    '400 1rem "SignPainter"',
+    '500 1rem "Montserrat"',
+    '700 1rem "Montserrat"',
+    '500 1rem "Caveat"'
+  ];
   const state = {
     selectedItemId: null,
     selectedOptionIndex: 0,
@@ -63,9 +71,6 @@
   const detailPreview = document.querySelector("#detailPreview");
   const appLoader = document.querySelector("#appLoader");
   const heroButterflyImage = document.querySelector(".hero-butterfly__image");
-  window.setTimeout(() => {
-    revealApp();
-  }, LOADER_HARD_TIMEOUT);
   cartFab.addEventListener("click", openCart);
   closeDetailButton.addEventListener("click", closeDetail);
   closeCartButton.addEventListener("click", closeCart);
@@ -138,9 +143,8 @@
       }
     }, MENU_LOADING_SLOW_DELAY);
     try {
-      await Promise.all([waitForCoreFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
+      await Promise.all([waitForRequiredFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
       revealApp();
-      warmSecondaryFonts();
       loadDeferredHeroMedia();
       const menuData = await menuDataPromise;
       window.clearTimeout(slowLoadingTimer);
@@ -438,30 +442,23 @@
     const parsed = Number.parseFloat(normalized);
     return Number.isFinite(parsed) ? parsed : null;
   }
-  function waitForCoreFonts() {
-    if (!("fonts" in document)) {
-      return Promise.resolve();
-    }
-    const fontLoads = [
-      document.fonts.load('700 1rem "Lulo Clean"'),
-      document.fonts.load('400 1rem "Factually Handwriting"')
-    ];
-    return Promise.race([
-      Promise.all(fontLoads),
-      new Promise((resolve) => window.setTimeout(resolve, 1800))
-    ]);
-  }
-  function warmSecondaryFonts() {
+  async function waitForRequiredFonts() {
     if (!("fonts" in document)) {
       return;
     }
-    scheduleNonCriticalWork(
-      () => Promise.all([
-        document.fonts.load('400 1rem "Housky Demo"'),
-        document.fonts.load('400 1rem "SignPainter"')
-      ]).catch(() => {
-      })
-    );
+    await Promise.all(REQUIRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+    if (document.fonts.ready) {
+      await document.fonts.ready;
+    }
+  }
+  async function waitForFontLoad(descriptor) {
+    while (true) {
+      const loadedFonts = await document.fonts.load(descriptor);
+      if (loadedFonts && loadedFonts.length > 0) {
+        return;
+      }
+      await wait(140);
+    }
   }
   function waitMinimumLoaderTime(duration) {
     const elapsed = performance.now() - loaderStartedAt;
@@ -535,6 +532,9 @@
   }
   function buildVersionedPath(path) {
     return "".concat(path, "?v=").concat(APP_VERSION);
+  }
+  function wait(duration) {
+    return new Promise((resolve) => window.setTimeout(resolve, duration));
   }
   function revealApp() {
     if (appHasRevealed) {
