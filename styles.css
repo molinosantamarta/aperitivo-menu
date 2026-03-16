@@ -149,17 +149,18 @@ a {
 .app-loader__card {
   position: relative;
   overflow: hidden;
-  width: min(100%, 430px);
+  width: min(100%, 442px);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 42px 32px 32px;
-  border-radius: 30px;
+  gap: 20px;
+  padding: 44px 34px 34px;
+  border-radius: 32px;
   text-align: left;
   background:
-    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(252, 247, 239, 0.96));
+    linear-gradient(180deg, rgba(255, 253, 248, 0.985), rgba(252, 247, 239, 0.965));
+  backdrop-filter: blur(10px);
   box-shadow:
-    0 24px 54px rgba(52, 39, 25, 0.14),
+    0 26px 60px rgba(52, 39, 25, 0.16),
     inset 0 0 0 1px rgba(92, 68, 46, 0.08);
 }
 
@@ -188,13 +189,16 @@ a {
   pointer-events: none;
 }
 
-.app-loader__eyebrow {
+.app-loader__card > * {
   position: relative;
   z-index: 1;
+}
+
+.app-loader__eyebrow {
   display: inline-flex;
   align-self: flex-start;
   margin: 0;
-  padding: 9px 14px 8px;
+  padding: 10px 15px 9px;
   font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -207,32 +211,30 @@ a {
 }
 
 .app-loader__title {
-  position: relative;
-  z-index: 1;
   margin: 0;
   font-family: "Montserrat", sans-serif;
-  font-size: clamp(1.48rem, 5.9vw, 1.8rem);
+  font-size: clamp(1.56rem, 6.1vw, 1.92rem);
   font-weight: 800;
   letter-spacing: -0.05em;
   line-height: 1.04;
   color: #171717;
-  max-width: 11ch;
+  max-width: 10ch;
 }
 
 .app-loader__note {
-  position: relative;
-  z-index: 1;
   max-width: 31ch;
   margin: 0;
-  padding: 16px 18px;
+  padding: 18px 20px;
   color: rgba(89, 76, 66, 0.94);
-  font-size: 1.16rem;
-  line-height: 1.5;
-  min-height: calc(1.5em * 3);
+  font-size: 1.18rem;
+  line-height: 1.52;
+  min-height: calc(1.52em * 3);
   background: linear-gradient(180deg, rgba(255, 248, 238, 0.96), rgba(248, 240, 228, 0.86));
   border: 1px solid rgba(120, 88, 58, 0.1);
   border-radius: 20px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 10px 18px rgba(56, 41, 26, 0.05);
   transition:
     opacity 220ms ease,
     transform 220ms ease,
@@ -246,12 +248,10 @@ a {
 }
 
 .app-loader__meta {
-  position: relative;
-  z-index: 1;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 2px;
+  margin-top: 0;
   font-size: 1rem;
   letter-spacing: 0.02em;
   color: rgba(23, 23, 23, 0.9);
@@ -274,9 +274,7 @@ a {
 }
 
 .app-loader__bar {
-  position: relative;
-  z-index: 1;
-  height: 12px;
+  height: 13px;
   margin-top: 0;
   overflow: hidden;
   border-radius: 999px;
@@ -303,7 +301,7 @@ a {
 
   .app-loader__card {
     width: 100%;
-    padding: 36px 26px 28px;
+    padding: 38px 26px 30px;
   }
 
   .app-loader__card::before {
