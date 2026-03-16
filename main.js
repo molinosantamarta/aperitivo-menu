@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316u";
+const APP_VERSION = "20260316v";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -151,19 +151,17 @@ document.addEventListener("keydown", (event) => {
 init();
 
 async function init() {
-  renderMenuLoadingState("loading");
   const menuDataPromise = loadMenuData();
   const fontsReadyPromise = waitForRequiredFonts();
   const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION);
 
   try {
     const menuData = await menuDataPromise;
-    await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
-    revealApp();
     applyMenuData(menuData);
+    const menuAssetsReadyPromise = waitForMenuAssets(menuData);
+    await Promise.all([fontsReadyPromise, minimumLoaderPromise, menuAssetsReadyPromise]);
+    revealApp();
     scheduleNonCriticalWork(async () => {
-      await waitForCriticalAssets(menuData);
-      await wait(240);
       loadDeferredHeroMedia();
     });
   } catch (error) {
@@ -560,46 +558,58 @@ function waitMinimumLoaderTime(duration) {
   return new Promise((resolve) => window.setTimeout(resolve, remaining));
 }
 
-async function waitForCriticalAssets(menuData) {
-  const criticalUrls = collectCriticalAssetUrls(menuData);
-  if (!criticalUrls.length) {
+async function waitForMenuAssets(menuData) {
+  const assetUrls = collectMenuAssetUrls(menuData);
+  if (!assetUrls.length) {
     return;
   }
 
-  await promiseAllSettledCompat(criticalUrls.map((url) => preloadImage(url)));
+  await promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url)));
 }
 
-function collectCriticalAssetUrls(menuData) {
-  const urls = new Set();
-  const criticalSections = menuData.sections.slice(0, 3);
+function collectMenuAssetUrls(menuData) {
+  const urls = new Set([
+    "./menu-assets/footer.png",
+    "./menu-assets/instagram-logo.webp",
+    "./menu-assets/sgb-molino-black.png",
+  ]);
 
-  criticalSections.forEach((section) => {
-    section.items.slice(0, 4).forEach((item) => {
-      if (
-        getVisualType(item) === "photo-panel" &&
-        item.visual &&
-        item.visual.asset &&
-        !isBottleSectionItem(item)
-      ) {
-        urls.add(getVisualAsset(item.visual.asset));
+  menuData.sections.forEach((section) => {
+    section.items.forEach((item) => {
+      collectVisualAssetUrls(item.visual, urls);
+      getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
+
+      if (Array.isArray(item.detailGallery)) {
+        item.detailGallery.forEach((visual) => collectVisualAssetUrls(visual, urls));
       }
-
-      getAllSideVisuals(item).forEach((visual) => {
-        if (visual.asset) {
-          urls.add(getSideVisualImage(visual));
-        }
-      });
     });
   });
 
-  const allItems = menuData.sections.reduce((items, section) => items.concat(section.items), []);
-  const gelatoItem = allItems.find((item) => item.id === "agri-gelato");
+  return Array.from(urls);
+}
 
-  if (gelatoItem && gelatoItem.visual && gelatoItem.visual.asset) {
-    urls.add(getVisualAsset(gelatoItem.visual.asset));
+function collectVisualAssetUrls(visual, urls) {
+  if (!visual || !urls) {
+    return;
   }
 
-  return Array.from(urls).slice(0, 14);
+  if (visual.asset) {
+    urls.add(getVisualAsset(visual.asset));
+  }
+
+  if (visual.type === "can-cluster" && Array.isArray(visual.items)) {
+    visual.items.forEach((item) => {
+      if (item && item.asset) {
+        urls.add(getVisualAsset(item.asset));
+      }
+    });
+  }
+}
+
+function collectSideVisualAssetUrls(visual, urls) {
+  if (visual && visual.asset) {
+    urls.add(getSideVisualImage(visual));
+  }
 }
 
 function preloadImage(url, priority = "auto") {
@@ -1964,37 +1974,27 @@ function getItemCategoryLabel(item, entry) {
 }
 
 function renderMenuLoadingState(mode) {
-  const isSlow = mode === "slow";
   const isRetry = mode === "retry";
 
   sectionNav.innerHTML = `
-    <span class="section-nav__placeholder${isSlow || isRetry ? " section-nav__placeholder--slow" : ""}">
-      ${isRetry ? "Ricarico le categorie" : "Categorie in caricamento"}
+    <span class="section-nav__placeholder${isRetry ? " section-nav__placeholder--slow" : ""}">
+      ${isRetry ? "Menu non disponibile" : "Categorie in caricamento"}
     </span>
   `;
 
-  const eyebrow = isRetry ? "Connessione lenta" : "Menu in arrivo";
-  const title = isRetry
-    ? "Sto ancora preparando categorie e prodotti."
-    : isSlow
-      ? "Sto caricando le risorse rimanenti del menu."
-      : "Sto caricando categorie e prodotti.";
+  const eyebrow = isRetry ? "Menu non disponibile" : "Menu in arrivo";
+  const title = isRetry ? "Non sono riuscito a caricare categorie e prodotti." : "Sto caricando categorie e prodotti.";
   const description = isRetry
-    ? "Il resto dell'interfaccia e gia disponibile. Se vuoi, continua a scorrere la pagina mentre provo a completare il menu."
-    : isSlow
-      ? "Puoi continuare a leggere la pagina e le sezioni promo: intanto completo il caricamento del menu."
-      : "Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli Agri-Eventi: il menu si completa tra poco.";
+    ? "Controlla la connessione e riprova. Il resto della pagina resta comunque disponibile."
+    : "Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli Agri-Eventi: il menu si completa tra poco.";
 
   menuSections.innerHTML = `
-    <section class="menu-loading-card${isSlow || isRetry ? " menu-loading-card--slow" : ""}" aria-live="polite">
+    <section class="menu-loading-card${isRetry ? " menu-loading-card--slow" : ""}" aria-live="polite">
       <p class="eyebrow">${eyebrow}</p>
       <h2>${title}</h2>
       <p>
         ${description}
       </p>
-      <div class="menu-loading-card__bar" aria-hidden="true">
-        <span class="menu-loading-card__fill"></span>
-      </div>
       ${
         isRetry
           ? `

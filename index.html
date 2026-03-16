@@ -31,7 +31,7 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316u" />
+    <link rel="stylesheet" href="./styles.css?v=20260316v" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -159,19 +159,7 @@
           </aside>
         </section>
 
-        <div class="menu-sections" id="menuSections">
-          <section class="menu-loading-card" aria-live="polite">
-            <p class="eyebrow">Menu in arrivo</p>
-            <h2>Sto caricando categorie e prodotti.</h2>
-            <p>
-              Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli
-              Agri-Eventi: il menu si completa tra poco.
-            </p>
-            <div class="menu-loading-card__bar" aria-hidden="true">
-              <span class="menu-loading-card__fill"></span>
-            </div>
-          </section>
-        </div>
+        <div class="menu-sections" id="menuSections"></div>
 
         <a
           class="promo-panel promo-panel--link"
@@ -181,7 +169,7 @@
           aria-label="Apri Instagram Agri Eventi"
         >
           <img
-            src="./menu-assets/footer.png?v=20260316u"
+            src="./menu-assets/footer.png?v=20260316v"
             alt="Eventi e novità Agri Eventi 2026"
           />
         </a>
@@ -214,7 +202,7 @@
           aria-label="Apri il sito Molino Santa Marta"
         >
           <img
-            src="./menu-assets/sgb-molino-black.png?v=20260316u"
+            src="./menu-assets/sgb-molino-black.png?v=20260316v"
             alt="Agriturismo Molino Santa Marta"
           />
         </a>
@@ -298,9 +286,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316u";
+          script.src = "./main.js?v=20260316v";
         } else {
-          script.src = "./main.runtime.js?v=20260316u";
+          script.src = "./main.runtime.js?v=20260316v";
         }
 
         document.body.appendChild(script);

@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316u";
+  const APP_VERSION = "20260316v";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -153,18 +153,16 @@
   });
   init();
   async function init() {
-    renderMenuLoadingState("loading");
     const menuDataPromise = loadMenuData();
     const fontsReadyPromise = waitForRequiredFonts();
     const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION);
     try {
       const menuData = await menuDataPromise;
-      await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
-      revealApp();
       applyMenuData(menuData);
+      const menuAssetsReadyPromise = waitForMenuAssets(menuData);
+      await Promise.all([fontsReadyPromise, minimumLoaderPromise, menuAssetsReadyPromise]);
+      revealApp();
       scheduleNonCriticalWork(async () => {
-        await waitForCriticalAssets(menuData);
-        await wait(240);
         loadDeferredHeroMedia();
       });
     } catch (error) {
@@ -487,34 +485,49 @@
     const remaining = Math.max(0, duration - elapsed);
     return new Promise((resolve) => window.setTimeout(resolve, remaining));
   }
-  async function waitForCriticalAssets(menuData) {
-    const criticalUrls = collectCriticalAssetUrls(menuData);
-    if (!criticalUrls.length) {
+  async function waitForMenuAssets(menuData) {
+    const assetUrls = collectMenuAssetUrls(menuData);
+    if (!assetUrls.length) {
       return;
     }
-    await promiseAllSettledCompat(criticalUrls.map((url) => preloadImage(url)));
+    await promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url)));
   }
-  function collectCriticalAssetUrls(menuData) {
-    const urls = /* @__PURE__ */ new Set();
-    const criticalSections = menuData.sections.slice(0, 3);
-    criticalSections.forEach((section) => {
-      section.items.slice(0, 4).forEach((item) => {
-        if (getVisualType(item) === "photo-panel" && item.visual && item.visual.asset && !isBottleSectionItem(item)) {
-          urls.add(getVisualAsset(item.visual.asset));
+  function collectMenuAssetUrls(menuData) {
+    const urls = /* @__PURE__ */ new Set([
+      "./menu-assets/footer.png",
+      "./menu-assets/instagram-logo.webp",
+      "./menu-assets/sgb-molino-black.png"
+    ]);
+    menuData.sections.forEach((section) => {
+      section.items.forEach((item) => {
+        collectVisualAssetUrls(item.visual, urls);
+        getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
+        if (Array.isArray(item.detailGallery)) {
+          item.detailGallery.forEach((visual) => collectVisualAssetUrls(visual, urls));
         }
-        getAllSideVisuals(item).forEach((visual) => {
-          if (visual.asset) {
-            urls.add(getSideVisualImage(visual));
-          }
-        });
       });
     });
-    const allItems = menuData.sections.reduce((items, section) => items.concat(section.items), []);
-    const gelatoItem = allItems.find((item) => item.id === "agri-gelato");
-    if (gelatoItem && gelatoItem.visual && gelatoItem.visual.asset) {
-      urls.add(getVisualAsset(gelatoItem.visual.asset));
+    return Array.from(urls);
+  }
+  function collectVisualAssetUrls(visual, urls) {
+    if (!visual || !urls) {
+      return;
     }
-    return Array.from(urls).slice(0, 14);
+    if (visual.asset) {
+      urls.add(getVisualAsset(visual.asset));
+    }
+    if (visual.type === "can-cluster" && Array.isArray(visual.items)) {
+      visual.items.forEach((item) => {
+        if (item && item.asset) {
+          urls.add(getVisualAsset(item.asset));
+        }
+      });
+    }
+  }
+  function collectSideVisualAssetUrls(visual, urls) {
+    if (visual && visual.asset) {
+      urls.add(getSideVisualImage(visual));
+    }
   }
   function preloadImage(url, priority = "auto") {
     return new Promise((resolve) => {
@@ -1383,13 +1396,12 @@
     return "";
   }
   function renderMenuLoadingState(mode) {
-    const isSlow = mode === "slow";
     const isRetry = mode === "retry";
-    sectionNav.innerHTML = '\n    <span class="section-nav__placeholder'.concat(isSlow || isRetry ? " section-nav__placeholder--slow" : "", '">\n      ').concat(isRetry ? "Ricarico le categorie" : "Categorie in caricamento", "\n    </span>\n  ");
-    const eyebrow = isRetry ? "Connessione lenta" : "Menu in arrivo";
-    const title = isRetry ? "Sto ancora preparando categorie e prodotti." : isSlow ? "Sto caricando le risorse rimanenti del menu." : "Sto caricando categorie e prodotti.";
-    const description = isRetry ? "Il resto dell'interfaccia e gia disponibile. Se vuoi, continua a scorrere la pagina mentre provo a completare il menu." : isSlow ? "Puoi continuare a leggere la pagina e le sezioni promo: intanto completo il caricamento del menu." : "Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli Agri-Eventi: il menu si completa tra poco.";
-    menuSections.innerHTML = '\n    <section class="menu-loading-card'.concat(isSlow || isRetry ? " menu-loading-card--slow" : "", '" aria-live="polite">\n      <p class="eyebrow">').concat(eyebrow, "</p>\n      <h2>").concat(title, "</h2>\n      <p>\n        ").concat(description, '\n      </p>\n      <div class="menu-loading-card__bar" aria-hidden="true">\n        <span class="menu-loading-card__fill"></span>\n      </div>\n      ').concat(isRetry ? '\n            <button class="utility-btn utility-btn--accent menu-loading-card__action" id="retryLoad" type="button">\n              Ricarica il menu\n            </button>\n          ' : "", "\n    </section>\n  ");
+    sectionNav.innerHTML = '\n    <span class="section-nav__placeholder'.concat(isRetry ? " section-nav__placeholder--slow" : "", '">\n      ').concat(isRetry ? "Menu non disponibile" : "Categorie in caricamento", "\n    </span>\n  ");
+    const eyebrow = isRetry ? "Menu non disponibile" : "Menu in arrivo";
+    const title = isRetry ? "Non sono riuscito a caricare categorie e prodotti." : "Sto caricando categorie e prodotti.";
+    const description = isRetry ? "Controlla la connessione e riprova. Il resto della pagina resta comunque disponibile." : "Intanto puoi iniziare a leggere il resto della pagina e le informazioni sugli Agri-Eventi: il menu si completa tra poco.";
+    menuSections.innerHTML = '\n    <section class="menu-loading-card'.concat(isRetry ? " menu-loading-card--slow" : "", '" aria-live="polite">\n      <p class="eyebrow">').concat(eyebrow, "</p>\n      <h2>").concat(title, "</h2>\n      <p>\n        ").concat(description, "\n      </p>\n      ").concat(isRetry ? '\n            <button class="utility-btn utility-btn--accent menu-loading-card__action" id="retryLoad" type="button">\n              Ricarica il menu\n            </button>\n          ' : "", "\n    </section>\n  ");
     const retryButton = document.querySelector("#retryLoad");
     if (retryButton) {
       retryButton.addEventListener("click", () => window.location.reload());
