@@ -168,8 +168,9 @@ a {
   position: relative;
   margin: 12px 0 0;
   font-family: var(--font-display);
-  font-size: 1.08rem;
+  font-size: clamp(0.98rem, 4vw, 1.08rem);
   letter-spacing: -0.1em;
+  white-space: nowrap;
   text-transform: uppercase;
   color: #171717;
 }
