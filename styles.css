@@ -1547,7 +1547,7 @@ a {
 }
 
 .sheet-panel--detail {
-  padding-top: 34px;
+  padding-top: 20px;
 }
 
 .sheet-backdrop.is-open .sheet-panel {
@@ -1598,6 +1598,14 @@ a {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.sheet-panel--detail .sheet-kicker {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  margin-bottom: 12px;
+  padding-right: 54px;
 }
 
 .sheet-panel h2 {
