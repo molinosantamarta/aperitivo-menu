@@ -618,10 +618,10 @@ a {
 
 #section-birre {
   background:
-    linear-gradient(180deg, rgba(255, 250, 239, 0.96), rgba(247, 237, 214, 0.9));
+    linear-gradient(180deg, rgba(255, 248, 230, 0.98), rgba(241, 224, 182, 0.94));
   box-shadow:
     var(--shadow),
-    inset 0 0 0 1px rgba(185, 143, 31, 0.08);
+    inset 0 0 0 1px rgba(185, 143, 31, 0.16);
 }
 
 .menu-section::before {
@@ -636,9 +636,9 @@ a {
 
 #section-birre::before {
   background:
-    radial-gradient(circle at top right, rgba(185, 143, 31, 0.18), transparent 34%),
-    radial-gradient(circle at bottom left, rgba(214, 181, 107, 0.12), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08));
+    radial-gradient(circle at top right, rgba(185, 143, 31, 0.24), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(214, 181, 107, 0.18), transparent 44%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.04));
 }
 
 .menu-section > * {
