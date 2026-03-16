@@ -24,13 +24,13 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316an";
+  const APP_VERSION = "20260316ao";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
-  const LOADER_MESSAGE_INTERVAL = 1650;
-  const LOADER_MESSAGE_FADE_DURATION = 280;
+  const LOADER_MESSAGE_INTERVAL = 1900;
+  const LOADER_MESSAGE_FADE_DURATION = 420;
   const LOADER_PROGRESS_WEIGHTS = {
     boot: 6,
     menuData: 20,
