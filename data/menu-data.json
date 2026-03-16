@@ -621,8 +621,8 @@
       "title": "Bottiglie",
       "kicker": "Vino, bollicine & selezione zero",
       "description": "Una piccola cantina da scegliere con calma, tra calici, bottiglie e proposte zero pensate per tutti.",
-      "accent": "#315c93",
-      "accentSoft": "#d8e2f3",
+      "accent": "#9c5566",
+      "accentSoft": "#f1d7dc",
       "items": [
         {
           "id": "oltrepo",
