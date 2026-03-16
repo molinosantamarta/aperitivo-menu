@@ -586,6 +586,10 @@ a {
   gap: 14px;
 }
 
+.promo-agri__visual .utility-btn {
+  width: 100%;
+}
+
 .promo-agri__video-wrap {
   overflow: hidden;
   border-radius: 28px;
