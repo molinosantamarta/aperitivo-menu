@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316ag";
+const APP_VERSION = "20260316ah";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -272,7 +272,16 @@ function startLoaderMessageRotation() {
     }
 
     currentIndex = (currentIndex + 1) % LOADER_MESSAGES.length;
-    appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+    appLoaderMessage.classList.add("is-transitioning");
+
+    window.setTimeout(() => {
+      if (!appLoaderMessage || appHasRevealed) {
+        return;
+      }
+
+      appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+      appLoaderMessage.classList.remove("is-transitioning");
+    }, 220);
   }, 1350);
 }
 

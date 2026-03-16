@@ -131,8 +131,10 @@ a {
   z-index: 120;
   display: grid;
   place-items: center;
-  padding: 20px;
-  background: linear-gradient(180deg, #faf3e8 0%, #e4d4c1 100%);
+  padding: 22px;
+  background:
+    radial-gradient(circle at top center, rgba(255, 220, 150, 0.18), transparent 34%),
+    linear-gradient(180deg, #faf4ea 0%, #e2d2bf 100%);
   transition:
     opacity 0.42s ease,
     visibility 0.42s ease;
@@ -144,28 +146,35 @@ a {
 }
 
 .app-loader__card {
-  width: min(100%, 400px);
+  width: min(100%, 430px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 38px 30px 30px;
-  border-radius: 28px;
+  gap: 18px;
+  padding: 42px 32px 32px;
+  border-radius: 30px;
   text-align: left;
-  background: rgba(255, 252, 246, 0.96);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(252, 247, 239, 0.96));
   box-shadow:
-    0 22px 48px rgba(52, 39, 25, 0.14),
+    0 24px 54px rgba(52, 39, 25, 0.14),
     inset 0 0 0 1px rgba(92, 68, 46, 0.08);
 }
 
 .app-loader__card::before {
-  display: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 28%);
+  pointer-events: none;
 }
 
 .app-loader__eyebrow {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   font-weight: 800;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #7d6250;
 }
@@ -173,10 +182,10 @@ a {
 .app-loader__title {
   margin: 0;
   font-family: "Montserrat", sans-serif;
-  font-size: clamp(1.34rem, 5.4vw, 1.62rem);
+  font-size: clamp(1.48rem, 5.9vw, 1.8rem);
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
+  letter-spacing: -0.05em;
+  line-height: 1.04;
   color: #171717;
 }
 
@@ -184,35 +193,45 @@ a {
   max-width: 31ch;
   margin: 0;
   color: rgba(89, 76, 66, 0.94);
-  font-size: 1.08rem;
-  line-height: 1.48;
-  min-height: calc(1.48em * 3);
+  font-size: 1.16rem;
+  line-height: 1.5;
+  min-height: calc(1.5em * 3);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    filter 220ms ease;
+}
+
+.app-loader__note.is-transitioning {
+  opacity: 0.12;
+  transform: translateY(6px);
+  filter: blur(1px);
 }
 
 .app-loader__meta {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 4px;
-  font-size: 0.98rem;
+  margin-top: 2px;
+  font-size: 1rem;
   letter-spacing: 0.02em;
   color: rgba(23, 23, 23, 0.9);
 }
 
 .app-loader__percent {
   font-weight: 900;
-  font-size: 1.46rem;
+  font-size: 1.62rem;
   letter-spacing: -0.04em;
   color: rgba(23, 23, 23, 0.9);
 }
 
 .app-loader__bar {
   position: relative;
-  height: 11px;
+  height: 12px;
   margin-top: 0;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(23, 23, 23, 0.09);
+  background: rgba(23, 23, 23, 0.08);
   box-shadow: inset 0 0 0 1px rgba(23, 23, 23, 0.03);
 }
 
@@ -235,11 +254,11 @@ a {
 
   .app-loader__card {
     width: 100%;
-    padding: 34px 26px 28px;
+    padding: 36px 26px 28px;
   }
 
   .app-loader__note {
-    font-size: 1.02rem;
+    font-size: 1.08rem;
   }
 }
 
