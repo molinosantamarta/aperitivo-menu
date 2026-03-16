@@ -3,7 +3,8 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316e";
+const APP_VERSION = "20260316f";
+const LOADER_HARD_TIMEOUT = 1800;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 
@@ -48,6 +49,10 @@ const copySummaryButton = document.querySelector("#copySummary");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const appLoader = document.querySelector("#appLoader");
+
+window.setTimeout(() => {
+  revealApp();
+}, LOADER_HARD_TIMEOUT);
 
 cartFab.addEventListener("click", openCart);
 openCartButton.addEventListener("click", openCart);
@@ -125,7 +130,7 @@ init();
 
 async function init() {
   try {
-    const menuData = await promiseTimeout(loadMenuData(), 4500);
+    const menuData = await promiseTimeout(loadMenuData(), 2800);
     sections = menuData.sections;
     itemLookup = sections.reduce((lookup, section) => {
       section.items.forEach((item) => {
@@ -143,7 +148,7 @@ async function init() {
     renderNavigation();
     renderSections();
     renderCart();
-    await waitMinimumLoaderTime(420);
+    await waitMinimumLoaderTime(260);
     revealApp();
 
     waitForCriticalAssets(menuData).catch(() => {});
