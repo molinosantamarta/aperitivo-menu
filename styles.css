@@ -709,10 +709,10 @@ a {
 
 .menu-section__header {
   display: grid;
-  gap: 10px;
+  gap: 14px;
   justify-items: center;
   padding-top: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
   text-align: center;
 }
 
@@ -767,7 +767,7 @@ a {
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 18px;
 }
 
 .menu-section__group-pill {
@@ -787,17 +787,19 @@ a {
 
 .menu-group-stack {
   display: grid;
-  gap: 18px;
+  gap: 24px;
 }
 
 .menu-group {
   display: grid;
-  gap: 12px;
+  gap: 16px;
 }
 
 .menu-group__header {
   display: grid;
-  gap: 10px;
+  gap: 14px;
+  justify-items: center;
+  text-align: center;
 }
 
 .menu-group__pill {
@@ -818,6 +820,7 @@ a {
 
 .menu-group__description {
   margin: 0;
+  max-width: 34ch;
   color: var(--muted);
   font-size: var(--description-font-size);
   line-height: var(--description-line-height);
