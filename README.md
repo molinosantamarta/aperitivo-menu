@@ -46,6 +46,14 @@ Preview locale: `http://localhost:4173/`
 npm run build
 ```
 
+La build ora prepara anche i file runtime necessari per GitHub Pages dentro `dist/`, inclusi:
+
+- `main.js`
+- `main.runtime.js`
+- `data/`
+- `menu-assets/`
+- `farfalla-bianca.gif`
+
 ## Estrazione asset dal PDF
 
 ```bash
@@ -56,7 +64,7 @@ Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `menu
 
 ## Google Sheet opzionale
 
-Il progetto puo leggere override dinamici da un Google Sheet pubblicato come CSV.
+Il progetto può leggere override dinamici da un Google Sheet pubblicato come CSV.
 
 ### Generare il template
 

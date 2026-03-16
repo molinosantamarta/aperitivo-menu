@@ -7,8 +7,9 @@
     "extract": "python3 scripts/extract_ape_assets.py",
     "sheet:template": "node scripts/export_sheet_template.mjs",
     "build:pages-runtime": "esbuild main.js --platform=browser --format=iife --target=safari11 --outfile=main.runtime.js",
+    "build:pages-assets": "node scripts/prepare_dist.mjs",
     "dev": "vite --host 0.0.0.0 --port 4173",
-    "build": "vite build",
+    "build": "npm run build:pages-runtime && vite build && npm run build:pages-assets",
     "preview": "vite preview --host 0.0.0.0 --port 4174"
   },
   "devDependencies": {

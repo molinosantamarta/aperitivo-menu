@@ -3,7 +3,7 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316j";
+const APP_VERSION = "20260316k";
 const LOADER_HARD_TIMEOUT = 2600;
 const LOADER_MIN_DURATION = 560;
 const MENU_LOADING_SLOW_DELAY = 4200;
