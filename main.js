@@ -840,7 +840,7 @@ function openDetail(itemId) {
   state.selectedItemId = itemId;
   state.selectedOptionIndex = 0;
   state.selectedQuantity = 1;
-  detailCategory.textContent = item.category;
+  detailCategory.textContent = formatDetailCategoryLabel(item);
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
   detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}`;
@@ -1097,6 +1097,40 @@ function getCartSummaryBucket(entry) {
 
 function findSectionTitleForItem(itemId) {
   return itemSectionLookup[itemId] || "";
+}
+
+function formatDetailCategoryLabel(item) {
+  const sectionTitle = findSectionTitleForItem(item.id).trim();
+  const categoryLabel = getItemCategoryLabel(item).trim();
+
+  if (sectionTitle && categoryLabel) {
+    const normalizedSection = normalizeLabel(sectionTitle);
+    const normalizedCategory = normalizeLabel(categoryLabel);
+
+    if (normalizedSection === normalizedCategory) {
+      return sectionTitle;
+    }
+
+    if (normalizedCategory.includes(normalizedSection)) {
+      return categoryLabel;
+    }
+
+    if (normalizedSection.includes(normalizedCategory)) {
+      return sectionTitle;
+    }
+
+    return `${sectionTitle} · ${categoryLabel}`;
+  }
+
+  return categoryLabel || sectionTitle;
+}
+
+function normalizeLabel(value) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 async function saveSummary(text) {
