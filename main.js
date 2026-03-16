@@ -932,6 +932,8 @@ function openDetail(itemId) {
   state.selectedItemId = itemId;
   initializeDetailState(item);
   detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
+  detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
+  detailPanel.scrollTop = 0;
   detailCategory.textContent = formatDetailCategoryLabel(item);
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
@@ -951,6 +953,7 @@ function openDetail(itemId) {
 
 function closeDetail() {
   detailPanel.classList.remove("sheet-panel--selection-groups");
+  detailPanel.classList.remove("sheet-panel--long-options");
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   if (!cartSheet.classList.contains("is-open")) {
@@ -1468,6 +1471,10 @@ function getCardOptionsToDisplay(item) {
   }
 
   return item.options;
+}
+
+function hasLongOptionList(item) {
+  return Boolean(item && Array.isArray(item.options) && item.options.length >= 8);
 }
 
 function pluralize(count, singular, plural) {

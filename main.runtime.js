@@ -703,6 +703,8 @@
     state.selectedItemId = itemId;
     initializeDetailState(item);
     detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
+    detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
+    detailPanel.scrollTop = 0;
     detailCategory.textContent = formatDetailCategoryLabel(item);
     detailTitle.textContent = item.name;
     detailDescription.textContent = item.description;
@@ -717,6 +719,7 @@
   }
   function closeDetail() {
     detailPanel.classList.remove("sheet-panel--selection-groups");
+    detailPanel.classList.remove("sheet-panel--long-options");
     detailSheet.classList.remove("is-open");
     detailSheet.setAttribute("aria-hidden", "true");
     if (!cartSheet.classList.contains("is-open")) {
@@ -1057,6 +1060,15 @@
     if (!item || !Array.isArray(item.options) || item.options.length <= 1) {
       return (item == null ? void 0 : item.options) || [];
     }
+    if (typeof item.cardPriceOverride === "number") {
+      return [
+        {
+          label: "",
+          displayLabel: "",
+          price: item.cardPriceOverride
+        }
+      ];
+    }
     const [firstOption, ...otherOptions] = item.options;
     const allSamePrice = otherOptions.every((option) => option.price === firstOption.price);
     if (allSamePrice) {
@@ -1067,6 +1079,9 @@
       ];
     }
     return item.options;
+  }
+  function hasLongOptionList(item) {
+    return Boolean(item && Array.isArray(item.options) && item.options.length >= 8);
   }
   function pluralize(count, singular, plural) {
     return count === 1 ? singular : plural;
