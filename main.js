@@ -893,7 +893,7 @@ function renderItemCard(item) {
           ${item.options
             .map(
               (option) => `
-                <span class="price-chip">${formatOptionChip(option)}</span>
+                <span class="price-chip">${formatOptionChip(item, option)}</span>
               `
             )
             .join("")}
@@ -1015,7 +1015,7 @@ function renderOptions(item) {
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
-    const displayLabel = getOptionDisplayLabel(option);
+    const displayLabel = getOptionDisplayLabel(item, option);
 
     optionButton.type = "button";
     optionButton.className = `option-btn${index === state.selectedOptionIndex ? " is-selected" : ""}${
@@ -1428,16 +1428,24 @@ function buildCartEntryId(item, option) {
   return [item.id, ...selectionKey, optionKey].filter(Boolean).join(":");
 }
 
-function getOptionDisplayLabel(option) {
-  return option.displayLabel != null ? option.displayLabel : option.label;
+function getOptionDisplayLabel(item, option) {
+  if (option.displayLabel != null) {
+    return option.displayLabel;
+  }
+
+  if (item && isBottleSectionItem(item) && item.options.length === 1) {
+    return "";
+  }
+
+  return option.label;
 }
 
 function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
 }
 
-function formatOptionChip(option) {
-  const displayLabel = getOptionDisplayLabel(option);
+function formatOptionChip(item, option) {
+  const displayLabel = getOptionDisplayLabel(item, option);
   return displayLabel
     ? `${displayLabel} · ${formatPrice(option.price)}`
     : formatPrice(option.price);
