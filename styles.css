@@ -203,24 +203,16 @@ a {
 
 .app-loader__meta {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  place-items: center;
   margin-top: 16px;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(103, 92, 83, 0.9);
-}
-
-.app-loader__phase {
-  min-width: 0;
-  text-align: left;
+  color: rgba(23, 23, 23, 0.9);
 }
 
 .app-loader__percent {
-  flex: 0 0 auto;
   font-weight: 800;
   color: rgba(23, 23, 23, 0.9);
 }

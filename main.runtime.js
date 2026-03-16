@@ -24,18 +24,25 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316x";
+  const APP_VERSION = "20260316y";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
   const LOADER_PROGRESS_WEIGHTS = {
     boot: 6,
-    menuData: 32,
-    render: 22,
-    fonts: 24,
-    timeGate: 16
+    menuData: 26,
+    render: 20,
+    fonts: 18,
+    deferredFonts: 10,
+    shellAssets: 8,
+    timeGate: 12
   };
+  const LOADER_SHELL_ASSET_URLS = [
+    "./menu-assets/footer.png",
+    "./menu-assets/instagram-logo.webp",
+    "./menu-assets/sgb-molino-black.png"
+  ];
   let sections = [];
   let itemLookup = {};
   let itemSectionLookup = {};
@@ -91,13 +98,14 @@
   const appLoaderBar = document.querySelector("#appLoaderBar");
   const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
-  const appLoaderPhase = document.querySelector("#appLoaderPhase");
   const heroButterflyImage = document.querySelector(".hero-butterfly__image");
   const loaderProgressState = {
     boot: 0,
     menuData: 0,
     render: 0,
     fonts: 0,
+    deferredFonts: 0,
+    shellAssets: 0,
     timeGate: 0
   };
   cartFab.addEventListener("click", openCart);
@@ -182,6 +190,12 @@
     const fontsReadyPromise = waitForRequiredFonts().then(() => {
       setLoaderTaskProgress("fonts", 1);
     });
+    const deferredFontsReadyPromise = waitForDeferredFonts().then(() => {
+      setLoaderTaskProgress("deferredFonts", 1);
+    });
+    const shellAssetsReadyPromise = waitForShellAssets().then(() => {
+      setLoaderTaskProgress("shellAssets", 1);
+    });
     const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION).then(() => {
       setLoaderTaskProgress("timeGate", 1);
     });
@@ -190,12 +204,22 @@
       applyMenuData(menuData);
       await waitForMenuRender();
       setLoaderTaskProgress("render", 1);
-      await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
+      await Promise.all([
+        fontsReadyPromise,
+        deferredFontsReadyPromise,
+        shellAssetsReadyPromise,
+        minimumLoaderPromise
+      ]);
       revealApp();
       warmNonCriticalAssets(menuData);
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
-      await promiseAllSettledCompat([fontsReadyPromise, minimumLoaderPromise]);
+      await promiseAllSettledCompat([
+        fontsReadyPromise,
+        deferredFontsReadyPromise,
+        shellAssetsReadyPromise,
+        minimumLoaderPromise
+      ]);
       syncLoaderProgress("Menu non disponibile");
       renderMenuLoadingState("retry");
       revealApp();
@@ -247,9 +271,6 @@
     if (appLoaderPercent) {
       appLoaderPercent.textContent = "".concat(Math.max(0, Math.min(100, percentage)), "%");
     }
-    if (appLoaderPhase) {
-      appLoaderPhase.textContent = phaseLabel;
-    }
     if (appLoaderBar) {
       appLoaderBar.setAttribute("aria-valuenow", String(Math.max(0, Math.min(100, percentage))));
       appLoaderBar.setAttribute("aria-valuetext", phaseLabel);
@@ -257,7 +278,7 @@
   }
   function resolveLoaderPhaseLabel() {
     if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-      return "Avvio del menu";
+      return "Caricamento in corso";
     }
     if (loaderProgressState.menuData < 1) {
       return "Scarico categorie e prodotti";
@@ -267,6 +288,12 @@
     }
     if (loaderProgressState.fonts < 1) {
       return "Carico i font";
+    }
+    if (loaderProgressState.deferredFonts < 1) {
+      return "Rifinisco i font";
+    }
+    if (loaderProgressState.shellAssets < 1) {
+      return "Completo gli elementi visivi";
     }
     if (loaderProgressState.timeGate < 1) {
       return "Rifinisco il caricamento";
@@ -607,18 +634,20 @@
   }
   function warmNonCriticalAssets(menuData) {
     scheduleNonCriticalWork(() => {
-      warmDeferredFonts();
       warmMenuVisualAssets(menuData);
       window.setTimeout(() => {
         loadDeferredHeroMedia();
       }, 900);
     });
   }
-  function warmDeferredFonts() {
+  function waitForDeferredFonts() {
     if (!("fonts" in document) || !DEFERRED_FONT_DESCRIPTORS.length) {
-      return;
+      return Promise.resolve();
     }
-    promiseAllSettledCompat(DEFERRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+    return promiseAllSettledCompat(DEFERRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+  }
+  function waitForShellAssets() {
+    return promiseAllSettledCompat(LOADER_SHELL_ASSET_URLS.map((url) => preloadImage(url, "high", 12e3)));
   }
   function warmMenuVisualAssets(menuData) {
     const assetUrls = collectMenuVisualAssetUrls(menuData);
@@ -628,11 +657,7 @@
     promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "low", 12e3)));
   }
   function collectMenuVisualAssetUrls(menuData) {
-    const urls = /* @__PURE__ */ new Set([
-      "./menu-assets/footer.png",
-      "./menu-assets/instagram-logo.webp",
-      "./menu-assets/sgb-molino-black.png"
-    ]);
+    const urls = /* @__PURE__ */ new Set();
     menuData.sections.forEach((section) => {
       section.items.forEach((item) => {
         collectVisualAssetUrls(item.visual, urls);
@@ -752,6 +777,8 @@
     loaderProgressState.menuData = 1;
     loaderProgressState.render = 1;
     loaderProgressState.fonts = 1;
+    loaderProgressState.deferredFonts = 1;
+    loaderProgressState.shellAssets = 1;
     loaderProgressState.timeGate = 1;
     syncLoaderProgress("Menu pronto");
     appHasRevealed = true;
