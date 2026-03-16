@@ -53,6 +53,8 @@
   --font-script-letter-spacing: 0;
   --font-script-size-adjust: -2px;
   --font-script-scale: 2;
+  --description-font-size: 0.95rem;
+  --description-line-height: 1.5;
 }
 
 * {
@@ -316,8 +318,8 @@ a {
 .cart-empty {
   margin: 12px 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: var(--description-font-size);
+  line-height: var(--description-line-height);
 }
 
 .hero-copy .intro {
@@ -340,8 +342,8 @@ a {
   max-width: 34ch;
   margin: 0 auto;
   color: rgba(103, 92, 83, 0.96);
-  font-size: 0.9rem;
-  line-height: 1.45;
+  font-size: var(--description-font-size);
+  line-height: var(--description-line-height);
   text-align: center;
 }
 
@@ -483,7 +485,14 @@ a {
 .menu-section__header p {
   margin: 10px 0 0;
   color: var(--muted);
-  line-height: 1.5;
+  font-size: var(--description-font-size);
+  line-height: var(--description-line-height);
+}
+
+.promo-agri__copy {
+  max-width: 34ch;
+  margin: 10px auto 0;
+  text-align: center;
 }
 
 .promo-agri {
@@ -772,8 +781,8 @@ a {
 .menu-group__description {
   margin: 0;
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: var(--description-font-size);
+  line-height: var(--description-line-height);
   min-height: 1.5em;
 }
 
