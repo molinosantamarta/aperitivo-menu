@@ -880,6 +880,11 @@ a {
   background: transparent;
 }
 
+.item-card--drink .item-card__visual--beer-script {
+  align-items: flex-start;
+  padding-top: 2px;
+}
+
 .item-card__visual--photo-panel,
 .sheet-preview--photo-panel {
   padding: 0;
@@ -1058,6 +1063,11 @@ a {
     inset 0 12px 18px rgba(255, 255, 255, 0.08),
     inset 0 -16px 28px rgba(110, 30, 6, 0.14);
   animation: drink-gradient-pour 19s cubic-bezier(0.42, 0.06, 0.18, 0.98) infinite alternate;
+}
+
+.item-card--drink .beer-script-visual--display {
+  min-height: 76px;
+  border-radius: 24px;
 }
 
 .beer-script-visual--display::before,

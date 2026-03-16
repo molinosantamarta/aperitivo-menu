@@ -796,12 +796,13 @@ function renderSection(section, isLeadSection) {
 
 function renderItemCard(item) {
   const isArtisanalBeer = isArtisanalBeerItem(item);
+  const isDrink = isDrinkItem(item);
 
   return `
     <button
       class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}${
         hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
-      }${isArtisanalBeer ? " item-card--artisanal-beer" : ""}"
+      }${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${isDrink ? " item-card--drink" : ""}"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
@@ -838,6 +839,10 @@ function isArtisanalBeerItem(item) {
     findSectionTitleForItem(item.id).toLowerCase() === "birre" &&
     getItemCategoryLabel(item).toLowerCase() === "artigianali"
   );
+}
+
+function isDrinkItem(item) {
+  return findSectionTitleForItem(item.id).toLowerCase() === "drink";
 }
 
 function openDetail(itemId) {
