@@ -675,27 +675,27 @@ a {
 }
 
 #section-birre {
-  background: #edd583;
+  background: #f1dc97;
 }
 
 #section-drink {
-  background: #efab78;
+  background: #f3ba8f;
 }
 
 #section-bottiglie {
-  background: #d8a1a4;
+  background: #deafb1;
 }
 
 #section-altre-bevande {
-  background: #dbe6f7;
+  background: #e4ecf9;
 }
 
 #section-agri-gelato {
-  background: #d7ebd4;
+  background: #e0f0dc;
 }
 
 #section-taglieri {
-  background: #efd2ad;
+  background: #f3ddbf;
 }
 
 .menu-section::before {
