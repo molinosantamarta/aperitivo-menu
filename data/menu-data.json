@@ -855,6 +855,20 @@
           ]
         },
         {
+          "id": "grappe-amari",
+          "page": 2,
+          "name": "Grappe e amari",
+          "category": "Altre bevande",
+          "description": "Grappe, amari e liquori.",
+          "options": [
+            {
+              "label": "1 consumazione",
+              "displayLabel": "",
+              "price": 4
+            }
+          ]
+        },
+        {
           "id": "bibite",
           "page": 2,
           "name": "Bibite",
