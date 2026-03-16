@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316y";
+const APP_VERSION = "20260316z";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -83,6 +83,7 @@ const appLoader = document.querySelector("#appLoader");
 const appLoaderBar = document.querySelector("#appLoaderBar");
 const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
 const appLoaderPercent = document.querySelector("#appLoaderPercent");
+const appLoaderMessage = document.querySelector("#appLoaderMessage");
 const heroButterflyImage = document.querySelector(".hero-butterfly__image");
 const loaderProgressState = {
   boot: 0,
@@ -282,6 +283,9 @@ function syncLoaderProgress(phaseOverride) {
   if (appLoaderPercent) {
     appLoaderPercent.textContent = `${Math.max(0, Math.min(100, percentage))}%`;
   }
+  if (appLoaderMessage) {
+    appLoaderMessage.textContent = phaseLabel;
+  }
   if (appLoaderBar) {
     appLoaderBar.setAttribute("aria-valuenow", String(Math.max(0, Math.min(100, percentage))));
     appLoaderBar.setAttribute("aria-valuetext", phaseLabel);
@@ -290,34 +294,34 @@ function syncLoaderProgress(phaseOverride) {
 
 function resolveLoaderPhaseLabel() {
   if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-    return "Caricamento in corso";
+    return "Stendo la tovaglia della domenica e arrivo.";
   }
 
   if (loaderProgressState.menuData < 1) {
-    return "Scarico categorie e prodotti";
+    return "Sto radunando bottiglie, taglieri e buone idee.";
   }
 
   if (loaderProgressState.render < 1) {
-    return "Compongo il menu";
+    return "Allineo i bicchieri, che qui si fa sul serio.";
   }
 
   if (loaderProgressState.fonts < 1) {
-    return "Carico i font";
+    return "Do una pettinata elegante al menu.";
   }
 
   if (loaderProgressState.deferredFonts < 1) {
-    return "Rifinisco i font";
+    return "Aggiungo quel tocco curato che fa scena.";
   }
 
   if (loaderProgressState.shellAssets < 1) {
-    return "Completo gli elementi visivi";
+    return "Accendo le ultime luci nel parco.";
   }
 
   if (loaderProgressState.timeGate < 1) {
-    return "Rifinisco il caricamento";
+    return "Verso l'aperitivo con calma, come si deve.";
   }
 
-  return "Menu pronto";
+  return "Il menu è servito.";
 }
 
 function applyMenuData(menuData) {

@@ -194,11 +194,12 @@ a {
 
 .app-loader__note {
   position: relative;
-  max-width: 26ch;
+  max-width: 28ch;
   margin: 12px auto 0;
   color: rgba(103, 92, 83, 0.92);
   font-size: 0.9rem;
   line-height: 1.45;
+  min-height: calc(1.45em * 2);
 }
 
 .app-loader__meta {
