@@ -685,7 +685,7 @@ function renderNavigation() {
 
 function renderSections() {
   menuSections.innerHTML = sections
-    .map((section) => renderSection(section))
+    .map((section, index) => renderSection(section, index === 0))
     .join("");
 
   menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
@@ -732,15 +732,16 @@ function setupSideVisualAnimations() {
   sideVisuals.forEach((visual) => sideVisualObserver.observe(visual));
 }
 
-function renderSection(section) {
+function renderSection(section, isLeadSection) {
   if (section.layout === "grouped" && Array.isArray(section.groups)) {
     return `
       <section
-        class="menu-section menu-section--grouped"
+        class="menu-section menu-section--grouped${isLeadSection ? " menu-section--lead" : ""}"
         id="section-${section.id}"
         style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
       >
         <div class="menu-section__header menu-section__header--centered">
+          ${isLeadSection ? '<span class="menu-section__bridge">Menu Aperitivo</span>' : ""}
           <h2>${section.title}</h2>
           <div class="menu-section__group-pills" aria-label="Categorie ${section.title}">
             ${section.groups
@@ -780,11 +781,12 @@ function renderSection(section) {
 
   return `
     <section
-      class="menu-section"
+      class="menu-section${isLeadSection ? " menu-section--lead" : ""}"
       id="section-${section.id}"
       style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
     >
       <div class="menu-section__header">
+        ${isLeadSection ? '<span class="menu-section__bridge">Menu Aperitivo</span>' : ""}
         <h2>${section.title}</h2>
         <span class="menu-section__kicker">${section.kicker}</span>
         <p>${section.description}</p>
