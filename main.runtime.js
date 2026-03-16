@@ -26,8 +26,7 @@
   });
   const APP_VERSION = "20260316u";
   const LOADER_MIN_DURATION = 7e3;
-  const MENU_LOADING_SLOW_DELAY = 4200;
-  const FONT_LOAD_TIMEOUT = 8e3;
+  const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
   let sections = [];
@@ -156,24 +155,21 @@
   async function init() {
     renderMenuLoadingState("loading");
     const menuDataPromise = loadMenuData();
-    const criticalAssetWarmupPromise = menuDataPromise.then((menuData) => waitForCriticalAssets(menuData)).catch(() => {
-    });
-    const slowLoadingTimer = window.setTimeout(() => {
-      if (!sections.length) {
-        renderMenuLoadingState("slow");
-      }
-    }, MENU_LOADING_SLOW_DELAY);
-    loadDeferredHeroMedia();
+    const fontsReadyPromise = waitForRequiredFonts();
+    const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION);
     try {
-      await Promise.all([waitForRequiredFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
-      revealApp();
       const menuData = await menuDataPromise;
-      window.clearTimeout(slowLoadingTimer);
+      await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
+      revealApp();
       applyMenuData(menuData);
-      scheduleNonCriticalWork(() => criticalAssetWarmupPromise);
+      scheduleNonCriticalWork(async () => {
+        await waitForCriticalAssets(menuData);
+        await wait(240);
+        loadDeferredHeroMedia();
+      });
     } catch (error) {
-      window.clearTimeout(slowLoadingTimer);
       console.error("Errore durante il caricamento del menu:", error);
+      await Promise.allSettled([fontsReadyPromise, minimumLoaderPromise]);
       renderMenuLoadingState("retry");
       revealApp();
     }
@@ -499,7 +495,7 @@
     await promiseAllSettledCompat(criticalUrls.map((url) => preloadImage(url)));
   }
   function collectCriticalAssetUrls(menuData) {
-    const urls = /* @__PURE__ */ new Set(["./farfalla-bianca.gif"]);
+    const urls = /* @__PURE__ */ new Set();
     const criticalSections = menuData.sections.slice(0, 3);
     criticalSections.forEach((section) => {
       section.items.slice(0, 4).forEach((item) => {
