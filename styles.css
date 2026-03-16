@@ -594,14 +594,6 @@ a {
   box-shadow: none;
 }
 
-.utility-btn--empty {
-  color: #111;
-  background: rgba(255, 255, 255, 0.38);
-  box-shadow:
-    inset 0 0 0 1.5px rgba(17, 17, 17, 0.7),
-    0 8px 18px rgba(42, 31, 18, 0.05);
-}
-
 .utility-btn--instagram {
   color: #554843;
   background: rgba(255, 255, 255, 0.88);
@@ -1031,13 +1023,6 @@ a {
 .sheet-preview--placeholder-panel {
   padding: 0;
   background: transparent;
-}
-
-.item-card__image {
-  width: 100%;
-  height: auto;
-  transform: scale(1.08);
-  transform-origin: center;
 }
 
 .beer-script-visual {
@@ -1852,13 +1837,6 @@ a {
   margin-bottom: 12px;
 }
 
-.sheet-preview__image {
-  width: 100%;
-  height: auto;
-  transform: scale(1.04);
-  transform-origin: center;
-}
-
 .sheet-preview--gallery {
   padding-bottom: 14px;
 }
@@ -2191,41 +2169,8 @@ a {
     var(--paper);
 }
 
-.menu-loading-card__bar {
-  position: relative;
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(17, 17, 17, 0.08);
-}
-
-.menu-loading-card__fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  display: block;
-  width: 40%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
-  animation: loader-slide 1.45s ease-in-out infinite;
-}
-
 .menu-loading-card__action {
   margin-top: 4px;
-}
-
-@keyframes loader-slide {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  50% {
-    transform: translateX(150%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
 }
 
 @media (min-width: 640px) {
