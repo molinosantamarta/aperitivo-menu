@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316ac";
+  const APP_VERSION = "20260316ad";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -298,33 +298,33 @@
   }
   function resolveLoaderPhaseLabel() {
     if (loaderProgressState.menuData < 1 && loaderProgressState.fonts === 0) {
-      return "Spritz in fresco, taglieri in arrivo.";
+      return "Stiamo sistemando i tavoli.";
     }
     if (loaderProgressState.menuData < 1) {
-      return "Sto chiamando a raccolta aperitivo, taglieri e buone idee.";
+      return "Sto tagliando il prato.";
     }
     if (loaderProgressState.render < 1) {
-      return "Allineo i bicchieri: lo spritz vuole la sua entrata.";
+      return "Sto caricando le bottiglie di bollicine.";
     }
     if (loaderProgressState.fonts < 1) {
-      return "Do una sistemata elegante, che anche il menu vuole fare bella figura.";
+      return "I popcorn stanno gia scoppiettando.";
     }
     if (loaderProgressState.deferredFonts < 1) {
-      return "Metto il tocco finale, come il sale giusto sull'aperitivo.";
+      return "Sto affettando il salame.";
     }
     if (loaderProgressState.shellAssets < 1) {
-      return "Accendo le luci: i popcorn iniziano gia a scoppiettare.";
+      return "Sto infornando le sfiziosita.";
     }
     if (loaderProgressState.beerAssets < 1) {
-      return "Le birre stanno prendendo posto, fredde al punto giusto.";
+      return "Sto caricando le bottiglie di bollicine.";
     }
     if (loaderProgressState.drinkAssets < 1) {
-      return "Gli spritz si stanno mettendo in fila al bancone.";
+      return "Sto riempiendo il carretto del gelato.";
     }
     if (loaderProgressState.timeGate < 1) {
-      return "Un attimo ancora e anche l'agri-gelato arriva con stile.";
+      return "Sto dando un'ultima occhiata all'aperitivo.";
     }
-    return "Aperitivo servito, gelato compreso.";
+    return "Aperitivo servito.";
   }
   function applyMenuData(menuData) {
     sections = menuData.sections;
