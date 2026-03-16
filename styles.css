@@ -605,6 +605,14 @@ a {
   overflow: hidden;
 }
 
+#section-birre {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 239, 0.96), rgba(247, 237, 214, 0.9));
+  box-shadow:
+    var(--shadow),
+    inset 0 0 0 1px rgba(185, 143, 31, 0.08);
+}
+
 .menu-section::before {
   content: "";
   position: absolute;
@@ -613,6 +621,13 @@ a {
     radial-gradient(circle at top right, color-mix(in srgb, var(--section-accent, #b98f1f) 20%, transparent), transparent 36%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.12));
   pointer-events: none;
+}
+
+#section-birre::before {
+  background:
+    radial-gradient(circle at top right, rgba(185, 143, 31, 0.18), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(214, 181, 107, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08));
 }
 
 .menu-section > * {
