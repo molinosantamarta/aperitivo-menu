@@ -3,7 +3,7 @@
     {
       "id": "birre",
       "title": "Birre",
-      "kicker": "Artigianali, classiche e alla spina",
+      "kicker": "Artigianali, classiche & alla spina",
       "description": "Bionde, ambrate, leggere o più aromatiche: una selezione pensata per accompagnare gusti e momenti diversi.",
       "accent": "#b98f1f",
       "accentSoft": "#f2e4b7",
@@ -23,7 +23,12 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "bianchina-floating.png"
+            "asset": "bianchina-floating.png",
+            "width": "118px",
+            "height": "248px",
+            "right": "18px",
+            "bottom": "18px",
+            "tilt": "12deg"
           },
           "options": [
             {
@@ -67,7 +72,12 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "ghe-sem-floating.png"
+            "asset": "ghe-sem-floating.png",
+            "width": "118px",
+            "height": "248px",
+            "right": "18px",
+            "bottom": "18px",
+            "tilt": "12deg"
           },
           "options": [
             {
@@ -110,7 +120,12 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "tel-chi-floating.png"
+            "asset": "tel-chi-floating.png",
+            "width": "118px",
+            "height": "248px",
+            "right": "18px",
+            "bottom": "18px",
+            "tilt": "12deg"
           },
           "options": [
             {
@@ -153,7 +168,12 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "casciaball-floating.png"
+            "asset": "casciaball-floating.png",
+            "width": "118px",
+            "height": "248px",
+            "right": "18px",
+            "bottom": "18px",
+            "tilt": "12deg"
           },
           "options": [
             {
@@ -190,18 +210,19 @@
           "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
-            "asset": "moretti-back.jpg",
+            "asset": "moretti-back.png",
             "position": "center center",
-            "size": "cover",
-            "backgroundColor": "#ffffff"
+            "size": "28% auto",
+            "backgroundColor": "#ddc98b"
           },
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "moretti-33.png",
-            "width": "118px",
-            "height": "248px",
-            "right": "12px",
-            "bottom": "10px",
+            "width": "106px",
+            "height": "223px",
+            "right": "16px",
+            "bottom": "18px",
+            "tilt": "0deg",
             "backgroundSize": "136% auto",
             "backgroundPosition": "center bottom"
           },
@@ -246,10 +267,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "birra-spina.png",
-            "width": "118px",
-            "height": "248px",
-            "right": "4px",
-            "bottom": "10px",
+            "width": "112px",
+            "height": "236px",
+            "right": "8px",
+            "bottom": "4px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -285,7 +306,7 @@
     {
       "id": "drink",
       "title": "Drink",
-      "kicker": "Spritz e classici",
+      "kicker": "Spritz & classici",
       "description": "I grandi classici dell'aperitivo del Molino: freschi, immediati e perfetti da sorseggiare all'aperto.",
       "accent": "#d96b20",
       "accentSoft": "#ffd9be",
@@ -313,7 +334,7 @@
             "width": "142px",
             "height": "298px",
             "right": "-10px",
-            "bottom": "14px",
+            "bottom": "8px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -540,7 +561,7 @@
             "width": "72px",
             "height": "66px",
             "right": "78px",
-            "bottom": "58px",
+            "bottom": "46px",
             "tilt": "-8deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center center"
@@ -588,6 +609,29 @@
             "textStyle": "display",
             "script": "Spritz"
           },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.png",
+            "width": "80px",
+            "height": "200px",
+            "right": "22px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-accent",
+            "asset": "sambuco-floating.png",
+            "width": "117px",
+            "height": "117px",
+            "right": "56px",
+            "bottom": "46px",
+            "zIndex": "2",
+            "tilt": "-6deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center center"
+          },
           "options": [
             {
               "label": "1 drink",
@@ -619,8 +663,8 @@
     {
       "id": "bottiglie",
       "title": "Bottiglie",
-      "kicker": "Vino, bollicine, zero & special",
-      "description": "Una piccola cantina da scegliere con calma, tra calici, bottiglie e proposte zero pensate per tutti.",
+      "kicker": "Vino, bollicine e selezione zero",
+      "description": "Una piccola cantina selezionata da noi, tra calici, bottiglie e proposte zero pensate per tutti.",
       "accent": "#9c5566",
       "accentSoft": "#f1d7dc",
       "items": [
@@ -629,7 +673,33 @@
           "page": 1,
           "name": "Oltrepò Pavese",
           "category": "Vino",
-          "description": "Bonarda, barbera, chardonnay, pinot grigio.",
+          "description": "Bonarda, Barbera, Chardonnay, Pinot Grigio.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "oltrepo-back.png",
+            "position": "center center",
+            "size": "cover"
+          },
+          "selectionGroups": [
+            {
+              "id": "wine-style",
+              "label": "Tipologia",
+              "options": [
+                {
+                  "label": "Bonarda"
+                },
+                {
+                  "label": "Barbera"
+                },
+                {
+                  "label": "Chardonnay"
+                },
+                {
+                  "label": "Pinot Grigio"
+                }
+              ]
+            }
+          ],
           "options": [
             {
               "label": "Bottiglia",
@@ -658,7 +728,26 @@
           "page": 1,
           "name": "Rosso del Lupo",
           "category": "Vino",
-          "description": "Valcalepio rosso DOC, bio.",
+          "description": "Valcalepio rosso fermo DOC, BIO.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "rossodelupo-back.png",
+            "position": "42% center",
+            "size": "82% auto",
+            "backgroundColor": "#6b2030",
+            "blendMode": "screen"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "rosso-del-lupo-floating.png",
+            "width": "96px",
+            "height": "266px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
@@ -683,7 +772,24 @@
           "page": 1,
           "name": "Pinot, Extra Dry Metodo Charmat",
           "category": "Bollicine",
-          "description": "Pinot extra dry, metodo charmat.",
+          "description": "Spumante extra dry, Oltrepò Pavese.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "brut-back.png",
+            "position": "center center",
+            "size": "cover"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.png",
+            "width": "106px",
+            "height": "264px",
+            "right": "8px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
@@ -712,7 +818,38 @@
           "page": 1,
           "name": "Quarantalune",
           "category": "Bollicine",
-          "description": "Brut metodo classico, 40 mesi, millesimato.",
+          "description": "Brut metodo classico, 40 mesi sui lieviti, millesimato, Lombardia.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "40lune-back.jpeg",
+            "position": "center 18%",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "40lune-back.jpeg",
+              "position": "center 18%",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "quarantalune-tonneau.jpg",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "quarantalune-floating.png",
+            "width": "98px",
+            "height": "256px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
@@ -735,9 +872,26 @@
         {
           "id": "glera-zero",
           "page": 1,
-          "name": "Glera, Dry Borgo Molino Dealcolato",
+          "name": "Spumante dealcolato",
           "category": "Selezione Zero",
-          "description": "Glera dry dealcolato Borgo Molino.",
+          "description": "Uve Glera, spumante dry, Borgo Molino, Veneto/Friuli.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "borgo-molino-back.jpg",
+            "position": "center center",
+            "size": "cover"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "glera-zero-floating.png",
+            "width": "74px",
+            "height": "201px",
+            "right": "24px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
@@ -762,7 +916,38 @@
           "page": 1,
           "name": "Rosè n°5 Feral",
           "category": "Special",
-          "description": "Fermentazione ancestrale - 0°.",
+          "description": "Rosè di erbe ribelli, fermentazione ancestrale (0 alcol), bollicina elegante.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "feral-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "feral-back.webp",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "feral-2.webp",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "rose-n5-floating.webp",
+            "width": "134px",
+            "height": "284px",
+            "right": "8px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
@@ -798,9 +983,26 @@
           "name": "Acqua",
           "category": "Altre bevande",
           "description": "Naturale o frizzante, bottiglia 50 cl.",
+          "visual": {
+            "type": "none"
+          },
+          "selectionGroups": [
+            {
+              "id": "water-type",
+              "label": "Tipologia",
+              "options": [
+                {
+                  "label": "Naturale"
+                },
+                {
+                  "label": "Frizzante"
+                }
+              ]
+            }
+          ],
           "options": [
             {
-              "label": "1 bottiglia",
+              "label": "",
               "price": 1.5
             }
           ],
@@ -828,10 +1030,80 @@
           "page": 2,
           "name": "Bibite",
           "category": "Altre bevande",
-          "description": "Bibite analcoliche.",
+          "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca.",
+          "visual": {
+            "type": "can-cluster",
+            "backgroundColor": "#cfd7e4",
+            "items": [
+              {
+                "asset": "bibite-coca.png",
+                "left": "18%",
+                "bottom": "-31%",
+                "width": "48px",
+                "rotate": "-8deg",
+                "zIndex": 2,
+                "floatDistance": "4px",
+                "floatDuration": "3.9s",
+                "floatDelay": "-0.8s"
+              },
+              {
+                "asset": "bibite-coca-zero.png",
+                "left": "39%",
+                "bottom": "-29%",
+                "width": "50px",
+                "rotate": "-2deg",
+                "zIndex": 4,
+                "floatDistance": "6px",
+                "floatDuration": "4.4s",
+                "floatDelay": "-1.2s"
+              },
+              {
+                "asset": "bibite-te-pesca.png",
+                "left": "61%",
+                "bottom": "-30%",
+                "width": "54px",
+                "rotate": "4deg",
+                "zIndex": 3,
+                "floatDistance": "5px",
+                "floatDuration": "4.1s",
+                "floatDelay": "-0.4s"
+              },
+              {
+                "asset": "bibite-te-limone.png",
+                "left": "81%",
+                "bottom": "-28%",
+                "width": "54px",
+                "rotate": "9deg",
+                "zIndex": 1,
+                "floatDistance": "4px",
+                "floatDuration": "4.7s",
+                "floatDelay": "-1.6s"
+              }
+            ]
+          },
+          "selectionGroups": [
+            {
+              "id": "bibita",
+              "label": "Bibita",
+              "options": [
+                {
+                  "label": "Coca-Cola"
+                },
+                {
+                  "label": "Coca Zero"
+                },
+                {
+                  "label": "Estathè Limone"
+                },
+                {
+                  "label": "Estathè Pesca"
+                }
+              ]
+            }
+          ],
           "options": [
             {
-              "label": "1 bibita",
+              "label": "",
               "price": 4
             }
           ],
@@ -859,7 +1131,7 @@
           "page": 2,
           "name": "Drink alla frutta bio",
           "category": "Altre bevande",
-          "description": "Drink alla frutta bio.",
+          "description": "Bevanda analcolica alla frutta biologica.",
           "options": [
             {
               "label": "1 drink",
@@ -890,10 +1162,27 @@
           "page": 2,
           "name": "Kombucha Limone",
           "category": "Altre bevande",
-          "description": "Kombucha limone.",
+          "description": "Tè fermentato frizzante, analcolico, gusto limone.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "kombucha-back.jpg",
+            "position": "center center",
+            "size": "cover"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "kombucha-limone-floating.png",
+            "width": "82px",
+            "height": "176px",
+            "right": "38px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "6deg"
+          },
           "options": [
             {
-              "label": "1 bottiglia",
+              "label": "",
               "price": 4
             }
           ],
@@ -922,9 +1211,15 @@
           "name": "Caffè",
           "category": "Altre bevande",
           "description": "Caffè.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "caffe-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
           "options": [
             {
-              "label": "1 caffè",
+              "label": "",
               "price": 1.5
             }
           ],
@@ -953,6 +1248,12 @@
           "name": "Grappe e amari",
           "category": "Altre bevande",
           "description": "Grappe, amari e liquori.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "grappe-amari-back.jpg",
+            "position": "center 18%",
+            "size": "cover"
+          },
           "options": [
             {
               "label": "1 consumazione",
@@ -966,8 +1267,8 @@
     {
       "id": "taglieri",
       "title": "Taglieri",
-      "kicker": "Taglieri, mezzi metri e sfiziosità",
-      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate per stare insieme.",
+      "kicker": "Taglieri & sfiziosità",
+      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate da gustare insieme.",
       "accent": "#c96f11",
       "accentSoft": "#ffe0ba",
       "items": [
@@ -976,10 +1277,10 @@
           "page": 2,
           "name": "Metro del Molino",
           "category": "Taglieri & sfiziosità",
-          "description": "Il tagliere da 1 m con salumi, affettati e sfiziosità da condividere.",
+          "description": "Il tagliere da 1 m con sfiziosità del Molino, salumi, affettati e altre golosità da condividere.",
           "options": [
             {
-              "label": "1 metro",
+              "label": "",
               "price": 18
             }
           ],
@@ -1007,11 +1308,11 @@
           "page": 2,
           "name": "1/2 Metro",
           "category": "Taglieri & sfiziosità",
-          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del molino.",
+          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del Molino.",
           "options": [
             {
-              "label": "1 tagliere",
-              "price": 10
+              "label": "",
+              "price": 12
             }
           ],
           "rect": [
@@ -1040,15 +1341,15 @@
       "title": "Agri-Gelato",
       "kicker": "Dal latte al cono",
       "description": "Il momento più dolce della Domenica: l'agri-gelato con il latte fresco della nostra cascina, da gustare al carretto nel parco.",
-      "accent": "#18a54b",
-      "accentSoft": "#d7f2df",
+      "accent": "#0f6b33",
+      "accentSoft": "#d7ead8",
       "items": [
         {
           "id": "agri-gelato",
           "page": 2,
           "name": "Agri-gelato km 0",
           "category": "Gelateria",
-          "description": "Recati al carretto nel parco.",
+          "description": "Recati direttamente al carretto nel parco.",
           "visual": {
             "type": "photo-panel",
             "asset": "agri-gelato-photo.jpeg",
@@ -1057,7 +1358,7 @@
           },
           "options": [
             {
-              "label": "1 gelato",
+              "label": "",
               "price": 3
             }
           ],

@@ -31,7 +31,7 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316r" />
+    <link rel="stylesheet" href="./styles.css?v=20260316s" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" aria-hidden="true">
@@ -78,8 +78,8 @@
         </nav>
         <div class="hero-guide" aria-label="Come usare il menu">
           <p>
-            Sfoglia il menu e se ti va, usa la funzione riepilogo per raggruppare l'ordine del
-            tavolo da comunicare al cameriere.
+            Sfoglia il menu, se vuoi usa la funzione riepilogo per raggruppare l'ordine del
+            tavolo da dire al cameriere.
           </p>
         </div>
       </header>
@@ -173,27 +173,51 @@
           </section>
         </div>
 
-        <figure class="promo-panel">
+        <a
+          class="promo-panel promo-panel--link"
+          href="https://www.instagram.com/agri_eventi/"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Apri Instagram Agri Eventi"
+        >
           <img
             src="./menu-assets/footer.png?v=20260316l"
             alt="Eventi e novità Agri Eventi 2026"
           />
-        </figure>
+        </a>
 
         <section class="review-card" aria-label="Lascia una recensione">
           <p class="eyebrow">La tua esperienza</p>
           <p class="review-card__copy">
             Se ti sei trovato bene, una recensione aiuta a far conoscere meglio gli agri-eventi al Molino. Grazie e alla prossima!
           </p>
-          <a
-            class="utility-btn review-card__action"
-            href="https://g.page/r/Cd4kUcCBUsf0EBM/review"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Lascia una recensione
-          </a>
+          <div class="review-card__action-wrap">
+            <span class="review-card__spark review-card__spark--one" aria-hidden="true">✦</span>
+            <span class="review-card__spark review-card__spark--two" aria-hidden="true">✦</span>
+            <span class="review-card__spark review-card__spark--three" aria-hidden="true">✦</span>
+            <a
+              class="utility-btn review-card__action"
+              href="https://g.page/r/Cd4kUcCBUsf0EBM/review"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Lascia una recensione
+            </a>
+          </div>
         </section>
+
+        <a
+          class="site-brandmark"
+          href="https://www.molinosantamarta.it/"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Apri il sito Molino Santa Marta"
+        >
+          <img
+            src="./menu-assets/sgb-molino-black.png?v=20260316l"
+            alt="Agriturismo Molino Santa Marta"
+          />
+        </a>
       </main>
     </div>
 
@@ -274,9 +298,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316r";
+          script.src = "./main.js?v=20260316s";
         } else {
-          script.src = "./main.runtime.js?v=20260316r";
+          script.src = "./main.runtime.js?v=20260316s";
         }
 
         document.body.appendChild(script);

@@ -13,23 +13,30 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 ├── fonts/
 ├── menu-assets/
 │   ├── footer.png
-│   ├── hero.png
+│   ├── instagram-logo.webp
+│   ├── sgb-molino-black.png
 │   └── items/
 ├── references/
 │   ├── fonts/
 │   └── layout-slices/
 ├── scripts/
-│   └── extract_ape_assets.py
+│   ├── export_sheet_template.mjs
+│   ├── extract_ape_assets.py
+│   └── prepare_dist.mjs
+├── farfalla-bianca.gif
 ├── index.html
 ├── main.js
-└── styles.css
+├── main.runtime.js
+├── package.json
+├── styles.css
+└── vite.config.js
 ```
 
 - `data/`: dati del menu usati dall'app.
 - `fonts/`: font effettivamente caricati dal sito.
-- `menu-assets/`: asset runtime realmente usati dall'interfaccia.
+- `menu-assets/`: solo asset runtime realmente usati dall'interfaccia.
 - `references/`: materiali sorgente o legacy tenuti solo come archivio di lavoro.
-- `scripts/`: utility di estrazione e manutenzione.
+- `scripts/`: utility di estrazione, generazione template e preparazione deploy.
 
 ## Sviluppo locale
 
@@ -54,7 +61,9 @@ La build ora prepara anche i file runtime necessari per GitHub Pages dentro `dis
 - `menu-assets/`
 - `farfalla-bianca.gif`
 
-## Estrazione asset dal PDF
+## Script utili
+
+### Estrazione asset dal PDF
 
 ```bash
 npm run extract
@@ -62,17 +71,17 @@ npm run extract
 
 Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `menu-assets/`.
 
-## Google Sheet opzionale
-
-Il progetto può leggere override dinamici da un Google Sheet pubblicato come CSV.
-
-### Generare il template
+### Generare il template Google Sheet
 
 ```bash
 npm run sheet:template
 ```
 
 Questo aggiorna [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv) con tutti i prodotti attuali.
+
+## Google Sheet opzionale
+
+Il progetto può leggere override dinamici da un Google Sheet pubblicato come CSV.
 
 ### Flusso consigliato
 

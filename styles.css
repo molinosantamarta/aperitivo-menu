@@ -33,7 +33,7 @@
 }
 
 :root {
-  --bg: #e8d9c7;
+  --bg: #dfcebb;
   --bg-soft: rgba(255, 255, 255, 0.66);
   --paper: #fffdf8;
   --ink: #171717;
@@ -73,9 +73,9 @@ body {
   font-family: "Montserrat", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at top left, rgba(255, 214, 126, 0.28), transparent 30%),
-    radial-gradient(circle at top right, rgba(164, 53, 55, 0.18), transparent 24%),
-    linear-gradient(180deg, #f9efdf 0%, var(--bg) 100%);
+    radial-gradient(circle at top left, rgba(220, 183, 102, 0.24), transparent 30%),
+    radial-gradient(circle at top right, rgba(146, 47, 49, 0.16), transparent 24%),
+    linear-gradient(180deg, #f1e3d2 0%, var(--bg) 100%);
 }
 
 body.is-loading {
@@ -531,13 +531,14 @@ a {
 
 .menu-section__header h2 {
   margin: 0;
-  font-size: clamp(1.74rem, 5.1vw, 2.26rem);
+  font-size: clamp(1.92rem, 5.55vw, 2.5rem);
   line-height: 1.08;
   font-family: var(--font-display);
   letter-spacing: var(--font-display-letter-spacing);
   justify-self: center;
   text-align: center;
   text-transform: uppercase;
+  color: #fffaf2;
 }
 
 .promo-agri__copy,
@@ -675,27 +676,27 @@ a {
 }
 
 #section-birre {
-  background: #f1dc97;
+  background: #a89359;
 }
 
 #section-drink {
-  background: #f3ba8f;
+  background: #af6f4c;
 }
 
 #section-bottiglie {
-  background: #deafb1;
+  background: #976a72;
 }
 
 #section-altre-bevande {
-  background: #e4ecf9;
+  background: #9eabbb;
 }
 
 #section-agri-gelato {
-  background: #e0f0dc;
+  background: #87947e;
 }
 
 #section-taglieri {
-  background: #f3ddbf;
+  background: #ad9679;
 }
 
 .menu-section::before {
@@ -760,6 +761,7 @@ a {
 .menu-section__header p {
   max-width: 34ch;
   margin: 0;
+  color: rgba(255, 250, 242, 0.94);
 }
 
 .menu-section__group-pills {
@@ -821,7 +823,7 @@ a {
 .menu-group__description {
   margin: 0;
   max-width: 34ch;
-  color: var(--muted);
+  color: rgba(255, 250, 242, 0.92);
   font-size: var(--description-font-size);
   line-height: var(--description-line-height);
   min-height: 1.5em;
@@ -869,6 +871,11 @@ a {
   background: linear-gradient(180deg, #f0ede8 0%, #f8f5f0 100%);
 }
 
+.item-card__visual--hidden,
+.sheet-preview--hidden {
+  display: none;
+}
+
 .item-card__visual--custom,
 .sheet-preview--custom {
   min-height: auto;
@@ -884,9 +891,10 @@ a {
   background: transparent;
 }
 
+.item-card--artisanal-beer .item-card__visual--beer-script,
 .item-card--drink .item-card__visual--beer-script {
   align-items: flex-start;
-  padding-top: 4px;
+  padding-top: 0;
 }
 
 .item-card--drink .item-card__visual {
@@ -913,72 +921,6 @@ a {
   transform-origin: center;
 }
 
-.brand-pill {
-  position: relative;
-  display: grid;
-  align-content: end;
-  justify-items: center;
-  width: fit-content;
-  max-width: 100%;
-  min-height: 84px;
-  padding-top: 12px;
-}
-
-.brand-pill__script {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  z-index: 2;
-  font-family: var(--font-subtitle);
-  font-size: clamp(1.75rem, 6.8vw, 2.35rem);
-  line-height: 0.85;
-  letter-spacing: -0.03em;
-  color: var(--brand-script-color, #111111);
-  white-space: nowrap;
-  transform: translateX(-34%) rotate(-5deg);
-}
-
-.brand-pill__shape {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  min-height: 62px;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--brand-pill-start), var(--brand-pill-end));
-  box-shadow: 0 10px 16px rgba(255, 120, 18, 0.14);
-}
-
-.brand-pill__label {
-  font-family: var(--font-display);
-  font-size: clamp(1.65rem, 7vw, 2.15rem);
-  font-weight: 700;
-  letter-spacing: -0.12em;
-  line-height: 0.9;
-  text-transform: uppercase;
-  color: #fffdf8;
-  transform: translateX(0.03em);
-}
-
-.brand-pill--detail {
-  min-height: 108px;
-  padding-top: 18px;
-}
-
-.brand-pill--detail .brand-pill__script {
-  font-size: clamp(2rem, 8vw, 2.9rem);
-}
-
-.brand-pill--detail .brand-pill__shape {
-  min-height: 78px;
-  padding: 0 22px;
-}
-
-.brand-pill--detail .brand-pill__label {
-  font-size: clamp(1.95rem, 8vw, 2.55rem);
-}
-
 .beer-script-visual {
   display: grid;
   place-items: center;
@@ -998,10 +940,10 @@ a {
 
 .item-card--artisanal-beer .beer-script-visual {
   min-height: 74px;
-  width: fit-content;
-  max-width: 100%;
-  padding: 5px 28px;
-  border-radius: 999px;
+  width: 100%;
+  max-width: none;
+  padding: 7px 18px;
+  border-radius: 22px;
 }
 
 .beer-script-visual__script {
@@ -1097,9 +1039,20 @@ a {
   background: transparent;
 }
 
+.sheet-preview--beer-script.sheet-preview--beer-script-framed {
+  padding: 10px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #f0ede8 0%, #f8f5f0 100%);
+}
+
 .beer-script-visual--detail {
   min-height: 120px;
   padding: 12px 16px;
+}
+
+.sheet-preview--beer-script-framed .beer-script-visual--detail {
+  border-radius: 16px;
 }
 
 .beer-script-visual--detail .beer-script-visual__label {
@@ -1129,6 +1082,7 @@ a {
   background-position: var(--photo-panel-position, center center);
   background-repeat: no-repeat;
   background-size: var(--photo-panel-size, cover);
+  background-blend-mode: var(--photo-panel-blend, normal);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     0 10px 22px rgba(42, 31, 18, 0.08);
@@ -1190,8 +1144,71 @@ a {
   color: var(--text-panel-label, #fffdf8);
 }
 
+.can-cluster-visual {
+  position: relative;
+  width: 100%;
+  min-height: 112px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--can-cluster-bg, #d8dee8);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 10px 22px rgba(42, 31, 18, 0.08);
+}
+
+.can-cluster-visual--detail {
+  min-height: 182px;
+}
+
+.can-cluster-visual__can {
+  position: absolute;
+  left: var(--can-left, 50%);
+  bottom: var(--can-bottom, -18%);
+  z-index: var(--can-z, 1);
+  width: var(--can-width, 64px);
+  height: auto;
+  transform: translateX(-50%) rotate(var(--can-rotate, 0deg));
+  transform-origin: center bottom;
+  filter: drop-shadow(0 12px 16px rgba(42, 31, 18, 0.16));
+  animation: can-cluster-float var(--can-float-duration, 4.2s) ease-in-out infinite;
+  animation-delay: var(--can-float-delay, 0s);
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.can-cluster-visual--detail .can-cluster-visual__can {
+  filter: drop-shadow(0 16px 18px rgba(42, 31, 18, 0.18));
+}
+
+@keyframes can-cluster-float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) rotate(var(--can-rotate, 0deg));
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(calc(var(--can-float-distance, 5px) * -1))
+      rotate(var(--can-rotate, 0deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .can-cluster-visual__can {
+    animation: none;
+  }
+}
+
 .item-card__content {
   padding: 14px 4px 2px;
+}
+
+.item-card--beer .item-card__content {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-content: start;
+  min-height: 146px;
+  padding-top: 11px;
 }
 
 .item-card--drink .item-card__content {
@@ -1233,6 +1250,11 @@ a {
   padding-right: 128px;
 }
 
+.item-card--beer.item-card--floating-bottle .item-card__content {
+  min-height: 146px;
+  padding-right: 120px;
+}
+
 .item-card--drink.item-card--floating-bottle .item-card__content {
   min-height: 146px;
   padding-right: 120px;
@@ -1247,7 +1269,7 @@ a {
   top: var(--side-visual-top, auto);
   bottom: var(--side-visual-bottom, 14px);
   right: var(--side-visual-right, 4px);
-  z-index: 3;
+  z-index: var(--side-visual-z, 3);
   width: var(--side-visual-width, 118px);
   height: var(--side-visual-height, 248px);
   background-position: var(--side-visual-position, 52% 50%);
@@ -1256,7 +1278,7 @@ a {
   mix-blend-mode: var(--side-visual-blend, normal);
   pointer-events: none;
   opacity: 0;
-  transform: translate3d(24px, 0, 0) rotate(var(--side-visual-tilt, 8deg));
+  transform: translate3d(24px, 0, 0) rotate(var(--side-visual-tilt, 0deg));
   transform-origin: center bottom;
   transition:
     opacity 620ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -1267,7 +1289,7 @@ a {
   top: var(--side-visual-top, auto);
   bottom: var(--side-visual-bottom, 14px);
   right: var(--side-visual-right, 4px);
-  z-index: 4;
+  z-index: var(--side-visual-z, 4);
   width: var(--side-visual-width, 72px);
   height: var(--side-visual-height, 72px);
   background-position: var(--side-visual-position, center center);
@@ -1285,7 +1307,7 @@ a {
 
 .item-card__side-visual--floating-bottle.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) rotate(var(--side-visual-tilt, 8deg));
+  transform: translate3d(0, 0, 0) rotate(var(--side-visual-tilt, 0deg));
 }
 
 .item-card__side-visual--floating-accent.is-visible {
@@ -1297,7 +1319,7 @@ a {
   .item-card__side-visual--floating-bottle,
   .item-card__side-visual--floating-accent {
     opacity: 1;
-    transform: rotate(var(--side-visual-tilt, 8deg));
+    transform: rotate(var(--side-visual-tilt, 0deg));
     transition: none;
   }
 }
@@ -1317,16 +1339,6 @@ a {
   color: var(--section-accent, #b98f1f);
 }
 
-.item-card__hint {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: #7a6e63;
-}
-
-.item-card__hint--below {
-  margin: 6px 0 0;
-}
-
 .item-card h3 {
   margin: 8px 0 0;
   font-size: 1.08rem;
@@ -1334,6 +1346,10 @@ a {
   font-family: var(--font-display);
   letter-spacing: var(--font-display-letter-spacing);
   text-transform: uppercase;
+}
+
+.item-card--beer h3 {
+  margin-top: 6px;
 }
 
 .item-card--drink h3 {
@@ -1345,7 +1361,7 @@ a {
 }
 
 .item-card--artisanal-beer .beer-script-visual__label {
-  width: auto;
+  width: 100%;
   white-space: nowrap;
   text-wrap: nowrap;
 }
@@ -1357,6 +1373,11 @@ a {
   line-height: 1.45;
 }
 
+.item-card--beer p {
+  margin-top: 6px;
+  line-height: 1.38;
+}
+
 .item-card--drink p {
   margin-top: 6px;
   line-height: 1.38;
@@ -1364,7 +1385,10 @@ a {
 
 .item-card--artisanal-beer p {
   margin-top: 6px;
+  font-size: 0.84rem;
   line-height: 1.4;
+  white-space: nowrap;
+  text-wrap: nowrap;
 }
 
 .item-card__prices {
@@ -1372,6 +1396,11 @@ a {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+.item-card--beer .item-card__prices {
+  align-self: end;
+  margin-top: 10px;
 }
 
 .item-card--drink .item-card__prices {
@@ -1396,10 +1425,15 @@ a {
 }
 
 .promo-panel {
+  display: block;
   margin: 0;
   overflow: hidden;
   background: transparent;
   backdrop-filter: none;
+}
+
+.promo-panel--link {
+  text-decoration: none;
 }
 
 .promo-panel img {
@@ -1428,13 +1462,93 @@ a {
   line-height: var(--description-line-height);
 }
 
+.review-card__action-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 12px 10px;
+}
+
+.review-card__spark {
+  position: absolute;
+  z-index: 0;
+  color: rgba(219, 177, 86, 0.9);
+  text-shadow: 0 0 14px rgba(219, 177, 86, 0.18);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  animation: review-sparkle 4.6s ease-in-out infinite;
+}
+
+.review-card__spark--one {
+  top: 0;
+  left: 16px;
+  font-size: 0.95rem;
+  animation-delay: -0.9s;
+}
+
+.review-card__spark--two {
+  top: 8px;
+  right: 22px;
+  font-size: 0.72rem;
+  animation-delay: -2.1s;
+}
+
+.review-card__spark--three {
+  right: 4px;
+  bottom: 2px;
+  font-size: 0.84rem;
+  animation-delay: -3s;
+}
+
 .review-card__action {
+  position: relative;
+  z-index: 1;
   min-height: 42px;
   padding: 0 16px;
   background: rgba(255, 255, 255, 0.56);
   box-shadow:
     inset 0 0 0 1px rgba(17, 17, 17, 0.1),
     0 10px 18px rgba(42, 31, 18, 0.04);
+}
+
+@keyframes review-sparkle {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: translateY(0) scale(0.88) rotate(0deg);
+  }
+
+  45% {
+    opacity: 0.82;
+    transform: translateY(-3px) scale(1.04) rotate(8deg);
+  }
+
+  70% {
+    opacity: 0.36;
+    transform: translateY(-1px) scale(0.96) rotate(-6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-card__spark {
+    animation: none;
+    opacity: 0.34;
+  }
+}
+
+.site-brandmark {
+  display: block;
+  width: min(100%, 160px);
+  margin: 6px auto 24px;
+  text-decoration: none;
+}
+
+.site-brandmark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.96;
 }
 
 .info-card {
@@ -1505,6 +1619,13 @@ a {
   padding-top: 20px;
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups {
+  max-height: min(86vh, 760px);
+  padding-top: 18px;
+  padding-bottom: 14px;
+  overflow-y: auto;
+}
+
 .sheet-backdrop.is-open .sheet-panel {
   transform: translateY(0);
 }
@@ -1563,6 +1684,11 @@ a {
   padding-right: 54px;
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups .sheet-kicker {
+  min-height: 34px;
+  margin-bottom: 8px;
+}
+
 .sheet-panel h2 {
   margin: 0;
   font-size: 1.5rem;
@@ -1580,11 +1706,69 @@ a {
   background: linear-gradient(180deg, #f0ede8 0%, #f8f5f0 100%);
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups .sheet-preview {
+  margin-bottom: 12px;
+}
+
 .sheet-preview__image {
   width: 100%;
   height: auto;
   transform: scale(1.04);
   transform-origin: center;
+}
+
+.sheet-preview--gallery {
+  padding-bottom: 14px;
+}
+
+.detail-gallery {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-gallery__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.detail-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.detail-gallery__slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
+}
+
+.detail-gallery__slide .photo-panel-visual--detail {
+  min-height: 186px;
+}
+
+.detail-gallery__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.detail-gallery__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.22);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.detail-gallery__dot.is-active {
+  background: rgba(17, 17, 17, 0.78);
+  transform: scale(1.18);
 }
 
 .option-list {
@@ -1593,12 +1777,53 @@ a {
   margin-top: 18px;
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups .option-list {
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.option-group {
+  display: grid;
+  gap: 10px;
+}
+
+.sheet-panel--detail.sheet-panel--selection-groups .option-group {
+  gap: 8px;
+}
+
+.option-group__label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.54);
+}
+
+.option-group__options {
+  display: grid;
+  gap: 10px;
+}
+
+.sheet-panel--detail.sheet-panel--selection-groups .option-group__options {
+  gap: 8px;
+}
+
+.option-group__options--compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .detail-quantity {
   display: grid;
   justify-items: center;
   gap: 10px;
   margin-top: 12px;
   margin-bottom: 16px;
+}
+
+.sheet-panel--detail.sheet-panel--selection-groups .detail-quantity {
+  margin-top: 10px;
+  margin-bottom: 12px;
 }
 
 .detail-quantity__pill {
@@ -1629,6 +1854,10 @@ a {
   margin-top: 0;
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups .sheet-description {
+  margin-top: 10px;
+}
+
 .option-btn,
 .qty-btn {
   border: 0;
@@ -1647,9 +1876,19 @@ a {
   background: rgba(17, 17, 17, 0.05);
 }
 
+.sheet-panel--detail.sheet-panel--selection-groups .option-btn {
+  padding: 12px 14px;
+}
+
 .option-btn--price-only {
   grid-template-columns: 1fr;
   justify-items: center;
+}
+
+.option-btn--label-only {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
 }
 
 .option-btn.is-selected {
@@ -1657,8 +1896,28 @@ a {
   background: #171717;
 }
 
+.option-btn--wine-red.is-selected {
+  color: #fff7f8;
+  background: #8a2d3b;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 10px 18px rgba(96, 27, 39, 0.2);
+}
+
+.option-btn--wine-white.is-selected {
+  color: #4d3714;
+  background: #e7cf82;
+  box-shadow:
+    inset 0 0 0 1px rgba(126, 95, 22, 0.14),
+    0 10px 18px rgba(145, 115, 42, 0.14);
+}
+
 .option-label {
   font-weight: 700;
+}
+
+.option-label--solo {
+  width: 100%;
 }
 
 .option-price {

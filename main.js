@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316r";
-const LOADER_MIN_DURATION = 4000;
+const APP_VERSION = "20260316t";
+const LOADER_MIN_DURATION = 7000;
 const MENU_LOADING_SLOW_DELAY = 4200;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
@@ -15,6 +15,7 @@ let sections = [];
 let itemLookup = {};
 let itemSectionLookup = {};
 let sideVisualObserver;
+let deferredPhotoPanelObserver;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
 const REQUIRED_FONT_DESCRIPTORS = [
@@ -30,6 +31,7 @@ const REQUIRED_FONT_DESCRIPTORS = [
 const state = {
   selectedItemId: null,
   selectedOptionIndex: 0,
+  selectedSelections: {},
   selectedQuantity: 1,
   cart: loadCart(),
 };
@@ -41,6 +43,7 @@ const menuSections = document.querySelector("#menuSections");
 const cartFab = document.querySelector("#cartFab");
 const detailSheet = document.querySelector("#detailSheet");
 const cartSheet = document.querySelector("#cartSheet");
+const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
 const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
@@ -80,9 +83,10 @@ addToCartButton.addEventListener("click", () => {
     return;
   }
 
-  const option = item.options[state.selectedOptionIndex];
-  const entryId = `${item.id}:${option.label}`;
+  const option = getSelectedOption(item);
+  const entryId = buildCartEntryId(item, option);
   const existing = state.cart.find((entry) => entry.entryId === entryId);
+  const configurationLabel = buildSelectionSummaryLabel(item, option);
 
   if (existing) {
     existing.quantity += state.selectedQuantity;
@@ -92,7 +96,7 @@ addToCartButton.addEventListener("click", () => {
       itemId: item.id,
       name: item.name,
       category: item.category,
-      optionLabel: option.label,
+      optionLabel: configurationLabel,
       price: option.price,
       quantity: state.selectedQuantity,
     });
@@ -106,11 +110,14 @@ addToCartButton.addEventListener("click", () => {
 
 copySummaryButton.addEventListener("click", async () => {
   const summary = buildSummary();
+  blurActiveElement();
+  closeCart();
+
   if (!summary) {
+    copySummaryButton.textContent = saveSummaryLabel;
     return;
   }
 
-  closeCart();
   const saved = await saveSummary(summary);
   copySummaryButton.textContent = saved ? "Salvato" : "Continua";
   window.setTimeout(() => {
@@ -136,22 +143,25 @@ init();
 async function init() {
   renderMenuLoadingState("loading");
   const menuDataPromise = loadMenuData();
+  const criticalAssetWarmupPromise = menuDataPromise
+    .then((menuData) => waitForCriticalAssets(menuData))
+    .catch(() => {});
   const slowLoadingTimer = window.setTimeout(() => {
     if (!sections.length) {
       renderMenuLoadingState("slow");
     }
   }, MENU_LOADING_SLOW_DELAY);
 
+  loadDeferredHeroMedia();
+
   try {
     await Promise.all([waitForRequiredFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
     revealApp();
-    loadDeferredHeroMedia();
 
     const menuData = await menuDataPromise;
     window.clearTimeout(slowLoadingTimer);
     applyMenuData(menuData);
-
-    scheduleNonCriticalWork(() => waitForCriticalAssets(menuData));
+    scheduleNonCriticalWork(() => criticalAssetWarmupPromise);
   } catch (error) {
     window.clearTimeout(slowLoadingTimer);
     console.error("Errore durante il caricamento del menu:", error);
@@ -554,11 +564,12 @@ function collectCriticalAssetUrls(menuData) {
 
   criticalSections.forEach((section) => {
     section.items.slice(0, 4).forEach((item) => {
-      if (!hasCustomVisual(item)) {
-        urls.add(getItemImage(item));
-      }
-
-      if (getVisualType(item) === "photo-panel" && item.visual && item.visual.asset) {
+      if (
+        getVisualType(item) === "photo-panel" &&
+        item.visual &&
+        item.visual.asset &&
+        !isBottleSectionItem(item)
+      ) {
         urls.add(getVisualAsset(item.visual.asset));
       }
 
@@ -580,10 +591,13 @@ function collectCriticalAssetUrls(menuData) {
   return Array.from(urls).slice(0, 14);
 }
 
-function preloadImage(url) {
+function preloadImage(url, priority = "auto") {
   return new Promise((resolve) => {
     const image = new Image();
     image.decoding = "async";
+    if ("fetchPriority" in image) {
+      image.fetchPriority = priority;
+    }
     image.onload = () => resolve();
     image.onerror = () => resolve();
     image.src = url;
@@ -616,15 +630,6 @@ function scheduleNonCriticalWork(task) {
   }
 
   window.setTimeout(runTask, 180);
-}
-
-function promiseTimeout(promise, duration) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      window.setTimeout(() => reject(new Error("Tempo scaduto durante il caricamento del menu")), duration)
-    ),
-  ]);
 }
 
 function buildVersionedPath(path) {
@@ -690,6 +695,7 @@ function renderSections() {
   });
 
   setupSideVisualAnimations();
+  setupDeferredBottleBackgrounds();
 }
 
 function setupSideVisualAnimations() {
@@ -727,6 +733,64 @@ function setupSideVisualAnimations() {
   );
 
   sideVisuals.forEach((visual) => sideVisualObserver.observe(visual));
+}
+
+function setupDeferredBottleBackgrounds() {
+  if (deferredPhotoPanelObserver) {
+    deferredPhotoPanelObserver.disconnect();
+  }
+
+  const panels = menuSections.querySelectorAll(".photo-panel-visual--deferred[data-photo-panel-image]");
+  if (!panels.length) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    scheduleNonCriticalWork(() => {
+      panels.forEach((panel) => loadDeferredPhotoPanel(panel));
+    });
+    return;
+  }
+
+  deferredPhotoPanelObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        loadDeferredPhotoPanel(entry.target);
+        if (deferredPhotoPanelObserver) {
+          deferredPhotoPanelObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.01,
+      rootMargin: "280px 0px",
+    }
+  );
+
+  panels.forEach((panel) => deferredPhotoPanelObserver.observe(panel));
+}
+
+function loadDeferredPhotoPanel(panel) {
+  if (!panel || panel.dataset.photoPanelLoaded === "true") {
+    return;
+  }
+
+  const imageUrl = panel.dataset.photoPanelImage;
+  if (!imageUrl) {
+    return;
+  }
+
+  panel.dataset.photoPanelLoaded = "loading";
+
+  preloadImage(imageUrl, "low").then(() => {
+    panel.style.setProperty("--photo-panel-image", `url('${imageUrl}')`);
+    panel.dataset.photoPanelLoaded = "true";
+    panel.classList.remove("photo-panel-visual--deferred");
+  });
 }
 
 function renderSection(section, isLeadSection) {
@@ -799,13 +863,16 @@ function renderSection(section, isLeadSection) {
 
 function renderItemCard(item) {
   const isArtisanalBeer = isArtisanalBeerItem(item);
+  const isBeer = isBeerItem(item);
   const isDrink = isDrinkItem(item);
 
   return `
     <button
       class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}${
         hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
-      }${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${isDrink ? " item-card--drink" : ""}"
+      }${isBeer ? " item-card--beer" : ""}${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${
+        isDrink ? " item-card--drink" : ""
+      }"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
@@ -844,8 +911,16 @@ function isArtisanalBeerItem(item) {
   );
 }
 
+function isBeerItem(item) {
+  return findSectionTitleForItem(item.id).toLowerCase() === "birre";
+}
+
 function isDrinkItem(item) {
   return findSectionTitleForItem(item.id).toLowerCase() === "drink";
+}
+
+function isBottleSectionItem(item) {
+  return findSectionTitleForItem(item.id).toLowerCase() === "bottiglie";
 }
 
 function openDetail(itemId) {
@@ -855,13 +930,18 @@ function openDetail(itemId) {
   }
 
   state.selectedItemId = itemId;
-  state.selectedOptionIndex = 0;
-  state.selectedQuantity = 1;
+  initializeDetailState(item);
+  detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
   detailCategory.textContent = formatDetailCategoryLabel(item);
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
-  detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}`;
-  detailPreview.innerHTML = renderItemVisual(item, "detail");
+  detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}${
+    hasDetailGallery(item) ? " sheet-preview--gallery" : ""
+  }${
+    isArtisanalBeerItem(item) || isDrinkItem(item) ? " sheet-preview--beer-script-framed" : ""
+  }`;
+  detailPreview.innerHTML = renderDetailPreview(item);
+  setupDetailGallery();
   renderOptions(item);
   renderQuantityControl();
   detailSheet.classList.add("is-open");
@@ -870,6 +950,7 @@ function openDetail(itemId) {
 }
 
 function closeDetail() {
+  detailPanel.classList.remove("sheet-panel--selection-groups");
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   if (!cartSheet.classList.contains("is-open")) {
@@ -893,13 +974,44 @@ function closeCart() {
 
 function renderOptions(item) {
   detailOptions.innerHTML = "";
+  const selectionGroups = getSelectionGroups(item);
+  const shouldShowFormat = item.options.length > 1;
 
-  if (item.options.length === 1) {
+  if (!selectionGroups.length && !shouldShowFormat) {
     detailOptions.hidden = true;
     return;
   }
 
   detailOptions.hidden = false;
+
+  selectionGroups.forEach((group) => {
+    const groupNode = createOptionGroup(group.label, true);
+
+    group.options.forEach((selectionOption, index) => {
+      const optionButton = document.createElement("button");
+      const selectedIndex = getSelectedSelectionIndex(group);
+      const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
+
+      optionButton.type = "button";
+      optionButton.className = `option-btn option-btn--label-only${toneClass ? ` ${toneClass}` : ""}${
+        index === selectedIndex ? " is-selected" : ""
+      }`;
+      optionButton.innerHTML = `<span class="option-label option-label--solo">${selectionOption.label}</span>`;
+      optionButton.addEventListener("click", () => {
+        state.selectedSelections[group.id] = index;
+        renderOptions(item);
+      });
+      groupNode.options.append(optionButton);
+    });
+
+    detailOptions.append(groupNode.wrapper);
+  });
+
+  if (!shouldShowFormat) {
+    return;
+  }
+
+  const formatGroup = createOptionGroup(selectionGroups.length ? "Formato" : "");
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
@@ -921,8 +1033,10 @@ function renderOptions(item) {
       state.selectedOptionIndex = index;
       renderOptions(item);
     });
-    detailOptions.append(optionButton);
+    formatGroup.options.append(optionButton);
   });
+
+  detailOptions.append(formatGroup.wrapper);
 }
 
 function renderQuantityControl() {
@@ -959,6 +1073,34 @@ function renderQuantityControl() {
 function updateSelectedQuantity(delta) {
   state.selectedQuantity = Math.max(1, state.selectedQuantity + delta);
   renderQuantityControl();
+}
+
+function initializeDetailState(item) {
+  state.selectedOptionIndex = 0;
+  state.selectedQuantity = 1;
+  state.selectedSelections = {};
+
+  getSelectionGroups(item).forEach((group) => {
+    state.selectedSelections[group.id] = 0;
+  });
+}
+
+function createOptionGroup(label, compact = false) {
+  const wrapper = document.createElement("section");
+  wrapper.className = "option-group";
+
+  if (label) {
+    const title = document.createElement("p");
+    title.className = "option-group__label";
+    title.textContent = label;
+    wrapper.append(title);
+  }
+
+  const options = document.createElement("div");
+  options.className = `option-group__options${compact ? " option-group__options--compact" : ""}`;
+  wrapper.append(options);
+
+  return { wrapper, options };
 }
 
 function renderCart() {
@@ -1151,6 +1293,8 @@ function normalizeLabel(value) {
 }
 
 async function saveSummary(text) {
+  blurActiveElement();
+
   if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
@@ -1160,7 +1304,19 @@ async function saveSummary(text) {
     }
   }
 
+  if (shouldSkipClipboardFallback()) {
+    return false;
+  }
+
   return copyTextFallback(text);
+}
+
+function shouldSkipClipboardFallback() {
+  const touchPoints = navigator.maxTouchPoints || 0;
+  const coarsePointer =
+    window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const mobileUserAgent = /iphone|ipad|ipod|android|mobile/i.test(navigator.userAgent || "");
+  return touchPoints > 0 || coarsePointer || mobileUserAgent;
 }
 
 function copyTextFallback(text) {
@@ -1187,6 +1343,12 @@ function copyTextFallback(text) {
   return copied;
 }
 
+function blurActiveElement() {
+  if (document.activeElement && typeof document.activeElement.blur === "function") {
+    document.activeElement.blur();
+  }
+}
+
 function loadCart() {
   try {
     const raw = window.localStorage.getItem("molino-cart");
@@ -1208,6 +1370,64 @@ function formatPrice(value) {
   return priceFormatter.format(value);
 }
 
+function getSelectionGroups(item) {
+  return Array.isArray(item.selectionGroups) ? item.selectionGroups : [];
+}
+
+function getSelectedOption(item) {
+  return item.options[state.selectedOptionIndex] || item.options[0];
+}
+
+function getSelectedSelectionIndex(group) {
+  const selectedIndex = state.selectedSelections[group.id];
+  return Number.isInteger(selectedIndex) ? selectedIndex : 0;
+}
+
+function getSelectionOptionToneClass(item, group, selectionOption) {
+  if (!item || item.id !== "oltrepo" || !group || group.id !== "wine-style" || !selectionOption) {
+    return "";
+  }
+
+  const normalizedLabel = normalizeLabel(selectionOption.label || "");
+
+  if (normalizedLabel === "bonarda" || normalizedLabel === "barbera") {
+    return "option-btn--wine-red";
+  }
+
+  if (
+    normalizedLabel === "chardonnay" ||
+    normalizedLabel === "pinot grigio" ||
+    normalizedLabel === "pinot-grigio"
+  ) {
+    return "option-btn--wine-white";
+  }
+
+  return "";
+}
+
+function getSelectedSelectionLabels(item) {
+  return getSelectionGroups(item)
+    .map((group) => group.options[getSelectedSelectionIndex(group)]?.label || "")
+    .filter(Boolean);
+}
+
+function buildSelectionSummaryLabel(item, option) {
+  const parts = [...getSelectedSelectionLabels(item)];
+
+  if (option && option.label) {
+    parts.push(option.label);
+  }
+
+  return parts.join(" · ");
+}
+
+function buildCartEntryId(item, option) {
+  const selectionKey = getSelectedSelectionLabels(item).map(normalizeLabel);
+  const optionKey = option && option.label ? normalizeLabel(option.label) : "";
+
+  return [item.id, ...selectionKey, optionKey].filter(Boolean).join(":");
+}
+
 function getOptionDisplayLabel(option) {
   return option.displayLabel != null ? option.displayLabel : option.label;
 }
@@ -1223,26 +1443,55 @@ function formatOptionChip(option) {
     : formatPrice(option.price);
 }
 
-function hasCustomVisual(item) {
-  const visualType = getVisualType(item);
-  return (
-    visualType === "placeholder-panel" ||
-    visualType === "brand-pill" ||
-    visualType === "beer-script" ||
-    visualType === "photo-panel" ||
-    visualType === "text-panel"
-  );
+function hasDetailGallery(item) {
+  return item && Array.isArray(item.detailGallery) && item.detailGallery.length > 1;
+}
+
+function setupDetailGallery() {
+  const track = detailPreview.querySelector("[data-detail-gallery-track]");
+  if (!track) {
+    return;
+  }
+
+  const slides = Array.from(track.querySelectorAll("[data-gallery-slide]"));
+  const dots = Array.from(detailPreview.querySelectorAll("[data-gallery-dot]"));
+
+  const updateActiveDot = () => {
+    const slideWidth = track.clientWidth || 1;
+    const activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / slideWidth)));
+
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("is-active", index === activeIndex);
+    });
+  };
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      const targetSlide = slides[index];
+      if (!targetSlide) {
+        return;
+      }
+
+      track.scrollTo({
+        left: targetSlide.offsetLeft,
+        behavior: "smooth",
+      });
+    });
+  });
+
+  track.addEventListener("scroll", updateActiveDot, { passive: true });
+  updateActiveDot();
 }
 
 function getCardVisualClass(item) {
   const visualType = getVisualType(item);
 
-  if (visualType === "placeholder-panel") {
-    return " item-card__visual--placeholder-panel";
+  if (visualType === "none") {
+    return " item-card__visual--hidden";
   }
 
-  if (visualType === "brand-pill") {
-    return " item-card__visual--custom";
+  if (visualType === "placeholder-panel") {
+    return " item-card__visual--placeholder-panel";
   }
 
   if (visualType === "beer-script") {
@@ -1251,6 +1500,10 @@ function getCardVisualClass(item) {
 
   if (visualType === "photo-panel") {
     return " item-card__visual--photo-panel";
+  }
+
+  if (visualType === "can-cluster") {
+    return " item-card__visual--custom";
   }
 
   if (visualType === "text-panel") {
@@ -1263,12 +1516,12 @@ function getCardVisualClass(item) {
 function getDetailPreviewClass(item) {
   const visualType = getVisualType(item);
 
-  if (visualType === "placeholder-panel") {
-    return " sheet-preview--placeholder-panel";
+  if (visualType === "none") {
+    return " sheet-preview--hidden";
   }
 
-  if (visualType === "brand-pill") {
-    return " sheet-preview--custom";
+  if (visualType === "placeholder-panel") {
+    return " sheet-preview--placeholder-panel";
   }
 
   if (visualType === "beer-script") {
@@ -1277,6 +1530,10 @@ function getDetailPreviewClass(item) {
 
   if (visualType === "photo-panel") {
     return " sheet-preview--photo-panel";
+  }
+
+  if (visualType === "can-cluster") {
+    return " sheet-preview--custom";
   }
 
   if (visualType === "text-panel") {
@@ -1297,12 +1554,12 @@ function hasFloatingBottle(item) {
 function renderItemVisual(item, context) {
   const visualType = getVisualType(item);
 
-  if (visualType === "placeholder-panel") {
-    return renderPlaceholderPanelVisual(context);
+  if (visualType === "none") {
+    return "";
   }
 
-  if (visualType === "brand-pill") {
-    return renderBrandPillVisual(item.visual, context);
+  if (visualType === "placeholder-panel") {
+    return renderPlaceholderPanelVisual(context);
   }
 
   if (visualType === "beer-script") {
@@ -1310,7 +1567,11 @@ function renderItemVisual(item, context) {
   }
 
   if (visualType === "photo-panel") {
-    return renderPhotoPanelVisual(item.visual, context);
+    return renderPhotoPanelVisual(item.visual, context, item);
+  }
+
+  if (visualType === "can-cluster") {
+    return renderCanClusterVisual(item.visual, context);
   }
 
   if (visualType === "text-panel") {
@@ -1327,6 +1588,70 @@ function renderPlaceholderPanelVisual(context) {
   }
 
   return `<div class="${classes.join(" ")}" aria-hidden="true"></div>`;
+}
+
+function renderDetailPreview(item) {
+  if (!hasDetailGallery(item)) {
+    return renderItemVisual(item, "detail");
+  }
+
+  const slides = item.detailGallery
+    .map(
+      (visual, index) => `
+        <div class="detail-gallery__slide" data-gallery-slide="${index}">
+          ${renderVisualByType(visual, "detail")}
+        </div>
+      `
+    )
+    .join("");
+
+  const dots = item.detailGallery
+    .map(
+      (_, index) => `
+        <button
+          class="detail-gallery__dot${index === 0 ? " is-active" : ""}"
+          type="button"
+          aria-label="Vai all'immagine ${index + 1}"
+          data-gallery-dot="${index}"
+        ></button>
+      `
+    )
+    .join("");
+
+  return `
+    <div class="detail-gallery">
+      <div class="detail-gallery__track" data-detail-gallery-track>
+        ${slides}
+      </div>
+      <div class="detail-gallery__dots" aria-label="Più immagini disponibili">
+        ${dots}
+      </div>
+    </div>
+  `;
+}
+
+function renderVisualByType(visual, context) {
+  if (!visual || !visual.type) {
+    return renderPlaceholderPanelVisual(context);
+  }
+
+  if (visual.type === "beer-script") {
+    return renderBeerScriptVisual(visual, context);
+  }
+
+  if (visual.type === "photo-panel") {
+    return renderPhotoPanelVisual(visual, context, null);
+  }
+
+  if (visual.type === "can-cluster") {
+    return renderCanClusterVisual(visual, context);
+  }
+
+  if (visual.type === "text-panel") {
+    return renderTextPanelVisual(visual, context);
+  }
+
+  return renderPlaceholderPanelVisual(context);
 }
 
 function renderBeerScriptVisual(visual, context) {
@@ -1354,22 +1679,74 @@ function renderBeerScriptVisual(visual, context) {
   `;
 }
 
-function renderPhotoPanelVisual(visual, context) {
+function renderPhotoPanelVisual(visual, context, item) {
   const classes = ["photo-panel-visual"];
   if (context === "detail") {
     classes.push("photo-panel-visual--detail");
   }
 
+  const shouldDeferImage = context !== "detail" && item && isBottleSectionItem(item);
+  const imageUrl = getVisualAsset(visual.asset);
+
+  if (shouldDeferImage) {
+    classes.push("photo-panel-visual--deferred");
+  }
+
   return `
     <div
       class="${classes.join(" ")}"
+      ${shouldDeferImage ? `data-photo-panel-image="${imageUrl}" data-photo-panel-loaded="false"` : ""}
       style="
-        --photo-panel-image: url('${getVisualAsset(visual.asset)}');
+        --photo-panel-image: ${shouldDeferImage ? "none" : `url('${imageUrl}')`};
         --photo-panel-position: ${visual.position || "center center"};
         --photo-panel-size: ${visual.size || "cover"};
         --photo-panel-bg: ${visual.backgroundColor || "transparent"};
+        --photo-panel-blend: ${visual.blendMode || "normal"};
       "
     ></div>
+  `;
+}
+
+function renderCanClusterVisual(visual, context) {
+  const classes = ["can-cluster-visual"];
+  if (context === "detail") {
+    classes.push("can-cluster-visual--detail");
+  }
+
+  const cans = Array.isArray(visual.items)
+    ? visual.items
+        .map(
+          (item) => `
+            <img
+              class="can-cluster-visual__can"
+              src="${getVisualAsset(item.asset)}"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              style="
+                --can-left: ${item.left || "50%"};
+                --can-bottom: ${item.bottom || "-18%"};
+                --can-width: ${item.width || "64px"};
+                --can-rotate: ${item.rotate || "0deg"};
+                --can-z: ${item.zIndex || 1};
+                --can-float-distance: ${item.floatDistance || "5px"};
+                --can-float-duration: ${item.floatDuration || "4.2s"};
+                --can-float-delay: ${item.floatDelay || "0s"};
+              "
+            />
+          `
+        )
+        .join("")
+    : "";
+
+  return `
+    <div
+      class="${classes.join(" ")}"
+      style="--can-cluster-bg: ${visual.backgroundColor || "#d8dee8"};"
+    >
+      ${cans}
+    </div>
   `;
 }
 
@@ -1417,33 +1794,6 @@ function renderItemSideVisual(item) {
       `;
     })
     .join("");
-}
-
-function renderBrandPillVisual(visual, context) {
-  const classes = ["brand-pill"];
-  if (context === "detail") {
-    classes.push("brand-pill--detail");
-  }
-
-  return `
-    <div
-      class="${classes.join(" ")}"
-      style="
-        --brand-pill-start: ${visual.gradientStart};
-        --brand-pill-end: ${visual.gradientEnd};
-        --brand-script-color: ${visual.scriptColor || "#111111"};
-      "
-    >
-      <span class="brand-pill__script">${visual.script}</span>
-      <span class="brand-pill__shape">
-        <span class="brand-pill__label">${visual.label}</span>
-      </span>
-    </div>
-  `;
-}
-
-function getItemImage(item) {
-  return `./menu-assets/items/${item.id}.png`;
 }
 
 function getSideVisualImage(visual) {
@@ -1547,6 +1897,9 @@ function buildSideVisualStyle(sideVisual) {
   }
   if (sideVisual.blendMode) {
     styles.push(`--side-visual-blend: ${sideVisual.blendMode}`);
+  }
+  if (sideVisual.zIndex) {
+    styles.push(`--side-visual-z: ${sideVisual.zIndex}`);
   }
   if (sideVisual.tilt) {
     styles.push(`--side-visual-tilt: ${sideVisual.tilt}`);
