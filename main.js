@@ -3,7 +3,7 @@ const currency = new Intl.NumberFormat("it-IT", {
   currency: "EUR",
 });
 
-const APP_VERSION = "20260316m";
+const APP_VERSION = "20260316n";
 const LOADER_HARD_TIMEOUT = 4000;
 const LOADER_MIN_DURATION = 4000;
 const MENU_LOADING_SLOW_DELAY = 4200;
@@ -1180,6 +1180,7 @@ function showDetailHint(item) {
 function hasCustomVisual(item) {
   const visualType = getVisualType(item);
   return (
+    visualType === "placeholder-panel" ||
     visualType === "brand-pill" ||
     visualType === "beer-script" ||
     visualType === "photo-panel" ||
@@ -1189,6 +1190,10 @@ function hasCustomVisual(item) {
 
 function getCardVisualClass(item) {
   const visualType = getVisualType(item);
+
+  if (visualType === "placeholder-panel") {
+    return " item-card__visual--placeholder-panel";
+  }
 
   if (visualType === "brand-pill") {
     return " item-card__visual--custom";
@@ -1211,6 +1216,10 @@ function getCardVisualClass(item) {
 
 function getDetailPreviewClass(item) {
   const visualType = getVisualType(item);
+
+  if (visualType === "placeholder-panel") {
+    return " sheet-preview--placeholder-panel";
+  }
 
   if (visualType === "brand-pill") {
     return " sheet-preview--custom";
@@ -1242,6 +1251,10 @@ function hasFloatingBottle(item) {
 function renderItemVisual(item, context) {
   const visualType = getVisualType(item);
 
+  if (visualType === "placeholder-panel") {
+    return renderPlaceholderPanelVisual(context);
+  }
+
   if (visualType === "brand-pill") {
     return renderBrandPillVisual(item.visual, context);
   }
@@ -1258,15 +1271,16 @@ function renderItemVisual(item, context) {
     return renderTextPanelVisual(item.visual, context);
   }
 
-  const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
-  return `
-    <img
-      class="${imageClass}"
-      src="${getItemImage(item)}"
-      alt="${item.name}"
-      loading="${context === "detail" ? "eager" : "lazy"}"
-    />
-  `;
+  return renderPlaceholderPanelVisual(context);
+}
+
+function renderPlaceholderPanelVisual(context) {
+  const classes = ["placeholder-panel-visual"];
+  if (context === "detail") {
+    classes.push("placeholder-panel-visual--detail");
+  }
+
+  return `<div class="${classes.join(" ")}" aria-hidden="true"></div>`;
 }
 
 function renderBeerScriptVisual(visual, context) {
@@ -1392,7 +1406,7 @@ function getSideVisualImage(visual) {
 }
 
 function getVisualType(item) {
-  return item && item.visual ? item.visual.type : "";
+  return item && item.visual ? item.visual.type : "placeholder-panel";
 }
 
 function getItemCategoryLabel(item, entry) {

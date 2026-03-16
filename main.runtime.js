@@ -19,7 +19,7 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316m";
+  const APP_VERSION = "20260316n";
   const LOADER_HARD_TIMEOUT = 4e3;
   const LOADER_MIN_DURATION = 4e3;
   const MENU_LOADING_SLOW_DELAY = 4200;
@@ -856,10 +856,13 @@
   }
   function hasCustomVisual(item) {
     const visualType = getVisualType(item);
-    return visualType === "brand-pill" || visualType === "beer-script" || visualType === "photo-panel" || visualType === "text-panel";
+    return visualType === "placeholder-panel" || visualType === "brand-pill" || visualType === "beer-script" || visualType === "photo-panel" || visualType === "text-panel";
   }
   function getCardVisualClass(item) {
     const visualType = getVisualType(item);
+    if (visualType === "placeholder-panel") {
+      return " item-card__visual--placeholder-panel";
+    }
     if (visualType === "brand-pill") {
       return " item-card__visual--custom";
     }
@@ -876,6 +879,9 @@
   }
   function getDetailPreviewClass(item) {
     const visualType = getVisualType(item);
+    if (visualType === "placeholder-panel") {
+      return " sheet-preview--placeholder-panel";
+    }
     if (visualType === "brand-pill") {
       return " sheet-preview--custom";
     }
@@ -898,6 +904,9 @@
   }
   function renderItemVisual(item, context) {
     const visualType = getVisualType(item);
+    if (visualType === "placeholder-panel") {
+      return renderPlaceholderPanelVisual(context);
+    }
     if (visualType === "brand-pill") {
       return renderBrandPillVisual(item.visual, context);
     }
@@ -910,8 +919,14 @@
     if (visualType === "text-panel") {
       return renderTextPanelVisual(item.visual, context);
     }
-    const imageClass = context === "detail" ? "sheet-preview__image" : "item-card__image";
-    return '\n    <img\n      class="'.concat(imageClass, '"\n      src="').concat(getItemImage(item), '"\n      alt="').concat(item.name, '"\n      loading="').concat(context === "detail" ? "eager" : "lazy", '"\n    />\n  ');
+    return renderPlaceholderPanelVisual(context);
+  }
+  function renderPlaceholderPanelVisual(context) {
+    const classes = ["placeholder-panel-visual"];
+    if (context === "detail") {
+      classes.push("placeholder-panel-visual--detail");
+    }
+    return '<div class="'.concat(classes.join(" "), '" aria-hidden="true"></div>');
   }
   function renderBeerScriptVisual(visual, context) {
     const classes = ["beer-script-visual"];
@@ -962,7 +977,7 @@
     return "./menu-assets/items/".concat(assetName);
   }
   function getVisualType(item) {
-    return item && item.visual ? item.visual.type : "";
+    return item && item.visual ? item.visual.type : "placeholder-panel";
   }
   function getItemCategoryLabel(item, entry) {
     if (item && item.category) {

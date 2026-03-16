@@ -880,6 +880,12 @@ a {
   background: transparent;
 }
 
+.item-card__visual--placeholder-panel,
+.sheet-preview--placeholder-panel {
+  padding: 0;
+  background: transparent;
+}
+
 .item-card__image {
   width: 100%;
   height: auto;
@@ -1178,6 +1184,21 @@ a {
 
 .photo-panel-visual--detail {
   min-height: 172px;
+}
+
+.placeholder-panel-visual {
+  width: 100%;
+  min-height: 112px;
+  border-radius: 22px;
+  background: #d4d1cb;
+  box-shadow:
+    inset 0 0 0 1px rgba(89, 82, 74, 0.08),
+    0 10px 22px rgba(42, 31, 18, 0.04);
+}
+
+.placeholder-panel-visual--detail {
+  min-height: 172px;
+  background: #d0cdc7;
 }
 
 .text-panel-visual {
