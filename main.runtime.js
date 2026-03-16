@@ -813,7 +813,7 @@
       if (normalizedSection.includes(normalizedCategory)) {
         return sectionTitle;
       }
-      return "".concat(sectionTitle, " \xB7 ").concat(categoryLabel);
+      return "".concat(sectionTitle, " - ").concat(categoryLabel);
     }
     return categoryLabel || sectionTitle;
   }
