@@ -32,9 +32,24 @@
               "price": 6
             }
           ],
-          "rect": [68, 340, 312, 440],
-          "cropRect": [90, 360, 319, 437],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            68,
+            340,
+            312,
+            440
+          ],
+          "cropRect": [
+            90,
+            360,
+            319,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "ghe-sem",
@@ -61,9 +76,24 @@
               "price": 6
             }
           ],
-          "rect": [324, 340, 575, 440],
-          "cropRect": [345, 360, 578, 437],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            324,
+            340,
+            575,
+            440
+          ],
+          "cropRect": [
+            345,
+            360,
+            578,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "tel-chi",
@@ -89,9 +119,24 @@
               "price": 6
             }
           ],
-          "rect": [584, 340, 830, 440],
-          "cropRect": [603, 360, 838, 437],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            584,
+            340,
+            830,
+            440
+          ],
+          "cropRect": [
+            603,
+            360,
+            838,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "casciaball",
@@ -117,9 +162,24 @@
               "price": 6
             }
           ],
-          "rect": [840, 332, 1092, 440],
-          "cropRect": [858, 354, 1090, 437],
-          "cropPadding": [8, 12, 8, 10]
+          "rect": [
+            840,
+            332,
+            1092,
+            440
+          ],
+          "cropRect": [
+            858,
+            354,
+            1090,
+            437
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
         },
         {
           "id": "moretti",
@@ -152,9 +212,24 @@
               "price": 4
             }
           ],
-          "rect": [34, 542, 430, 624],
-          "cropRect": [58, 556, 419, 622],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            34,
+            542,
+            430,
+            624
+          ],
+          "cropRect": [
+            58,
+            556,
+            419,
+            622
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "spina",
@@ -186,9 +261,24 @@
               "price": 5
             }
           ],
-          "rect": [34, 644, 790, 742],
-          "cropRect": [60, 664, 724, 739],
-          "cropPadding": [10, 12, 10, 14]
+          "rect": [
+            34,
+            644,
+            790,
+            742
+          ],
+          "cropRect": [
+            60,
+            664,
+            724,
+            739
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            14
+          ]
         }
       ]
     },
@@ -235,9 +325,24 @@
               "price": 6
             }
           ],
-          "rect": [46, 874, 256, 982],
-          "cropRect": [96, 904, 274, 980],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            46,
+            874,
+            256,
+            982
+          ],
+          "cropRect": [
+            96,
+            904,
+            274,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "campari",
@@ -274,9 +379,24 @@
               "price": 6
             }
           ],
-          "rect": [262, 874, 480, 982],
-          "cropRect": [300, 904, 496, 980],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            262,
+            874,
+            480,
+            982
+          ],
+          "cropRect": [
+            300,
+            904,
+            496,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "sarti",
@@ -313,9 +433,24 @@
               "price": 6
             }
           ],
-          "rect": [484, 874, 678, 982],
-          "cropRect": [516, 904, 682, 980],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            484,
+            874,
+            678,
+            982
+          ],
+          "cropRect": [
+            516,
+            904,
+            682,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         },
         {
           "id": "gin-tonic",
@@ -352,9 +487,24 @@
               "price": 6
             }
           ],
-          "rect": [676, 868, 932, 982],
-          "cropRect": [700, 900, 930, 980],
-          "cropPadding": [8, 12, 8, 10]
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
         },
         {
           "id": "gin-lemon",
@@ -402,9 +552,24 @@
               "price": 6
             }
           ],
-          "rect": [676, 868, 932, 982],
-          "cropRect": [700, 900, 930, 980],
-          "cropPadding": [8, 12, 8, 10]
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
         },
         {
           "id": "hugo",
@@ -430,9 +595,24 @@
               "price": 6
             }
           ],
-          "rect": [938, 874, 1116, 982],
-          "cropRect": [940, 904, 1088, 980],
-          "cropPadding": [8, 10, 8, 10]
+          "rect": [
+            938,
+            874,
+            1116,
+            982
+          ],
+          "cropRect": [
+            940,
+            904,
+            1088,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
         }
       ]
     },
@@ -460,8 +640,18 @@
               "price": 4
             }
           ],
-          "rect": [40, 1186, 356, 1348],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            40,
+            1186,
+            356,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "pinot-extra-dry",
@@ -479,8 +669,18 @@
               "price": 4.5
             }
           ],
-          "rect": [390, 1186, 746, 1348],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            390,
+            1186,
+            746,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "glera-zero",
@@ -494,8 +694,18 @@
               "price": 18
             }
           ],
-          "rect": [772, 1186, 1096, 1348],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            772,
+            1186,
+            1096,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "rosso-del-lupo",
@@ -509,8 +719,18 @@
               "price": 26
             }
           ],
-          "rect": [40, 1424, 356, 1582],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            40,
+            1424,
+            356,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "quarantalune",
@@ -524,8 +744,18 @@
               "price": 35
             }
           ],
-          "rect": [390, 1424, 746, 1582],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            390,
+            1424,
+            746,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         },
         {
           "id": "rose-n5",
@@ -539,8 +769,18 @@
               "price": 25
             }
           ],
-          "rect": [772, 1424, 1096, 1582],
-          "cropPadding": [10, 12, 10, 12]
+          "rect": [
+            772,
+            1424,
+            1096,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
         }
       ]
     },
@@ -564,9 +804,24 @@
               "price": 1.5
             }
           ],
-          "rect": [44, 136, 292, 226],
-          "cropRect": [92, 160, 258, 222],
-          "cropPadding": [10, 10, 10, 10]
+          "rect": [
+            44,
+            136,
+            292,
+            226
+          ],
+          "cropRect": [
+            92,
+            160,
+            258,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         },
         {
           "id": "caffe",
@@ -580,9 +835,24 @@
               "price": 1.5
             }
           ],
-          "rect": [466, 136, 632, 226],
-          "cropRect": [490, 160, 624, 222],
-          "cropPadding": [10, 10, 10, 10]
+          "rect": [
+            466,
+            136,
+            632,
+            226
+          ],
+          "cropRect": [
+            490,
+            160,
+            624,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         },
         {
           "id": "bibite",
@@ -596,9 +866,24 @@
               "price": 4
             }
           ],
-          "rect": [42, 246, 276, 334],
-          "cropRect": [92, 268, 250, 330],
-          "cropPadding": [10, 10, 10, 10]
+          "rect": [
+            42,
+            246,
+            276,
+            334
+          ],
+          "cropRect": [
+            92,
+            268,
+            250,
+            330
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         },
         {
           "id": "frutta-bio",
@@ -612,9 +897,24 @@
               "price": 5
             }
           ],
-          "rect": [44, 350, 490, 438],
-          "cropRect": [92, 372, 494, 435],
-          "cropPadding": [10, 10, 10, 10]
+          "rect": [
+            44,
+            350,
+            490,
+            438
+          ],
+          "cropRect": [
+            92,
+            372,
+            494,
+            435
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         },
         {
           "id": "kombucha",
@@ -628,9 +928,96 @@
               "price": 4
             }
           ],
-          "rect": [48, 442, 470, 526],
-          "cropRect": [92, 462, 472, 526],
-          "cropPadding": [10, 10, 10, 10]
+          "rect": [
+            48,
+            442,
+            470,
+            526
+          ],
+          "cropRect": [
+            92,
+            462,
+            472,
+            526
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taglieri",
+      "title": "Taglieri",
+      "kicker": "Taglieri, mezzi metri e sfiziosità",
+      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate per stare insieme.",
+      "accent": "#c96f11",
+      "accentSoft": "#ffe0ba",
+      "items": [
+        {
+          "id": "metro-del-molino",
+          "page": 2,
+          "name": "Metro del Molino",
+          "category": "Taglieri & sfiziosità",
+          "description": "Il tagliere da 1 m con salumi, affettati e sfiziosità da condividere.",
+          "options": [
+            {
+              "label": "1 metro",
+              "price": 18
+            }
+          ],
+          "rect": [
+            48,
+            778,
+            942,
+            866
+          ],
+          "cropRect": [
+            90,
+            820,
+            1110,
+            892
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "mezzo-metro",
+          "page": 2,
+          "name": "1/2 Metro",
+          "category": "Taglieri & sfiziosità",
+          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del molino.",
+          "options": [
+            {
+              "label": "1 tagliere",
+              "price": 10
+            }
+          ],
+          "rect": [
+            48,
+            894,
+            942,
+            984
+          ],
+          "cropRect": [
+            90,
+            936,
+            1110,
+            1006
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         }
       ]
     },
@@ -660,51 +1047,24 @@
               "price": 3
             }
           ],
-          "rect": [26, 520, 1164, 620],
-          "cropRect": [60, 548, 1112, 612],
-          "cropPadding": [10, 10, 10, 10]
-        }
-      ]
-    },
-    {
-      "id": "taglieri",
-      "title": "Taglieri",
-      "kicker": "Taglieri, mezzi metri e sfiziosità",
-      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate per stare insieme.",
-      "accent": "#c96f11",
-      "accentSoft": "#ffe0ba",
-      "items": [
-        {
-          "id": "metro-del-molino",
-          "page": 2,
-          "name": "Metro del Molino",
-          "category": "Taglieri & sfiziosità",
-          "description": "Il tagliere da 1 m con salumi, affettati e sfiziosità da condividere.",
-          "options": [
-            {
-              "label": "1 metro",
-              "price": 18
-            }
+          "rect": [
+            26,
+            520,
+            1164,
+            620
           ],
-          "rect": [48, 778, 942, 866],
-          "cropRect": [90, 820, 1110, 892],
-          "cropPadding": [10, 10, 10, 10]
-        },
-        {
-          "id": "mezzo-metro",
-          "page": 2,
-          "name": "1/2 Metro",
-          "category": "Taglieri & sfiziosità",
-          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del molino.",
-          "options": [
-            {
-              "label": "1 tagliere",
-              "price": 10
-            }
+          "cropRect": [
+            60,
+            548,
+            1112,
+            612
           ],
-          "rect": [48, 894, 942, 984],
-          "cropRect": [90, 936, 1110, 1006],
-          "cropPadding": [10, 10, 10, 10]
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         }
       ]
     }
