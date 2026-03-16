@@ -680,20 +680,7 @@ function renderNavigation() {
 }
 
 function renderSections() {
-  menuSections.innerHTML = sections
-    .map((section, index) =>
-      index === 0
-        ? `
-            <div class="menu-section-entry menu-section-entry--lead">
-              <div class="menu-section__bridge-wrap">
-                <span class="menu-section__bridge">Menu Aperitivo</span>
-              </div>
-              ${renderSection(section, true)}
-            </div>
-          `
-        : renderSection(section, false)
-    )
-    .join("");
+  menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
 
   menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
     button.addEventListener("click", () => openDetail(button.dataset.itemId));

@@ -565,9 +565,7 @@
     ).join("");
   }
   function renderSections() {
-    menuSections.innerHTML = sections.map(
-      (section, index) => index === 0 ? '\n            <div class="menu-section-entry menu-section-entry--lead">\n              <div class="menu-section__bridge-wrap">\n                <span class="menu-section__bridge">Menu Aperitivo</span>\n              </div>\n              '.concat(renderSection(section, true), "\n            </div>\n          ") : renderSection(section, false)
-    ).join("");
+    menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
     menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
       button.addEventListener("click", () => openDetail(button.dataset.itemId));
     });
