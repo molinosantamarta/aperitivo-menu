@@ -1259,7 +1259,7 @@
           "page": 2,
           "name": "Grappe e amari",
           "category": "Altre bevande",
-          "description": "Grappe, amari e liquori.",
+          "description": "Amari, grappe e liquori da fine pasto.",
           "visual": {
             "type": "photo-panel",
             "asset": "grappe-amari-back.jpg",
@@ -1268,8 +1268,64 @@
           },
           "options": [
             {
-              "label": "1 consumazione",
+              "label": "Amaro del Capo",
               "displayLabel": "",
+              "price": 4
+            },
+            {
+              "label": "Averna",
+              "price": 4
+            },
+            {
+              "label": "Brancamenta",
+              "price": 4
+            },
+            {
+              "label": "Braulio",
+              "price": 4
+            },
+            {
+              "label": "Fernet",
+              "price": 4
+            },
+            {
+              "label": "Grappa barricata",
+              "price": 4
+            },
+            {
+              "label": "Grappa morbida",
+              "price": 4
+            },
+            {
+              "label": "Jägermeister",
+              "price": 4
+            },
+            {
+              "label": "Limoncello",
+              "price": 4
+            },
+            {
+              "label": "Liquirizia",
+              "price": 4
+            },
+            {
+              "label": "Mirto",
+              "price": 4
+            },
+            {
+              "label": "Montenegro",
+              "price": 4
+            },
+            {
+              "label": "Unicum",
+              "price": 4
+            },
+            {
+              "label": "San Simone",
+              "price": 4
+            },
+            {
+              "label": "Amaro alle erbe Molino Santa Marta",
               "price": 4
             }
           ]

@@ -890,7 +890,7 @@ function renderItemCard(item) {
         <h3>${item.name}</h3>
         <p>${item.description}</p>
         <div class="item-card__prices">
-          ${item.options
+          ${getCardOptionsToDisplay(item)
             .map(
               (option) => `
                 <span class="price-chip">${formatOptionChip(item, option)}</span>
@@ -1438,6 +1438,26 @@ function getOptionDisplayLabel(item, option) {
   }
 
   return option.label;
+}
+
+function getCardOptionsToDisplay(item) {
+  if (!item || !Array.isArray(item.options) || item.options.length <= 1) {
+    return item?.options || [];
+  }
+
+  const [firstOption, ...otherOptions] = item.options;
+  const allSamePrice = otherOptions.every((option) => option.price === firstOption.price);
+
+  if (allSamePrice) {
+    return [
+      {
+        ...firstOption,
+        displayLabel: "",
+      },
+    ];
+  }
+
+  return item.options;
 }
 
 function pluralize(count, singular, plural) {
