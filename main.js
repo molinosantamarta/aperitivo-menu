@@ -1474,7 +1474,7 @@ function getCardOptionsToDisplay(item) {
 }
 
 function hasLongOptionList(item) {
-  return Boolean(item && Array.isArray(item.options) && item.options.length >= 8);
+  return Boolean(item && Array.isArray(item.options) && item.options.length >= 6);
 }
 
 function pluralize(count, singular, plural) {
