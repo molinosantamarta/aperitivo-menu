@@ -677,7 +677,7 @@
     const isBeer = isBeerItem(item);
     const isDrink = isDrinkItem(item);
     return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="Apri dettagli per ').concat(item.name, '"\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(item.options.map(
-      (option) => '\n                <span class="price-chip">'.concat(formatOptionChip(option), "</span>\n              ")
+      (option) => '\n                <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n              ")
     ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }
   function isArtisanalBeerItem(item) {
@@ -764,7 +764,7 @@
     const formatGroup = createOptionGroup(selectionGroups.length ? "Formato" : "");
     item.options.forEach((option, index) => {
       const optionButton = document.createElement("button");
-      const displayLabel = getOptionDisplayLabel(option);
+      const displayLabel = getOptionDisplayLabel(item, option);
       optionButton.type = "button";
       optionButton.className = "option-btn".concat(index === state.selectedOptionIndex ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
       optionButton.innerHTML = displayLabel ? '\n          <span class="option-label">'.concat(displayLabel, '</span>\n          <span class="option-price">').concat(formatPrice(option.price), "</span>\n        ") : '\n          <span class="option-price option-price--solo">'.concat(formatPrice(option.price), "</span>\n        ");
@@ -1041,14 +1041,20 @@
     const optionKey = option && option.label ? normalizeLabel(option.label) : "";
     return [item.id, ...selectionKey, optionKey].filter(Boolean).join(":");
   }
-  function getOptionDisplayLabel(option) {
-    return option.displayLabel != null ? option.displayLabel : option.label;
+  function getOptionDisplayLabel(item, option) {
+    if (option.displayLabel != null) {
+      return option.displayLabel;
+    }
+    if (item && isBottleSectionItem(item) && item.options.length === 1) {
+      return "";
+    }
+    return option.label;
   }
   function pluralize(count, singular, plural) {
     return count === 1 ? singular : plural;
   }
-  function formatOptionChip(option) {
-    const displayLabel = getOptionDisplayLabel(option);
+  function formatOptionChip(item, option) {
+    const displayLabel = getOptionDisplayLabel(item, option);
     return displayLabel ? "".concat(displayLabel, " \xB7 ").concat(formatPrice(option.price)) : formatPrice(option.price);
   }
   function hasDetailGallery(item) {

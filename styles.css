@@ -197,8 +197,10 @@ a {
 }
 
 .app-loader__bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
   display: block;
-  width: 36%;
+  width: 40%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
@@ -2024,6 +2026,7 @@ a {
 }
 
 .menu-loading-card__bar {
+  position: relative;
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
@@ -2031,8 +2034,10 @@ a {
 }
 
 .menu-loading-card__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
   display: block;
-  width: 38%;
+  width: 40%;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
@@ -2045,15 +2050,15 @@ a {
 
 @keyframes loader-slide {
   0% {
-    transform: translateX(-110%);
+    transform: translateX(-100%);
   }
 
   50% {
-    transform: translateX(140%);
+    transform: translateX(150%);
   }
 
   100% {
-    transform: translateX(-110%);
+    transform: translateX(-100%);
   }
 }
 
