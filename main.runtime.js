@@ -697,13 +697,7 @@
     sideVisualObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            return;
-          }
-          entry.target.classList.add("is-visible");
-          if (sideVisualObserver) {
-            sideVisualObserver.unobserve(entry.target);
-          }
+          entry.target.classList.toggle("is-visible", entry.isIntersecting);
         });
       },
       {
