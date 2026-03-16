@@ -854,6 +854,10 @@ a {
   padding: 10px;
 }
 
+.item-card--drink {
+  padding: 10px;
+}
+
 .item-card__visual {
   display: flex;
   align-items: center;
@@ -883,6 +887,10 @@ a {
 .item-card--drink .item-card__visual--beer-script {
   align-items: flex-start;
   padding-top: 2px;
+}
+
+.item-card--drink .item-card__visual {
+  min-height: 100px;
 }
 
 .item-card__visual--photo-panel,
@@ -1267,6 +1275,13 @@ a {
   padding: 14px 4px 2px;
 }
 
+.item-card--drink .item-card__content {
+  display: grid;
+  align-content: start;
+  min-height: 142px;
+  padding-top: 10px;
+}
+
 .item-card--artisanal-beer .item-card__content {
   padding-top: 11px;
 }
@@ -1296,6 +1311,11 @@ a {
 .item-card--floating-bottle .item-card__content {
   min-height: 156px;
   padding-right: 128px;
+}
+
+.item-card--drink.item-card--floating-bottle .item-card__content {
+  min-height: 142px;
+  padding-right: 120px;
 }
 
 .item-card--artisanal-beer.item-card--floating-bottle .item-card__content {
@@ -1405,6 +1425,10 @@ a {
   text-transform: uppercase;
 }
 
+.item-card--drink h3 {
+  margin-top: 6px;
+}
+
 .item-card--artisanal-beer h3 {
   margin-top: 6px;
 }
@@ -1422,6 +1446,11 @@ a {
   line-height: 1.45;
 }
 
+.item-card--drink p {
+  margin-top: 6px;
+  line-height: 1.38;
+}
+
 .item-card--artisanal-beer p {
   margin-top: 6px;
   line-height: 1.4;
@@ -1432,6 +1461,10 @@ a {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+.item-card--drink .item-card__prices {
+  margin-top: 10px;
 }
 
 .item-card--artisanal-beer .item-card__prices {
