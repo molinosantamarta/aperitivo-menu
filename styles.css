@@ -1225,11 +1225,14 @@ a {
 .promo-panel {
   margin: 0;
   overflow: hidden;
+  background: transparent;
+  backdrop-filter: none;
 }
 
 .promo-panel img {
   width: 100%;
   height: auto;
+  display: block;
 }
 
 .info-card {
