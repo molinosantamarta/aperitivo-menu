@@ -5,19 +5,20 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316z";
+const APP_VERSION = "20260316aa";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 const LOADER_PROGRESS_WEIGHTS = {
   boot: 6,
-  menuData: 26,
-  render: 20,
-  fonts: 18,
-  deferredFonts: 10,
+  menuData: 24,
+  render: 18,
+  fonts: 16,
+  deferredFonts: 8,
   shellAssets: 8,
-  timeGate: 12,
+  beerAssets: 12,
+  timeGate: 8,
 };
 const LOADER_SHELL_ASSET_URLS = [
   "./menu-assets/footer.png",
@@ -92,6 +93,7 @@ const loaderProgressState = {
   fonts: 0,
   deferredFonts: 0,
   shellAssets: 0,
+  beerAssets: 0,
   timeGate: 0,
 };
 
@@ -182,6 +184,7 @@ initLoaderProgress();
 init();
 
 async function init() {
+  let beerAssetsReadyPromise = Promise.resolve();
   const menuDataPromise = loadMenuData().then((menuData) => {
     setLoaderTaskProgress("menuData", 1);
     return menuData;
@@ -201,6 +204,9 @@ async function init() {
 
   try {
     const menuData = await menuDataPromise;
+    beerAssetsReadyPromise = waitForBeerAssets(menuData).then(() => {
+      setLoaderTaskProgress("beerAssets", 1);
+    });
     applyMenuData(menuData);
     await waitForMenuRender();
     setLoaderTaskProgress("render", 1);
@@ -208,6 +214,7 @@ async function init() {
       fontsReadyPromise,
       deferredFontsReadyPromise,
       shellAssetsReadyPromise,
+      beerAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     revealApp();
@@ -218,6 +225,7 @@ async function init() {
       fontsReadyPromise,
       deferredFontsReadyPromise,
       shellAssetsReadyPromise,
+      beerAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
     syncLoaderProgress("Menu non disponibile");
@@ -315,6 +323,10 @@ function resolveLoaderPhaseLabel() {
 
   if (loaderProgressState.shellAssets < 1) {
     return "Accendo le ultime luci nel parco.";
+  }
+
+  if (loaderProgressState.beerAssets < 1) {
+    return "Le birre stanno prendendo posto nel secchiello.";
   }
 
   if (loaderProgressState.timeGate < 1) {
@@ -754,6 +766,15 @@ function waitForShellAssets() {
   return promiseAllSettledCompat(LOADER_SHELL_ASSET_URLS.map((url) => preloadImage(url, "high", 12000)));
 }
 
+function waitForBeerAssets(menuData) {
+  const assetUrls = collectBeerAssetUrls(menuData);
+  if (!assetUrls.length) {
+    return Promise.resolve();
+  }
+
+  return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
+}
+
 function warmMenuVisualAssets(menuData) {
   const assetUrls = collectMenuVisualAssetUrls(menuData);
   if (!assetUrls.length) {
@@ -776,6 +797,25 @@ function collectMenuVisualAssetUrls(menuData) {
       }
     });
   });
+
+  return Array.from(urls);
+}
+
+function collectBeerAssetUrls(menuData) {
+  const urls = new Set();
+
+  menuData.sections
+    .filter((section) => normalizeLabel(section.id || section.title || "") === "birre")
+    .forEach((section) => {
+      section.items.forEach((item) => {
+        collectVisualAssetUrls(item.visual, urls);
+        getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
+
+        if (Array.isArray(item.detailGallery)) {
+          item.detailGallery.forEach((visual) => collectVisualAssetUrls(visual, urls));
+        }
+      });
+    });
 
   return Array.from(urls);
 }
@@ -907,6 +947,7 @@ function revealApp() {
   loaderProgressState.fonts = 1;
   loaderProgressState.deferredFonts = 1;
   loaderProgressState.shellAssets = 1;
+  loaderProgressState.beerAssets = 1;
   loaderProgressState.timeGate = 1;
   syncLoaderProgress("Menu pronto");
 
