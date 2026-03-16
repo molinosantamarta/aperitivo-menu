@@ -19,8 +19,9 @@
     style: "currency",
     currency: "EUR"
   });
-  const APP_VERSION = "20260316f";
-  const LOADER_HARD_TIMEOUT = 1800;
+  const APP_VERSION = "20260316g";
+  const LOADER_HARD_TIMEOUT = 3200;
+  const LOADER_MIN_DURATION = 720;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
   const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
   let sections = [];
@@ -147,11 +148,9 @@
       renderNavigation();
       renderSections();
       renderCart();
-      await waitMinimumLoaderTime(260);
+      await Promise.all([waitForFonts(), waitMinimumLoaderTime(LOADER_MIN_DURATION)]);
       revealApp();
       waitForCriticalAssets(menuData).catch(() => {
-      });
-      waitForFonts().catch(() => {
       });
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
