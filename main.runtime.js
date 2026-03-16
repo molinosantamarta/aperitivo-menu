@@ -15,9 +15,9 @@
       }
     return a;
   };
-  const currency = new Intl.NumberFormat("it-IT", {
-    style: "currency",
-    currency: "EUR"
+  const priceFormatter = new Intl.NumberFormat("it-IT", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
   });
   const APP_VERSION = "20260316n";
   const LOADER_HARD_TIMEOUT = 4e3;
@@ -865,7 +865,7 @@
     }
   }
   function formatPrice(value) {
-    return currency.format(value);
+    return priceFormatter.format(value);
   }
   function getOptionDisplayLabel(option) {
     return option.displayLabel != null ? option.displayLabel : option.label;

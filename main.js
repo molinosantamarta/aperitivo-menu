@@ -1,6 +1,6 @@
-const currency = new Intl.NumberFormat("it-IT", {
-  style: "currency",
-  currency: "EUR",
+const priceFormatter = new Intl.NumberFormat("it-IT", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
 });
 
 const APP_VERSION = "20260316n";
@@ -1197,7 +1197,7 @@ function persistCart() {
 }
 
 function formatPrice(value) {
-  return currency.format(value);
+  return priceFormatter.format(value);
 }
 
 function getOptionDisplayLabel(option) {
