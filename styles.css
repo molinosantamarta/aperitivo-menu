@@ -103,6 +103,21 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+.cart-fab:focus-visible,
+.sheet-close:focus-visible,
+.utility-btn:focus-visible,
+.section-nav__link:focus-visible,
+.promo-agri__chip:focus-visible,
+.promo-panel--link:focus-visible,
+.site-brandmark:focus-visible,
+.item-card:focus-visible,
+.option-btn:focus-visible,
+.qty-btn:focus-visible {
+  outline: 2px solid rgba(23, 23, 23, 0.96);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(255, 250, 242, 0.7);
+}
+
 .page-shell {
   width: min(100%, var(--shell-max-width));
   margin: 0 auto;
@@ -385,6 +400,7 @@ a {
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 2px 2px;
   scrollbar-width: none;
 }
@@ -1456,6 +1472,10 @@ a {
   margin-bottom: 0;
 }
 
+.review-card__title {
+  margin: 0;
+}
+
 .review-card__copy {
   max-width: 30ch;
   margin: 0;
@@ -1625,12 +1645,16 @@ a {
   max-height: min(86vh, 760px);
   padding-top: 18px;
   padding-bottom: 14px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   overflow-y: auto;
 }
 
 .sheet-panel--detail.sheet-panel--long-options {
   max-height: min(86vh, 760px);
   padding-bottom: 14px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   overflow-y: auto;
 }
 
@@ -1642,6 +1666,7 @@ a {
   max-height: min(80vh, 680px);
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overscroll-behavior: contain;
 }
 
 .sheet-panel--cart h2 {

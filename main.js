@@ -5,9 +5,10 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316t";
+const APP_VERSION = "20260316u";
 const LOADER_MIN_DURATION = 7000;
 const MENU_LOADING_SLOW_DELAY = 4200;
+const FONT_LOAD_TIMEOUT = 8000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 
@@ -18,6 +19,7 @@ let sideVisualObserver;
 let deferredPhotoPanelObserver;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
+let lastFocusedElement = null;
 const REQUIRED_FONT_DESCRIPTORS = [
   '700 1rem "Lulo Clean"',
   '400 1rem "Housky Demo"',
@@ -44,6 +46,7 @@ const cartFab = document.querySelector("#cartFab");
 const detailSheet = document.querySelector("#detailSheet");
 const cartSheet = document.querySelector("#cartSheet");
 const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
+const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
 const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
@@ -135,6 +138,14 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeDetail();
     closeCart();
+    return;
+  }
+
+  if (event.key === "Tab") {
+    const openModalPanel = getOpenModalPanel();
+    if (openModalPanel) {
+      trapFocus(event, openModalPanel);
+    }
   }
 });
 
@@ -533,9 +544,16 @@ async function waitForRequiredFonts() {
 }
 
 async function waitForFontLoad(descriptor) {
+  const deadline = performance.now() + FONT_LOAD_TIMEOUT;
+
   while (true) {
     const loadedFonts = await document.fonts.load(descriptor);
     if (loadedFonts && loadedFonts.length > 0) {
+      return;
+    }
+
+    if (performance.now() >= deadline) {
+      console.warn(`Timeout nel caricamento del font: ${descriptor}`);
       return;
     }
 
@@ -648,6 +666,7 @@ function revealApp() {
   appHasRevealed = true;
   document.body.classList.remove("is-loading");
   if (appLoader) {
+    appLoader.setAttribute("aria-hidden", "true");
     appLoader.classList.add("is-hidden");
   }
 
@@ -929,6 +948,7 @@ function openDetail(itemId) {
     return;
   }
 
+  rememberLastFocusedElement();
   state.selectedItemId = itemId;
   initializeDetailState(item);
   detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
@@ -949,6 +969,7 @@ function openDetail(itemId) {
   detailSheet.classList.add("is-open");
   detailSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+  focusElement(closeDetailButton);
 }
 
 function closeDetail() {
@@ -958,13 +979,16 @@ function closeDetail() {
   detailSheet.setAttribute("aria-hidden", "true");
   if (!cartSheet.classList.contains("is-open")) {
     document.body.classList.remove("modal-open");
+    restoreLastFocusedElement();
   }
 }
 
 function openCart() {
+  rememberLastFocusedElement();
   cartSheet.classList.add("is-open");
   cartSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+  focusElement(closeCartButton);
 }
 
 function closeCart() {
@@ -972,6 +996,7 @@ function closeCart() {
   cartSheet.setAttribute("aria-hidden", "true");
   if (!detailSheet.classList.contains("is-open")) {
     document.body.classList.remove("modal-open");
+    restoreLastFocusedElement();
   }
 }
 
@@ -1349,6 +1374,89 @@ function copyTextFallback(text) {
 function blurActiveElement() {
   if (document.activeElement && typeof document.activeElement.blur === "function") {
     document.activeElement.blur();
+  }
+}
+
+function rememberLastFocusedElement() {
+  if (detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open")) {
+    return;
+  }
+
+  if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+    lastFocusedElement = document.activeElement;
+  }
+}
+
+function restoreLastFocusedElement() {
+  if (!(lastFocusedElement instanceof HTMLElement) || !document.contains(lastFocusedElement)) {
+    lastFocusedElement = null;
+    return;
+  }
+
+  focusElement(lastFocusedElement);
+  lastFocusedElement = null;
+}
+
+function focusElement(element) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    try {
+      element.focus({ preventScroll: true });
+    } catch (error) {
+      element.focus();
+    }
+  });
+}
+
+function getOpenModalPanel() {
+  if (detailSheet.classList.contains("is-open")) {
+    return detailPanel;
+  }
+
+  if (cartSheet.classList.contains("is-open")) {
+    return cartPanel;
+  }
+
+  return null;
+}
+
+function getFocusableElements(container) {
+  if (!(container instanceof HTMLElement)) {
+    return [];
+  }
+
+  return Array.from(
+    container.querySelectorAll(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+  ).filter((element) => !element.hidden && element.getAttribute("aria-hidden") !== "true");
+}
+
+function trapFocus(event, container) {
+  const focusableElements = getFocusableElements(container);
+  if (!focusableElements.length) {
+    return;
+  }
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+  const activeElement = document.activeElement;
+
+  if (!(activeElement instanceof HTMLElement) || !container.contains(activeElement)) {
+    event.preventDefault();
+    firstElement.focus();
+    return;
+  }
+
+  if (event.shiftKey && activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+  } else if (!event.shiftKey && activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
   }
 }
 

@@ -31,10 +31,10 @@
       type="font/otf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260316s" />
+    <link rel="stylesheet" href="./styles.css?v=20260316u" />
   </head>
   <body class="is-loading">
-    <div class="app-loader" id="appLoader" aria-hidden="true">
+    <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
       <div class="app-loader__card">
         <p class="app-loader__eyebrow">Domenica al Molino</p>
         <p class="app-loader__title">Sto caricando il menu</p>
@@ -181,13 +181,13 @@
           aria-label="Apri Instagram Agri Eventi"
         >
           <img
-            src="./menu-assets/footer.png?v=20260316l"
+            src="./menu-assets/footer.png?v=20260316u"
             alt="Eventi e novità Agri Eventi 2026"
           />
         </a>
 
         <section class="review-card" aria-label="Lascia una recensione">
-          <p class="eyebrow">La tua esperienza</p>
+          <h2 class="eyebrow review-card__title">La tua esperienza</h2>
           <p class="review-card__copy">
             Se ti sei trovato bene, una recensione aiuta a far conoscere meglio gli agri-eventi al Molino. Grazie e alla prossima!
           </p>
@@ -214,7 +214,7 @@
           aria-label="Apri il sito Molino Santa Marta"
         >
           <img
-            src="./menu-assets/sgb-molino-black.png?v=20260316l"
+            src="./menu-assets/sgb-molino-black.png?v=20260316u"
             alt="Agriturismo Molino Santa Marta"
           />
         </a>
@@ -223,7 +223,7 @@
 
     <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine">
       <span class="cart-fab__label">Riepilogo</span>
-      <span class="cart-fab__count" id="cartCount">0</span>
+      <span class="cart-fab__count" id="cartCount" aria-live="polite">0</span>
     </button>
 
     <div class="sheet-backdrop" id="detailSheet" aria-hidden="true">
@@ -298,9 +298,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260316s";
+          script.src = "./main.js?v=20260316u";
         } else {
-          script.src = "./main.runtime.js?v=20260316s";
+          script.src = "./main.runtime.js?v=20260316u";
         }
 
         document.body.appendChild(script);
