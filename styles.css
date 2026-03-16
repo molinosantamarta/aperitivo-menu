@@ -985,7 +985,10 @@ a {
 
 .item-card--artisanal-beer .beer-script-visual {
   min-height: 74px;
-  padding: 5px 12px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 18px;
+  border-radius: 999px;
 }
 
 .beer-script-visual__script {
@@ -1394,6 +1397,12 @@ a {
 
 .item-card--artisanal-beer h3 {
   margin-top: 6px;
+}
+
+.item-card--artisanal-beer .beer-script-visual__label {
+  width: auto;
+  white-space: nowrap;
+  text-wrap: nowrap;
 }
 
 .item-card p {
