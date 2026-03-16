@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316v";
+const APP_VERSION = "20260316w";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -19,13 +19,15 @@ let deferredPhotoPanelObserver;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
 let lastFocusedElement = null;
-const REQUIRED_FONT_DESCRIPTORS = [
+const BLOCKING_FONT_DESCRIPTORS = [
   '700 1rem "Lulo Clean"',
   '400 1rem "Housky Demo"',
   '400 1rem "Factually Handwriting"',
-  '400 1rem "SignPainter"',
   '500 1rem "Montserrat"',
   '700 1rem "Montserrat"',
+];
+const DEFERRED_FONT_DESCRIPTORS = [
+  '400 1rem "SignPainter"',
   '500 1rem "Caveat"',
 ];
 
@@ -158,15 +160,13 @@ async function init() {
   try {
     const menuData = await menuDataPromise;
     applyMenuData(menuData);
-    const menuAssetsReadyPromise = waitForMenuAssets(menuData);
-    await Promise.all([fontsReadyPromise, minimumLoaderPromise, menuAssetsReadyPromise]);
+    await waitForMenuRender();
+    await Promise.all([fontsReadyPromise, minimumLoaderPromise]);
     revealApp();
-    scheduleNonCriticalWork(async () => {
-      loadDeferredHeroMedia();
-    });
+    warmNonCriticalAssets(menuData);
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
-    await Promise.allSettled([fontsReadyPromise, minimumLoaderPromise]);
+    await promiseAllSettledCompat([fontsReadyPromise, minimumLoaderPromise]);
     renderMenuLoadingState("retry");
     revealApp();
   }
@@ -527,10 +527,14 @@ async function waitForRequiredFonts() {
     return;
   }
 
-  await Promise.all(REQUIRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+  await promiseAllSettledCompat(BLOCKING_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
 
   if (document.fonts.ready) {
-    await document.fonts.ready;
+    try {
+      await waitWithTimeout(document.fonts.ready, FONT_LOAD_TIMEOUT);
+    } catch (error) {
+      console.warn("Timeout nel caricamento dei font bloccanti.");
+    }
   }
 }
 
@@ -538,7 +542,14 @@ async function waitForFontLoad(descriptor) {
   const deadline = performance.now() + FONT_LOAD_TIMEOUT;
 
   while (true) {
-    const loadedFonts = await document.fonts.load(descriptor);
+    let loadedFonts = [];
+    try {
+      loadedFonts = await waitWithTimeout(document.fonts.load(descriptor), 2600);
+    } catch (error) {
+      console.warn(`Impossibile verificare il font: ${descriptor}`);
+      return;
+    }
+
     if (loadedFonts && loadedFonts.length > 0) {
       return;
     }
@@ -558,16 +569,46 @@ function waitMinimumLoaderTime(duration) {
   return new Promise((resolve) => window.setTimeout(resolve, remaining));
 }
 
-async function waitForMenuAssets(menuData) {
-  const assetUrls = collectMenuAssetUrls(menuData);
+async function waitForMenuRender() {
+  await waitForNextPaint();
+  await waitForNextPaint();
+
+  const hasCategories = sectionNav.querySelectorAll(".section-nav__link").length > 0;
+  const hasSections = menuSections.querySelectorAll(".menu-section").length > 0;
+
+  if (!hasCategories || !hasSections) {
+    throw new Error("Categorie e prodotti non sono stati renderizzati correttamente.");
+  }
+}
+
+function warmNonCriticalAssets(menuData) {
+  scheduleNonCriticalWork(() => {
+    warmDeferredFonts();
+    warmMenuVisualAssets(menuData);
+    window.setTimeout(() => {
+      loadDeferredHeroMedia();
+    }, 900);
+  });
+}
+
+function warmDeferredFonts() {
+  if (!("fonts" in document) || !DEFERRED_FONT_DESCRIPTORS.length) {
+    return;
+  }
+
+  promiseAllSettledCompat(DEFERRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+}
+
+function warmMenuVisualAssets(menuData) {
+  const assetUrls = collectMenuVisualAssetUrls(menuData);
   if (!assetUrls.length) {
     return;
   }
 
-  await promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url)));
+  promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "low", 12000)));
 }
 
-function collectMenuAssetUrls(menuData) {
+function collectMenuVisualAssetUrls(menuData) {
   const urls = new Set([
     "./menu-assets/footer.png",
     "./menu-assets/instagram-logo.webp",
@@ -612,15 +653,24 @@ function collectSideVisualAssetUrls(visual, urls) {
   }
 }
 
-function preloadImage(url, priority = "auto") {
+function preloadImage(url, priority = "auto", timeout = 12000) {
   return new Promise((resolve) => {
     const image = new Image();
+    const timeoutId = window.setTimeout(() => {
+      resolve();
+    }, timeout);
     image.decoding = "async";
     if ("fetchPriority" in image) {
       image.fetchPriority = priority;
     }
-    image.onload = () => resolve();
-    image.onerror = () => resolve();
+    image.onload = () => {
+      window.clearTimeout(timeoutId);
+      resolve();
+    };
+    image.onerror = () => {
+      window.clearTimeout(timeoutId);
+      resolve();
+    };
     image.src = url;
   });
 }
@@ -661,6 +711,36 @@ function wait(duration) {
   return new Promise((resolve) => window.setTimeout(resolve, duration));
 }
 
+function waitForNextPaint() {
+  return new Promise((resolve) => {
+    if ("requestAnimationFrame" in window) {
+      window.requestAnimationFrame(() => resolve());
+      return;
+    }
+
+    window.setTimeout(resolve, 16);
+  });
+}
+
+function waitWithTimeout(promise, duration) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error("timeout"));
+    }, duration);
+
+    Promise.resolve(promise).then(
+      (value) => {
+        window.clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timeoutId);
+        reject(error);
+      }
+    );
+  });
+}
+
 function revealApp() {
   if (appHasRevealed) {
     return;
@@ -690,6 +770,9 @@ function loadDeferredHeroMedia() {
     return;
   }
 
+  if ("fetchPriority" in heroButterflyImage) {
+    heroButterflyImage.fetchPriority = "low";
+  }
   heroButterflyImage.setAttribute("src", deferredSrc);
 }
 
