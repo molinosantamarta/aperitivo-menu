@@ -536,6 +536,7 @@ a {
 .promo-agri__content {
   display: grid;
   gap: 14px;
+  padding-top: 4px;
 }
 
 .promo-agri__content .eyebrow {
@@ -545,7 +546,7 @@ a {
 
 .promo-agri__eyebrow {
   margin: 0 0 18px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
