@@ -16,10 +16,12 @@
     return a;
   };
   const priceFormatter = new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260316o";
+  const APP_VERSION = "20260316p";
   const LOADER_HARD_TIMEOUT = 4e3;
   const LOADER_MIN_DURATION = 4e3;
   const MENU_LOADING_SLOW_DELAY = 4200;

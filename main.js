@@ -1,9 +1,11 @@
 const priceFormatter = new Intl.NumberFormat("it-IT", {
+  style: "currency",
+  currency: "EUR",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316o";
+const APP_VERSION = "20260316p";
 const LOADER_HARD_TIMEOUT = 4000;
 const LOADER_MIN_DURATION = 4000;
 const MENU_LOADING_SLOW_DELAY = 4200;
