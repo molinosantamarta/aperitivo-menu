@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316q";
+const APP_VERSION = "20260316r";
 const LOADER_MIN_DURATION = 4000;
 const MENU_LOADING_SLOW_DELAY = 4200;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");

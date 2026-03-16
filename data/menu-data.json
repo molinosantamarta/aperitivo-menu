@@ -619,7 +619,7 @@
     {
       "id": "bottiglie",
       "title": "Bottiglie",
-      "kicker": "Vino, bollicine & selezione zero",
+      "kicker": "Vino, bollicine, zero & special",
       "description": "Una piccola cantina da scegliere con calma, tra calici, bottiglie e proposte zero pensate per tutti.",
       "accent": "#9c5566",
       "accentSoft": "#f1d7dc",
@@ -644,60 +644,6 @@
             40,
             1186,
             356,
-            1348
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
-          "id": "pinot-extra-dry",
-          "page": 1,
-          "name": "Pinot, Extra Dry Metodo Charmat",
-          "category": "Special",
-          "description": "Pinot extra dry, metodo charmat.",
-          "options": [
-            {
-              "label": "Bottiglia",
-              "price": 16
-            },
-            {
-              "label": "Calice",
-              "price": 4.5
-            }
-          ],
-          "rect": [
-            390,
-            1186,
-            746,
-            1348
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
-          "id": "glera-zero",
-          "page": 1,
-          "name": "Glera, Dry Borgo Molino Dealcolato",
-          "category": "Selezione Zero",
-          "description": "Glera dry dealcolato Borgo Molino.",
-          "options": [
-            {
-              "label": "Bottiglia",
-              "price": 18
-            }
-          ],
-          "rect": [
-            772,
-            1186,
-            1096,
             1348
           ],
           "cropPadding": [
@@ -733,6 +679,35 @@
           ]
         },
         {
+          "id": "pinot-extra-dry",
+          "page": 1,
+          "name": "Pinot, Extra Dry Metodo Charmat",
+          "category": "Bollicine",
+          "description": "Pinot extra dry, metodo charmat.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 16
+            },
+            {
+              "label": "Calice",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            390,
+            1186,
+            746,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
           "id": "quarantalune",
           "page": 1,
           "name": "Quarantalune",
@@ -758,10 +733,35 @@
           ]
         },
         {
+          "id": "glera-zero",
+          "page": 1,
+          "name": "Glera, Dry Borgo Molino Dealcolato",
+          "category": "Selezione Zero",
+          "description": "Glera dry dealcolato Borgo Molino.",
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 18
+            }
+          ],
+          "rect": [
+            772,
+            1186,
+            1096,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
           "id": "rose-n5",
           "page": 1,
           "name": "Rosè n°5 Feral",
-          "category": "Bollicine",
+          "category": "Special",
           "description": "Fermentazione ancestrale - 0°.",
           "options": [
             {
