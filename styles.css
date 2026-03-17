@@ -790,10 +790,14 @@ a {
 .promo-agri__visual .utility-btn {
   width: 100%;
   min-height: 48px;
+  font-size: 0.95rem;
+  line-height: 1.1;
 }
 
 .promo-agri__actions .utility-btn {
   min-height: 48px;
+  font-size: 0.95rem;
+  line-height: 1.1;
 }
 
 .promo-agri__video-carousel {
