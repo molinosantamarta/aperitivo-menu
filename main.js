@@ -2293,7 +2293,8 @@ function renderCanClusterVisual(visual, context) {
               style="
                 --can-left: ${item.left || "50%"};
                 --can-bottom: ${item.bottom || "-18%"};
-                --can-width: ${item.width || "64px"};
+                --can-width: ${item.width || "auto"};
+                --can-height: ${item.height || "auto"};
                 --can-rotate: ${item.rotate || "0deg"};
                 --can-z: ${item.zIndex || 1};
                 --can-float-distance: ${item.floatDistance || "5px"};
