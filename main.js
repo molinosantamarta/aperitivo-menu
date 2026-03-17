@@ -5,9 +5,12 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317f";
+const APP_VERSION = "20260317g";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
+const STRICT_FONT_LOAD_TIMEOUT = 45000;
+const CRITICAL_IMAGE_LOAD_TIMEOUT = 22000;
+const CRITICAL_IMAGE_RETRY_COUNT = 2;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 const LOADER_MESSAGE_INTERVAL = 1900;
@@ -33,6 +36,7 @@ const LOADER_MESSAGES = [
   "scoppiettando i popcorn",
 ];
 const LOADER_MESSAGE_ROW_PREFIX = "loader-message-";
+const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
 
 let sections = [];
 let itemLookup = {};
@@ -46,9 +50,9 @@ let loaderMessageIndex = 0;
 const loaderStartedAt = performance.now();
 let appHasRevealed = false;
 let lastFocusedElement = null;
+const CRITICAL_FONT_DESCRIPTORS = ['400 1rem "Housky Demo"'];
 const BLOCKING_FONT_DESCRIPTORS = [
   '700 1rem "Lulo Clean"',
-  '400 1rem "Housky Demo"',
   '400 1rem "Factually Handwriting"',
   '500 1rem "Montserrat"',
   '700 1rem "Montserrat"',
@@ -832,34 +836,53 @@ async function waitForRequiredFonts() {
     return;
   }
 
-  await promiseAllSettledCompat(BLOCKING_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+  await Promise.all([
+    ...CRITICAL_FONT_DESCRIPTORS.map((descriptor) =>
+      waitForFontLoad(descriptor, {
+        strict: true,
+        timeout: STRICT_FONT_LOAD_TIMEOUT,
+      })
+    ),
+    ...BLOCKING_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)),
+  ]);
 
   if (document.fonts.ready) {
     try {
-      await waitWithTimeout(document.fonts.ready, FONT_LOAD_TIMEOUT);
+      await waitWithTimeout(document.fonts.ready, STRICT_FONT_LOAD_TIMEOUT);
     } catch (error) {
-      console.warn("Timeout nel caricamento dei font bloccanti.");
+      if (!CRITICAL_FONT_DESCRIPTORS.every((descriptor) => document.fonts.check(descriptor))) {
+        throw new Error('Il font critico "Housky Demo" non e pronto.');
+      }
     }
   }
 }
 
-async function waitForFontLoad(descriptor) {
-  const deadline = performance.now() + FONT_LOAD_TIMEOUT;
+async function waitForFontLoad(descriptor, options = {}) {
+  const { strict = false, timeout = FONT_LOAD_TIMEOUT } = options;
+  const deadline = performance.now() + timeout;
 
   while (true) {
-    let loadedFonts = [];
-    try {
-      loadedFonts = await waitWithTimeout(document.fonts.load(descriptor), 2600);
-    } catch (error) {
-      console.warn(`Impossibile verificare il font: ${descriptor}`);
+    if (document.fonts.check(descriptor)) {
       return;
     }
 
-    if (loadedFonts && loadedFonts.length > 0) {
+    try {
+      await waitWithTimeout(document.fonts.load(descriptor), 2600);
+    } catch (error) {
+      if (strict && performance.now() >= deadline) {
+        throw new Error(`Timeout nel caricamento del font critico: ${descriptor}`);
+      }
+    }
+
+    if (document.fonts.check(descriptor)) {
       return;
     }
 
     if (performance.now() >= deadline) {
+      if (strict) {
+        throw new Error(`Timeout nel caricamento del font critico: ${descriptor}`);
+      }
+
       console.warn(`Timeout nel caricamento del font: ${descriptor}`);
       return;
     }
@@ -912,18 +935,55 @@ function waitForShellAssets() {
 }
 
 function waitForMenuAssets(menuData) {
-  const assetUrls = collectMenuVisualAssetUrls(menuData);
-  if (!assetUrls.length) {
+  const criticalAssetUrls = collectMenuVisualAssetUrls(menuData, {
+    includeSectionIds: CRITICAL_MENU_SECTION_IDS,
+  });
+  const secondaryAssetUrls = collectMenuVisualAssetUrls(menuData, {
+    excludeSectionIds: CRITICAL_MENU_SECTION_IDS,
+  });
+  const preloadTasks = [];
+
+  if (criticalAssetUrls.length) {
+    preloadTasks.push(waitForCriticalImages(criticalAssetUrls));
+  }
+
+  if (secondaryAssetUrls.length) {
+    preloadTasks.push(
+      promiseAllSettledCompat(secondaryAssetUrls.map((url) => preloadImage(url, "high", 14000)))
+    );
+  }
+
+  if (!preloadTasks.length) {
     return Promise.resolve();
   }
 
-  return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 14000)));
+  return Promise.all(preloadTasks);
 }
 
-function collectMenuVisualAssetUrls(menuData) {
+function waitForCriticalImages(urls) {
+  return Promise.all(
+    urls.map((url) =>
+      preloadImage(url, "high", CRITICAL_IMAGE_LOAD_TIMEOUT, {
+        strict: true,
+        retries: CRITICAL_IMAGE_RETRY_COUNT,
+      })
+    )
+  );
+}
+
+function collectMenuVisualAssetUrls(menuData, options = {}) {
+  const { includeSectionIds = null, excludeSectionIds = null } = options;
   const urls = new Set();
 
   menuData.sections.forEach((section) => {
+    if (includeSectionIds && !includeSectionIds.has(section.id)) {
+      return;
+    }
+
+    if (excludeSectionIds && excludeSectionIds.has(section.id)) {
+      return;
+    }
+
     section.items.forEach((item) => {
       collectVisualAssetUrls(item.visual, urls);
       getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
@@ -974,25 +1034,61 @@ function collectSideVisualAssetUrls(visual, urls) {
   }
 }
 
-function preloadImage(url, priority = "auto", timeout = 12000) {
-  return new Promise((resolve) => {
-    const image = new Image();
-    const timeoutId = window.setTimeout(() => {
-      resolve();
-    }, timeout);
-    image.decoding = "async";
-    if ("fetchPriority" in image) {
-      image.fetchPriority = priority;
-    }
-    image.onload = () => {
-      window.clearTimeout(timeoutId);
-      resolve();
+function preloadImage(url, priority = "auto", timeout = 12000, options = {}) {
+  const { strict = false, retries = 0 } = options;
+
+  return new Promise((resolve, reject) => {
+    let attempt = 0;
+
+    const startAttempt = () => {
+      const image = new Image();
+      let settled = false;
+
+      const finish = (result, error) => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        window.clearTimeout(timeoutId);
+
+        if (result === "load") {
+          resolve();
+          return;
+        }
+
+        if (attempt < retries) {
+          attempt += 1;
+          window.setTimeout(startAttempt, 180);
+          return;
+        }
+
+        if (strict) {
+          reject(error || new Error(`Impossibile caricare la risorsa critica: ${url}`));
+          return;
+        }
+
+        resolve();
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        finish("timeout", new Error(`Timeout nel caricamento di ${url}`));
+      }, timeout);
+
+      image.decoding = "async";
+      if ("fetchPriority" in image) {
+        image.fetchPriority = priority;
+      }
+      image.onload = () => {
+        finish("load");
+      };
+      image.onerror = () => {
+        finish("error", new Error(`Errore nel caricamento di ${url}`));
+      };
+      image.src = url;
     };
-    image.onerror = () => {
-      window.clearTimeout(timeoutId);
-      resolve();
-    };
-    image.src = url;
+
+    startAttempt();
   });
 }
 
