@@ -335,13 +335,24 @@ a {
   border-radius: var(--radius-xl);
   background: var(--bg-soft);
   backdrop-filter: blur(12px);
-  box-shadow: var(--shadow);
+  box-shadow:
+    var(--shadow),
+    inset 0 0 0 1px rgba(92, 68, 46, 0.08);
 }
 
 .hero-card {
   position: relative;
   overflow: visible;
   padding: 16px 16px 22px;
+}
+
+.hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  pointer-events: none;
 }
 
 .hero-card::after {
