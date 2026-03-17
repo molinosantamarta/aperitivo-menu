@@ -38,7 +38,7 @@
       type="font/ttf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260317g" />
+    <link rel="stylesheet" href="./styles.css?v=20260317h" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -184,9 +184,10 @@
 
         <div class="menu-sections" id="menuSections"></div>
 
-        <section class="format-showcase" aria-label="Tutti i nostri format">
-          <h2 class="format-showcase__title">Tutti i nostri format</h2>
-          <div class="format-carousel" id="formatCarousel">
+        <section class="format-showcase-block" aria-label="Tutti i nostri format">
+          <h2 class="eyebrow format-showcase__eyebrow">Tutti i nostri format</h2>
+          <div class="format-showcase">
+            <div class="format-carousel" id="formatCarousel">
             <div class="format-carousel__viewport">
               <div class="format-carousel__track" id="formatCarouselTrack">
                 <figure class="format-carousel__slide">
@@ -263,11 +264,12 @@
                 </figure>
               </div>
             </div>
-            <div
-              class="format-carousel__dots"
-              id="formatCarouselDots"
-              aria-label="Scorrimento automatico dei format"
-            ></div>
+              <div
+                class="format-carousel__dots"
+                id="formatCarouselDots"
+                aria-label="Scorrimento automatico dei format"
+              ></div>
+            </div>
           </div>
         </section>
 
