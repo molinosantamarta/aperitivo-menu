@@ -16,6 +16,8 @@ const columns = [
   "nome",
   "descrizione",
   "categoria",
+  "varianti",
+  "prezzo_unico",
   ...Array.from({ length: MAX_SIMPLE_OPTIONS }, (_, index) => [`variante_${index + 1}`, `prezzo_${index + 1}`]).flat(),
   "varianti_extra",
 ];
@@ -32,13 +34,28 @@ const rows = menu.sections.flatMap((section) =>
       nome: item.name ?? "",
       descrizione: item.description ?? "",
       categoria: item.category ?? "",
-      varianti_extra: buildExtraVariants(item.options || []),
+      varianti: "",
+      prezzo_unico: "",
+      varianti_extra: "",
     };
 
-    (item.options || []).slice(0, MAX_SIMPLE_OPTIONS).forEach((option, optionIndex) => {
-      row[`variante_${optionIndex + 1}`] = option.label ?? "";
-      row[`prezzo_${optionIndex + 1}`] = option.price ?? "";
-    });
+    const options = item.options || [];
+    const hasUniformPrice =
+      options.length > 0 && options.every((option) => option.price === options[0].price);
+
+    if (hasUniformPrice) {
+      row.prezzo_unico = options[0].price ?? "";
+      row.varianti = options
+        .map((option) => option.label || option.displayLabel || "")
+        .filter(Boolean)
+        .join(" | ");
+    } else {
+      row.varianti_extra = buildExtraVariants(options);
+      options.slice(0, MAX_SIMPLE_OPTIONS).forEach((option, optionIndex) => {
+        row[`variante_${optionIndex + 1}`] = option.label ?? "";
+        row[`prezzo_${optionIndex + 1}`] = option.price ?? "";
+      });
+    }
 
     return row;
   })

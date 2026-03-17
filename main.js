@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317b";
+const APP_VERSION = "20260317c";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -646,10 +646,20 @@ function buildSheetVisual(row, section, existingVisual, fallbackName) {
 }
 
 function parseSheetOptions(row) {
+  const compactOptions = parseCompactSheetOptions(row);
+  if (compactOptions.length) {
+    return compactOptions;
+  }
+
   return SHEET_OPTION_INDEXES.map((index) => buildSheetOption(index, row)).filter(Boolean);
 }
 
 function mergeSheetOptions(existingOptions, row) {
+  const compactOptions = parseCompactSheetOptions(row);
+  if (compactOptions.length) {
+    return compactOptions;
+  }
+
   const nextOptions = (existingOptions || []).map((option) => ({ ...option }));
   let hasOverrides = false;
 
@@ -687,6 +697,25 @@ function mergeSheetOptions(existingOptions, row) {
   });
 
   return hasOverrides ? nextOptions.filter(Boolean) : null;
+}
+
+function parseCompactSheetOptions(row) {
+  const rawVariants = getFirstSheetValue(row.varianti);
+  const sharedPrice = parseSheetNumber(getFirstSheetValue(row.prezzo_unico));
+
+  if (!rawVariants || sharedPrice == null) {
+    return [];
+  }
+
+  return rawVariants
+    .split("|")
+    .map((label) => label.trim())
+    .filter(Boolean)
+    .map((label) => ({
+      label,
+      displayLabel: "",
+      price: sharedPrice,
+    }));
 }
 
 function buildSheetOption(index, row) {

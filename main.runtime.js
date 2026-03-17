@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317b";
+  const APP_VERSION = "20260317c";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -574,9 +574,17 @@
     };
   }
   function parseSheetOptions(row) {
+    const compactOptions = parseCompactSheetOptions(row);
+    if (compactOptions.length) {
+      return compactOptions;
+    }
     return SHEET_OPTION_INDEXES.map((index) => buildSheetOption(index, row)).filter(Boolean);
   }
   function mergeSheetOptions(existingOptions, row) {
+    const compactOptions = parseCompactSheetOptions(row);
+    if (compactOptions.length) {
+      return compactOptions;
+    }
     const nextOptions = (existingOptions || []).map((option) => __spreadValues({}, option));
     let hasOverrides = false;
     SHEET_OPTION_INDEXES.forEach((index) => {
@@ -608,6 +616,18 @@
       };
     });
     return hasOverrides ? nextOptions.filter(Boolean) : null;
+  }
+  function parseCompactSheetOptions(row) {
+    const rawVariants = getFirstSheetValue(row.varianti);
+    const sharedPrice = parseSheetNumber(getFirstSheetValue(row.prezzo_unico));
+    if (!rawVariants || sharedPrice == null) {
+      return [];
+    }
+    return rawVariants.split("|").map((label) => label.trim()).filter(Boolean).map((label) => ({
+      label,
+      displayLabel: "",
+      price: sharedPrice
+    }));
   }
   function buildSheetOption(index, row) {
     const optionInput = getSheetOptionInput(row, index);
