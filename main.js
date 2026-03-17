@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zzb";
+const APP_VERSION = "20260317zzc";
 const LOADER_MIN_DURATION = 10000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -359,11 +359,16 @@ function syncLoaderProgress(phaseOverride) {
     return;
   }
 
-  const percentage = Math.round(
+  const rawPercentage =
     Object.keys(LOADER_PROGRESS_WEIGHTS).reduce((sum, key) => {
       return sum + LOADER_PROGRESS_WEIGHTS[key] * (loaderProgressState[key] || 0);
-    }, 0)
+    }, 0);
+  const allTasksComplete = Object.keys(LOADER_PROGRESS_WEIGHTS).every(
+    (key) => (loaderProgressState[key] || 0) >= 1
   );
+  const percentage = allTasksComplete
+    ? 100
+    : Math.max(0, Math.min(99, Math.floor(rawPercentage)));
   const phaseLabel = phaseOverride || resolveLoaderPhaseLabel(percentage);
 
   appLoaderBarFill.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
