@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zc";
+  const APP_VERSION = "20260317ze";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -63,18 +63,17 @@
   const PROMO_AGRI_VIDEOS = [
     {
       title: "Video Agri-Eventi 1",
-      src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
+      src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     },
     {
       title: "Video Agri-Eventi 2",
-      src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
+      src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
     },
     {
       title: "Video Agri-Eventi 3",
       src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1"
     }
   ];
-  const LOADER_MESSAGE_ROW_PREFIX = "loader-message-";
   const CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
   let sections = [];
   let itemLookup = {};
@@ -302,14 +301,6 @@
       }, LOADER_MESSAGE_FADE_DURATION);
     }, LOADER_MESSAGE_INTERVAL);
   }
-  function setLoaderMessages(messages) {
-    loaderMessages = Array.isArray(messages) && messages.length ? messages : [...LOADER_MESSAGES];
-    loaderMessageIndex = 0;
-    if (appLoaderMessage && !appHasRevealed) {
-      appLoaderMessage.classList.remove("is-transitioning");
-      appLoaderMessage.textContent = loaderMessages[0] || "";
-    }
-  }
   function startLoaderTimeProgress() {
     const tick = () => {
       if (appHasRevealed) {
@@ -394,7 +385,6 @@
       if (!sheetRows.length) {
         return baseData;
       }
-      setLoaderMessages(extractLoaderMessages(sheetRows));
       return applySheetRowsToMenu(baseData, sheetRows);
     } catch (error) {
       console.warn("Impossibile caricare le override dal Google Sheet:", error);
@@ -486,9 +476,6 @@
       prezzo: "prezzo_1"
     };
     return aliases[normalized] || normalized;
-  }
-  function extractLoaderMessages(sheetRows) {
-    return sheetRows.filter((row) => row.id && row.id.startsWith(LOADER_MESSAGE_ROW_PREFIX)).sort((left, right) => parseSheetInteger(left.position, 0) - parseSheetInteger(right.position, 0)).map((row) => getFirstSheetValue(row.name, row.description)).filter(Boolean);
   }
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));
