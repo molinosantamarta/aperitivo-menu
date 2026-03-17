@@ -782,8 +782,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "pinot-extra-dry-floating.png",
-            "width": "106px",
-            "height": "264px",
+            "width": "101px",
+            "height": "251px",
             "right": "8px",
             "bottom": "0px",
             "backgroundSize": "contain",
