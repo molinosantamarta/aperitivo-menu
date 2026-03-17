@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zza";
-const LOADER_MIN_DURATION = 7000;
+const APP_VERSION = "20260317zzb";
+const LOADER_MIN_DURATION = 10000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
 const CRITICAL_IMAGE_LOAD_TIMEOUT = 22000;

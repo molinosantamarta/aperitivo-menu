@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zza";
-  const LOADER_MIN_DURATION = 7e3;
+  const APP_VERSION = "20260317zzb";
+  const LOADER_MIN_DURATION = 1e4;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
   const CRITICAL_IMAGE_LOAD_TIMEOUT = 22e3;
