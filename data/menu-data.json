@@ -875,11 +875,10 @@
           "name": "Spumante dealcolato",
           "category": "Selezione Zero",
           "description": "Uve Glera, spumante dry, Borgo Molino, Veneto/Friuli.",
+          "hideCardVisual": true,
           "visual": {
             "type": "photo-panel",
-            "asset": "borgo-molino-back.jpg",
-            "position": "center center",
-            "size": "cover"
+            "backgroundColor": "#efe8de"
           },
           "sideVisual": {
             "type": "floating-bottle",
