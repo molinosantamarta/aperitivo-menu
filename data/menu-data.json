@@ -1037,7 +1037,7 @@
             "items": [
               {
                 "asset": "bibite-coca.png",
-                "left": "18%",
+                "left": "20%",
                 "bottom": "-31%",
                 "height": "126px",
                 "rotate": "-8deg",
@@ -1048,7 +1048,7 @@
               },
               {
                 "asset": "bibite-coca-zero.png",
-                "left": "39%",
+                "left": "40%",
                 "bottom": "-29%",
                 "height": "126px",
                 "rotate": "-2deg",
@@ -1059,7 +1059,7 @@
               },
               {
                 "asset": "bibite-te-pesca.png",
-                "left": "61%",
+                "left": "60%",
                 "bottom": "-30%",
                 "height": "126px",
                 "rotate": "4deg",
@@ -1070,7 +1070,7 @@
               },
               {
                 "asset": "bibite-te-limone.png",
-                "left": "81%",
+                "left": "80%",
                 "bottom": "-28%",
                 "height": "126px",
                 "rotate": "9deg",
