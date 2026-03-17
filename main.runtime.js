@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zb";
+  const APP_VERSION = "20260317zc";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -46,13 +46,19 @@
   };
   const SHEET_OPTION_INDEXES = Array.from({ length: 12 }, (_, index) => index + 1);
   const LOADER_MESSAGES = [
-    "sistemando i tavoli nel parco",
-    "tagliando il prato",
-    "caricando le birre in frigo",
-    "affettando il salame",
-    "assaggiando lo spritz",
-    "caricando i gelati nel carretto",
-    "scoppiettando i popcorn"
+    "sistemo i tavoli nel parco",
+    "nel verde, tutto rallenta un po'",
+    "metto in fresco le birre",
+    "stendo i teli da picnic sul prato",
+    "assaggio lo spritz",
+    "metto i gelati nel carretto",
+    "scoppiettando i popcorn",
+    "inforno le pizzette",
+    "tutto comincia dalle cose semplici",
+    "affetto il salame",
+    "taglio il pane appena sfornato",
+    "scoppiettano i popcorn",
+    "il parco si accende lentamente"
   ];
   const PROMO_AGRI_VIDEOS = [
     {
