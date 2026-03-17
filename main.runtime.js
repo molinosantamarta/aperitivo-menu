@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317i";
+  const APP_VERSION = "20260317j";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -1064,7 +1064,7 @@
       }
       autoplayId = window.setInterval(() => {
         goToSlide(activeIndex + 1);
-      }, 3400);
+      }, 2600);
     };
     dots.forEach((dot) => {
       dot.addEventListener("click", () => {
