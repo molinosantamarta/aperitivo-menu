@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zw";
+  const APP_VERSION = "20260317zx";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -80,6 +80,7 @@
   let itemSectionLookup = {};
   let sideVisualObserver;
   let deferredPhotoPanelObserver;
+  let deferredSideVisualObserver;
   let loaderProgressFrame = null;
   let loaderMessageIntervalId = null;
   let loaderMessages = [...LOADER_MESSAGES];
@@ -859,7 +860,9 @@
       }
       section.items.forEach((item) => {
         collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
-        getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
+        getAllSideVisuals(item).forEach(
+          (visual) => collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
+        );
         if (Array.isArray(item.detailGallery)) {
           item.detailGallery.forEach(
             (visual) => collectVisualAssetUrls(visual, urls, { skipDeferredPhotoPanels: true })
@@ -895,8 +898,9 @@
       });
     }
   }
-  function collectSideVisualAssetUrls(visual, urls) {
-    if (visual && visual.asset) {
+  function collectSideVisualAssetUrls(visual, urls, options = {}) {
+    const { skipDeferredSideVisuals = false } = options;
+    if (visual && visual.asset && !(skipDeferredSideVisuals && visual.deferAsset === true)) {
       urls.add(getSideVisualImage(visual));
     }
   }
@@ -1360,6 +1364,7 @@
       button.addEventListener("click", () => openDetail(button.dataset.itemId));
     });
     setupSideVisualAnimations();
+    setupDeferredSideVisuals();
     setupDeferredBottleBackgrounds();
   }
   function setupSideVisualAnimations() {
@@ -1419,6 +1424,54 @@
       }
     );
     panels.forEach((panel) => deferredPhotoPanelObserver.observe(panel));
+  }
+  function setupDeferredSideVisuals() {
+    if (deferredSideVisualObserver) {
+      deferredSideVisualObserver.disconnect();
+    }
+    const visuals = menuSections.querySelectorAll(".item-card__side-visual--deferred[data-side-visual-image]");
+    if (!visuals.length) {
+      return;
+    }
+    if (!("IntersectionObserver" in window)) {
+      scheduleNonCriticalWork(() => {
+        visuals.forEach((visual) => loadDeferredSideVisual(visual));
+      });
+      return;
+    }
+    deferredSideVisualObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          loadDeferredSideVisual(entry.target);
+          if (deferredSideVisualObserver) {
+            deferredSideVisualObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "280px 0px"
+      }
+    );
+    visuals.forEach((visual) => deferredSideVisualObserver.observe(visual));
+  }
+  function loadDeferredSideVisual(visual) {
+    if (!visual || visual.dataset.sideVisualLoaded === "true") {
+      return;
+    }
+    const imageUrl = visual.dataset.sideVisualImage;
+    if (!imageUrl) {
+      return;
+    }
+    visual.dataset.sideVisualLoaded = "loading";
+    preloadImage(imageUrl, "low").then(() => {
+      visual.style.backgroundImage = "url('".concat(imageUrl, "')");
+      visual.dataset.sideVisualLoaded = "true";
+      visual.classList.remove("item-card__side-visual--deferred");
+    });
   }
   function loadDeferredPhotoPanel(panel) {
     if (!panel || panel.dataset.photoPanelLoaded === "true") {
@@ -2127,7 +2180,8 @@
     }
     return sideVisuals.map((visual) => {
       const sideVisualClass = visual.type === "floating-bottle" ? "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-bottle" : "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-accent";
-      return '\n        <span\n          class="'.concat(sideVisualClass, '"\n          aria-hidden="true"\n          style="').concat(buildSideVisualStyle(visual), '"\n        ></span>\n      ');
+      const deferredAttributes = visual.deferAsset === true ? ' data-side-visual-image="'.concat(getSideVisualImage(visual), '" data-side-visual-loaded="false"') : "";
+      return '\n        <span\n          class="'.concat(sideVisualClass).concat(visual.deferAsset === true ? " item-card__side-visual--deferred" : "", '"\n          aria-hidden="true"\n          ').concat(deferredAttributes, '\n          style="').concat(buildSideVisualStyle(visual), '"\n        ></span>\n      ');
     }).join("");
   }
   function getSideVisualImage(visual) {
@@ -2162,7 +2216,9 @@
     return buildVersionedPath("./menu-assets/items/".concat(assetName));
   }
   function buildSideVisualStyle(sideVisual) {
-    const styles = ["background-image: url('".concat(getSideVisualImage(sideVisual), "')")];
+    const styles = [
+      "background-image: ".concat(sideVisual.deferAsset === true ? "none" : "url('".concat(getSideVisualImage(sideVisual), "')"))
+    ];
     if (sideVisual.width) {
       styles.push("--side-visual-width: ".concat(sideVisual.width));
     }

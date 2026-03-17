@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zw";
+const APP_VERSION = "20260317zx";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -62,6 +62,7 @@ let itemLookup = {};
 let itemSectionLookup = {};
 let sideVisualObserver;
 let deferredPhotoPanelObserver;
+let deferredSideVisualObserver;
 let loaderProgressFrame = null;
 let loaderMessageIntervalId = null;
 let loaderMessages = [...LOADER_MESSAGES];
@@ -1000,7 +1001,9 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
 
     section.items.forEach((item) => {
       collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
-      getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
+      getAllSideVisuals(item).forEach((visual) =>
+        collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
+      );
 
       if (Array.isArray(item.detailGallery)) {
         item.detailGallery.forEach((visual) =>
@@ -1045,8 +1048,9 @@ function collectVisualAssetUrls(visual, urls, options = {}) {
   }
 }
 
-function collectSideVisualAssetUrls(visual, urls) {
-  if (visual && visual.asset) {
+function collectSideVisualAssetUrls(visual, urls, options = {}) {
+  const { skipDeferredSideVisuals = false } = options;
+  if (visual && visual.asset && !(skipDeferredSideVisuals && visual.deferAsset === true)) {
     urls.add(getSideVisualImage(visual));
   }
 }
@@ -1633,6 +1637,7 @@ function renderSections() {
   });
 
   setupSideVisualAnimations();
+  setupDeferredSideVisuals();
   setupDeferredBottleBackgrounds();
 }
 
@@ -1703,6 +1708,64 @@ function setupDeferredBottleBackgrounds() {
   );
 
   panels.forEach((panel) => deferredPhotoPanelObserver.observe(panel));
+}
+
+function setupDeferredSideVisuals() {
+  if (deferredSideVisualObserver) {
+    deferredSideVisualObserver.disconnect();
+  }
+
+  const visuals = menuSections.querySelectorAll(".item-card__side-visual--deferred[data-side-visual-image]");
+  if (!visuals.length) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    scheduleNonCriticalWork(() => {
+      visuals.forEach((visual) => loadDeferredSideVisual(visual));
+    });
+    return;
+  }
+
+  deferredSideVisualObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        loadDeferredSideVisual(entry.target);
+        if (deferredSideVisualObserver) {
+          deferredSideVisualObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.01,
+      rootMargin: "280px 0px",
+    }
+  );
+
+  visuals.forEach((visual) => deferredSideVisualObserver.observe(visual));
+}
+
+function loadDeferredSideVisual(visual) {
+  if (!visual || visual.dataset.sideVisualLoaded === "true") {
+    return;
+  }
+
+  const imageUrl = visual.dataset.sideVisualImage;
+  if (!imageUrl) {
+    return;
+  }
+
+  visual.dataset.sideVisualLoaded = "loading";
+
+  preloadImage(imageUrl, "low").then(() => {
+    visual.style.backgroundImage = `url('${imageUrl}')`;
+    visual.dataset.sideVisualLoaded = "true";
+    visual.classList.remove("item-card__side-visual--deferred");
+  });
 }
 
 function loadDeferredPhotoPanel(panel) {
@@ -2871,11 +2934,16 @@ function renderItemSideVisual(item) {
         visual.type === "floating-bottle"
           ? "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-bottle"
           : "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-accent";
+      const deferredAttributes =
+        visual.deferAsset === true
+          ? ` data-side-visual-image="${getSideVisualImage(visual)}" data-side-visual-loaded="false"`
+          : "";
 
       return `
         <span
-          class="${sideVisualClass}"
+          class="${sideVisualClass}${visual.deferAsset === true ? " item-card__side-visual--deferred" : ""}"
           aria-hidden="true"
+          ${deferredAttributes}
           style="${buildSideVisualStyle(visual)}"
         ></span>
       `;
@@ -2949,7 +3017,11 @@ function getVisualAsset(assetName) {
 }
 
 function buildSideVisualStyle(sideVisual) {
-  const styles = [`background-image: url('${getSideVisualImage(sideVisual)}')`];
+  const styles = [
+    `background-image: ${
+      sideVisual.deferAsset === true ? "none" : `url('${getSideVisualImage(sideVisual)}')`
+    }`,
+  ];
 
   if (sideVisual.width) {
     styles.push(`--side-visual-width: ${sideVisual.width}`);
