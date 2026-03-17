@@ -1361,7 +1361,7 @@ a {
   z-index: var(--can-z, 1);
   width: var(--can-width, auto);
   height: var(--can-height, auto);
-  transform: translateX(-50%) rotate(var(--can-rotate, 0deg));
+  transform: translateX(calc(-50% + var(--can-shift-x, 0px))) rotate(var(--can-rotate, 0deg));
   transform-origin: center bottom;
   filter: drop-shadow(0 12px 16px rgba(42, 31, 18, 0.16));
   animation: can-cluster-float var(--can-float-duration, 4.2s) ease-in-out infinite;
@@ -1378,12 +1378,13 @@ a {
 @keyframes can-cluster-float {
   0%,
   100% {
-    transform: translateX(-50%) translateY(0) rotate(var(--can-rotate, 0deg));
+    transform: translateX(calc(-50% + var(--can-shift-x, 0px))) translateY(0)
+      rotate(var(--can-rotate, 0deg));
   }
 
   50% {
-    transform: translateX(-50%) translateY(calc(var(--can-float-distance, 5px) * -1))
-      rotate(var(--can-rotate, 0deg));
+    transform: translateX(calc(-50% + var(--can-shift-x, 0px)))
+      translateY(calc(var(--can-float-distance, 5px) * -1)) rotate(var(--can-rotate, 0deg));
   }
 }
 
@@ -1869,6 +1870,10 @@ a {
 }
 
 @media (max-width: 420px) {
+  .item-card[data-item-id="bibite"] .can-cluster-visual__can {
+    --can-shift-x: -6px;
+  }
+
   .format-showcase-block {
     gap: 14px;
     margin-top: 16px;
