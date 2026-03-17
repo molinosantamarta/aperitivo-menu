@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317e";
+  const APP_VERSION = "20260317f";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -41,11 +41,6 @@
     shellAssets: 8,
     timeGate: 8
   };
-  const LOADER_SHELL_ASSET_URLS = [
-    "./menu-assets/footer.png",
-    "./menu-assets/instagram-logo.webp",
-    "./menu-assets/sgb-molino-black.png"
-  ];
   const SHEET_OPTION_INDEXES = Array.from({ length: 12 }, (_, index) => index + 1);
   const LOADER_MESSAGES = [
     "sistemando i tavoli nel parco",
@@ -117,6 +112,9 @@
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
   const heroButterflyImage = document.querySelector(".hero-butterfly__image");
+  const formatCarousel = document.querySelector("#formatCarousel");
+  const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
+  const formatCarouselDots = document.querySelector("#formatCarouselDots");
   const loaderProgressState = {
     boot: 0,
     menuData: 0,
@@ -200,6 +198,7 @@
     }
   });
   initLoaderProgress();
+  initFormatCarousel();
   init();
   async function init() {
     let menuAssetsReadyPromise = Promise.resolve();
@@ -779,7 +778,11 @@
     return promiseAllSettledCompat(DEFERRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
   }
   function waitForShellAssets() {
-    return promiseAllSettledCompat(LOADER_SHELL_ASSET_URLS.map((url) => preloadImage(url, "high", 12e3)));
+    const assetUrls = collectShellAssetUrls();
+    if (!assetUrls.length) {
+      return Promise.resolve();
+    }
+    return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 12e3)));
   }
   function waitForMenuAssets(menuData) {
     const assetUrls = collectMenuVisualAssetUrls(menuData);
@@ -798,6 +801,16 @@
           item.detailGallery.forEach((visual) => collectVisualAssetUrls(visual, urls));
         }
       });
+    });
+    return Array.from(urls);
+  }
+  function collectShellAssetUrls() {
+    const urls = /* @__PURE__ */ new Set();
+    document.querySelectorAll("[data-shell-asset]").forEach((asset) => {
+      const src = asset.currentSrc || asset.getAttribute("src");
+      if (src) {
+        urls.add(src);
+      }
     });
     return Array.from(urls);
   }
@@ -929,6 +942,96 @@
         appLoader.remove();
       }
     }, 320);
+  }
+  function initFormatCarousel() {
+    if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {
+      return;
+    }
+    const slides = Array.from(formatCarouselTrack.querySelectorAll(".format-carousel__slide"));
+    if (!slides.length) {
+      return;
+    }
+    let activeIndex = 0;
+    let autoplayId = null;
+    let carouselVisible = false;
+    let carouselPaused = false;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    formatCarouselDots.innerHTML = slides.map(
+      (_, index) => '\n        <button\n          class="format-carousel__dot"\n          type="button"\n          aria-label="Vai al format '.concat(index + 1, '"\n          data-slide-index="').concat(index, '"\n        ></button>\n      ')
+    ).join("");
+    const dots = Array.from(formatCarouselDots.querySelectorAll(".format-carousel__dot"));
+    const syncCarousel = () => {
+      formatCarouselTrack.style.transform = "translateX(-".concat(activeIndex * 100, "%)");
+      slides.forEach((slide, index) => {
+        slide.classList.toggle("is-active", index === activeIndex);
+      });
+      dots.forEach((dot, index) => {
+        const isActive = index === activeIndex;
+        dot.classList.toggle("is-active", isActive);
+        dot.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    };
+    const goToSlide = (index) => {
+      activeIndex = (index + slides.length) % slides.length;
+      syncCarousel();
+    };
+    const stopAutoplay = () => {
+      if (autoplayId != null) {
+        window.clearInterval(autoplayId);
+        autoplayId = null;
+      }
+    };
+    const startAutoplay = () => {
+      if (prefersReducedMotion || carouselPaused || !carouselVisible || slides.length < 2 || autoplayId != null) {
+        return;
+      }
+      autoplayId = window.setInterval(() => {
+        goToSlide(activeIndex + 1);
+      }, 3400);
+    };
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        goToSlide(Number(dot.dataset.slideIndex || 0));
+      });
+    });
+    formatCarousel.addEventListener("mouseenter", () => {
+      carouselPaused = true;
+      stopAutoplay();
+    });
+    formatCarousel.addEventListener("mouseleave", () => {
+      carouselPaused = false;
+      startAutoplay();
+    });
+    formatCarousel.addEventListener("focusin", () => {
+      carouselPaused = true;
+      stopAutoplay();
+    });
+    formatCarousel.addEventListener("focusout", () => {
+      carouselPaused = false;
+      startAutoplay();
+    });
+    if ("IntersectionObserver" in window) {
+      const visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            carouselVisible = entry.isIntersecting;
+            if (carouselVisible) {
+              startAutoplay();
+            } else {
+              stopAutoplay();
+            }
+          });
+        },
+        {
+          threshold: 0.45
+        }
+      );
+      visibilityObserver.observe(formatCarousel);
+    } else {
+      carouselVisible = true;
+      startAutoplay();
+    }
+    syncCarousel();
   }
   function loadDeferredHeroMedia() {
     if (!heroButterflyImage || heroButterflyImage.getAttribute("src")) {
