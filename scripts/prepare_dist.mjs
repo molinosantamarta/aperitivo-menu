@@ -10,6 +10,7 @@ const entriesToCopy = [
   { src: "main.runtime.js", dest: "main.runtime.js" },
   { src: "farfalla-bianca.gif", dest: "farfalla-bianca.gif" },
   { src: "data", dest: "data" },
+  { src: "carosello format", dest: "carosello format" },
   { src: "menu-assets", dest: "menu-assets" },
 ];
 

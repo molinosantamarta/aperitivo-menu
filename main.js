@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317s";
+const APP_VERSION = "20260317t";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -1201,6 +1201,8 @@ function initFormatCarousel() {
     return;
   }
 
+  initDeferredFormatCarouselAssets();
+
   const slides = Array.from(formatCarouselTrack.querySelectorAll(".format-carousel__slide"));
   if (!slides.length) {
     return;
@@ -1308,6 +1310,67 @@ function initFormatCarousel() {
   }
 
   syncCarousel();
+}
+
+function initDeferredFormatCarouselAssets() {
+  if (!formatCarousel) {
+    return;
+  }
+
+  const deferredImages = Array.from(formatCarousel.querySelectorAll("img[data-deferred-src]"));
+  if (!deferredImages.length) {
+    return;
+  }
+
+  let hasLoadedDeferredImages = false;
+
+  const loadImages = () => {
+    if (hasLoadedDeferredImages) {
+      return;
+    }
+
+    hasLoadedDeferredImages = true;
+
+    deferredImages.forEach((image) => {
+      const deferredSrc = image.getAttribute("data-deferred-src");
+      if (!deferredSrc) {
+        return;
+      }
+
+      if ("fetchPriority" in image) {
+        image.fetchPriority = "low";
+      }
+
+      image.setAttribute("src", deferredSrc);
+      image.removeAttribute("data-deferred-src");
+    });
+  };
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          loadImages();
+          observer.disconnect();
+        });
+      },
+      {
+        rootMargin: "900px 0px",
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(formatCarousel);
+  } else {
+    window.setTimeout(loadImages, 0);
+  }
+
+  formatCarousel.addEventListener("focusin", loadImages, { once: true });
+  formatCarousel.addEventListener("pointerenter", loadImages, { once: true });
 }
 
 function loadDeferredHeroMedia() {
