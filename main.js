@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zg";
+const APP_VERSION = "20260317zh";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -30,7 +30,7 @@ const LOADER_MESSAGES = [
   "sistemo i tavoli nel parco",
   "nel verde, tutto rallenta un po'",
   "metto in fresco le birre",
-  "stendo i teli da picnic sul prato",
+  "stendo i teli da picnic",
   "assaggio lo spritz",
   "metto i gelati nel carretto",
   "scoppiettando i popcorn",

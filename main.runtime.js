@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zg";
+  const APP_VERSION = "20260317zh";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -49,7 +49,7 @@
     "sistemo i tavoli nel parco",
     "nel verde, tutto rallenta un po'",
     "metto in fresco le birre",
-    "stendo i teli da picnic sul prato",
+    "stendo i teli da picnic",
     "assaggio lo spritz",
     "metto i gelati nel carretto",
     "scoppiettando i popcorn",
