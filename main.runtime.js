@@ -439,6 +439,8 @@
       sezione: "section_id",
       ordine: "position",
       visibile: "visible",
+      disponibile: "available",
+      disponibilita: "available",
       nome: "name",
       descrizione: "description",
       categoria: "category",
@@ -506,6 +508,7 @@
         nextItem.showDetailHint == null ? true : nextItem.showDetailHint
       );
     }
+    nextItem.available = parseSheetBoolean(row.available, nextItem.available !== false);
     const options = mergeSheetOptions(nextItem.options, row);
     if (options) {
       nextItem.options = options;
@@ -527,6 +530,7 @@
       name: row.name || row.visual_label || row.id,
       category: row.category || section.title,
       description: row.description || "",
+      available: parseSheetBoolean(row.available, true),
       showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
       options,
       visual: buildSheetVisual(row, section, null, row.name || row.id)
@@ -1026,8 +1030,9 @@
     const isArtisanalBeer = isArtisanalBeerItem(item);
     const isBeer = isBeerItem(item);
     const isDrink = isDrinkItem(item);
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="Apri dettagli per ').concat(item.name, '"\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(getCardOptionsToDisplay(item).map(
-      (option) => '\n                <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n              ")
+    const isUnavailable = !isItemAvailable(item);
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " non disponibile") : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", '\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip price-chip--unavailable">Non disponibile</span>' : getCardOptionsToDisplay(item).map(
+      (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
     ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }
   function isArtisanalBeerItem(item) {
@@ -1044,7 +1049,7 @@
   }
   function openDetail(itemId) {
     const item = itemLookup[itemId];
-    if (!item) {
+    if (!item || !isItemAvailable(item)) {
       return;
     }
     rememberLastFocusedElement();
@@ -1506,6 +1511,9 @@
   }
   function pluralize(count, singular, plural) {
     return count === 1 ? singular : plural;
+  }
+  function isItemAvailable(item) {
+    return item ? item.available !== false : false;
   }
   function formatOptionChip(item, option) {
     const displayLabel = getOptionDisplayLabel(item, option);

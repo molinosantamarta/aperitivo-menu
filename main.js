@@ -484,6 +484,8 @@ function normalizeSheetHeader(value) {
     sezione: "section_id",
     ordine: "position",
     visibile: "visible",
+    disponibile: "available",
+    disponibilita: "available",
     nome: "name",
     descrizione: "description",
     categoria: "category",
@@ -566,6 +568,7 @@ function updateItemFromSheet(item, row, section) {
       nextItem.showDetailHint == null ? true : nextItem.showDetailHint
     );
   }
+  nextItem.available = parseSheetBoolean(row.available, nextItem.available !== false);
 
   const options = mergeSheetOptions(nextItem.options, row);
   if (options) {
@@ -592,6 +595,7 @@ function createItemFromSheet(row, section) {
     name: row.name || row.visual_label || row.id,
     category: row.category || section.title,
     description: row.description || "",
+    available: parseSheetBoolean(row.available, true),
     showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
     options,
     visual: buildSheetVisual(row, section, null, row.name || row.id),
@@ -1261,6 +1265,7 @@ function renderItemCard(item) {
   const isArtisanalBeer = isArtisanalBeerItem(item);
   const isBeer = isBeerItem(item);
   const isDrink = isDrinkItem(item);
+  const isUnavailable = !isItemAvailable(item);
 
   return `
     <button
@@ -1268,11 +1273,13 @@ function renderItemCard(item) {
         hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
       }${isBeer ? " item-card--beer" : ""}${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${
         isDrink ? " item-card--drink" : ""
-      }"
+      }${isUnavailable ? " item-card--unavailable" : ""}"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
-      aria-label="Apri dettagli per ${item.name}"
+      aria-label="${isUnavailable ? `${item.name} non disponibile` : `Apri dettagli per ${item.name}`}"
+      aria-disabled="${isUnavailable ? "true" : "false"}"
+      ${isUnavailable ? "disabled" : ""}
     >
       <div class="item-card__visual${getCardVisualClass(item)}">
         ${renderItemVisual(item, "card")}
@@ -1286,13 +1293,17 @@ function renderItemCard(item) {
         <h3>${item.name}</h3>
         <p>${item.description}</p>
         <div class="item-card__prices">
-          ${getCardOptionsToDisplay(item)
-            .map(
-              (option) => `
-                <span class="price-chip">${formatOptionChip(item, option)}</span>
-              `
-            )
-            .join("")}
+          ${
+            isUnavailable
+              ? `<span class="price-chip price-chip--unavailable">Non disponibile</span>`
+              : getCardOptionsToDisplay(item)
+                  .map(
+                    (option) => `
+                      <span class="price-chip">${formatOptionChip(item, option)}</span>
+                    `
+                  )
+                  .join("")
+          }
         </div>
         ${renderItemSideVisual(item)}
       </div>
@@ -1321,7 +1332,7 @@ function isBottleSectionItem(item) {
 
 function openDetail(itemId) {
   const item = itemLookup[itemId];
-  if (!item) {
+  if (!item || !isItemAvailable(item)) {
     return;
   }
 
@@ -1964,6 +1975,10 @@ function hasLongOptionList(item) {
 
 function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
+}
+
+function isItemAvailable(item) {
+  return item ? item.available !== false : false;
 }
 
 function formatOptionChip(item, option) {

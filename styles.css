@@ -1528,6 +1528,36 @@ a {
   background: var(--section-accent-soft, #f4ead8);
 }
 
+.price-chip--unavailable {
+  color: rgba(53, 49, 45, 0.92);
+  background: rgba(111, 108, 103, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(80, 76, 71, 0.14);
+}
+
+.item-card--unavailable {
+  cursor: default;
+  filter: saturate(0.4);
+}
+
+.item-card--unavailable .item-card__visual,
+.item-card--unavailable .item-card__side-visual,
+.item-card--unavailable .beer-script-visual,
+.item-card--unavailable .photo-panel-visual,
+.item-card--unavailable .text-panel-visual,
+.item-card--unavailable .can-cluster-visual {
+  filter: grayscale(0.3);
+}
+
+.item-card--unavailable .item-card__content {
+  opacity: 0.76;
+}
+
+.item-card--unavailable .item-card__label,
+.item-card--unavailable h3,
+.item-card--unavailable p {
+  color: rgba(66, 62, 58, 0.9);
+}
+
 .promo-panel {
   display: block;
   margin: 0;

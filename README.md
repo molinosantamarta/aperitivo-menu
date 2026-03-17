@@ -91,7 +91,8 @@ Il progetto può leggere override dinamici da un Google Sheet pubblicato come CS
 
 1. importa `data/google-sheet-template-semplice.csv` in Google Sheets
 2. modifica dal foglio:
-   - `visibile` per mostrare/nascondere
+   - `visibile` per mostrare/nascondere del tutto
+   - `disponibile` per lasciare il prodotto visibile ma non ordinabile
    - `nome`, `descrizione`, `categoria`
    - `varianti` + `prezzo_unico` se tutte le varianti hanno lo stesso prezzo
    - `prezzo_1`, `prezzo_2`, `prezzo_3` se il prodotto ha piu varianti con prezzi diversi
@@ -106,6 +107,7 @@ Il progetto può leggere override dinamici da un Google Sheet pubblicato come CS
 ### Note
 
 - se il foglio non e configurato o non risponde, il sito usa automaticamente `data/menu-data.json`
+- nelle colonne booleane puoi usare sia `si/no` sia `true/false`
 - per prodotti come `Grappe e amari`, puoi tenere tutte le varianti in `varianti` separate da `|`
 - il template semplice aggiorna i prezzi per indice e mantiene le varianti extra che non compaiono nel foglio
 - i nuovi prodotti creati dal foglio usano una card testuale pulita, senza bisogno immediato di immagini dedicate
