@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317c";
+const APP_VERSION = "20260317d";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -2343,7 +2343,7 @@ function renderItemSideVisual(item) {
 
 function getSideVisualImage(visual) {
   const assetName = visual && visual.asset ? visual.asset : "";
-  return `./menu-assets/items/${assetName}`;
+  return buildVersionedPath(`./menu-assets/items/${assetName}`);
 }
 
 function getVisualType(item) {
@@ -2403,7 +2403,7 @@ function renderMenuLoadingState(mode) {
 }
 
 function getVisualAsset(assetName) {
-  return `./menu-assets/items/${assetName}`;
+  return buildVersionedPath(`./menu-assets/items/${assetName}`);
 }
 
 function buildSideVisualStyle(sideVisual) {

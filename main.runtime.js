@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317c";
+  const APP_VERSION = "20260317d";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -1711,7 +1711,7 @@
   }
   function getSideVisualImage(visual) {
     const assetName = visual && visual.asset ? visual.asset : "";
-    return "./menu-assets/items/".concat(assetName);
+    return buildVersionedPath("./menu-assets/items/".concat(assetName));
   }
   function getVisualType(item) {
     return item && item.visual ? item.visual.type : "placeholder-panel";
@@ -1738,7 +1738,7 @@
     }
   }
   function getVisualAsset(assetName) {
-    return "./menu-assets/items/".concat(assetName);
+    return buildVersionedPath("./menu-assets/items/".concat(assetName));
   }
   function buildSideVisualStyle(sideVisual) {
     const styles = ["background-image: url('".concat(getSideVisualImage(sideVisual), "')")];
