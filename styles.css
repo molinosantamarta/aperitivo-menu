@@ -1687,7 +1687,7 @@ a {
 .format-carousel__slide--logo img {
   width: 84%;
   height: 84%;
-  transform: translateY(-8px);
+  transform: translateY(-11px);
 }
 
 .format-carousel__slide--cinema img {
@@ -1865,7 +1865,7 @@ a {
   .format-carousel__slide--logo img {
     width: 80%;
     height: 80%;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
 
   .format-carousel__slide--cinema img {
