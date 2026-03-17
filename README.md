@@ -75,30 +75,40 @@ npm run sheet:template
 
 Questo aggiorna [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv) con tutti i prodotti attuali.
 
+Per una versione piu semplice, pensata per l'uso quotidiano:
+
+```bash
+npm run sheet:template:simple
+```
+
+Questo aggiorna [google-sheet-template-semplice.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template-semplice.csv).
+
 ## Google Sheet opzionale
 
 Il progetto può leggere override dinamici da un Google Sheet pubblicato come CSV.
 
 ### Flusso consigliato
 
-1. importa `data/google-sheet-template.csv` in Google Sheets
+1. importa `data/google-sheet-template-semplice.csv` in Google Sheets
 2. modifica dal foglio:
-   - `visible` per mostrare/nascondere
-   - `name`, `description`, `category`
-   - `option_1_*`, `option_2_*`, `option_3_*` per i prezzi
-3. se vuoi aggiungere un nuovo prodotto, duplica una riga e cambia almeno:
+   - `visibile` per mostrare/nascondere
+   - `nome`, `descrizione`, `categoria`
+   - `prezzo_1`, `prezzo_2`, `prezzo_3` se il prodotto ha piu varianti
+3. se vuoi aggiungere un nuovo prodotto semplice, duplica una riga e cambia almeno:
    - `id`
-   - `section_id`
-   - `name`
-   - almeno `option_1_label` e `option_1_price`
+   - `sezione`
+   - `nome`
+   - almeno `prezzo_1`
 4. pubblica il foglio come CSV
 5. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/sheet-config.json)
 
 ### Note
 
 - se il foglio non e configurato o non risponde, il sito usa automaticamente `data/menu-data.json`
+- il template semplice aggiorna i prezzi per indice e mantiene le varianti extra che non compaiono nel foglio
 - i nuovi prodotti creati dal foglio usano una card testuale pulita, senza bisogno immediato di immagini dedicate
 - per visual personalizzati complessi (bottiglie, gradienti speciali, asset fotografici) conviene ancora intervenire nel repository
+- se vuoi modificare tutte le varianti in modo avanzato, resta disponibile anche [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv)
 
 ## Deploy
 

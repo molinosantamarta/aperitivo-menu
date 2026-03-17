@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260316ap";
+const APP_VERSION = "20260317a";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -27,6 +27,7 @@ const LOADER_SHELL_ASSET_URLS = [
   "./menu-assets/instagram-logo.webp",
   "./menu-assets/sgb-molino-black.png",
 ];
+const SHEET_OPTION_INDEXES = Array.from({ length: 12 }, (_, index) => index + 1);
 const LOADER_MESSAGES = [
   "sistemando i tavoli nel parco",
   "tagliando il prato",
@@ -478,7 +479,19 @@ function parseCsvRows(csvText) {
 }
 
 function normalizeSheetHeader(value) {
-  return value.trim().toLowerCase().replace(/\s+/g, "_");
+  const normalized = value.trim().toLowerCase().replace(/\s+/g, "_");
+  const aliases = {
+    sezione: "section_id",
+    ordine: "position",
+    visibile: "visible",
+    nome: "name",
+    descrizione: "description",
+    categoria: "category",
+    variante: "variante_1",
+    prezzo: "prezzo_1",
+  };
+
+  return aliases[normalized] || normalized;
 }
 
 function applySheetRowsToMenu(baseMenu, sheetRows) {
@@ -554,8 +567,8 @@ function updateItemFromSheet(item, row, section) {
     );
   }
 
-  const options = parseSheetOptions(row);
-  if (options.length) {
+  const options = mergeSheetOptions(nextItem.options, row);
+  if (options) {
     nextItem.options = options;
   }
 
@@ -633,27 +646,97 @@ function buildSheetVisual(row, section, existingVisual, fallbackName) {
 }
 
 function parseSheetOptions(row) {
-  return [1, 2, 3]
-    .map((index) => {
-      const price = parseSheetNumber(row[`option_${index}_price`]);
-      const label = row[`option_${index}_label`] || "";
-      const displayLabel = row[`option_${index}_display_label`] || "";
+  return SHEET_OPTION_INDEXES.map((index) => buildSheetOption(index, row)).filter(Boolean);
+}
 
-      if (price == null && !label && !displayLabel) {
-        return null;
+function mergeSheetOptions(existingOptions, row) {
+  const nextOptions = (existingOptions || []).map((option) => ({ ...option }));
+  let hasOverrides = false;
+
+  SHEET_OPTION_INDEXES.forEach((index) => {
+    const optionInput = getSheetOptionInput(row, index);
+    if (!optionInput.hasValues) {
+      return;
+    }
+
+    hasOverrides = true;
+    const existingOption = nextOptions[index - 1];
+
+    if (existingOption) {
+      if (optionInput.label) {
+        existingOption.label = optionInput.label;
       }
-
-      if (price == null) {
-        return null;
+      if (optionInput.displayLabel) {
+        existingOption.displayLabel = optionInput.displayLabel;
       }
+      if (optionInput.price != null) {
+        existingOption.price = optionInput.price;
+      }
+      return;
+    }
 
-      return {
-        label: label || `Opzione ${index}`,
-        displayLabel,
-        price,
-      };
-    })
-    .filter(Boolean);
+    if (optionInput.price == null) {
+      return;
+    }
+
+    nextOptions[index - 1] = {
+      label: optionInput.label || `Opzione ${index}`,
+      displayLabel: optionInput.displayLabel || "",
+      price: optionInput.price,
+    };
+  });
+
+  return hasOverrides ? nextOptions.filter(Boolean) : null;
+}
+
+function buildSheetOption(index, row) {
+  const optionInput = getSheetOptionInput(row, index);
+  if (!optionInput.hasValues || optionInput.price == null) {
+    return null;
+  }
+
+  return {
+    label: optionInput.label || `Opzione ${index}`,
+    displayLabel: optionInput.displayLabel || "",
+    price: optionInput.price,
+  };
+}
+
+function getSheetOptionInput(row, index) {
+  const rawPrice = getFirstSheetValue(
+    row[`option_${index}_price`],
+    row[`prezzo_${index}`],
+    index === 1 ? row.prezzo : ""
+  );
+  const label = getFirstSheetValue(
+    row[`option_${index}_label`],
+    row[`variante_${index}`],
+    index === 1 ? row.variante : ""
+  );
+  const displayLabel = getFirstSheetValue(row[`option_${index}_display_label`]);
+  const price = parseSheetNumber(rawPrice);
+
+  return {
+    label,
+    displayLabel,
+    price,
+    hasValues: Boolean(label || displayLabel || rawPrice),
+  };
+}
+
+function getFirstSheetValue(...values) {
+  for (const value of values) {
+    if (value == null) {
+      continue;
+    }
+
+    const normalized = String(value).trim();
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return "";
 }
 
 function getSheetPosition(item) {
