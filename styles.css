@@ -1604,7 +1604,7 @@ a {
   margin: 0;
   display: grid;
   place-items: center;
-  aspect-ratio: 1.6 / 1;
+  aspect-ratio: 16 / 9;
   padding: clamp(18px, 5vw, 28px);
   border-radius: calc(var(--radius-xl) - 6px);
   background:
@@ -1619,6 +1619,11 @@ a {
   height: 100%;
   object-fit: contain;
   object-position: center;
+}
+
+.format-carousel__slide--compact img {
+  width: 80%;
+  height: 80%;
 }
 
 .format-carousel__dots {
@@ -1775,8 +1780,13 @@ a {
   }
 
   .format-carousel__slide {
-    aspect-ratio: 1.45 / 1;
+    aspect-ratio: 16 / 9;
     padding: 16px;
+  }
+
+  .format-carousel__slide--compact img {
+    width: 76%;
+    height: 76%;
   }
 }
 
