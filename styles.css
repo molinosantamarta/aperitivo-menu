@@ -793,18 +793,6 @@ a {
     0 12px 24px rgba(42, 31, 18, 0.06);
 }
 
-.promo-agri__video-track {
-  display: flex;
-  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.promo-agri__video-slide {
-  flex: 0 0 100%;
-  min-width: 100%;
-  margin: 0;
-}
-
 .promo-agri__video {
   display: block;
   width: 100%;

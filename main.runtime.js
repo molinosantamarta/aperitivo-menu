@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317v";
+  const APP_VERSION = "20260317x";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -53,6 +53,20 @@
     "assaggiando lo spritz",
     "caricando i gelati nel carretto",
     "scoppiettando i popcorn"
+  ];
+  const PROMO_AGRI_VIDEOS = [
+    {
+      title: "Video Agri-Eventi 1",
+      src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
+    },
+    {
+      title: "Video Agri-Eventi 2",
+      src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
+    },
+    {
+      title: "Video Agri-Eventi 3",
+      src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1"
+    }
   ];
   const LOADER_MESSAGE_ROW_PREFIX = "loader-message-";
   const CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
@@ -117,7 +131,7 @@
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
   const heroButterflyImage = document.querySelector(".hero-butterfly__image");
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
-  const promoAgriCarouselTrack = document.querySelector("#promoAgriCarouselTrack");
+  const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
@@ -1025,19 +1039,94 @@
     }, 320);
   }
   function initPromoAgriCarousel() {
-    if (!promoAgriCarousel || !promoAgriCarouselTrack || !promoAgriCarouselDots) {
+    if (!promoAgriCarousel || !promoAgriVideoFrame || !promoAgriCarouselDots || !PROMO_AGRI_VIDEOS.length) {
       return;
     }
-    initAutoplayCarousel({
-      root: promoAgriCarousel,
-      track: promoAgriCarouselTrack,
-      dotsContainer: promoAgriCarouselDots,
-      slideSelector: ".promo-agri__video-slide",
-      dotClassName: "promo-agri__video-dot",
-      dotAriaLabelPrefix: "Vai al video",
-      interval: 4200,
-      visibilityThreshold: 0.35
+    let activeIndex = 0;
+    let autoplayId = null;
+    let carouselVisible = false;
+    let carouselPaused = false;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    promoAgriCarouselDots.innerHTML = PROMO_AGRI_VIDEOS.map(
+      (_, index) => '\n      <button\n        class="promo-agri__video-dot"\n        type="button"\n        aria-label="Vai al video '.concat(index + 1, '"\n        data-slide-index="').concat(index, '"\n      ></button>\n    ')
+    ).join("");
+    const dots = Array.from(promoAgriCarouselDots.querySelectorAll(".promo-agri__video-dot"));
+    const syncCarousel = () => {
+      const video = PROMO_AGRI_VIDEOS[activeIndex];
+      if (!video) {
+        return;
+      }
+      if (promoAgriVideoFrame.getAttribute("src") !== video.src) {
+        promoAgriVideoFrame.setAttribute("src", video.src);
+      }
+      promoAgriVideoFrame.setAttribute("title", video.title);
+      dots.forEach((dot, index) => {
+        const isActive = index === activeIndex;
+        dot.classList.toggle("is-active", isActive);
+        dot.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    };
+    const goToSlide = (index) => {
+      activeIndex = (index + PROMO_AGRI_VIDEOS.length) % PROMO_AGRI_VIDEOS.length;
+      syncCarousel();
+    };
+    const stopAutoplay = () => {
+      if (autoplayId != null) {
+        window.clearInterval(autoplayId);
+        autoplayId = null;
+      }
+    };
+    const startAutoplay = () => {
+      if (prefersReducedMotion || carouselPaused || !carouselVisible || PROMO_AGRI_VIDEOS.length < 2 || autoplayId != null) {
+        return;
+      }
+      autoplayId = window.setInterval(() => {
+        goToSlide(activeIndex + 1);
+      }, 4200);
+    };
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        goToSlide(Number(dot.dataset.slideIndex || 0));
+      });
     });
+    promoAgriCarousel.addEventListener("mouseenter", () => {
+      carouselPaused = true;
+      stopAutoplay();
+    });
+    promoAgriCarousel.addEventListener("mouseleave", () => {
+      carouselPaused = false;
+      startAutoplay();
+    });
+    promoAgriCarousel.addEventListener("focusin", () => {
+      carouselPaused = true;
+      stopAutoplay();
+    });
+    promoAgriCarousel.addEventListener("focusout", () => {
+      carouselPaused = false;
+      startAutoplay();
+    });
+    if ("IntersectionObserver" in window) {
+      const visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            carouselVisible = entry.isIntersecting;
+            if (carouselVisible) {
+              startAutoplay();
+            } else {
+              stopAutoplay();
+            }
+          });
+        },
+        {
+          threshold: 0.35
+        }
+      );
+      visibilityObserver.observe(promoAgriCarousel);
+    } else {
+      carouselVisible = true;
+      startAutoplay();
+    }
+    syncCarousel();
   }
   function initFormatCarousel() {
     if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {

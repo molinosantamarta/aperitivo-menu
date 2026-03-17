@@ -38,7 +38,7 @@
       type="font/ttf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260317w" />
+    <link rel="stylesheet" href="./styles.css?v=20260317x" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -155,41 +155,16 @@
           <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
             <div class="promo-agri__video-carousel" id="promoAgriCarousel">
               <div class="promo-agri__video-wrap">
-                <div class="promo-agri__video-track" id="promoAgriCarouselTrack">
-                  <div class="promo-agri__video-slide">
-                    <iframe
-                      class="promo-agri__video"
-                      src="https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0"
-                      title="Video Agri-Eventi 1"
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerpolicy="strict-origin-when-cross-origin"
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                  <div class="promo-agri__video-slide">
-                    <iframe
-                      class="promo-agri__video"
-                      src="https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0"
-                      title="Video Agri-Eventi 2"
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerpolicy="strict-origin-when-cross-origin"
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                  <div class="promo-agri__video-slide">
-                    <iframe
-                      class="promo-agri__video"
-                      src="https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0"
-                      title="Video Agri-Eventi 3"
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerpolicy="strict-origin-when-cross-origin"
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                </div>
+                <iframe
+                  class="promo-agri__video"
+                  id="promoAgriVideoFrame"
+                  src="https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
+                  title="Video Agri-Eventi 1"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                ></iframe>
               </div>
               <div
                 class="promo-agri__video-dots"
@@ -206,7 +181,7 @@
               <span class="utility-btn__icon" aria-hidden="true">
                 <img
                   data-shell-asset
-                  src="./menu-assets/instagram-logo.webp?v=20260317v"
+                  src="./menu-assets/instagram-logo.webp?v=20260317x"
                   alt=""
                 />
               </span>
@@ -232,7 +207,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317x"
                       alt="Logo Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -249,7 +224,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317x"
                       alt="Format BBQ Hub"
                       loading="lazy"
                       decoding="async"
@@ -266,7 +241,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260317x"
                       alt="Format BBQ Picnic"
                       loading="lazy"
                       decoding="async"
@@ -283,7 +258,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260317x"
                       alt="Format BBQ sotto le stelle"
                       loading="lazy"
                       decoding="async"
@@ -300,7 +275,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/cinema.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/cinema.png?v=20260317x"
                       alt="Format Cinema"
                       loading="lazy"
                       decoding="async"
@@ -317,7 +292,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/country.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/country.png?v=20260317x"
                       alt="Format Country"
                       loading="lazy"
                       decoding="async"
@@ -334,7 +309,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/dam.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/dam.png?v=20260317x"
                       alt="Format Domenica al Molino"
                       loading="lazy"
                       decoding="async"
@@ -351,7 +326,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260317v"
+                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260317x"
                       alt="Instagram Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -397,7 +372,7 @@
         >
           <img
             data-shell-asset
-            src="./menu-assets/sgb-molino-black.png?v=20260317v"
+            src="./menu-assets/sgb-molino-black.png?v=20260317x"
             alt="Agriturismo Molino Santa Marta"
           />
         </a>
@@ -481,9 +456,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260317v";
+          script.src = "./main.js?v=20260317x";
         } else {
-          script.src = "./main.runtime.js?v=20260317v";
+          script.src = "./main.runtime.js?v=20260317x";
         }
 
         document.body.appendChild(script);
