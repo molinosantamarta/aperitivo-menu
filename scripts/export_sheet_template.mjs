@@ -71,37 +71,9 @@ const rows = menu.sections.flatMap((section) =>
   })
 );
 
-const loaderRows = [
-  "sistemando i tavoli nel parco",
-  "tagliando il prato",
-  "caricando le birre in frigo",
-  "affettando il salame",
-  "assaggiando lo spritz",
-  "caricando i gelati nel carretto",
-  "scoppiettando i popcorn",
-].map((message, index) => ({
-  id: `loader-message-${index + 1}`,
-  section_id: "impostazioni",
-  position: index,
-  visible: "si",
-  available: "si",
-  name: message,
-  description: "",
-  category: "loader",
-  show_detail_hint: "no",
-  visual_mode: "inherit",
-  visual_label: "",
-  visual_script: "",
-  visual_gradient_start: "",
-  visual_gradient_mid: "",
-  visual_gradient_end: "",
-  visual_label_color: "",
-  visual_script_color: "",
-}));
-
 const csv = [
   columns.join(","),
-  ...[...rows, ...loaderRows].map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
+  ...rows.map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
 ].join("\n");
 
 await writeFile(outputPath, csv);

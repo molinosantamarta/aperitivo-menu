@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zc";
+const APP_VERSION = "20260317zd";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -55,7 +55,6 @@ const PROMO_AGRI_VIDEOS = [
     src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1",
   },
 ];
-const LOADER_MESSAGE_ROW_PREFIX = "loader-message-";
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
 
 let sections = [];
@@ -424,7 +423,6 @@ async function loadMenuData() {
       return baseData;
     }
 
-    setLoaderMessages(extractLoaderMessages(sheetRows));
     return applySheetRowsToMenu(baseData, sheetRows);
   } catch (error) {
     console.warn("Impossibile caricare le override dal Google Sheet:", error);
@@ -534,14 +532,6 @@ function normalizeSheetHeader(value) {
   };
 
   return aliases[normalized] || normalized;
-}
-
-function extractLoaderMessages(sheetRows) {
-  return sheetRows
-    .filter((row) => row.id && row.id.startsWith(LOADER_MESSAGE_ROW_PREFIX))
-    .sort((left, right) => parseSheetInteger(left.position, 0) - parseSheetInteger(right.position, 0))
-    .map((row) => getFirstSheetValue(row.name, row.description))
-    .filter(Boolean);
 }
 
 function applySheetRowsToMenu(baseMenu, sheetRows) {
