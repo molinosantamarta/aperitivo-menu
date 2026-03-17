@@ -211,6 +211,7 @@
           "visual": {
             "type": "photo-panel",
             "asset": "moretti-back.png",
+            "deferAsset": true,
             "position": "center center",
             "size": "28% auto",
             "backgroundColor": "#ddc98b"

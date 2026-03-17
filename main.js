@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zv";
+const APP_VERSION = "20260317zw";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -999,11 +999,13 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
     }
 
     section.items.forEach((item) => {
-      collectVisualAssetUrls(item.visual, urls);
+      collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
       getAllSideVisuals(item).forEach((visual) => collectSideVisualAssetUrls(visual, urls));
 
       if (Array.isArray(item.detailGallery)) {
-        item.detailGallery.forEach((visual) => collectVisualAssetUrls(visual, urls));
+        item.detailGallery.forEach((visual) =>
+          collectVisualAssetUrls(visual, urls, { skipDeferredPhotoPanels: true })
+        );
       }
     });
   });
@@ -1024,12 +1026,13 @@ function collectShellAssetUrls() {
   return Array.from(urls);
 }
 
-function collectVisualAssetUrls(visual, urls) {
+function collectVisualAssetUrls(visual, urls, options = {}) {
+  const { skipDeferredPhotoPanels = false } = options;
   if (!visual || !urls) {
     return;
   }
 
-  if (visual.asset) {
+  if (visual.asset && !(skipDeferredPhotoPanels && visual.type === "photo-panel" && visual.deferAsset === true)) {
     urls.add(getVisualAsset(visual.asset));
   }
 
@@ -2765,7 +2768,11 @@ function renderPhotoPanelVisual(visual, context, item) {
   }
 
   const imageUrl = visual.asset ? getVisualAsset(visual.asset) : "";
-  const shouldDeferImage = Boolean(imageUrl) && context !== "detail" && item && isBottleSectionItem(item);
+  const shouldDeferImage =
+    Boolean(imageUrl) &&
+    context !== "detail" &&
+    item &&
+    (isBottleSectionItem(item) || visual.deferAsset === true);
 
   if (shouldDeferImage) {
     classes.push("photo-panel-visual--deferred");
