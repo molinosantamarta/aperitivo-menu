@@ -802,19 +802,6 @@ a {
   border-radius: 18px;
 }
 
-.promo-agri__video-touch-layer {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  bottom: 6px;
-  z-index: 2;
-  padding: 0;
-  border: 0;
-  border-radius: 18px;
-  background: transparent;
-}
-
 .promo-agri__video-dots {
   display: flex;
   justify-content: center;

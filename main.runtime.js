@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317za";
+  const APP_VERSION = "20260317zb";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -133,7 +133,6 @@
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
   const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
-  const promoAgriTouchLayer = document.querySelector("#promoAgriTouchLayer");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1090,13 +1089,11 @@
         goToSlide(Number(dot.dataset.slideIndex || 0));
       });
     });
-    if (promoAgriTouchLayer) {
-      bindSwipeZone(
-        promoAgriTouchLayer,
-        () => goToSlide(activeIndex - 1),
-        () => goToSlide(activeIndex + 1)
-      );
-    }
+    bindSwipeZone(
+      promoAgriCarousel,
+      () => goToSlide(activeIndex - 1),
+      () => goToSlide(activeIndex + 1)
+    );
     promoAgriCarousel.addEventListener("mouseenter", () => {
       carouselPaused = true;
       stopAutoplay();

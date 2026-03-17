@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317za";
+const APP_VERSION = "20260317zb";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -118,7 +118,6 @@ const heroButterflyImage = document.querySelector(".hero-butterfly__image");
 const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
 const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
 const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
-const promoAgriTouchLayer = document.querySelector("#promoAgriTouchLayer");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1291,13 +1290,11 @@ function initPromoAgriCarousel() {
     });
   });
 
-  if (promoAgriTouchLayer) {
-    bindSwipeZone(
-      promoAgriTouchLayer,
-      () => goToSlide(activeIndex - 1),
-      () => goToSlide(activeIndex + 1)
-    );
-  }
+  bindSwipeZone(
+    promoAgriCarousel,
+    () => goToSlide(activeIndex - 1),
+    () => goToSlide(activeIndex + 1)
+  );
 
   promoAgriCarousel.addEventListener("mouseenter", () => {
     carouselPaused = true;
