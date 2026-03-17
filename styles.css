@@ -344,6 +344,7 @@ a {
   position: relative;
   overflow: visible;
   padding: 16px 16px 22px;
+  background: rgba(255, 253, 248, 0.98);
 }
 
 .hero-card::before {
