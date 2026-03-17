@@ -38,7 +38,7 @@
       type="font/ttf"
       crossorigin
     />
-    <link rel="stylesheet" href="./styles.css?v=20260317z" />
+    <link rel="stylesheet" href="./styles.css?v=20260317za" />
   </head>
   <body class="is-loading">
     <div class="app-loader" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -155,12 +155,6 @@
           <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
             <div class="promo-agri__video-carousel" id="promoAgriCarousel">
               <div class="promo-agri__video-wrap">
-                <button
-                  class="promo-agri__video-swipe-zone promo-agri__video-swipe-zone--prev"
-                  id="promoAgriPrev"
-                  type="button"
-                  aria-label="Video precedente"
-                ></button>
                 <iframe
                   class="promo-agri__video"
                   id="promoAgriVideoFrame"
@@ -172,10 +166,10 @@
                   allowfullscreen
                 ></iframe>
                 <button
-                  class="promo-agri__video-swipe-zone promo-agri__video-swipe-zone--next"
-                  id="promoAgriNext"
+                  class="promo-agri__video-touch-layer"
+                  id="promoAgriTouchLayer"
                   type="button"
-                  aria-label="Video successivo"
+                  aria-label="Scorri i video Agri-Eventi"
                 ></button>
               </div>
               <div
@@ -193,7 +187,7 @@
               <span class="utility-btn__icon" aria-hidden="true">
                 <img
                   data-shell-asset
-                  src="./menu-assets/instagram-logo.webp?v=20260317z"
+                  src="./menu-assets/instagram-logo.webp?v=20260317za"
                   alt=""
                 />
               </span>
@@ -219,7 +213,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317za"
                       alt="Logo Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -236,7 +230,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317za"
                       alt="Format BBQ Hub"
                       loading="lazy"
                       decoding="async"
@@ -253,7 +247,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260317za"
                       alt="Format BBQ Picnic"
                       loading="lazy"
                       decoding="async"
@@ -270,7 +264,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260317za"
                       alt="Format BBQ sotto le stelle"
                       loading="lazy"
                       decoding="async"
@@ -287,7 +281,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/cinema.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/cinema.png?v=20260317za"
                       alt="Format Cinema"
                       loading="lazy"
                       decoding="async"
@@ -304,7 +298,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/country.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/country.png?v=20260317za"
                       alt="Format Country"
                       loading="lazy"
                       decoding="async"
@@ -321,7 +315,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/dam.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/dam.png?v=20260317za"
                       alt="Format Domenica al Molino"
                       loading="lazy"
                       decoding="async"
@@ -338,7 +332,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260317z"
+                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260317za"
                       alt="Instagram Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -384,7 +378,7 @@
         >
           <img
             data-shell-asset
-            src="./menu-assets/sgb-molino-black.png?v=20260317z"
+            src="./menu-assets/sgb-molino-black.png?v=20260317za"
             alt="Agriturismo Molino Santa Marta"
           />
         </a>
@@ -468,9 +462,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260317z";
+          script.src = "./main.js?v=20260317za";
         } else {
-          script.src = "./main.runtime.js?v=20260317z";
+          script.src = "./main.runtime.js?v=20260317za";
         }
 
         document.body.appendChild(script);

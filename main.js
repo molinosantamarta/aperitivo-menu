@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317z";
+const APP_VERSION = "20260317za";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -118,8 +118,7 @@ const heroButterflyImage = document.querySelector(".hero-butterfly__image");
 const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
 const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
 const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
-const promoAgriPrev = document.querySelector("#promoAgriPrev");
-const promoAgriNext = document.querySelector("#promoAgriNext");
+const promoAgriTouchLayer = document.querySelector("#promoAgriTouchLayer");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1263,14 +1262,6 @@ function initPromoAgriCarousel() {
     syncCarousel();
   };
 
-  const goPrev = () => {
-    goToSlide(activeIndex - 1);
-  };
-
-  const goNext = () => {
-    goToSlide(activeIndex + 1);
-  };
-
   const stopAutoplay = () => {
     if (autoplayId != null) {
       window.clearInterval(autoplayId);
@@ -1300,14 +1291,12 @@ function initPromoAgriCarousel() {
     });
   });
 
-  if (promoAgriPrev) {
-    promoAgriPrev.addEventListener("click", goPrev);
-    bindSwipeZone(promoAgriPrev, goPrev, goNext);
-  }
-
-  if (promoAgriNext) {
-    promoAgriNext.addEventListener("click", goNext);
-    bindSwipeZone(promoAgriNext, goPrev, goNext);
+  if (promoAgriTouchLayer) {
+    bindSwipeZone(
+      promoAgriTouchLayer,
+      () => goToSlide(activeIndex - 1),
+      () => goToSlide(activeIndex + 1)
+    );
   }
 
   promoAgriCarousel.addEventListener("mouseenter", () => {

@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317z";
+  const APP_VERSION = "20260317za";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -133,8 +133,7 @@
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
   const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
-  const promoAgriPrev = document.querySelector("#promoAgriPrev");
-  const promoAgriNext = document.querySelector("#promoAgriNext");
+  const promoAgriTouchLayer = document.querySelector("#promoAgriTouchLayer");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1072,12 +1071,6 @@
       activeIndex = (index + PROMO_AGRI_VIDEOS.length) % PROMO_AGRI_VIDEOS.length;
       syncCarousel();
     };
-    const goPrev = () => {
-      goToSlide(activeIndex - 1);
-    };
-    const goNext = () => {
-      goToSlide(activeIndex + 1);
-    };
     const stopAutoplay = () => {
       if (autoplayId != null) {
         window.clearInterval(autoplayId);
@@ -1097,13 +1090,12 @@
         goToSlide(Number(dot.dataset.slideIndex || 0));
       });
     });
-    if (promoAgriPrev) {
-      promoAgriPrev.addEventListener("click", goPrev);
-      bindSwipeZone(promoAgriPrev, goPrev, goNext);
-    }
-    if (promoAgriNext) {
-      promoAgriNext.addEventListener("click", goNext);
-      bindSwipeZone(promoAgriNext, goPrev, goNext);
+    if (promoAgriTouchLayer) {
+      bindSwipeZone(
+        promoAgriTouchLayer,
+        () => goToSlide(activeIndex - 1),
+        () => goToSlide(activeIndex + 1)
+      );
     }
     promoAgriCarousel.addEventListener("mouseenter", () => {
       carouselPaused = true;
