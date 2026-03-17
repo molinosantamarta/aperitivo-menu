@@ -1133,7 +1133,7 @@
           "description": "Bevanda analcolica.",
           "options": [
             {
-              "label": "1 drink",
+              "label": "",
               "price": 5
             }
           ],
