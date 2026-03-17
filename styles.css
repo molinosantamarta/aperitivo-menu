@@ -1598,8 +1598,8 @@ a {
   margin: 0;
   display: grid;
   place-items: center;
-  aspect-ratio: 1.82 / 1;
-  padding: clamp(14px, 4vw, 24px);
+  aspect-ratio: 20 / 9;
+  padding: clamp(10px, 3vw, 18px);
   background: transparent;
 }
 
@@ -1611,8 +1611,8 @@ a {
 }
 
 .format-carousel__slide--compact img {
-  width: 80%;
-  height: 80%;
+  width: 72%;
+  height: 72%;
 }
 
 .format-carousel__dots {
@@ -1765,13 +1765,13 @@ a {
   }
 
   .format-carousel__slide {
-    aspect-ratio: 1.82 / 1;
-    padding: 12px;
+    aspect-ratio: 20 / 9;
+    padding: 10px;
   }
 
   .format-carousel__slide--compact img {
-    width: 76%;
-    height: 76%;
+    width: 68%;
+    height: 68%;
   }
 }
 
