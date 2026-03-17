@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317d";
+  const APP_VERSION = "20260317e";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -56,6 +56,7 @@
     "caricando i gelati nel carretto",
     "scoppiettando i popcorn"
   ];
+  const LOADER_MESSAGE_ROW_PREFIX = "loader-message-";
   let sections = [];
   let itemLookup = {};
   let itemSectionLookup = {};
@@ -63,6 +64,8 @@
   let deferredPhotoPanelObserver;
   let loaderProgressFrame = null;
   let loaderMessageIntervalId = null;
+  let loaderMessages = [...LOADER_MESSAGES];
+  let loaderMessageIndex = 0;
   const loaderStartedAt = performance.now();
   let appHasRevealed = false;
   let lastFocusedElement = null;
@@ -253,25 +256,32 @@
     startLoaderTimeProgress();
   }
   function startLoaderMessageRotation() {
-    if (!appLoaderMessage || !LOADER_MESSAGES.length) {
+    if (!appLoaderMessage || !loaderMessages.length) {
       return;
     }
-    let currentIndex = 0;
-    appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+    appLoaderMessage.textContent = loaderMessages[loaderMessageIndex];
     loaderMessageIntervalId = window.setInterval(() => {
       if (appHasRevealed) {
         return;
       }
-      currentIndex = (currentIndex + 1) % LOADER_MESSAGES.length;
+      loaderMessageIndex = (loaderMessageIndex + 1) % loaderMessages.length;
       appLoaderMessage.classList.add("is-transitioning");
       window.setTimeout(() => {
         if (!appLoaderMessage || appHasRevealed) {
           return;
         }
-        appLoaderMessage.textContent = LOADER_MESSAGES[currentIndex];
+        appLoaderMessage.textContent = loaderMessages[loaderMessageIndex];
         appLoaderMessage.classList.remove("is-transitioning");
       }, LOADER_MESSAGE_FADE_DURATION);
     }, LOADER_MESSAGE_INTERVAL);
+  }
+  function setLoaderMessages(messages) {
+    loaderMessages = Array.isArray(messages) && messages.length ? messages : [...LOADER_MESSAGES];
+    loaderMessageIndex = 0;
+    if (appLoaderMessage && !appHasRevealed) {
+      appLoaderMessage.classList.remove("is-transitioning");
+      appLoaderMessage.textContent = loaderMessages[0] || "";
+    }
   }
   function startLoaderTimeProgress() {
     const tick = () => {
@@ -357,6 +367,7 @@
       if (!sheetRows.length) {
         return baseData;
       }
+      setLoaderMessages(extractLoaderMessages(sheetRows));
       return applySheetRowsToMenu(baseData, sheetRows);
     } catch (error) {
       console.warn("Impossibile caricare le override dal Google Sheet:", error);
@@ -448,6 +459,9 @@
       prezzo: "prezzo_1"
     };
     return aliases[normalized] || normalized;
+  }
+  function extractLoaderMessages(sheetRows) {
+    return sheetRows.filter((row) => row.id && row.id.startsWith(LOADER_MESSAGE_ROW_PREFIX)).sort((left, right) => parseSheetInteger(left.position, 0) - parseSheetInteger(right.position, 0)).map((row) => getFirstSheetValue(row.name, row.description)).filter(Boolean);
   }
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));

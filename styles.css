@@ -220,6 +220,9 @@ a {
 }
 
 .app-loader__note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 30ch;
   margin: 2px 0 4px;
@@ -229,6 +232,7 @@ a {
   font-weight: 600;
   line-height: 1.52;
   min-height: calc(1.52em * 3);
+  text-align: center;
   transition:
     opacity 360ms ease,
     transform 360ms ease,

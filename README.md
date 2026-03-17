@@ -96,6 +96,7 @@ Il progetto può leggere override dinamici da un Google Sheet pubblicato come CS
    - `nome`, `descrizione`, `categoria`
    - `varianti` + `prezzo_unico` se tutte le varianti hanno lo stesso prezzo
    - `prezzo_1`, `prezzo_2`, `prezzo_3` se il prodotto ha piu varianti con prezzi diversi
+   - nelle righe `loader-message-*` puoi cambiare il testo del loader modificando la colonna `nome`
 3. se vuoi aggiungere un nuovo prodotto semplice, duplica una riga e cambia almeno:
    - `id`
    - `sezione`

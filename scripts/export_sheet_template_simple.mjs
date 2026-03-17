@@ -63,9 +63,31 @@ const rows = menu.sections.flatMap((section) =>
   })
 );
 
+const loaderRows = [
+  "sistemando i tavoli nel parco",
+  "tagliando il prato",
+  "caricando le birre in frigo",
+  "affettando il salame",
+  "assaggiando lo spritz",
+  "caricando i gelati nel carretto",
+  "scoppiettando i popcorn",
+].map((message, index) => ({
+  id: `loader-message-${index + 1}`,
+  sezione: "impostazioni",
+  ordine: index,
+  visibile: "si",
+  disponibile: "si",
+  nome: message,
+  descrizione: "",
+  categoria: "loader",
+  varianti: "",
+  prezzo_unico: "",
+  varianti_extra: "",
+}));
+
 const csv = [
   columns.join(","),
-  ...rows.map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
+  ...[...rows, ...loaderRows].map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
 ].join("\n");
 
 await writeFile(outputPath, csv);
