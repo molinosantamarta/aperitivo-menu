@@ -108,6 +108,7 @@ a {
 .utility-btn:focus-visible,
 .section-nav__link:focus-visible,
 .promo-agri__chip:focus-visible,
+.promo-agri__video-dot:focus-visible,
 .format-carousel__dot:focus-visible,
 .format-carousel__slide-link:focus-visible,
 .site-brandmark:focus-visible,
@@ -779,6 +780,11 @@ a {
   width: 100%;
 }
 
+.promo-agri__video-carousel {
+  display: grid;
+  gap: 10px;
+}
+
 .promo-agri__video-wrap {
   overflow: hidden;
   padding: 6px;
@@ -789,12 +795,47 @@ a {
     0 12px 24px rgba(42, 31, 18, 0.06);
 }
 
+.promo-agri__video-track {
+  display: flex;
+  transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.promo-agri__video-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  margin: 0;
+}
+
 .promo-agri__video {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 0;
   border-radius: 18px;
+}
+
+.promo-agri__video-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.promo-agri__video-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(125, 98, 80, 0.2);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.promo-agri__video-dot.is-active {
+  background: rgba(152, 30, 34, 0.84);
+  transform: scale(1.08);
 }
 
 .promo-agri__visual .utility-btn--instagram {

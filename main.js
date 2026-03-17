@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317u";
+const APP_VERSION = "20260317v";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -101,6 +101,9 @@ const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
 const appLoaderPercent = document.querySelector("#appLoaderPercent");
 const appLoaderMessage = document.querySelector("#appLoaderMessage");
 const heroButterflyImage = document.querySelector(".hero-butterfly__image");
+const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
+const promoAgriCarouselTrack = document.querySelector("#promoAgriCarouselTrack");
+const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -199,6 +202,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 initLoaderProgress();
+initPromoAgriCarousel();
 initFormatCarousel();
 init();
 
@@ -1196,6 +1200,23 @@ function revealApp() {
   }, 320);
 }
 
+function initPromoAgriCarousel() {
+  if (!promoAgriCarousel || !promoAgriCarouselTrack || !promoAgriCarouselDots) {
+    return;
+  }
+
+  initAutoplayCarousel({
+    root: promoAgriCarousel,
+    track: promoAgriCarouselTrack,
+    dotsContainer: promoAgriCarouselDots,
+    slideSelector: ".promo-agri__video-slide",
+    dotClassName: "promo-agri__video-dot",
+    dotAriaLabelPrefix: "Vai al video",
+    interval: 4200,
+    visibilityThreshold: 0.35,
+  });
+}
+
 function initFormatCarousel() {
   if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {
     return;
@@ -1203,7 +1224,33 @@ function initFormatCarousel() {
 
   initDeferredFormatCarouselAssets();
 
-  const slides = Array.from(formatCarouselTrack.querySelectorAll(".format-carousel__slide"));
+  initAutoplayCarousel({
+    root: formatCarousel,
+    track: formatCarouselTrack,
+    dotsContainer: formatCarouselDots,
+    slideSelector: ".format-carousel__slide",
+    dotClassName: "format-carousel__dot",
+    dotAriaLabelPrefix: "Vai al format",
+    interval: 2600,
+    visibilityThreshold: 0.45,
+  });
+}
+
+function initAutoplayCarousel({
+  root,
+  track,
+  dotsContainer,
+  slideSelector,
+  dotClassName,
+  dotAriaLabelPrefix,
+  interval,
+  visibilityThreshold,
+}) {
+  if (!root || !track || !dotsContainer) {
+    return;
+  }
+
+  const slides = Array.from(track.querySelectorAll(slideSelector));
   if (!slides.length) {
     return;
   }
@@ -1214,23 +1261,23 @@ function initFormatCarousel() {
   let carouselPaused = false;
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  formatCarouselDots.innerHTML = slides
+  dotsContainer.innerHTML = slides
     .map(
       (_, index) => `
         <button
-          class="format-carousel__dot"
+          class="${dotClassName}"
           type="button"
-          aria-label="Vai al format ${index + 1}"
+          aria-label="${dotAriaLabelPrefix} ${index + 1}"
           data-slide-index="${index}"
         ></button>
       `
     )
     .join("");
 
-  const dots = Array.from(formatCarouselDots.querySelectorAll(".format-carousel__dot"));
+  const dots = Array.from(dotsContainer.querySelectorAll(`.${dotClassName}`));
 
   const syncCarousel = () => {
-    formatCarouselTrack.style.transform = `translateX(-${activeIndex * 100}%)`;
+    track.style.transform = `translateX(-${activeIndex * 100}%)`;
     slides.forEach((slide, index) => {
       slide.classList.toggle("is-active", index === activeIndex);
     });
@@ -1258,9 +1305,9 @@ function initFormatCarousel() {
       return;
     }
 
-      autoplayId = window.setInterval(() => {
-        goToSlide(activeIndex + 1);
-      }, 2600);
+    autoplayId = window.setInterval(() => {
+      goToSlide(activeIndex + 1);
+    }, interval);
   };
 
   dots.forEach((dot) => {
@@ -1269,19 +1316,19 @@ function initFormatCarousel() {
     });
   });
 
-  formatCarousel.addEventListener("mouseenter", () => {
+  root.addEventListener("mouseenter", () => {
     carouselPaused = true;
     stopAutoplay();
   });
-  formatCarousel.addEventListener("mouseleave", () => {
+  root.addEventListener("mouseleave", () => {
     carouselPaused = false;
     startAutoplay();
   });
-  formatCarousel.addEventListener("focusin", () => {
+  root.addEventListener("focusin", () => {
     carouselPaused = true;
     stopAutoplay();
   });
-  formatCarousel.addEventListener("focusout", () => {
+  root.addEventListener("focusout", () => {
     carouselPaused = false;
     startAutoplay();
   });
@@ -1299,11 +1346,11 @@ function initFormatCarousel() {
         });
       },
       {
-        threshold: 0.45,
+        threshold: visibilityThreshold,
       }
     );
 
-    visibilityObserver.observe(formatCarousel);
+    visibilityObserver.observe(root);
   } else {
     carouselVisible = true;
     startAutoplay();

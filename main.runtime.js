@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317u";
+  const APP_VERSION = "20260317v";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -116,6 +116,9 @@
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
   const heroButterflyImage = document.querySelector(".hero-butterfly__image");
+  const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
+  const promoAgriCarouselTrack = document.querySelector("#promoAgriCarouselTrack");
+  const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -202,6 +205,7 @@
     }
   });
   initLoaderProgress();
+  initPromoAgriCarousel();
   initFormatCarousel();
   init();
   async function init() {
@@ -1020,12 +1024,51 @@
       }
     }, 320);
   }
+  function initPromoAgriCarousel() {
+    if (!promoAgriCarousel || !promoAgriCarouselTrack || !promoAgriCarouselDots) {
+      return;
+    }
+    initAutoplayCarousel({
+      root: promoAgriCarousel,
+      track: promoAgriCarouselTrack,
+      dotsContainer: promoAgriCarouselDots,
+      slideSelector: ".promo-agri__video-slide",
+      dotClassName: "promo-agri__video-dot",
+      dotAriaLabelPrefix: "Vai al video",
+      interval: 4200,
+      visibilityThreshold: 0.35
+    });
+  }
   function initFormatCarousel() {
     if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {
       return;
     }
     initDeferredFormatCarouselAssets();
-    const slides = Array.from(formatCarouselTrack.querySelectorAll(".format-carousel__slide"));
+    initAutoplayCarousel({
+      root: formatCarousel,
+      track: formatCarouselTrack,
+      dotsContainer: formatCarouselDots,
+      slideSelector: ".format-carousel__slide",
+      dotClassName: "format-carousel__dot",
+      dotAriaLabelPrefix: "Vai al format",
+      interval: 2600,
+      visibilityThreshold: 0.45
+    });
+  }
+  function initAutoplayCarousel({
+    root,
+    track,
+    dotsContainer,
+    slideSelector,
+    dotClassName,
+    dotAriaLabelPrefix,
+    interval,
+    visibilityThreshold
+  }) {
+    if (!root || !track || !dotsContainer) {
+      return;
+    }
+    const slides = Array.from(track.querySelectorAll(slideSelector));
     if (!slides.length) {
       return;
     }
@@ -1034,12 +1077,12 @@
     let carouselVisible = false;
     let carouselPaused = false;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    formatCarouselDots.innerHTML = slides.map(
-      (_, index) => '\n        <button\n          class="format-carousel__dot"\n          type="button"\n          aria-label="Vai al format '.concat(index + 1, '"\n          data-slide-index="').concat(index, '"\n        ></button>\n      ')
+    dotsContainer.innerHTML = slides.map(
+      (_, index) => '\n        <button\n          class="'.concat(dotClassName, '"\n          type="button"\n          aria-label="').concat(dotAriaLabelPrefix, " ").concat(index + 1, '"\n          data-slide-index="').concat(index, '"\n        ></button>\n      ')
     ).join("");
-    const dots = Array.from(formatCarouselDots.querySelectorAll(".format-carousel__dot"));
+    const dots = Array.from(dotsContainer.querySelectorAll(".".concat(dotClassName)));
     const syncCarousel = () => {
-      formatCarouselTrack.style.transform = "translateX(-".concat(activeIndex * 100, "%)");
+      track.style.transform = "translateX(-".concat(activeIndex * 100, "%)");
       slides.forEach((slide, index) => {
         slide.classList.toggle("is-active", index === activeIndex);
       });
@@ -1065,26 +1108,26 @@
       }
       autoplayId = window.setInterval(() => {
         goToSlide(activeIndex + 1);
-      }, 2600);
+      }, interval);
     };
     dots.forEach((dot) => {
       dot.addEventListener("click", () => {
         goToSlide(Number(dot.dataset.slideIndex || 0));
       });
     });
-    formatCarousel.addEventListener("mouseenter", () => {
+    root.addEventListener("mouseenter", () => {
       carouselPaused = true;
       stopAutoplay();
     });
-    formatCarousel.addEventListener("mouseleave", () => {
+    root.addEventListener("mouseleave", () => {
       carouselPaused = false;
       startAutoplay();
     });
-    formatCarousel.addEventListener("focusin", () => {
+    root.addEventListener("focusin", () => {
       carouselPaused = true;
       stopAutoplay();
     });
-    formatCarousel.addEventListener("focusout", () => {
+    root.addEventListener("focusout", () => {
       carouselPaused = false;
       startAutoplay();
     });
@@ -1101,10 +1144,10 @@
           });
         },
         {
-          threshold: 0.45
+          threshold: visibilityThreshold
         }
       );
-      visibilityObserver.observe(formatCarousel);
+      visibilityObserver.observe(root);
     } else {
       carouselVisible = true;
       startAutoplay();
