@@ -109,6 +109,7 @@ a {
 .section-nav__link:focus-visible,
 .promo-agri__chip:focus-visible,
 .format-carousel__dot:focus-visible,
+.format-carousel__slide-link:focus-visible,
 .site-brandmark:focus-visible,
 .item-card:focus-visible,
 .option-btn:focus-visible,
@@ -1610,9 +1611,27 @@ a {
   object-position: center;
 }
 
-.format-carousel__slide--compact img {
-  width: 72%;
-  height: 72%;
+.format-carousel__slide-link {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.format-carousel__slide--logo img {
+  width: 84%;
+  height: 84%;
+}
+
+.format-carousel__slide--cinema img {
+  width: 92%;
+  height: 92%;
+}
+
+.format-carousel__slide--country img {
+  width: 78%;
+  height: 78%;
 }
 
 .format-carousel__dots {
@@ -1769,9 +1788,19 @@ a {
     padding: 10px;
   }
 
-  .format-carousel__slide--compact img {
-    width: 68%;
-    height: 68%;
+  .format-carousel__slide--logo img {
+    width: 80%;
+    height: 80%;
+  }
+
+  .format-carousel__slide--cinema img {
+    width: 88%;
+    height: 88%;
+  }
+
+  .format-carousel__slide--country img {
+    width: 74%;
+    height: 74%;
   }
 }
 
