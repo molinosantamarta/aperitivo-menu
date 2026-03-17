@@ -770,9 +770,9 @@
         {
           "id": "pinot-extra-dry",
           "page": 1,
-          "name": "Pinot, Extra Dry Metodo Charmat",
+          "name": "Pinot, spumante extra dry",
           "category": "Bollicine",
-          "description": "Spumante extra dry, Oltrepò Pavese.",
+          "description": "Metodo Charmat, Az. Brega, Oltrepò Pavese.",
           "visual": {
             "type": "photo-panel",
             "asset": "brut-back.png",
