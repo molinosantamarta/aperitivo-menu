@@ -775,9 +775,7 @@
           "description": "Metodo Charmat, Az. Brega, Oltrepò Pavese.",
           "visual": {
             "type": "photo-panel",
-            "asset": "brut-back.png",
-            "position": "center center",
-            "size": "cover"
+            "backgroundColor": "#efe8de"
           },
           "sideVisual": {
             "type": "floating-bottle",

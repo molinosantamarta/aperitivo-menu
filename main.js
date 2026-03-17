@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zp";
+const APP_VERSION = "20260317zq";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -2758,8 +2758,8 @@ function renderPhotoPanelVisual(visual, context, item) {
     classes.push("photo-panel-visual--detail");
   }
 
-  const shouldDeferImage = context !== "detail" && item && isBottleSectionItem(item);
-  const imageUrl = getVisualAsset(visual.asset);
+  const imageUrl = visual.asset ? getVisualAsset(visual.asset) : "";
+  const shouldDeferImage = Boolean(imageUrl) && context !== "detail" && item && isBottleSectionItem(item);
 
   if (shouldDeferImage) {
     classes.push("photo-panel-visual--deferred");
@@ -2770,7 +2770,7 @@ function renderPhotoPanelVisual(visual, context, item) {
       class="${classes.join(" ")}"
       ${shouldDeferImage ? `data-photo-panel-image="${imageUrl}" data-photo-panel-loaded="false"` : ""}
       style="
-        --photo-panel-image: ${shouldDeferImage ? "none" : `url('${imageUrl}')`};
+        --photo-panel-image: ${shouldDeferImage ? "none" : imageUrl ? `url('${imageUrl}')` : "none"};
         --photo-panel-position: ${visual.position || "center center"};
         --photo-panel-size: ${visual.size || "cover"};
         --photo-panel-bg: ${visual.backgroundColor || "transparent"};

@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zp";
+  const APP_VERSION = "20260317zq";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -2092,12 +2092,12 @@
     if (context === "detail") {
       classes.push("photo-panel-visual--detail");
     }
-    const shouldDeferImage = context !== "detail" && item && isBottleSectionItem(item);
-    const imageUrl = getVisualAsset(visual.asset);
+    const imageUrl = visual.asset ? getVisualAsset(visual.asset) : "";
+    const shouldDeferImage = Boolean(imageUrl) && context !== "detail" && item && isBottleSectionItem(item);
     if (shouldDeferImage) {
       classes.push("photo-panel-visual--deferred");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : "url('".concat(imageUrl, "')"), ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ';\n      "\n    ></div>\n  ');
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ';\n      "\n    ></div>\n  ');
   }
   function renderCanClusterVisual(visual, context) {
     const classes = ["can-cluster-visual"];
