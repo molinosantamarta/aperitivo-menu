@@ -788,6 +788,11 @@ a {
 
 .promo-agri__visual .utility-btn {
   width: 100%;
+  min-height: 48px;
+}
+
+.promo-agri__actions .utility-btn {
+  min-height: 48px;
 }
 
 .promo-agri__video-carousel {
@@ -838,7 +843,6 @@ a {
 }
 
 .promo-agri__visual .utility-btn--instagram {
-  min-height: 44px;
   background: rgba(255, 255, 255, 0.8);
 }
 
