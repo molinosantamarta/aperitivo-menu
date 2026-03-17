@@ -969,7 +969,7 @@ a {
 }
 
 .item-card--artisanal-beer {
-  padding: 10px;
+  padding: 9px;
 }
 
 .item-card--drink {
@@ -1048,10 +1048,10 @@ a {
 }
 
 .item-card--artisanal-beer .beer-script-visual {
-  min-height: 74px;
+  min-height: 70px;
   width: 100%;
   max-width: none;
-  padding: 7px 18px;
+  padding: 6px 16px;
   border-radius: 22px;
 }
 
@@ -1329,7 +1329,7 @@ a {
 }
 
 .item-card--artisanal-beer .item-card__content {
-  padding-top: 11px;
+  padding-top: 9px;
 }
 
 .item-card__content--with-side-visual {
@@ -1370,8 +1370,8 @@ a {
 }
 
 .item-card--artisanal-beer.item-card--floating-bottle .item-card__content {
-  min-height: 146px;
-  padding-right: 120px;
+  min-height: 142px;
+  padding-right: 118px;
 }
 
 .item-card__side-visual--floating-bottle {
@@ -1518,7 +1518,7 @@ a {
 }
 
 .item-card--artisanal-beer .item-card__prices {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .price-chip {
