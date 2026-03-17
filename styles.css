@@ -1875,9 +1875,9 @@ a {
   }
 
   .format-carousel__slide--country img {
-    width: 84%;
-    height: 84%;
-    transform: translateY(-7px);
+    width: 80%;
+    height: 80%;
+    transform: translateY(-12px);
   }
 
   .format-carousel__slide--aperitivo img {
