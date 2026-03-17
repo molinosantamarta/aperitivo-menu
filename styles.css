@@ -851,6 +851,15 @@ a {
   background: rgba(255, 255, 255, 0.8);
 }
 
+.promo-agri__visual-note {
+  margin: -2px 4px 0;
+  color: rgba(103, 92, 83, 0.94);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+}
+
 .menu-sections {
   position: relative;
   display: grid;
