@@ -1687,16 +1687,19 @@ a {
 .format-carousel__slide--logo img {
   width: 84%;
   height: 84%;
+  transform: translateY(-5px);
 }
 
 .format-carousel__slide--cinema img {
   width: 92%;
   height: 92%;
+  transform: translateY(-3px);
 }
 
 .format-carousel__slide--country img {
   width: 88%;
   height: 88%;
+  transform: translateY(-5px);
 }
 
 .format-carousel__dots {
@@ -1857,16 +1860,19 @@ a {
   .format-carousel__slide--logo img {
     width: 80%;
     height: 80%;
+    transform: translateY(-4px);
   }
 
   .format-carousel__slide--cinema img {
     width: 88%;
     height: 88%;
+    transform: translateY(-2px);
   }
 
   .format-carousel__slide--country img {
     width: 84%;
     height: 84%;
+    transform: translateY(-4px);
   }
 }
 
