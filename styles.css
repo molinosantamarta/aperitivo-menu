@@ -852,10 +852,11 @@ a {
 }
 
 .promo-agri__visual-note {
-  margin: -2px 4px 0;
-  color: rgba(103, 92, 83, 0.94);
-  font-size: 0.86rem;
-  line-height: 1.45;
+  max-width: 34ch;
+  margin: -2px auto 0;
+  color: rgba(93, 79, 68, 0.94);
+  font-size: var(--description-font-size);
+  line-height: var(--description-line-height);
   text-align: center;
   text-wrap: balance;
 }
