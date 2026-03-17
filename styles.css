@@ -1702,6 +1702,11 @@ a {
   transform: translateY(-5px);
 }
 
+.format-carousel__slide--aperitivo img {
+  width: 94%;
+  height: 94%;
+}
+
 .format-carousel__dots {
   display: flex;
   justify-content: center;
@@ -1873,6 +1878,11 @@ a {
     width: 84%;
     height: 84%;
     transform: translateY(-4px);
+  }
+
+  .format-carousel__slide--aperitivo img {
+    width: 92%;
+    height: 92%;
   }
 }
 
