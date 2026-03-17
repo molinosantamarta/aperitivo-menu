@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317zq";
+  const APP_VERSION = "20260317zr";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -1448,7 +1448,8 @@
     const isBeer = isBeerItem(item);
     const isDrink = isDrinkItem(item);
     const isUnavailable = !isItemAvailable(item);
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " non disponibile") : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", '\n    >\n      <div class="item-card__visual').concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), '\n      </div>\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip price-chip--unavailable">Non disponibile</span>' : getCardOptionsToDisplay(item).map(
+    const shouldHideCardVisual = item.hideCardVisual === true;
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " non disponibile") : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip price-chip--unavailable">Non disponibile</span>' : getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
     ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }

@@ -773,6 +773,7 @@
           "name": "Pinot, spumante extra dry",
           "category": "Bollicine",
           "description": "Metodo Charmat, Az. Brega, Oltrepò Pavese.",
+          "hideCardVisual": true,
           "visual": {
             "type": "photo-panel",
             "backgroundColor": "#efe8de"

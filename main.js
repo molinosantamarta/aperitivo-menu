@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zq";
+const APP_VERSION = "20260317zr";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -1794,6 +1794,7 @@ function renderItemCard(item) {
   const isBeer = isBeerItem(item);
   const isDrink = isDrinkItem(item);
   const isUnavailable = !isItemAvailable(item);
+  const shouldHideCardVisual = item.hideCardVisual === true;
 
   return `
     <button
@@ -1809,9 +1810,14 @@ function renderItemCard(item) {
       aria-disabled="${isUnavailable ? "true" : "false"}"
       ${isUnavailable ? "disabled" : ""}
     >
+      ${
+        shouldHideCardVisual
+          ? ""
+          : `
       <div class="item-card__visual${getCardVisualClass(item)}">
         ${renderItemVisual(item, "card")}
-      </div>
+      </div>`
+      }
       <div class="item-card__content${
         hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : ""
       }">
