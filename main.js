@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260317zi";
+const APP_VERSION = "20260317zj";
 const LOADER_MIN_DURATION = 7000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -44,15 +44,15 @@ const LOADER_MESSAGES = [
 const PROMO_AGRI_VIDEOS = [
   {
     title: "Video Agri-Eventi 1",
-    src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1",
-  },
-  {
-    title: "Video Agri-Eventi 2",
     src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1",
   },
   {
-    title: "Video Agri-Eventi 3",
+    title: "Video Agri-Eventi 2",
     src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1",
+  },
+  {
+    title: "Video Agri-Eventi 3",
+    src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1",
   },
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
