@@ -881,6 +881,10 @@ a {
   backdrop-filter: none;
 }
 
+.menu-section + .menu-section {
+  border-top: 2px solid rgba(255, 255, 255, 0.42);
+}
+
 .menu-section__inner {
   position: relative;
   padding: 26px var(--shell-side-padding) 30px;
