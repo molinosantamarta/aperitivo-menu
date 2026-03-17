@@ -1693,7 +1693,7 @@ a {
 .format-carousel__slide--cinema img {
   width: 92%;
   height: 92%;
-  transform: translateY(-3px);
+  transform: translateY(-5px);
 }
 
 .format-carousel__slide--country img {
@@ -1871,7 +1871,7 @@ a {
   .format-carousel__slide--cinema img {
     width: 88%;
     height: 88%;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
 
   .format-carousel__slide--country img {
