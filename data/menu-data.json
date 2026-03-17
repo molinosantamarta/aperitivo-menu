@@ -784,7 +784,7 @@
             "width": "106px",
             "height": "264px",
             "right": "8px",
-            "bottom": "12px",
+            "bottom": "0px",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom",
             "tilt": "0deg"
