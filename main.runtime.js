@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260317x";
+  const APP_VERSION = "20260317z";
   const LOADER_MIN_DURATION = 7e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -133,6 +133,8 @@
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
   const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
+  const promoAgriPrev = document.querySelector("#promoAgriPrev");
+  const promoAgriNext = document.querySelector("#promoAgriNext");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1070,6 +1072,12 @@
       activeIndex = (index + PROMO_AGRI_VIDEOS.length) % PROMO_AGRI_VIDEOS.length;
       syncCarousel();
     };
+    const goPrev = () => {
+      goToSlide(activeIndex - 1);
+    };
+    const goNext = () => {
+      goToSlide(activeIndex + 1);
+    };
     const stopAutoplay = () => {
       if (autoplayId != null) {
         window.clearInterval(autoplayId);
@@ -1089,6 +1097,14 @@
         goToSlide(Number(dot.dataset.slideIndex || 0));
       });
     });
+    if (promoAgriPrev) {
+      promoAgriPrev.addEventListener("click", goPrev);
+      bindSwipeZone(promoAgriPrev, goPrev, goNext);
+    }
+    if (promoAgriNext) {
+      promoAgriNext.addEventListener("click", goNext);
+      bindSwipeZone(promoAgriNext, goPrev, goNext);
+    }
     promoAgriCarousel.addEventListener("mouseenter", () => {
       carouselPaused = true;
       stopAutoplay();
@@ -1127,6 +1143,49 @@
       startAutoplay();
     }
     syncCarousel();
+  }
+  function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
+    if (!element) {
+      return;
+    }
+    let touchStartX = null;
+    let touchStartY = null;
+    element.addEventListener(
+      "touchstart",
+      (event) => {
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch) {
+          return;
+        }
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      },
+      { passive: true }
+    );
+    element.addEventListener(
+      "touchend",
+      (event) => {
+        const touch = event.changedTouches && event.changedTouches[0];
+        if (!touch || touchStartX == null || touchStartY == null) {
+          touchStartX = null;
+          touchStartY = null;
+          return;
+        }
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        touchStartX = null;
+        touchStartY = null;
+        if (Math.abs(deltaX) < 24 || Math.abs(deltaX) < Math.abs(deltaY)) {
+          return;
+        }
+        if (deltaX < 0) {
+          onSwipeLeft();
+        } else {
+          onSwipeRight();
+        }
+      },
+      { passive: true }
+    );
   }
   function initFormatCarousel() {
     if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {

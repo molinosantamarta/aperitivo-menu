@@ -784,6 +784,7 @@ a {
 }
 
 .promo-agri__video-wrap {
+  position: relative;
   overflow: hidden;
   padding: 6px;
   border-radius: 24px;
@@ -799,6 +800,26 @@ a {
   aspect-ratio: 16 / 9;
   border: 0;
   border-radius: 18px;
+}
+
+.promo-agri__video-swipe-zone {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  z-index: 2;
+  width: 22%;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+}
+
+.promo-agri__video-swipe-zone--prev {
+  left: 6px;
+}
+
+.promo-agri__video-swipe-zone--next {
+  right: 6px;
 }
 
 .promo-agri__video-dots {
