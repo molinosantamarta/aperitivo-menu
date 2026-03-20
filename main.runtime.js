@@ -25,7 +25,8 @@
     maximumFractionDigits: 2
   });
   const APP_VERSION = "20260318aaa";
-  const LOADER_CARD_DELAY = 2e3;
+  const LOADER_CARD_DELAY = 2800;
+  const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
   const LOADER_FONT_TIMEOUT = 12e3;
   const FONT_LOAD_TIMEOUT = 2e4;
@@ -199,6 +200,7 @@
   const detailPreview = document.querySelector("#detailPreview");
   const pageBody = document.body;
   const appLoader = document.querySelector("#appLoader");
+  const appLoaderIntro = document.querySelector("#appLoaderIntro");
   const appLoaderCard = (appLoader == null ? void 0 : appLoader.querySelector(".app-loader__card")) || null;
   const appLoaderBar = document.querySelector("#appLoaderBar");
   const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
@@ -391,6 +393,11 @@
       if (!appLoader || appHasRevealed) {
         return;
       }
+      hideLoaderIntro();
+      await wait(LOADER_INTRO_OUTRO_DURATION);
+      if (!appLoader || appHasRevealed) {
+        return;
+      }
       clearInitialLoaderCardHide();
       appLoader.classList.remove("app-loader--card-hidden");
       markLoaderClockStarted();
@@ -426,6 +433,12 @@
     loaderStartedAt = performance.now();
     resolveLoaderClockStarted();
   }
+  function hideLoaderIntro() {
+    if (!appLoader || !appLoaderIntro) {
+      return;
+    }
+    appLoader.classList.add("app-loader--intro-hidden");
+  }
   function clearInitialLoaderCardHide() {
     if (!appLoaderCard || appLoaderCard.dataset.loaderCardInitialHidden !== "true") {
       return;
@@ -438,6 +451,7 @@
     if (!appLoader) {
       return;
     }
+    hideLoaderIntro();
     clearInitialLoaderCardHide();
     appLoader.classList.remove("app-loader--card-hidden");
     appLoader.classList.add("app-loader--font-fallback");

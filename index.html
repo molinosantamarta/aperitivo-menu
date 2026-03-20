@@ -50,10 +50,26 @@
       type="font/ttf"
       crossorigin
     />
+    <link
+      rel="preload"
+      href="./menu-assets/sgb-molino-black.png?v=20260318aaa"
+      as="image"
+      fetchpriority="high"
+    />
     <link rel="stylesheet" href="./styles.css?v=20260318aaa" />
   </head>
   <body class="is-loading fonts-critical-loading loader-fonts-loading">
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
+      <div class="app-loader__intro" id="appLoaderIntro" aria-hidden="true">
+        <img
+          class="app-loader__intro-logo"
+          src="./menu-assets/sgb-molino-black.png?v=20260318aaa"
+          alt=""
+          decoding="async"
+          fetchpriority="high"
+        />
+        <p class="app-loader__intro-caption">presenta</p>
+      </div>
       <div
         class="app-loader__card"
         data-loader-card-initial-hidden="true"

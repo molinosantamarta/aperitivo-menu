@@ -6,7 +6,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 });
 
 const APP_VERSION = "20260318aaa";
-const LOADER_CARD_DELAY = 2000;
+const LOADER_CARD_DELAY = 2800;
+const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 20000;
@@ -186,6 +187,7 @@ const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const pageBody = document.body;
 const appLoader = document.querySelector("#appLoader");
+const appLoaderIntro = document.querySelector("#appLoaderIntro");
 const appLoaderCard = appLoader?.querySelector(".app-loader__card") || null;
 const appLoaderBar = document.querySelector("#appLoaderBar");
 const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
@@ -409,6 +411,13 @@ function revealLoaderCardAfterDelay() {
       return;
     }
 
+    hideLoaderIntro();
+    await wait(LOADER_INTRO_OUTRO_DURATION);
+
+    if (!appLoader || appHasRevealed) {
+      return;
+    }
+
     clearInitialLoaderCardHide();
     appLoader.classList.remove("app-loader--card-hidden");
     markLoaderClockStarted();
@@ -464,6 +473,14 @@ function markLoaderClockStarted() {
   resolveLoaderClockStarted();
 }
 
+function hideLoaderIntro() {
+  if (!appLoader || !appLoaderIntro) {
+    return;
+  }
+
+  appLoader.classList.add("app-loader--intro-hidden");
+}
+
 function clearInitialLoaderCardHide() {
   if (!appLoaderCard || appLoaderCard.dataset.loaderCardInitialHidden !== "true") {
     return;
@@ -478,6 +495,7 @@ function showBootstrapFailureState(error) {
     return;
   }
 
+  hideLoaderIntro();
   clearInitialLoaderCardHide();
   appLoader.classList.remove("app-loader--card-hidden");
   appLoader.classList.add("app-loader--font-fallback");
