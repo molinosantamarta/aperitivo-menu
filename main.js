@@ -186,6 +186,7 @@ const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const pageBody = document.body;
 const appLoader = document.querySelector("#appLoader");
+const appLoaderCard = appLoader?.querySelector(".app-loader__card") || null;
 const appLoaderBar = document.querySelector("#appLoaderBar");
 const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
 const appLoaderPercent = document.querySelector("#appLoaderPercent");
@@ -408,6 +409,7 @@ function revealLoaderCardAfterDelay() {
       return;
     }
 
+    clearInitialLoaderCardHide();
     appLoader.classList.remove("app-loader--card-hidden");
     markLoaderClockStarted();
     startLoaderMessageRotation();
@@ -462,11 +464,21 @@ function markLoaderClockStarted() {
   resolveLoaderClockStarted();
 }
 
+function clearInitialLoaderCardHide() {
+  if (!appLoaderCard || appLoaderCard.dataset.loaderCardInitialHidden !== "true") {
+    return;
+  }
+
+  appLoaderCard.removeAttribute("style");
+  appLoaderCard.removeAttribute("data-loader-card-initial-hidden");
+}
+
 function showBootstrapFailureState(error) {
   if (!appLoader) {
     return;
   }
 
+  clearInitialLoaderCardHide();
   appLoader.classList.remove("app-loader--card-hidden");
   appLoader.classList.add("app-loader--font-fallback");
   pageBody.classList.remove("loader-fonts-loading", "fonts-critical-loading");
