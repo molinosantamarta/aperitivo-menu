@@ -62,6 +62,7 @@ let itemSectionLookup = {};
 let sideVisualObserver;
 let deferredPhotoPanelObserver;
 let deferredSideVisualObserver;
+let deferredCanClusterObserver;
 let loaderProgressFrame = null;
 let loaderMessageIntervalId = null;
 let loaderMessages = [...LOADER_MESSAGES];
@@ -1053,6 +1054,10 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
     }
 
     section.items.forEach((item) => {
+      if (shouldDeferLoaderAssetsForItem(item)) {
+        return;
+      }
+
       collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
       getAllSideVisuals(item).forEach((visual) =>
         collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
@@ -1106,6 +1111,10 @@ function collectSideVisualAssetUrls(visual, urls, options = {}) {
   if (visual && visual.asset && !(skipDeferredSideVisuals && visual.deferAsset === true)) {
     urls.add(getSideVisualImage(visual));
   }
+}
+
+function shouldDeferLoaderAssetsForItem(item) {
+  return getItemAvailabilityState(item) !== "available";
 }
 
 function preloadImage(url, priority = "auto", timeout = 12000, options = {}) {
@@ -1692,6 +1701,7 @@ function renderSections() {
   setupSideVisualAnimations();
   setupDeferredSideVisuals();
   setupDeferredBottleBackgrounds();
+  setupDeferredCanClusterVisuals();
 }
 
 function setupSideVisualAnimations() {
@@ -1802,6 +1812,45 @@ function setupDeferredSideVisuals() {
   visuals.forEach((visual) => deferredSideVisualObserver.observe(visual));
 }
 
+function setupDeferredCanClusterVisuals() {
+  if (deferredCanClusterObserver) {
+    deferredCanClusterObserver.disconnect();
+  }
+
+  const cans = menuSections.querySelectorAll(".can-cluster-visual__can--deferred[data-can-image]");
+  if (!cans.length) {
+    return;
+  }
+
+  if (!("IntersectionObserver" in window)) {
+    scheduleNonCriticalWork(() => {
+      cans.forEach((can) => loadDeferredCanClusterVisual(can));
+    });
+    return;
+  }
+
+  deferredCanClusterObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          return;
+        }
+
+        loadDeferredCanClusterVisual(entry.target);
+        if (deferredCanClusterObserver) {
+          deferredCanClusterObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.01,
+      rootMargin: "280px 0px",
+    }
+  );
+
+  cans.forEach((can) => deferredCanClusterObserver.observe(can));
+}
+
 function loadDeferredSideVisual(visual) {
   if (!visual || visual.dataset.sideVisualLoaded === "true") {
     return;
@@ -1837,6 +1886,25 @@ function loadDeferredPhotoPanel(panel) {
     panel.style.setProperty("--photo-panel-image", `url('${imageUrl}')`);
     panel.dataset.photoPanelLoaded = "true";
     panel.classList.remove("photo-panel-visual--deferred");
+  });
+}
+
+function loadDeferredCanClusterVisual(can) {
+  if (!can || can.dataset.canLoaded === "true") {
+    return;
+  }
+
+  const imageUrl = can.dataset.canImage;
+  if (!imageUrl) {
+    return;
+  }
+
+  can.dataset.canLoaded = "loading";
+
+  preloadImage(imageUrl, "low").then(() => {
+    can.setAttribute("src", imageUrl);
+    can.dataset.canLoaded = "true";
+    can.classList.remove("can-cluster-visual__can--deferred");
   });
 }
 
@@ -2034,7 +2102,7 @@ function getItemUnavailableLabel(item) {
   }
 
   if (getItemAvailabilityState(item) === "coming-soon") {
-    return "In arrivo";
+    return "Novità in arrivo";
   }
 
   return "Non disponibile";
@@ -2841,7 +2909,7 @@ function renderItemVisual(item, context) {
   }
 
   if (visualType === "can-cluster") {
-    return renderCanClusterVisual(item.visual, context);
+    return renderCanClusterVisual(item.visual, context, item);
   }
 
   if (visualType === "text-panel") {
@@ -2914,7 +2982,7 @@ function renderVisualByType(visual, context) {
   }
 
   if (visual.type === "can-cluster") {
-    return renderCanClusterVisual(visual, context);
+    return renderCanClusterVisual(visual, context, null);
   }
 
   if (visual.type === "text-panel") {
@@ -2975,7 +3043,7 @@ function renderPhotoPanelVisual(visual, context, item) {
     Boolean(imageUrl) &&
     context !== "detail" &&
     item &&
-    (isBottleSectionItem(item) || visual.deferAsset === true);
+    (isBottleSectionItem(item) || visual.deferAsset === true || shouldDeferLoaderAssetsForItem(item));
 
   if (shouldDeferImage) {
     classes.push("photo-panel-visual--deferred");
@@ -2996,19 +3064,21 @@ function renderPhotoPanelVisual(visual, context, item) {
   `;
 }
 
-function renderCanClusterVisual(visual, context) {
+function renderCanClusterVisual(visual, context, item = null) {
   const classes = ["can-cluster-visual"];
   if (context === "detail") {
     classes.push("can-cluster-visual--detail");
   }
 
+  const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
   const cans = Array.isArray(visual.items)
     ? visual.items
         .map(
           (item) => `
             <img
-              class="can-cluster-visual__can"
-              src="${getVisualAsset(item.asset)}"
+              class="can-cluster-visual__can${shouldDeferImages ? " can-cluster-visual__can--deferred" : ""}"
+              ${shouldDeferImages ? `data-can-image="${getVisualAsset(item.asset)}" data-can-loaded="false"` : ""}
+              ${shouldDeferImages ? "" : `src="${getVisualAsset(item.asset)}"`}
               alt=""
               aria-hidden="true"
               loading="lazy"
@@ -3070,21 +3140,22 @@ function renderItemSideVisual(item) {
 
   return sideVisuals
     .map((visual) => {
+      const shouldDeferVisual = shouldDeferSideVisualAsset(item, visual);
       const sideVisualClass =
         visual.type === "floating-bottle"
           ? "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-bottle"
           : "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-accent";
       const deferredAttributes =
-        visual.deferAsset === true
+        shouldDeferVisual
           ? ` data-side-visual-image="${getSideVisualImage(visual)}" data-side-visual-loaded="false"`
           : "";
 
       return `
         <span
-          class="${sideVisualClass}${visual.deferAsset === true ? " item-card__side-visual--deferred" : ""}"
+          class="${sideVisualClass}${shouldDeferVisual ? " item-card__side-visual--deferred" : ""}"
           aria-hidden="true"
           ${deferredAttributes}
-          style="${buildSideVisualStyle(visual)}"
+          style="${buildSideVisualStyle(visual, shouldDeferVisual)}"
         ></span>
       `;
     })
@@ -3174,11 +3245,13 @@ function getVisualAsset(assetName) {
   return buildVersionedPath(`./menu-assets/items/${assetName}`);
 }
 
-function buildSideVisualStyle(sideVisual) {
+function shouldDeferSideVisualAsset(item, sideVisual) {
+  return Boolean(sideVisual && (sideVisual.deferAsset === true || shouldDeferLoaderAssetsForItem(item)));
+}
+
+function buildSideVisualStyle(sideVisual, shouldDeferAsset = false) {
   const styles = [
-    `background-image: ${
-      sideVisual.deferAsset === true ? "none" : `url('${getSideVisualImage(sideVisual)}')`
-    }`,
+    `background-image: ${shouldDeferAsset ? "none" : `url('${getSideVisualImage(sideVisual)}')`}`,
   ];
 
   if (sideVisual.width) {

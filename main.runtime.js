@@ -80,6 +80,7 @@
   let sideVisualObserver;
   let deferredPhotoPanelObserver;
   let deferredSideVisualObserver;
+  let deferredCanClusterObserver;
   let loaderProgressFrame = null;
   let loaderMessageIntervalId = null;
   let loaderMessages = [...LOADER_MESSAGES];
@@ -863,6 +864,9 @@
         return;
       }
       section.items.forEach((item) => {
+        if (shouldDeferLoaderAssetsForItem(item)) {
+          return;
+        }
         collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
         getAllSideVisuals(item).forEach(
           (visual) => collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
@@ -907,6 +911,9 @@
     if (visual && visual.asset && !(skipDeferredSideVisuals && visual.deferAsset === true)) {
       urls.add(getSideVisualImage(visual));
     }
+  }
+  function shouldDeferLoaderAssetsForItem(item) {
+    return getItemAvailabilityState(item) !== "available";
   }
   function preloadImage(url, priority = "auto", timeout = 12e3, options = {}) {
     const { strict = false, retries = 0 } = options;
@@ -1370,6 +1377,7 @@
     setupSideVisualAnimations();
     setupDeferredSideVisuals();
     setupDeferredBottleBackgrounds();
+    setupDeferredCanClusterVisuals();
   }
   function setupSideVisualAnimations() {
     if (sideVisualObserver) {
@@ -1462,6 +1470,39 @@
     );
     visuals.forEach((visual) => deferredSideVisualObserver.observe(visual));
   }
+  function setupDeferredCanClusterVisuals() {
+    if (deferredCanClusterObserver) {
+      deferredCanClusterObserver.disconnect();
+    }
+    const cans = menuSections.querySelectorAll(".can-cluster-visual__can--deferred[data-can-image]");
+    if (!cans.length) {
+      return;
+    }
+    if (!("IntersectionObserver" in window)) {
+      scheduleNonCriticalWork(() => {
+        cans.forEach((can) => loadDeferredCanClusterVisual(can));
+      });
+      return;
+    }
+    deferredCanClusterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+          loadDeferredCanClusterVisual(entry.target);
+          if (deferredCanClusterObserver) {
+            deferredCanClusterObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "280px 0px"
+      }
+    );
+    cans.forEach((can) => deferredCanClusterObserver.observe(can));
+  }
   function loadDeferredSideVisual(visual) {
     if (!visual || visual.dataset.sideVisualLoaded === "true") {
       return;
@@ -1490,6 +1531,21 @@
       panel.style.setProperty("--photo-panel-image", "url('".concat(imageUrl, "')"));
       panel.dataset.photoPanelLoaded = "true";
       panel.classList.remove("photo-panel-visual--deferred");
+    });
+  }
+  function loadDeferredCanClusterVisual(can) {
+    if (!can || can.dataset.canLoaded === "true") {
+      return;
+    }
+    const imageUrl = can.dataset.canImage;
+    if (!imageUrl) {
+      return;
+    }
+    can.dataset.canLoaded = "loading";
+    preloadImage(imageUrl, "low").then(() => {
+      can.setAttribute("src", imageUrl);
+      can.dataset.canLoaded = "true";
+      can.classList.remove("can-cluster-visual__can--deferred");
     });
   }
   function renderSection(section, isLeadSection) {
@@ -1550,7 +1606,7 @@
       }
     }
     if (getItemAvailabilityState(item) === "coming-soon") {
-      return "In arrivo";
+      return "Novit\xE0 in arrivo";
     }
     return "Non disponibile";
   }
@@ -2135,7 +2191,7 @@
       return renderPhotoPanelVisual(item.visual, context, item);
     }
     if (visualType === "can-cluster") {
-      return renderCanClusterVisual(item.visual, context);
+      return renderCanClusterVisual(item.visual, context, item);
     }
     if (visualType === "text-panel") {
       return renderTextPanelVisual(item.visual, context);
@@ -2172,7 +2228,7 @@
       return renderPhotoPanelVisual(visual, context, null);
     }
     if (visual.type === "can-cluster") {
-      return renderCanClusterVisual(visual, context);
+      return renderCanClusterVisual(visual, context, null);
     }
     if (visual.type === "text-panel") {
       return renderTextPanelVisual(visual, context);
@@ -2195,19 +2251,20 @@
       classes.push("photo-panel-visual--detail");
     }
     const imageUrl = visual.asset ? getVisualAsset(visual.asset) : "";
-    const shouldDeferImage = Boolean(imageUrl) && context !== "detail" && item && (isBottleSectionItem(item) || visual.deferAsset === true);
+    const shouldDeferImage = Boolean(imageUrl) && context !== "detail" && item && (isBottleSectionItem(item) || visual.deferAsset === true || shouldDeferLoaderAssetsForItem(item));
     if (shouldDeferImage) {
       classes.push("photo-panel-visual--deferred");
     }
     return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ';\n      "\n    ></div>\n  ');
   }
-  function renderCanClusterVisual(visual, context) {
+  function renderCanClusterVisual(visual, context, item = null) {
     const classes = ["can-cluster-visual"];
     if (context === "detail") {
       classes.push("can-cluster-visual--detail");
     }
+    const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
     const cans = Array.isArray(visual.items) ? visual.items.map(
-      (item) => '\n            <img\n              class="can-cluster-visual__can"\n              src="'.concat(getVisualAsset(item.asset), '"\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(item.left || "50%", ";\n                --can-bottom: ").concat(item.bottom || "-18%", ";\n                --can-width: ").concat(item.width || "auto", ";\n                --can-height: ").concat(item.height || "auto", ";\n                --can-rotate: ").concat(item.rotate || "0deg", ";\n                --can-z: ").concat(item.zIndex || 1, ";\n                --can-float-distance: ").concat(item.floatDistance || "5px", ";\n                --can-float-duration: ").concat(item.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(item.floatDelay || "0s", ';\n              "\n            />\n          ')
+      (item2) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(item2.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(item2.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(item2.left || "50%", ";\n                --can-bottom: ").concat(item2.bottom || "-18%", ";\n                --can-width: ").concat(item2.width || "auto", ";\n                --can-height: ").concat(item2.height || "auto", ";\n                --can-rotate: ").concat(item2.rotate || "0deg", ";\n                --can-z: ").concat(item2.zIndex || 1, ";\n                --can-float-distance: ").concat(item2.floatDistance || "5px", ";\n                --can-float-duration: ").concat(item2.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(item2.floatDelay || "0s", ';\n              "\n            />\n          ')
     ).join("") : "";
     return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="--can-cluster-bg: ').concat(visual.backgroundColor || "#d8dee8", ';"\n    >\n      ').concat(cans, "\n    </div>\n  ");
   }
@@ -2224,9 +2281,10 @@
       return "";
     }
     return sideVisuals.map((visual) => {
+      const shouldDeferVisual = shouldDeferSideVisualAsset(item, visual);
       const sideVisualClass = visual.type === "floating-bottle" ? "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-bottle" : "item-card__side-visual item-card__side-visual--floating item-card__side-visual--floating-accent";
-      const deferredAttributes = visual.deferAsset === true ? ' data-side-visual-image="'.concat(getSideVisualImage(visual), '" data-side-visual-loaded="false"') : "";
-      return '\n        <span\n          class="'.concat(sideVisualClass).concat(visual.deferAsset === true ? " item-card__side-visual--deferred" : "", '"\n          aria-hidden="true"\n          ').concat(deferredAttributes, '\n          style="').concat(buildSideVisualStyle(visual), '"\n        ></span>\n      ');
+      const deferredAttributes = shouldDeferVisual ? ' data-side-visual-image="'.concat(getSideVisualImage(visual), '" data-side-visual-loaded="false"') : "";
+      return '\n        <span\n          class="'.concat(sideVisualClass).concat(shouldDeferVisual ? " item-card__side-visual--deferred" : "", '"\n          aria-hidden="true"\n          ').concat(deferredAttributes, '\n          style="').concat(buildSideVisualStyle(visual, shouldDeferVisual), '"\n        ></span>\n      ');
     }).join("");
   }
   function getSideVisualImage(visual) {
@@ -2274,9 +2332,12 @@
   function getVisualAsset(assetName) {
     return buildVersionedPath("./menu-assets/items/".concat(assetName));
   }
-  function buildSideVisualStyle(sideVisual) {
+  function shouldDeferSideVisualAsset(item, sideVisual) {
+    return Boolean(sideVisual && (sideVisual.deferAsset === true || shouldDeferLoaderAssetsForItem(item)));
+  }
+  function buildSideVisualStyle(sideVisual, shouldDeferAsset = false) {
     const styles = [
-      "background-image: ".concat(sideVisual.deferAsset === true ? "none" : "url('".concat(getSideVisualImage(sideVisual), "')"))
+      "background-image: ".concat(shouldDeferAsset ? "none" : "url('".concat(getSideVisualImage(sideVisual), "')"))
     ];
     if (sideVisual.width) {
       styles.push("--side-visual-width: ".concat(sideVisual.width));

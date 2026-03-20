@@ -1807,8 +1807,13 @@ a {
 .item-card--coming-soon .photo-panel-visual,
 .item-card--coming-soon .text-panel-visual,
 .item-card--coming-soon .can-cluster-visual,
-.item-card--coming-soon .item-card__side-visual {
-  filter: grayscale(0.86) saturate(0.16) brightness(1.01) blur(2.4px);
+.item-card--coming-soon .item-card__side-visual,
+.item-card--coming-soon .item-card__topline,
+.item-card--coming-soon .item-card__title-row,
+.item-card--coming-soon .item-card__content > h3,
+.item-card--coming-soon .item-card__content > p {
+  filter: grayscale(0.86) saturate(0.16) brightness(1.01) blur(3.4px);
+  opacity: 0.72;
   transition:
     filter 220ms ease,
     opacity 220ms ease;
@@ -1828,11 +1833,12 @@ a {
 
 .item-card--coming-soon p {
   color: rgba(97, 91, 84, 0.92);
-  filter: blur(2px);
-  opacity: 0.78;
-  transition:
-    filter 220ms ease,
-    opacity 220ms ease;
+}
+
+.item-card--coming-soon .item-card__prices,
+.item-card--coming-soon .price-chip--coming-soon {
+  filter: none;
+  opacity: 1;
 }
 
 .item-card--unavailable .item-card__visual,
