@@ -531,9 +531,6 @@ function normalizeSheetHeader(value) {
     disponibilita: "available",
     stato: "availability_state",
     stato_disponibilita: "availability_state",
-    nome: "name",
-    descrizione: "description",
-    categoria: "category",
     variante: "variante_1",
     prezzo: "prezzo_1",
   };
@@ -563,26 +560,6 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
       });
   });
 
-  sheetRows.forEach((row) => {
-    const exists = nextMenu.sections.some((section) => section.items.some((item) => item.id === row.id));
-    if (exists || !parseSheetBoolean(row.visible, true)) {
-      return;
-    }
-
-    const targetSection = sectionLookup[row.section_id];
-    if (!targetSection) {
-      return;
-    }
-
-    const newItem = createItemFromSheet(row, targetSection);
-    if (!newItem) {
-      return;
-    }
-
-    newItem.__sheetPosition = parseSheetInteger(row.position, targetSection.items.length);
-    targetSection.items.push(newItem);
-  });
-
   nextMenu.sections.forEach((section) => {
     section.items = section.items
       .sort((left, right) => getSheetPosition(left) - getSheetPosition(right))
@@ -598,15 +575,6 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
 function updateItemFromSheet(item, row, section) {
   const nextItem = { ...item };
 
-  if (row.name) {
-    nextItem.name = row.name;
-  }
-  if (row.description) {
-    nextItem.description = row.description;
-  }
-  if (row.category) {
-    nextItem.category = row.category;
-  }
   if (row.show_detail_hint) {
     nextItem.showDetailHint = parseSheetBoolean(
       row.show_detail_hint,
@@ -624,29 +592,6 @@ function updateItemFromSheet(item, row, section) {
   if (visual) {
     nextItem.visual = visual;
   }
-
-  return nextItem;
-}
-
-function createItemFromSheet(row, section) {
-  const options = parseSheetOptions(row);
-  if (!options.length) {
-    return null;
-  }
-
-  const nextItem = {
-    id: row.id,
-    page: 1,
-    name: row.name || row.visual_label || row.id,
-    category: row.category || section.title,
-    description: row.description || "",
-    available: true,
-    showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
-    options,
-    visual: buildSheetVisual(row, section, null, row.name || row.id),
-  };
-
-  applySheetAvailabilityToItem(nextItem, row, "available");
 
   return nextItem;
 }

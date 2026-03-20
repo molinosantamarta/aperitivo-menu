@@ -1477,9 +1477,20 @@ a {
   padding-right: 126px;
 }
 
-.item-card[data-item-id="frutta-bio"].item-card--floating-bottle .item-card__content {
-  min-height: 184px;
-  padding-right: 174px;
+#section-altre-bevande .item-card--floating-bottle .item-card__content {
+  min-height: 136px;
+  padding-right: 94px;
+}
+
+#section-altre-bevande .item-card[data-item-id="kombucha"].item-card--floating-bottle .item-card__content,
+#section-altre-bevande .item-card[data-item-id="iced-coffee"].item-card--floating-bottle .item-card__content {
+  min-height: 142px;
+  padding-right: 104px;
+}
+
+#section-altre-bevande .item-card[data-item-id="frutta-bio"].item-card--floating-bottle .item-card__content {
+  min-height: 154px;
+  padding-right: 136px;
 }
 
 .item-card__side-visual--floating-bottle {

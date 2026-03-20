@@ -473,9 +473,6 @@
       disponibilita: "available",
       stato: "availability_state",
       stato_disponibilita: "availability_state",
-      nome: "name",
-      descrizione: "description",
-      categoria: "category",
       variante: "variante_1",
       prezzo: "prezzo_1"
     };
@@ -499,22 +496,6 @@
         return nextItem;
       });
     });
-    sheetRows.forEach((row) => {
-      const exists = nextMenu.sections.some((section) => section.items.some((item) => item.id === row.id));
-      if (exists || !parseSheetBoolean(row.visible, true)) {
-        return;
-      }
-      const targetSection = sectionLookup[row.section_id];
-      if (!targetSection) {
-        return;
-      }
-      const newItem = createItemFromSheet(row, targetSection);
-      if (!newItem) {
-        return;
-      }
-      newItem.__sheetPosition = parseSheetInteger(row.position, targetSection.items.length);
-      targetSection.items.push(newItem);
-    });
     nextMenu.sections.forEach((section) => {
       section.items = section.items.sort((left, right) => getSheetPosition(left) - getSheetPosition(right)).map((item) => {
         delete item.__sheetPosition;
@@ -525,15 +506,6 @@
   }
   function updateItemFromSheet(item, row, section) {
     const nextItem = __spreadValues({}, item);
-    if (row.name) {
-      nextItem.name = row.name;
-    }
-    if (row.description) {
-      nextItem.description = row.description;
-    }
-    if (row.category) {
-      nextItem.category = row.category;
-    }
     if (row.show_detail_hint) {
       nextItem.showDetailHint = parseSheetBoolean(
         row.show_detail_hint,
@@ -549,25 +521,6 @@
     if (visual) {
       nextItem.visual = visual;
     }
-    return nextItem;
-  }
-  function createItemFromSheet(row, section) {
-    const options = parseSheetOptions(row);
-    if (!options.length) {
-      return null;
-    }
-    const nextItem = {
-      id: row.id,
-      page: 1,
-      name: row.name || row.visual_label || row.id,
-      category: row.category || section.title,
-      description: row.description || "",
-      available: true,
-      showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
-      options,
-      visual: buildSheetVisual(row, section, null, row.name || row.id)
-    };
-    applySheetAvailabilityToItem(nextItem, row, "available");
     return nextItem;
   }
   function buildSheetVisual(row, section, existingVisual, fallbackName) {
@@ -610,13 +563,6 @@
       labelColor: row.visual_label_color || "#fffdf8",
       scriptColor: row.visual_script_color || "rgba(17, 17, 17, 0.72)"
     };
-  }
-  function parseSheetOptions(row) {
-    const compactOptions = parseCompactSheetOptions(row);
-    if (compactOptions.length) {
-      return compactOptions;
-    }
-    return SHEET_OPTION_INDEXES.map((index) => buildSheetOption(index, row)).filter(Boolean);
   }
   function mergeSheetOptions(existingOptions, row) {
     const compactOptions = parseCompactSheetOptions(row);
@@ -666,17 +612,6 @@
       displayLabel: "",
       price: sharedPrice
     }));
-  }
-  function buildSheetOption(index, row) {
-    const optionInput = getSheetOptionInput(row, index);
-    if (!optionInput.hasValues || optionInput.price == null) {
-      return null;
-    }
-    return {
-      label: optionInput.label || "Opzione ".concat(index),
-      displayLabel: optionInput.displayLabel || "",
-      price: optionInput.price
-    };
   }
   function getSheetOptionInput(row, index) {
     const rawPrice = getFirstSheetValue(

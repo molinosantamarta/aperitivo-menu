@@ -93,24 +93,19 @@ Il progetto può leggere override dinamici da un Google Sheet pubblicato come CS
 2. modifica dal foglio:
    - `visibile` per mostrare/nascondere del tutto
    - `disponibile` per lasciare il prodotto visibile ma non ordinabile
-   - `nome`, `descrizione`, `categoria`
+   - `stato` se vuoi distinguere `disponibile`, `non disponibile` e `in arrivo`
    - `varianti` + `prezzo_unico` se tutte le varianti hanno lo stesso prezzo
    - `prezzo_1`, `prezzo_2`, `prezzo_3` se il prodotto ha piu varianti con prezzi diversi
-3. se vuoi aggiungere un nuovo prodotto semplice, duplica una riga e cambia almeno:
-   - `id`
-   - `sezione`
-   - `nome`
-   - almeno `prezzo_1`
-4. pubblica il foglio come CSV
-5. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/sheet-config.json)
+3. pubblica il foglio come CSV
+4. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/sheet-config.json)
 
 ### Note
 
 - se il foglio non e configurato o non risponde, il sito usa automaticamente `data/menu-data.json`
 - nelle colonne booleane puoi usare sia `si/no` sia `true/false`
+- nomi, descrizioni, categorie e struttura del menu restano nel codice e non vengono piu letti dal foglio
 - per prodotti come `Grappe e amari`, puoi tenere tutte le varianti in `varianti` separate da `|`
 - il template semplice aggiorna i prezzi per indice e mantiene le varianti extra che non compaiono nel foglio
-- i nuovi prodotti creati dal foglio usano una card testuale pulita, senza bisogno immediato di immagini dedicate
 - per visual personalizzati complessi (bottiglie, gradienti speciali, asset fotografici) conviene ancora intervenire nel repository
 - se vuoi modificare tutte le varianti in modo avanzato, resta disponibile anche [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv)
 

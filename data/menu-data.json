@@ -1274,7 +1274,7 @@
           "description": "Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula.",
           "visual": {
             "type": "beer-script",
-            "label": "Aranciata<br>rossa",
+            "label": "Aranciata rossa",
             "gradientStart": "#d65b3d",
             "gradientMid": "#ea8a58",
             "gradientEnd": "#f6c39d",
@@ -1282,9 +1282,9 @@
             "textStyle": "display",
             "script": "La nostra",
             "labelFontFamily": "\"Montserrat\", sans-serif",
-            "labelFontSize": "clamp(1.42rem, 5.4vw, 1.95rem)",
-            "labelLineHeight": "0.94",
-            "labelLetterSpacing": "-0.03em",
+            "labelFontSize": "clamp(1.12rem, 4.2vw, 1.6rem)",
+            "labelLineHeight": "0.96",
+            "labelLetterSpacing": "-0.05em",
             "labelOrder": "1",
             "scriptFontFamily": "var(--font-subtitle)",
             "scriptFontSize": "clamp(1.25rem, 4.2vw, 1.6rem)",
@@ -1295,10 +1295,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "aranciata-rossa-lurisia-floating.png",
-            "width": "156px",
-            "height": "376px",
-            "right": "6px",
-            "bottom": "4px",
+            "width": "177px",
+            "height": "426px",
+            "right": "-18px",
+            "bottom": "8px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1501,6 +1501,11 @@
           },
           "options": [
             {
+              "label": "Amaro alle erbe Molino Santa Marta",
+              "displayLabel": "",
+              "price": 4
+            },
+            {
               "label": "Amaro del Capo",
               "displayLabel": "",
               "price": 4
@@ -1555,10 +1560,6 @@
             },
             {
               "label": "San Simone",
-              "price": 4
-            },
-            {
-              "label": "Amaro alle erbe Molino Santa Marta",
               "price": 4
             }
           ]
