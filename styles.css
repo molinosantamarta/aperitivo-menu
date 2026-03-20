@@ -1075,6 +1075,10 @@ a {
   padding: 10px;
 }
 
+.item-card[data-item-id="iced-coffee"] {
+  padding-top: 6px;
+}
+
 .item-card__visual {
   display: flex;
   align-items: center;
@@ -1271,17 +1275,17 @@ a {
 }
 
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__label {
-  order: 0;
+  order: var(--beer-script-label-order, 0);
   font-size: clamp(2.15rem, 8vw, 3.25rem);
 }
 
 .beer-script-visual--display.beer-script-visual--detail .beer-script-visual__script {
-  order: 1;
+  order: var(--beer-script-script-order, 1);
   margin: -0.18em 0 0;
   font-size: clamp(2.35rem, 8.8vw, 3.55rem);
   line-height: 0.88;
   letter-spacing: 0;
-  transform: translate(0.08em, 0.06em);
+  transform: var(--beer-script-script-transform, translate(0.08em, 0.06em));
 }
 
 .photo-panel-visual {
@@ -1614,6 +1618,10 @@ a {
   object-fit: contain;
   flex: 0 0 auto;
   filter: drop-shadow(0 1px 2px rgba(42, 31, 18, 0.08));
+}
+
+#section-altre-bevande .item-card[data-item-id="frutta-bio"] .item-card__title-logo {
+  transform: translateX(4px);
 }
 
 .item-card--artisanal-beer .beer-script-visual__label {

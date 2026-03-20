@@ -11,9 +11,8 @@ const MAX_SIMPLE_OPTIONS = 6;
 const columns = [
   "id",
   "sezione",
-  "visibile",
-  "disponibile",
-  "stato",
+  "visibilita (visibile/nascosto)",
+  "disponibilita (disponibile/non disponibile/in arrivo)",
   "varianti",
   "prezzo_unico",
   ...Array.from({ length: MAX_SIMPLE_OPTIONS }, (_, index) => [`variante_${index + 1}`, `prezzo_${index + 1}`]).flat(),
@@ -27,9 +26,8 @@ const rows = menu.sections.flatMap((section) =>
     const row = {
       id: item.id,
       sezione: section.id,
-      visibile: "si",
-      disponibile: item.available === false ? "no" : "si",
-      stato: getItemAvailabilityState(item),
+      visibilita: "visibile",
+      disponibilita: getItemAvailabilityState(item),
       varianti: "",
       prezzo_unico: "",
       varianti_extra: "",

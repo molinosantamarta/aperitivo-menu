@@ -522,15 +522,26 @@ function parseCsvRows(csvText) {
 }
 
 function normalizeSheetHeader(value) {
-  const normalized = value.trim().toLowerCase().replace(/\s+/g, "_");
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[()]/g, "")
+    .replace(/[\/,-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
   const aliases = {
     sezione: "section_id",
     ordine: "position",
-    visibile: "visible",
-    disponibile: "available",
-    disponibilita: "available",
+    visibilita: "visibility_state",
+    visibilita_visibile_nascosto: "visibility_state",
+    visibile: "visibility_state",
+    mostra: "visibility_state",
     stato: "availability_state",
     stato_disponibilita: "availability_state",
+    disponibilita: "availability_state",
+    disponibilita_disponibile_non_disponibile_in_arrivo: "availability_state",
+    disponibile: "availability_state",
     variante: "variante_1",
     prezzo: "prezzo_1",
   };
@@ -550,7 +561,7 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
     section.items = section.items
       .filter((item) => {
         const row = rowLookup.get(item.id);
-        return row ? parseSheetBoolean(row.visible, true) : true;
+        return row ? resolveSheetVisibility(row, true) : true;
       })
       .map((item, index) => {
         const row = rowLookup.get(item.id);
@@ -786,6 +797,28 @@ function parseSheetBoolean(value, fallbackValue) {
   return fallbackValue;
 }
 
+function parseVisibilityState(value) {
+  if (!value) {
+    return null;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+
+  if (
+    ["visibile", "mostra", "mostrare", "show", "shown", "si", "sì", "yes", "true", "1"].includes(normalized)
+  ) {
+    return true;
+  }
+
+  if (
+    ["nascosto", "nascondi", "nascondere", "hidden", "hide", "no", "false", "0"].includes(normalized)
+  ) {
+    return false;
+  }
+
+  return null;
+}
+
 function parseAvailabilityState(value) {
   if (!value) {
     return "";
@@ -810,6 +843,18 @@ function parseAvailabilityState(value) {
   }
 
   return "";
+}
+
+function resolveSheetVisibility(row, fallbackValue) {
+  const explicitVisibility = parseVisibilityState(
+    getFirstSheetValue(row.visibility_state, row.visible, row.visibile, row.visibilita)
+  );
+
+  if (explicitVisibility != null) {
+    return explicitVisibility;
+  }
+
+  return fallbackValue;
 }
 
 function resolveSheetAvailabilityState(row, fallbackState) {

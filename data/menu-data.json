@@ -670,9 +670,9 @@
           "visual": {
             "type": "beer-script",
             "label": "Gin",
-            "gradientStart": "#c45f1f",
-            "gradientMid": "#e6a92b",
-            "gradientEnd": "#efe37c",
+            "gradientStart": "#cc4e12",
+            "gradientMid": "#f39a18",
+            "gradientEnd": "#ffd74a",
             "labelColor": "#fffdf8",
             "textStyle": "display",
             "script": "Tropical"
@@ -1269,28 +1269,14 @@
           "category": "Altre bevande",
           "titleLogo": {
             "asset": "lurisia-logo-cutout.png",
-            "width": "46px"
+            "width": "50px"
           },
-          "description": "Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula.",
+          "description": "Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula. 27,5 cl.",
           "visual": {
-            "type": "beer-script",
-            "label": "Aranciata rossa",
-            "gradientStart": "#d65b3d",
-            "gradientMid": "#ea8a58",
-            "gradientEnd": "#f6c39d",
-            "labelColor": "#fff9f2",
-            "textStyle": "display",
-            "script": "La nostra",
-            "labelFontFamily": "\"Montserrat\", sans-serif",
-            "labelFontSize": "clamp(1.12rem, 4.2vw, 1.6rem)",
-            "labelLineHeight": "0.96",
-            "labelLetterSpacing": "-0.05em",
-            "labelOrder": "1",
-            "scriptFontFamily": "var(--font-subtitle)",
-            "scriptFontSize": "clamp(1.25rem, 4.2vw, 1.6rem)",
-            "scriptLineHeight": "0.95",
-            "scriptTransform": "translate(0, 0)",
-            "scriptOrder": "0"
+            "type": "photo-panel",
+            "asset": "aranciata-rossa-lurisia-back.jpg",
+            "position": "center 54%",
+            "size": "cover"
           },
           "sideVisual": {
             "type": "floating-bottle",
@@ -1331,9 +1317,9 @@
         {
           "id": "kombucha",
           "page": 2,
-          "name": "Kombucha artigianale al limone",
+          "name": "Kombucha al limone",
           "category": "Artigianale",
-          "description": "Tè fermentato frizzante, analcolico, gusto limone.",
+          "description": "Tè fermentato frizzante, analcolico, gusto limone. 33 cl.",
           "visual": {
             "type": "photo-panel",
             "asset": "kombucha-back.jpg",
@@ -1492,7 +1478,7 @@
           "page": 2,
           "name": "Grappe e amari",
           "category": "Altre bevande",
-          "description": "Amari, grappe e liquori da fine pasto.",
+          "description": "Amari, grappe e liquori da fine pasto. Scopri l'amaro alle erbe del Molino !",
           "visual": {
             "type": "photo-panel",
             "asset": "grappe-amari-back.jpg",
