@@ -1,9 +1,11 @@
+/* Local custom faces with non-standard metrics: keep them blocked until the app
+   confirms they are ready, instead of letting fallback fonts alter the layout. */
 @font-face {
   font-family: "Lulo Clean";
   src: url("./fonts/lulo-clean-bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
@@ -13,7 +15,7 @@
     local("Housky Demo");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
@@ -21,7 +23,7 @@
   src: url("./fonts/factually-handwriting.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
@@ -29,7 +31,7 @@
   src: url("./fonts/sign-painter.ttc") format("collection");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 :root {
@@ -87,6 +89,13 @@ body.is-loading .cart-fab,
 body.is-loading .sheet-backdrop {
   opacity: 0;
   pointer-events: none;
+}
+
+body.app-ready .page-shell,
+body.app-ready .cart-fab,
+body.app-ready .sheet-backdrop {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 body.modal-open {
@@ -164,6 +173,37 @@ a {
   box-shadow:
     var(--shadow),
     inset 0 0 0 1px rgba(92, 68, 46, 0.08);
+  transition:
+    opacity 0.38s ease,
+    transform 0.42s ease,
+    visibility 0.42s ease;
+}
+
+.app-loader--card-hidden .app-loader__card {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.985);
+}
+
+.app-loader--font-fallback .app-loader__eyebrow,
+.app-loader--font-fallback .app-loader__title,
+.app-loader--font-fallback .app-loader__note,
+.app-loader--font-fallback .app-loader__percent {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+}
+
+.app-loader--font-fallback .app-loader__title {
+  letter-spacing: -0.06em;
+}
+
+.app-loader--font-fallback .app-loader__meta,
+.app-loader--font-fallback .app-loader__bar {
+  display: none;
+}
+
+.app-loader__action {
+  margin-top: 2px;
 }
 
 .app-loader__card::before {
@@ -644,7 +684,7 @@ a {
 }
 
 .promo-agri {
-  padding: 18px 18px 28px;
+  padding: 18px 18px 38px;
   background: rgba(255, 253, 248, 0.98);
 }
 
@@ -1703,13 +1743,17 @@ a {
 .price-chip--coming-soon {
   position: relative;
   isolation: isolate;
-  color: #5e574f;
-  background: linear-gradient(135deg, rgba(246, 243, 239, 0.98) 0%, rgba(229, 223, 214, 0.98) 56%, rgba(214, 205, 194, 0.98) 100%);
+  transform: translateY(-1px);
+  color: #524940;
+  background: linear-gradient(180deg, rgba(248, 245, 241, 0.99) 0%, rgba(232, 226, 218, 0.99) 58%, rgba(214, 206, 196, 0.98) 100%);
   box-shadow:
-    inset 0 0 0 1px rgba(112, 104, 95, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 8px 16px rgba(64, 54, 44, 0.12),
-    0 0 0 1px rgba(255, 255, 255, 0.18);
+    inset 0 0 0 1px rgba(118, 110, 101, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -1px 0 rgba(173, 163, 151, 0.32),
+    0 3px 0 rgba(122, 112, 101, 0.18),
+    0 12px 20px rgba(58, 49, 40, 0.16),
+    0 22px 34px rgba(58, 49, 40, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.24);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1717,21 +1761,13 @@ a {
 .price-chip--coming-soon::before {
   content: "";
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: inherit;
-  background:
-    conic-gradient(
-      from 0deg,
-      rgba(255, 255, 255, 0) 0deg,
-      rgba(255, 255, 255, 0.36) 72deg,
-      rgba(176, 169, 160, 0.2) 150deg,
-      rgba(255, 255, 255, 0.08) 228deg,
-      rgba(255, 255, 255, 0) 360deg
-    );
-  filter: blur(7px);
-  opacity: 0.72;
+  background: radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.42), rgba(199, 188, 174, 0.18) 52%, rgba(199, 188, 174, 0) 76%);
+  filter: blur(9px);
+  opacity: 0.84;
   z-index: -1;
-  animation: coming-soon-chip-halo 4.8s linear infinite;
+  transform: scale(1.02);
 }
 
 .item-card--unavailable {

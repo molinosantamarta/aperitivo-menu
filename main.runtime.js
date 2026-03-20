@@ -25,7 +25,9 @@
     maximumFractionDigits: 2
   });
   const APP_VERSION = "20260318aaa";
+  const LOADER_CARD_DELAY = 2e3;
   const LOADER_MIN_DURATION = 1e4;
+  const LOADER_FONT_TIMEOUT = 12e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
   const CRITICAL_IMAGE_LOAD_TIMEOUT = 22e3;
@@ -74,6 +76,76 @@
     }
   ];
   const CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
+  const FONT_BOOTSTRAP_PLAN = {
+    loader: [
+      {
+        family: "Lulo Clean",
+        descriptor: '700 1rem "Lulo Clean"',
+        sample: "DOMENICA AL MOLINO",
+        selectors: "loader title, hero headings, section titles",
+        source: "local preload"
+      },
+      {
+        family: "Montserrat",
+        descriptor: '700 1rem "Montserrat"',
+        sample: "Agri-Eventi 100%",
+        selectors: "loader eyebrow, note, percent, CTA labels",
+        source: "Google Fonts"
+      }
+    ],
+    critical: [
+      {
+        family: "Housky Demo",
+        descriptor: '400 1rem "Housky Demo"',
+        sample: "al Molino",
+        selectors: "hero connector wordmark and decorative script accents",
+        source: "local preload"
+      },
+      {
+        family: "Factually Handwriting",
+        descriptor: '400 1rem "Factually Handwriting"',
+        sample: "Aperitivo e agrigelato",
+        selectors: "subtitles, descriptive script accents",
+        source: "local preload"
+      },
+      {
+        family: "SignPainter",
+        descriptor: '400 1rem "SignPainter"',
+        sample: "Iced Latte Tropical",
+        selectors: "beer-script visuals and label treatments",
+        source: "local file"
+      },
+      {
+        family: "Montserrat",
+        descriptor: '500 1rem "Montserrat"',
+        sample: "Menu digitale aperitivi 0123456789",
+        selectors: "body copy, descriptions, cards, navigation",
+        source: "Google Fonts"
+      },
+      {
+        family: "Montserrat",
+        descriptor: '800 1rem "Montserrat"',
+        sample: "Seguici su Instagram",
+        selectors: "buttons, chips, badges, emphasis labels",
+        source: "Google Fonts"
+      }
+    ],
+    deferred: [
+      {
+        family: "Caveat",
+        descriptor: '500 1rem "Caveat"',
+        sample: "Molino",
+        selectors: "decorative fallback only",
+        source: "Google Fonts"
+      }
+    ]
+  };
+  const LOADER_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.loader);
+  const REQUIRED_FONT_PLANS = dedupeFontPlans([
+    ...FONT_BOOTSTRAP_PLAN.loader,
+    ...FONT_BOOTSTRAP_PLAN.critical
+  ]);
+  const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
   let sections = [];
   let itemLookup = {};
   let itemSectionLookup = {};
@@ -85,20 +157,15 @@
   let loaderMessageIntervalId = null;
   let loaderMessages = [...LOADER_MESSAGES];
   let loaderMessageIndex = 0;
-  const loaderStartedAt = performance.now();
+  let loaderStartedAt = null;
   let appHasRevealed = false;
   let lastFocusedElement = null;
-  const CRITICAL_FONT_DESCRIPTORS = ['400 1rem "Housky Demo"'];
-  const BLOCKING_FONT_DESCRIPTORS = [
-    '700 1rem "Lulo Clean"',
-    '400 1rem "Factually Handwriting"',
-    '500 1rem "Montserrat"',
-    '700 1rem "Montserrat"'
-  ];
-  const DEFERRED_FONT_DESCRIPTORS = [
-    '400 1rem "SignPainter"',
-    '500 1rem "Caveat"'
-  ];
+  let loaderCardRevealPromise = null;
+  let resolveLoaderClockStarted = () => {
+  };
+  const loaderClockStartedPromise = new Promise((resolve) => {
+    resolveLoaderClockStarted = resolve;
+  });
   const state = {
     selectedItemId: null,
     selectedOptionIndex: 0,
@@ -130,6 +197,7 @@
   const copySummaryButton = document.querySelector("#copySummary");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
+  const pageBody = document.body;
   const appLoader = document.querySelector("#appLoader");
   const appLoaderBar = document.querySelector("#appLoaderBar");
   const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
@@ -233,15 +301,26 @@
     const menuDataPromise = loadMenuData().then((menuData) => {
       setLoaderTaskProgress("menuData", 1);
       return menuData;
+    }).catch((error) => {
+      error.bootPhase = "menu-data";
+      throw error;
     });
     const fontsReadyPromise = waitForRequiredFonts().then(() => {
+      pageBody.classList.remove("fonts-critical-loading");
+      pageBody.classList.add("fonts-critical-ready");
       setLoaderTaskProgress("fonts", 1);
+    }).catch((error) => {
+      error.bootPhase = "fonts";
+      throw error;
     });
     const deferredFontsReadyPromise = waitForDeferredFonts().then(() => {
       setLoaderTaskProgress("deferredFonts", 1);
     });
     const shellAssetsReadyPromise = waitForShellAssets().then(() => {
       setLoaderTaskProgress("shellAssets", 1);
+    }).catch((error) => {
+      error.bootPhase = "shell-assets";
+      throw error;
     });
     const minimumLoaderPromise = waitMinimumLoaderTime(LOADER_MIN_DURATION).then(() => {
       setLoaderTaskProgress("timeGate", 1);
@@ -250,13 +329,20 @@
       const menuData = await menuDataPromise;
       menuAssetsReadyPromise = waitForMenuAssets(menuData).then(() => {
         setLoaderTaskProgress("menuAssets", 1);
+      }).catch((error) => {
+        error.bootPhase = "menu-assets";
+        throw error;
       });
       applyMenuData(menuData);
-      await waitForMenuRender();
+      try {
+        await waitForMenuRender();
+      } catch (error) {
+        error.bootPhase = "render";
+        throw error;
+      }
       setLoaderTaskProgress("render", 1);
       await Promise.all([
         fontsReadyPromise,
-        deferredFontsReadyPromise,
         menuAssetsReadyPromise,
         shellAssetsReadyPromise,
         minimumLoaderPromise
@@ -265,22 +351,51 @@
       warmNonCriticalAssets(menuData);
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
-      await promiseAllSettledCompat([
-        fontsReadyPromise,
-        deferredFontsReadyPromise,
-        menuAssetsReadyPromise,
-        shellAssetsReadyPromise,
-        minimumLoaderPromise
-      ]);
-      syncLoaderProgress("Menu non disponibile");
-      renderMenuLoadingState("retry");
-      revealApp();
+      await promiseAllSettledCompat([deferredFontsReadyPromise]);
+      if (error.bootPhase === "menu-data" || error.bootPhase === "render") {
+        await promiseAllSettledCompat([fontsReadyPromise, minimumLoaderPromise, shellAssetsReadyPromise]);
+        syncLoaderProgress("Menu non disponibile");
+        renderMenuLoadingState("retry");
+        revealApp();
+        return;
+      }
+      showBootstrapFailureState(error);
     }
   }
   function initLoaderProgress() {
-    startLoaderMessageRotation();
     setLoaderTaskProgress("boot", 1);
-    startLoaderTimeProgress();
+    revealLoaderCardAfterDelay();
+  }
+  function revealLoaderCardAfterDelay() {
+    if (loaderCardRevealPromise) {
+      return loaderCardRevealPromise;
+    }
+    loaderCardRevealPromise = (async () => {
+      if (!appLoader) {
+        markLoaderClockStarted();
+        startLoaderMessageRotation();
+        startLoaderTimeProgress();
+        return;
+      }
+      appLoader.classList.add("app-loader--card-hidden");
+      try {
+        await Promise.all([wait(LOADER_CARD_DELAY), waitForLoaderFonts()]);
+        pageBody.classList.remove("loader-fonts-loading");
+        pageBody.classList.add("loader-fonts-ready");
+      } catch (error) {
+        pageBody.classList.remove("loader-fonts-loading");
+        pageBody.classList.add("loader-fonts-fallback");
+        appLoader.classList.add("app-loader--font-fallback");
+      }
+      if (!appLoader || appHasRevealed) {
+        return;
+      }
+      appLoader.classList.remove("app-loader--card-hidden");
+      markLoaderClockStarted();
+      startLoaderMessageRotation();
+      startLoaderTimeProgress();
+    })();
+    return loaderCardRevealPromise;
   }
   function startLoaderMessageRotation() {
     if (!appLoaderMessage || !loaderMessages.length) {
@@ -302,10 +417,61 @@
       }, LOADER_MESSAGE_FADE_DURATION);
     }, LOADER_MESSAGE_INTERVAL);
   }
+  function markLoaderClockStarted() {
+    if (loaderStartedAt != null) {
+      return;
+    }
+    loaderStartedAt = performance.now();
+    resolveLoaderClockStarted();
+  }
+  function showBootstrapFailureState(error) {
+    var _a;
+    if (!appLoader) {
+      return;
+    }
+    appLoader.classList.remove("app-loader--card-hidden");
+    appLoader.classList.add("app-loader--font-fallback");
+    pageBody.classList.remove("loader-fonts-loading", "fonts-critical-loading");
+    pageBody.classList.add("loader-fonts-fallback", "bootstrap-failed");
+    const eyebrow = appLoader.querySelector(".app-loader__eyebrow");
+    const title = appLoader.querySelector(".app-loader__title");
+    const note = appLoader.querySelector(".app-loader__note");
+    const meta = appLoader.querySelector(".app-loader__meta");
+    const bar = appLoader.querySelector(".app-loader__bar");
+    if (eyebrow) {
+      eyebrow.textContent = "Caricamento";
+    }
+    if (title) {
+      title.textContent = error && error.bootPhase === "fonts" ? "Sto completando i font essenziali." : "Sto ancora preparando la pagina.";
+    }
+    if (note) {
+      note.textContent = error && error.bootPhase === "fonts" ? "Aspetto i font necessari per mostrare il layout in modo leggibile. Se resta bloccata, prova a ricaricare." : "Qualcosa ha rallentato il bootstrap iniziale. Se resta bloccata, prova a ricaricare.";
+      note.classList.remove("is-transitioning");
+    }
+    if (meta) {
+      meta.setAttribute("aria-hidden", "true");
+    }
+    if (bar) {
+      bar.setAttribute("aria-hidden", "true");
+    }
+    let retryButton = appLoader.querySelector(".app-loader__action");
+    if (!retryButton) {
+      retryButton = document.createElement("button");
+      retryButton.type = "button";
+      retryButton.className = "utility-btn utility-btn--accent app-loader__action";
+      retryButton.textContent = "Ricarica la pagina";
+      retryButton.addEventListener("click", () => window.location.reload());
+      (_a = appLoader.querySelector(".app-loader__card")) == null ? void 0 : _a.appendChild(retryButton);
+    }
+  }
   function startLoaderTimeProgress() {
     const tick = () => {
       if (appHasRevealed) {
         loaderProgressFrame = null;
+        return;
+      }
+      if (loaderStartedAt == null) {
+        loaderProgressFrame = window.requestAnimationFrame(tick);
         return;
       }
       const elapsed = performance.now() - loaderStartedAt;
@@ -740,39 +906,55 @@
   }
   async function waitForRequiredFonts() {
     if (!("fonts" in document)) {
+      pageBody.classList.remove("fonts-critical-loading");
+      pageBody.classList.add("fonts-critical-ready", "loader-fonts-ready");
       return;
     }
-    await Promise.all([
-      ...CRITICAL_FONT_DESCRIPTORS.map(
-        (descriptor) => waitForFontLoad(descriptor, {
+    await Promise.all(
+      REQUIRED_FONT_PLANS.map(
+        (plan) => waitForFontLoad(plan, {
           strict: true,
           timeout: STRICT_FONT_LOAD_TIMEOUT
         })
-      ),
-      ...BLOCKING_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor))
-    ]);
+      )
+    );
     if (document.fonts.ready) {
       try {
         await waitWithTimeout(document.fonts.ready, STRICT_FONT_LOAD_TIMEOUT);
       } catch (error) {
-        if (!CRITICAL_FONT_DESCRIPTORS.every((descriptor) => document.fonts.check(descriptor))) {
-          throw new Error('Il font critico "Housky Demo" non e pronto.');
+        if (!REQUIRED_FONT_PLANS.every((plan) => document.fonts.check(plan.descriptor))) {
+          throw new Error("I font critici della pagina non sono ancora pronti.");
         }
       }
     }
   }
-  async function waitForFontLoad(descriptor, options = {}) {
+  async function waitForLoaderFonts() {
+    if (!("fonts" in document) || !LOADER_FONT_PLANS.length) {
+      return;
+    }
+    await Promise.all(
+      LOADER_FONT_PLANS.map(
+        (plan) => waitForFontLoad(plan, {
+          strict: true,
+          timeout: LOADER_FONT_TIMEOUT
+        })
+      )
+    );
+  }
+  async function waitForFontLoad(fontPlan, options = {}) {
     const { strict = false, timeout = FONT_LOAD_TIMEOUT } = options;
     const deadline = performance.now() + timeout;
+    const descriptor = fontPlan.descriptor;
+    const sample = fontPlan.sample || "BESbswy 0123456789";
     while (true) {
       if (document.fonts.check(descriptor)) {
         return;
       }
       try {
-        await waitWithTimeout(document.fonts.load(descriptor), 2600);
+        await waitWithTimeout(document.fonts.load(descriptor, sample), 2600);
       } catch (error) {
         if (strict && performance.now() >= deadline) {
-          throw new Error("Timeout nel caricamento del font critico: ".concat(descriptor));
+          throw new Error("Timeout nel caricamento del font critico: ".concat(fontPlan.family));
         }
       }
       if (document.fonts.check(descriptor)) {
@@ -780,15 +962,16 @@
       }
       if (performance.now() >= deadline) {
         if (strict) {
-          throw new Error("Timeout nel caricamento del font critico: ".concat(descriptor));
+          throw new Error("Timeout nel caricamento del font critico: ".concat(fontPlan.family));
         }
-        console.warn("Timeout nel caricamento del font: ".concat(descriptor));
+        console.warn("Timeout nel caricamento del font: ".concat(fontPlan.family));
         return;
       }
       await wait(140);
     }
   }
-  function waitMinimumLoaderTime(duration) {
+  async function waitMinimumLoaderTime(duration) {
+    await loaderClockStartedPromise;
     const elapsed = performance.now() - loaderStartedAt;
     const remaining = Math.max(0, duration - elapsed);
     return new Promise((resolve) => window.setTimeout(resolve, remaining));
@@ -810,10 +993,10 @@
     });
   }
   function waitForDeferredFonts() {
-    if (!("fonts" in document) || !DEFERRED_FONT_DESCRIPTORS.length) {
+    if (!("fonts" in document) || !DEFERRED_FONT_PLANS.length) {
       return Promise.resolve();
     }
-    return promiseAllSettledCompat(DEFERRED_FONT_DESCRIPTORS.map((descriptor) => waitForFontLoad(descriptor)));
+    return promiseAllSettledCompat(DEFERRED_FONT_PLANS.map((plan) => waitForFontLoad(plan)));
   }
   function waitForShellAssets() {
     const assetUrls = collectShellAssetUrls();
@@ -1017,6 +1200,19 @@
       );
     });
   }
+  function dedupeFontPlans(plans) {
+    const seen = /* @__PURE__ */ new Set();
+    return plans.filter((plan) => {
+      if (!plan || !plan.descriptor) {
+        return false;
+      }
+      if (seen.has(plan.descriptor)) {
+        return false;
+      }
+      seen.add(plan.descriptor);
+      return true;
+    });
+  }
   function revealApp() {
     if (appHasRevealed) {
       return;
@@ -1038,7 +1234,8 @@
     loaderProgressState.timeGate = 1;
     syncLoaderProgress("Menu pronto");
     appHasRevealed = true;
-    document.body.classList.remove("is-loading");
+    pageBody.classList.remove("is-loading", "fonts-critical-loading", "loader-fonts-loading");
+    pageBody.classList.add("app-ready", "fonts-critical-ready", "loader-fonts-ready");
     if (appLoader) {
       appLoader.setAttribute("aria-hidden", "true");
       appLoader.classList.add("is-hidden");
