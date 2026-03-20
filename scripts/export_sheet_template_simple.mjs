@@ -7,12 +7,15 @@ const rootDir = path.resolve(__dirname, "..");
 const inputPath = path.join(rootDir, "data", "menu-data.json");
 const outputPath = path.join(rootDir, "data", "google-sheet-template-semplice.csv");
 const MAX_SIMPLE_OPTIONS = 6;
+const VISIBILITY_HEADER = "visibilita (visibile/nascosto)";
+const AVAILABILITY_HEADER = "disponibilita (disponibile/non disponibile/in arrivo)";
 
 const columns = [
+  "nome attuale (solo riferimento)",
   "id",
   "sezione",
-  "visibilita (visibile/nascosto)",
-  "disponibilita (disponibile/non disponibile/in arrivo)",
+  VISIBILITY_HEADER,
+  AVAILABILITY_HEADER,
   "varianti",
   "prezzo_unico",
   ...Array.from({ length: MAX_SIMPLE_OPTIONS }, (_, index) => [`variante_${index + 1}`, `prezzo_${index + 1}`]).flat(),
@@ -24,10 +27,11 @@ const menu = JSON.parse(await readFile(inputPath, "utf8"));
 const rows = menu.sections.flatMap((section) =>
   section.items.map((item, index) => {
     const row = {
+      "nome attuale (solo riferimento)": item.name,
       id: item.id,
       sezione: section.id,
-      visibilita: "visibile",
-      disponibilita: getItemAvailabilityState(item),
+      [VISIBILITY_HEADER]: item.visible === false ? "nascosto" : "visibile",
+      [AVAILABILITY_HEADER]: getItemAvailabilityState(item),
       varianti: "",
       prezzo_unico: "",
       varianti_extra: "",
