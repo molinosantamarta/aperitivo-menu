@@ -853,7 +853,7 @@
           "visual": {
             "type": "photo-panel",
             "asset": "rossodelupo-back.png",
-            "position": "42% center",
+            "position": "39% center",
             "size": "82% auto",
             "backgroundColor": "#6b2030",
             "blendMode": "screen"
@@ -1166,7 +1166,7 @@
           "page": 2,
           "name": "Bibite",
           "category": "Altre bevande",
-          "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca.",
+          "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca. 33 cl.",
           "visual": {
             "type": "can-cluster",
             "backgroundColor": "#cfd7e4",
@@ -1284,7 +1284,7 @@
             "width": "177px",
             "height": "426px",
             "right": "-18px",
-            "bottom": "8px",
+            "bottom": "18px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1317,9 +1317,9 @@
         {
           "id": "kombucha",
           "page": 2,
-          "name": "Kombucha al limone",
+          "name": "Kombucha limone",
           "category": "Artigianale",
-          "description": "Tè fermentato frizzante, analcolico, gusto limone. 33 cl.",
+          "description": "Tè fermentato frizzante, analcolico, gusto limone.",
           "visual": {
             "type": "photo-panel",
             "asset": "kombucha-back.jpg",
@@ -1478,7 +1478,7 @@
           "page": 2,
           "name": "Grappe e amari",
           "category": "Altre bevande",
-          "description": "Amari, grappe e liquori da fine pasto. Scopri l'amaro alle erbe del Molino !",
+          "description": "Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe del Molino.",
           "visual": {
             "type": "photo-panel",
             "asset": "grappe-amari-back.jpg",

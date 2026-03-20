@@ -907,7 +907,7 @@ a {
 }
 
 #section-agri-gelato {
-  background: #87947e;
+  background: #69775f;
 }
 
 #section-taglieri {
@@ -1042,6 +1042,12 @@ a {
   font-size: var(--description-font-size);
   line-height: var(--description-line-height);
   min-height: 1.5em;
+}
+
+#section-agri-gelato .menu-section__header h2,
+#section-agri-gelato .menu-section__header p,
+#section-agri-gelato .menu-group__description {
+  text-shadow: 0 2px 8px rgba(34, 46, 30, 0.28);
 }
 
 .menu-group__description--empty {
@@ -1621,7 +1627,7 @@ a {
 }
 
 #section-altre-bevande .item-card[data-item-id="frutta-bio"] .item-card__title-logo {
-  transform: translateX(4px);
+  transform: translate(10px, -3px);
 }
 
 .item-card--artisanal-beer .beer-script-visual__label {
@@ -1695,19 +1701,65 @@ a {
 }
 
 .price-chip--coming-soon {
+  position: relative;
+  isolation: isolate;
   color: #5e574f;
   background: linear-gradient(135deg, rgba(246, 243, 239, 0.98) 0%, rgba(229, 223, 214, 0.98) 56%, rgba(214, 205, 194, 0.98) 100%);
   box-shadow:
     inset 0 0 0 1px rgba(112, 104, 95, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 6px 12px rgba(64, 54, 44, 0.08);
+    0 8px 16px rgba(64, 54, 44, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.18);
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.price-chip--coming-soon::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(255, 255, 255, 0) 0deg,
+      rgba(255, 255, 255, 0.36) 72deg,
+      rgba(176, 169, 160, 0.2) 150deg,
+      rgba(255, 255, 255, 0.08) 228deg,
+      rgba(255, 255, 255, 0) 360deg
+    );
+  filter: blur(7px);
+  opacity: 0.72;
+  z-index: -1;
+  animation: coming-soon-chip-halo 4.8s linear infinite;
 }
 
 .item-card--unavailable {
   cursor: default;
   filter: saturate(0.4);
+}
+
+@keyframes coming-soon-chip-halo {
+  from {
+    transform: rotate(0deg) scale(0.985);
+    opacity: 0.62;
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.02);
+    opacity: 0.88;
+  }
+
+  to {
+    transform: rotate(360deg) scale(0.985);
+    opacity: 0.62;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .price-chip--coming-soon::before {
+    animation: none;
+  }
 }
 
 .item-card--coming-soon {
@@ -1756,7 +1808,10 @@ a {
 .item-card--coming-soon .text-panel-visual,
 .item-card--coming-soon .can-cluster-visual,
 .item-card--coming-soon .item-card__side-visual {
-  filter: grayscale(0.86) saturate(0.16) brightness(1.01);
+  filter: grayscale(0.86) saturate(0.16) brightness(1.01) blur(2.4px);
+  transition:
+    filter 220ms ease,
+    opacity 220ms ease;
 }
 
 .item-card--coming-soon .item-card__label {
@@ -1764,7 +1819,7 @@ a {
 }
 
 .item-card--coming-soon .item-card__content {
-  opacity: 0.88;
+  opacity: 1;
 }
 
 .item-card--coming-soon h3 {
@@ -1773,6 +1828,11 @@ a {
 
 .item-card--coming-soon p {
   color: rgba(97, 91, 84, 0.92);
+  filter: blur(2px);
+  opacity: 0.78;
+  transition:
+    filter 220ms ease,
+    opacity 220ms ease;
 }
 
 .item-card--unavailable .item-card__visual,
