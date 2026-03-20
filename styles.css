@@ -162,8 +162,8 @@ a {
   display: grid;
   place-items: center;
   align-content: center;
-  gap: 14px;
-  padding: 28px;
+  gap: 18px;
+  padding: 32px;
   text-align: center;
   transition:
     opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
@@ -171,30 +171,63 @@ a {
     visibility 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.app-loader__intro::before,
+.app-loader__intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.app-loader__intro::before {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 249, 241, 0.88), rgba(255, 249, 241, 0) 48%),
+    radial-gradient(circle at 50% 85%, rgba(82, 58, 34, 0.09), rgba(82, 58, 34, 0) 54%);
+  opacity: 0;
+  animation: loader-intro-halo 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.app-loader__intro::after {
+  inset: 8px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0), rgba(28, 22, 16, 0.05) 82%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+  opacity: 0.9;
+}
+
 .app-loader__intro-logo,
 .app-loader__intro-caption {
+  position: relative;
+  z-index: 1;
   opacity: 0;
   transform: translateY(14px) scale(0.982);
-  animation: loader-intro-fade-in 1.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .app-loader__intro-logo {
-  width: min(46vw, 252px);
+  width: min(56vw, 308px);
   max-width: 100%;
   height: auto;
-  filter: drop-shadow(0 12px 24px rgba(31, 23, 16, 0.07));
-  animation-delay: 0.12s;
+  filter:
+    drop-shadow(0 10px 18px rgba(31, 23, 16, 0.06))
+    drop-shadow(0 24px 44px rgba(31, 23, 16, 0.08));
+  animation:
+    loader-intro-logo-enter 1.36s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    loader-intro-logo-drift 3.8s ease-in-out 1.4s infinite alternate;
+  animation-delay: 0.08s, 1.5s;
 }
 
 .app-loader__intro-caption {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.96rem;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(78, 62, 48, 0.82);
-  animation-delay: 0.42s;
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: rgba(82, 66, 49, 0.84);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.32);
+  animation: loader-intro-caption-enter 1.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.52s;
 }
 
 .app-loader--intro-hidden .app-loader__intro {
@@ -389,15 +422,61 @@ a {
   transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes loader-intro-fade-in {
+@keyframes loader-intro-logo-enter {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.982);
+    transform: translateY(16px) scale(0.955);
+    filter:
+      blur(4px)
+      drop-shadow(0 6px 12px rgba(31, 23, 16, 0.04));
   }
 
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter:
+      drop-shadow(0 10px 18px rgba(31, 23, 16, 0.06))
+      drop-shadow(0 24px 44px rgba(31, 23, 16, 0.08));
+  }
+}
+
+@keyframes loader-intro-caption-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes loader-intro-halo {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.96;
+    transform: scale(1);
+  }
+}
+
+@keyframes loader-intro-logo-drift {
+  from {
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    transform: translateY(-3px) scale(1.012);
   }
 }
 
@@ -407,17 +486,22 @@ a {
   }
 
   .app-loader__intro {
-    gap: 12px;
-    padding: 22px;
+    gap: 14px;
+    padding: 24px;
+  }
+
+  .app-loader__intro::after {
+    inset: 8px;
+    border-radius: 28px;
   }
 
   .app-loader__intro-logo {
-    width: min(52vw, 220px);
+    width: min(60vw, 246px);
   }
 
   .app-loader__intro-caption {
-    font-size: 0.84rem;
-    letter-spacing: 0.24em;
+    font-size: 0.88rem;
+    letter-spacing: 0.05em;
   }
 
   .app-loader__card {
@@ -450,6 +534,8 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .app-loader__intro::before,
+  .app-loader__intro::after,
   .app-loader__intro-logo,
   .app-loader__intro-caption {
     animation: none;
