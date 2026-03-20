@@ -11,9 +11,9 @@ const MAX_SIMPLE_OPTIONS = 6;
 const columns = [
   "id",
   "sezione",
-  "ordine",
   "visibile",
   "disponibile",
+  "stato",
   "nome",
   "descrizione",
   "categoria",
@@ -30,9 +30,9 @@ const rows = menu.sections.flatMap((section) =>
     const row = {
       id: item.id,
       sezione: section.id,
-      ordine: index,
       visibile: "si",
       disponibile: item.available === false ? "no" : "si",
+      stato: getItemAvailabilityState(item),
       nome: item.name ?? "",
       descrizione: item.description ?? "",
       categoria: item.category ?? "",
@@ -63,31 +63,9 @@ const rows = menu.sections.flatMap((section) =>
   })
 );
 
-const loaderRows = [
-  "sistemando i tavoli nel parco",
-  "tagliando il prato",
-  "caricando le birre in frigo",
-  "affettando il salame",
-  "assaggiando lo spritz",
-  "caricando i gelati nel carretto",
-  "scoppiettando i popcorn",
-].map((message, index) => ({
-  id: `loader-message-${index + 1}`,
-  sezione: "impostazioni",
-  ordine: index,
-  visibile: "si",
-  disponibile: "si",
-  nome: message,
-  descrizione: "",
-  categoria: "loader",
-  varianti: "",
-  prezzo_unico: "",
-  varianti_extra: "",
-}));
-
 const csv = [
   columns.join(","),
-  ...[...rows, ...loaderRows].map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
+  ...rows.map((row) => columns.map((column) => escapeCsv(row[column] ?? "")).join(",")),
 ].join("\n");
 
 await writeFile(outputPath, csv);
@@ -99,6 +77,14 @@ function buildExtraVariants(options) {
     .map((option) => option.label || "")
     .filter(Boolean)
     .join(" | ");
+}
+
+function getItemAvailabilityState(item) {
+  if (item?.availabilityState === "coming-soon") {
+    return "in arrivo";
+  }
+
+  return item?.available === false ? "non disponibile" : "disponibile";
 }
 
 function escapeCsv(value) {

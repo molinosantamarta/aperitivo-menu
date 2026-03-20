@@ -529,6 +529,8 @@ function normalizeSheetHeader(value) {
     visibile: "visible",
     disponibile: "available",
     disponibilita: "available",
+    stato: "availability_state",
+    stato_disponibilita: "availability_state",
     nome: "name",
     descrizione: "description",
     categoria: "category",
@@ -611,7 +613,7 @@ function updateItemFromSheet(item, row, section) {
       nextItem.showDetailHint == null ? true : nextItem.showDetailHint
     );
   }
-  nextItem.available = parseSheetBoolean(row.available, nextItem.available !== false);
+  applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
 
   const options = mergeSheetOptions(nextItem.options, row);
   if (options) {
@@ -632,17 +634,21 @@ function createItemFromSheet(row, section) {
     return null;
   }
 
-  return {
+  const nextItem = {
     id: row.id,
     page: 1,
     name: row.name || row.visual_label || row.id,
     category: row.category || section.title,
     description: row.description || "",
-    available: parseSheetBoolean(row.available, true),
+    available: true,
     showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
     options,
     visual: buildSheetVisual(row, section, null, row.name || row.id),
   };
+
+  applySheetAvailabilityToItem(nextItem, row, "available");
+
+  return nextItem;
 }
 
 function buildSheetVisual(row, section, existingVisual, fallbackName) {
@@ -833,6 +839,59 @@ function parseSheetBoolean(value, fallbackValue) {
   }
 
   return fallbackValue;
+}
+
+function parseAvailabilityState(value) {
+  if (!value) {
+    return "";
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+
+  if (["disponibile", "available", "si", "sì", "yes", "true", "1"].includes(normalized)) {
+    return "available";
+  }
+
+  if (
+    ["in arrivo", "arrivo", "coming soon", "coming-soon", "coming_soon", "preview", "teaser"].includes(
+      normalized
+    )
+  ) {
+    return "coming-soon";
+  }
+
+  if (["non disponibile", "esaurito", "unavailable", "sold out", "no", "false", "0"].includes(normalized)) {
+    return "unavailable";
+  }
+
+  return "";
+}
+
+function resolveSheetAvailabilityState(row, fallbackState) {
+  const explicitState = parseAvailabilityState(row.availability_state);
+  if (explicitState) {
+    return explicitState;
+  }
+
+  const availabilityValue = getFirstSheetValue(row.available);
+  const stateFromAvailability = parseAvailabilityState(availabilityValue);
+  if (stateFromAvailability) {
+    return stateFromAvailability;
+  }
+
+  if (availabilityValue) {
+    return parseSheetBoolean(availabilityValue, fallbackState === "available")
+      ? "available"
+      : "unavailable";
+  }
+
+  return fallbackState;
+}
+
+function applySheetAvailabilityToItem(item, row, fallbackState) {
+  const nextState = resolveSheetAvailabilityState(row, fallbackState);
+  item.availabilityState = nextState;
+  item.available = nextState === "available";
 }
 
 function parseSheetInteger(value, fallbackValue) {
@@ -1863,7 +1922,9 @@ function renderItemCard(item) {
   const isArtisanalBeer = isArtisanalBeerItem(item);
   const isBeer = isBeerItem(item);
   const isDrink = isDrinkItem(item);
-  const isUnavailable = !isItemAvailable(item);
+  const availabilityState = getItemAvailabilityState(item);
+  const isUnavailable = availabilityState !== "available";
+  const unavailableLabel = getItemUnavailableLabel(item);
   const shouldHideCardVisual = item.hideCardVisual === true;
 
   return `
@@ -1872,11 +1933,17 @@ function renderItemCard(item) {
         hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
       }${isBeer ? " item-card--beer" : ""}${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${
         isDrink ? " item-card--drink" : ""
-      }${isUnavailable ? " item-card--unavailable" : ""}"
+      }${
+        availabilityState === "coming-soon"
+          ? " item-card--coming-soon"
+          : isUnavailable
+            ? " item-card--unavailable"
+            : ""
+      }"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
-      aria-label="${isUnavailable ? `${item.name} non disponibile` : `Apri dettagli per ${item.name}`}"
+      aria-label="${isUnavailable ? `${item.name} ${unavailableLabel.toLowerCase()}` : `Apri dettagli per ${item.name}`}"
       aria-disabled="${isUnavailable ? "true" : "false"}"
       ${isUnavailable ? "disabled" : ""}
     >
@@ -1894,12 +1961,16 @@ function renderItemCard(item) {
         <div class="item-card__topline">
           <span class="item-card__label">${item.category}</span>
         </div>
-        <h3>${item.name}</h3>
+        ${renderItemTitle(item)}
         <p>${item.description}</p>
         <div class="item-card__prices">
           ${
             isUnavailable
-              ? `<span class="price-chip price-chip--unavailable">Non disponibile</span>`
+              ? `<span class="price-chip ${
+                  availabilityState === "coming-soon"
+                    ? "price-chip--coming-soon"
+                    : "price-chip--unavailable"
+                }">${unavailableLabel}</span>`
               : getCardOptionsToDisplay(item)
                   .map(
                     (option) => `
@@ -1912,6 +1983,25 @@ function renderItemCard(item) {
         ${renderItemSideVisual(item)}
       </div>
     </button>
+  `;
+}
+
+function renderItemTitle(item) {
+  if (!item || !item.titleLogo || !item.titleLogo.asset) {
+    return `<h3>${item.name}</h3>`;
+  }
+
+  return `
+    <div class="item-card__title-row item-card__title-row--with-logo">
+      <h3>${item.name}</h3>
+      <img
+        class="item-card__title-logo"
+        src="${getTitleLogoImage(item.titleLogo)}"
+        alt=""
+        aria-hidden="true"
+        style="${buildTitleLogoStyle(item.titleLogo)}"
+      />
+    </div>
   `;
 }
 
@@ -1932,6 +2022,32 @@ function isDrinkItem(item) {
 
 function isBottleSectionItem(item) {
   return findSectionTitleForItem(item.id).toLowerCase() === "bottiglie";
+}
+
+function getItemAvailabilityState(item) {
+  if (item && typeof item.availabilityState === "string") {
+    const normalizedState = parseAvailabilityState(item.availabilityState);
+    if (normalizedState) {
+      return normalizedState;
+    }
+  }
+
+  return item && item.available === false ? "unavailable" : "available";
+}
+
+function getItemUnavailableLabel(item) {
+  if (item && typeof item.unavailableLabel === "string") {
+    const normalizedLabel = item.unavailableLabel.trim();
+    if (normalizedLabel) {
+      return normalizedLabel;
+    }
+  }
+
+  if (getItemAvailabilityState(item) === "coming-soon") {
+    return "In arrivo";
+  }
+
+  return "Non disponibile";
 }
 
 function openDetail(itemId) {
@@ -2035,7 +2151,7 @@ function renderOptions(item) {
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
-    const displayLabel = getOptionDisplayLabel(item, option);
+    const displayLabel = getOptionModalLabel(item, option);
 
     optionButton.type = "button";
     optionButton.className = `option-btn${index === state.selectedOptionIndex ? " is-selected" : ""}${
@@ -2543,6 +2659,21 @@ function getOptionDisplayLabel(item, option) {
   return option.label;
 }
 
+function getOptionModalLabel(item, option) {
+  if (option.displayLabel != null) {
+    const normalizedDisplayLabel = String(option.displayLabel).trim();
+    if (normalizedDisplayLabel) {
+      return normalizedDisplayLabel;
+    }
+  }
+
+  if (item && isBottleSectionItem(item) && item.options.length === 1) {
+    return "";
+  }
+
+  return option.label;
+}
+
 function getCardOptionsToDisplay(item) {
   if (!item || !Array.isArray(item.options) || item.options.length <= 1) {
     return item?.options || [];
@@ -2582,7 +2713,7 @@ function pluralize(count, singular, plural) {
 }
 
 function isItemAvailable(item) {
-  return item ? item.available !== false : false;
+  return getItemAvailabilityState(item) === "available";
 }
 
 function formatOptionChip(item, option) {
@@ -2820,6 +2951,21 @@ function renderBeerScriptVisual(visual, context) {
         --beer-script-mid: ${visual.gradientMid || visual.gradientEnd || "#f8f5f0"};
         --beer-script-end: ${visual.gradientEnd || "#f8f5f0"};
         --beer-script-color: ${visual.labelColor || "rgba(56, 39, 24, 0.9)"};
+        --beer-script-radius: ${visual.radius || "34px"};
+        --beer-script-width: ${visual.width || "100%"};
+        --beer-script-max-width: ${visual.maxWidth || "none"};
+        --beer-script-min-height: ${visual.minHeight || "82px"};
+        --beer-script-label-font: ${visual.labelFontFamily || "var(--font-display)"};
+        --beer-script-label-size: ${visual.labelFontSize || "clamp(1.85rem, 7vw, 2.7rem)"};
+        --beer-script-label-line-height: ${visual.labelLineHeight || "0.88"};
+        --beer-script-label-letter-spacing: ${visual.labelLetterSpacing || "-0.14em"};
+        --beer-script-label-order: ${visual.labelOrder || "0"};
+        --beer-script-script-font: ${visual.scriptFontFamily || "var(--font-subtitle)"};
+        --beer-script-script-size: ${visual.scriptFontSize || "clamp(2.05rem, 7.7vw, 3rem)"};
+        --beer-script-script-line-height: ${visual.scriptLineHeight || "0.88"};
+        --beer-script-script-letter-spacing: ${visual.scriptLetterSpacing || "0"};
+        --beer-script-script-transform: ${visual.scriptTransform || "translate(0.08em, 0.05em)"};
+        --beer-script-script-order: ${visual.scriptOrder || "1"};
       "
     >
       ${visual.script ? `<span class="beer-script-visual__script">${visual.script}</span>` : ""}
@@ -2958,6 +3104,24 @@ function renderItemSideVisual(item) {
 function getSideVisualImage(visual) {
   const assetName = visual && visual.asset ? visual.asset : "";
   return buildVersionedPath(`./menu-assets/items/${assetName}`);
+}
+
+function getTitleLogoImage(visual) {
+  const assetName = visual && visual.asset ? visual.asset : "";
+  return buildVersionedPath(`./menu-assets/items/${assetName}`);
+}
+
+function buildTitleLogoStyle(visual) {
+  const styles = [];
+
+  if (visual.width) {
+    styles.push(`--title-logo-width: ${visual.width}`);
+  }
+  if (visual.height) {
+    styles.push(`--title-logo-height: ${visual.height}`);
+  }
+
+  return styles.join("; ");
 }
 
 function getVisualType(item) {

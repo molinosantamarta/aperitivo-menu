@@ -644,7 +644,7 @@ a {
 }
 
 .promo-agri {
-  padding: 18px;
+  padding: 18px 18px 28px;
   background: rgba(255, 253, 248, 0.98);
 }
 
@@ -882,7 +882,7 @@ a {
 }
 
 .menu-section + .menu-section {
-  border-top: 2px solid rgba(255, 255, 255, 0.42);
+  border-top: 8px solid rgba(255, 255, 255, 0.5);
 }
 
 .menu-section__inner {
@@ -1134,12 +1134,14 @@ a {
   place-items: center;
   position: relative;
   isolation: isolate;
-  min-height: 82px;
-  width: 100%;
+  min-height: var(--beer-script-min-height, 82px);
+  width: var(--beer-script-width, 100%);
+  max-width: var(--beer-script-max-width, none);
+  margin: 0 auto;
   padding: 7px 14px;
   overflow: hidden;
   text-align: center;
-  border-radius: 34px;
+  border-radius: var(--beer-script-radius, 34px);
   background: linear-gradient(135deg, var(--beer-script-start) 6%, var(--beer-script-mid) 52%, var(--beer-script-end) 94%);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.18),
@@ -1151,7 +1153,7 @@ a {
   width: 100%;
   max-width: none;
   padding: 6px 16px;
-  border-radius: 22px;
+  border-radius: var(--beer-script-radius, 22px);
 }
 
 .beer-script-visual__script {
@@ -1195,12 +1197,12 @@ a {
 }
 
 .beer-script-visual--display .beer-script-visual__label {
-  order: 0;
+  order: var(--beer-script-label-order, 0);
   width: auto;
-  font-family: var(--font-display);
-  font-size: clamp(1.85rem, 7vw, 2.7rem);
-  line-height: 0.88;
-  letter-spacing: -0.14em;
+  font-family: var(--beer-script-label-font, var(--font-display));
+  font-size: var(--beer-script-label-size, clamp(1.85rem, 7vw, 2.7rem));
+  line-height: var(--beer-script-label-line-height, 0.88);
+  letter-spacing: var(--beer-script-label-letter-spacing, -0.14em);
   white-space: nowrap;
   text-wrap: nowrap;
   transform: none;
@@ -1226,14 +1228,15 @@ a {
 }
 
 .beer-script-visual--display .beer-script-visual__script {
-  order: 1;
+  order: var(--beer-script-script-order, 1);
   align-self: center;
   margin: -0.16em 0 0;
-  font-size: clamp(2.05rem, 7.7vw, 3rem);
-  line-height: 0.88;
-  letter-spacing: 0;
+  font-family: var(--beer-script-script-font, var(--font-subtitle));
+  font-size: var(--beer-script-script-size, clamp(2.05rem, 7.7vw, 3rem));
+  line-height: var(--beer-script-script-line-height, 0.88);
+  letter-spacing: var(--beer-script-script-letter-spacing, 0);
   text-align: center;
-  transform: translate(0.08em, 0.05em);
+  transform: var(--beer-script-script-transform, translate(0.08em, 0.05em));
 }
 
 .beer-script-visual--display > * {
@@ -1471,7 +1474,12 @@ a {
 
 .item-card--artisanal-beer.item-card--floating-bottle .item-card__content {
   min-height: 142px;
-  padding-right: 118px;
+  padding-right: 126px;
+}
+
+.item-card[data-item-id="frutta-bio"].item-card--floating-bottle .item-card__content {
+  min-height: 184px;
+  padding-right: 174px;
 }
 
 .item-card__side-visual--floating-bottle {
@@ -1569,6 +1577,34 @@ a {
   margin-top: 6px;
 }
 
+.item-card__title-row {
+  margin-top: 8px;
+}
+
+.item-card--beer .item-card__title-row,
+.item-card--drink .item-card__title-row,
+.item-card--artisanal-beer .item-card__title-row {
+  margin-top: 6px;
+}
+
+.item-card__title-row--with-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-card__title-row h3 {
+  margin: 0;
+}
+
+.item-card__title-logo {
+  width: var(--title-logo-width, 48px);
+  height: var(--title-logo-height, auto);
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 1px 2px rgba(42, 31, 18, 0.08));
+}
+
 .item-card--artisanal-beer .beer-script-visual__label {
   width: 100%;
   white-space: nowrap;
@@ -1639,9 +1675,85 @@ a {
   box-shadow: inset 0 0 0 1px rgba(80, 76, 71, 0.14);
 }
 
+.price-chip--coming-soon {
+  color: #5e574f;
+  background: linear-gradient(135deg, rgba(246, 243, 239, 0.98) 0%, rgba(229, 223, 214, 0.98) 56%, rgba(214, 205, 194, 0.98) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(112, 104, 95, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 6px 12px rgba(64, 54, 44, 0.08);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .item-card--unavailable {
   cursor: default;
   filter: saturate(0.4);
+}
+
+.item-card--coming-soon {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  cursor: default;
+  background: linear-gradient(180deg, rgba(246, 244, 240, 0.99) 0%, rgba(233, 229, 222, 0.99) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(118, 112, 103, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 14px 24px rgba(42, 31, 18, 0.07),
+    0 0 0 3px rgba(138, 129, 118, 0.05);
+}
+
+.item-card--coming-soon::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 38px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0%, rgba(222, 217, 210, 0.2) 36%, rgba(255, 255, 255, 0) 76%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.item-card--coming-soon::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px 14px auto;
+  width: 78px;
+  height: 78px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(191, 185, 177, 0.18) 0%, rgba(191, 185, 177, 0) 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.item-card--coming-soon > * {
+  position: relative;
+  z-index: 1;
+}
+
+.item-card--coming-soon .item-card__visual,
+.item-card--coming-soon .beer-script-visual,
+.item-card--coming-soon .photo-panel-visual,
+.item-card--coming-soon .text-panel-visual,
+.item-card--coming-soon .can-cluster-visual,
+.item-card--coming-soon .item-card__side-visual {
+  filter: grayscale(0.86) saturate(0.16) brightness(1.01);
+}
+
+.item-card--coming-soon .item-card__label {
+  color: #8c857d;
+}
+
+.item-card--coming-soon .item-card__content {
+  opacity: 0.88;
+}
+
+.item-card--coming-soon h3 {
+  color: #59524b;
+}
+
+.item-card--coming-soon p {
+  color: rgba(97, 91, 84, 0.92);
 }
 
 .item-card--unavailable .item-card__visual,
@@ -1666,7 +1778,14 @@ a {
 .format-showcase-block {
   display: grid;
   gap: 18px;
-  margin-top: 18px;
+  margin-top: 0;
+}
+
+.page-outro {
+  display: grid;
+  gap: 24px;
+  margin-top: 22px;
+  padding-top: 22px;
 }
 
 .format-showcase__eyebrow {
@@ -1774,7 +1893,7 @@ a {
   display: grid;
   gap: 16px;
   justify-items: center;
-  padding: 28px 18px 18px;
+  padding: 6px 18px 18px;
   text-align: center;
 }
 

@@ -471,6 +471,8 @@
       visibile: "visible",
       disponibile: "available",
       disponibilita: "available",
+      stato: "availability_state",
+      stato_disponibilita: "availability_state",
       nome: "name",
       descrizione: "description",
       categoria: "category",
@@ -538,7 +540,7 @@
         nextItem.showDetailHint == null ? true : nextItem.showDetailHint
       );
     }
-    nextItem.available = parseSheetBoolean(row.available, nextItem.available !== false);
+    applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
     const options = mergeSheetOptions(nextItem.options, row);
     if (options) {
       nextItem.options = options;
@@ -554,17 +556,19 @@
     if (!options.length) {
       return null;
     }
-    return {
+    const nextItem = {
       id: row.id,
       page: 1,
       name: row.name || row.visual_label || row.id,
       category: row.category || section.title,
       description: row.description || "",
-      available: parseSheetBoolean(row.available, true),
+      available: true,
       showDetailHint: parseSheetBoolean(row.show_detail_hint, false),
       options,
       visual: buildSheetVisual(row, section, null, row.name || row.id)
     };
+    applySheetAvailabilityToItem(nextItem, row, "available");
+    return nextItem;
   }
   function buildSheetVisual(row, section, existingVisual, fallbackName) {
     const visualMode = (row.visual_mode || "").toLowerCase();
@@ -721,6 +725,44 @@
       return false;
     }
     return fallbackValue;
+  }
+  function parseAvailabilityState(value) {
+    if (!value) {
+      return "";
+    }
+    const normalized = String(value).trim().toLowerCase();
+    if (["disponibile", "available", "si", "s\xEC", "yes", "true", "1"].includes(normalized)) {
+      return "available";
+    }
+    if (["in arrivo", "arrivo", "coming soon", "coming-soon", "coming_soon", "preview", "teaser"].includes(
+      normalized
+    )) {
+      return "coming-soon";
+    }
+    if (["non disponibile", "esaurito", "unavailable", "sold out", "no", "false", "0"].includes(normalized)) {
+      return "unavailable";
+    }
+    return "";
+  }
+  function resolveSheetAvailabilityState(row, fallbackState) {
+    const explicitState = parseAvailabilityState(row.availability_state);
+    if (explicitState) {
+      return explicitState;
+    }
+    const availabilityValue = getFirstSheetValue(row.available);
+    const stateFromAvailability = parseAvailabilityState(availabilityValue);
+    if (stateFromAvailability) {
+      return stateFromAvailability;
+    }
+    if (availabilityValue) {
+      return parseSheetBoolean(availabilityValue, fallbackState === "available") ? "available" : "unavailable";
+    }
+    return fallbackState;
+  }
+  function applySheetAvailabilityToItem(item, row, fallbackState) {
+    const nextState = resolveSheetAvailabilityState(row, fallbackState);
+    item.availabilityState = nextState;
+    item.available = nextState === "available";
   }
   function parseSheetInteger(value, fallbackValue) {
     const parsed = Number.parseInt(value, 10);
@@ -1504,11 +1546,19 @@
     const isArtisanalBeer = isArtisanalBeerItem(item);
     const isBeer = isBeerItem(item);
     const isDrink = isDrinkItem(item);
-    const isUnavailable = !isItemAvailable(item);
+    const availabilityState = getItemAvailabilityState(item);
+    const isUnavailable = availabilityState !== "available";
+    const unavailableLabel = getItemUnavailableLabel(item);
     const shouldHideCardVisual = item.hideCardVisual === true;
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " non disponibile") : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        <h3>").concat(item.name, "</h3>\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip price-chip--unavailable">Non disponibile</span>' : getCardOptionsToDisplay(item).map(
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
     ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+  }
+  function renderItemTitle(item) {
+    if (!item || !item.titleLogo || !item.titleLogo.asset) {
+      return "<h3>".concat(item.name, "</h3>");
+    }
+    return '\n    <div class="item-card__title-row item-card__title-row--with-logo">\n      <h3>'.concat(item.name, '</h3>\n      <img\n        class="item-card__title-logo"\n        src="').concat(getTitleLogoImage(item.titleLogo), '"\n        alt=""\n        aria-hidden="true"\n        style="').concat(buildTitleLogoStyle(item.titleLogo), '"\n      />\n    </div>\n  ');
   }
   function isArtisanalBeerItem(item) {
     return findSectionTitleForItem(item.id).toLowerCase() === "birre" && getItemCategoryLabel(item).toLowerCase() === "artigianali";
@@ -1521,6 +1571,27 @@
   }
   function isBottleSectionItem(item) {
     return findSectionTitleForItem(item.id).toLowerCase() === "bottiglie";
+  }
+  function getItemAvailabilityState(item) {
+    if (item && typeof item.availabilityState === "string") {
+      const normalizedState = parseAvailabilityState(item.availabilityState);
+      if (normalizedState) {
+        return normalizedState;
+      }
+    }
+    return item && item.available === false ? "unavailable" : "available";
+  }
+  function getItemUnavailableLabel(item) {
+    if (item && typeof item.unavailableLabel === "string") {
+      const normalizedLabel = item.unavailableLabel.trim();
+      if (normalizedLabel) {
+        return normalizedLabel;
+      }
+    }
+    if (getItemAvailabilityState(item) === "coming-soon") {
+      return "In arrivo";
+    }
+    return "Non disponibile";
   }
   function openDetail(itemId) {
     const item = itemLookup[itemId];
@@ -1603,7 +1674,7 @@
     const formatGroup = createOptionGroup(selectionGroups.length ? "Formato" : "");
     item.options.forEach((option, index) => {
       const optionButton = document.createElement("button");
-      const displayLabel = getOptionDisplayLabel(item, option);
+      const displayLabel = getOptionModalLabel(item, option);
       optionButton.type = "button";
       optionButton.className = "option-btn".concat(index === state.selectedOptionIndex ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
       optionButton.innerHTML = displayLabel ? '\n          <span class="option-label">'.concat(displayLabel, '</span>\n          <span class="option-price">').concat(formatPrice(option.price), "</span>\n        ") : '\n          <span class="option-price option-price--solo">'.concat(formatPrice(option.price), "</span>\n        ");
@@ -1957,6 +2028,18 @@
     }
     return option.label;
   }
+  function getOptionModalLabel(item, option) {
+    if (option.displayLabel != null) {
+      const normalizedDisplayLabel = String(option.displayLabel).trim();
+      if (normalizedDisplayLabel) {
+        return normalizedDisplayLabel;
+      }
+    }
+    if (item && isBottleSectionItem(item) && item.options.length === 1) {
+      return "";
+    }
+    return option.label;
+  }
   function getCardOptionsToDisplay(item) {
     if (!item || !Array.isArray(item.options) || item.options.length <= 1) {
       return (item == null ? void 0 : item.options) || [];
@@ -1988,7 +2071,7 @@
     return count === 1 ? singular : plural;
   }
   function isItemAvailable(item) {
-    return item ? item.available !== false : false;
+    return getItemAvailabilityState(item) === "available";
   }
   function formatOptionChip(item, option) {
     const displayLabel = getOptionDisplayLabel(item, option);
@@ -2143,7 +2226,7 @@
     if (visual.textStyle === "display") {
       classes.push("beer-script-visual--display");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --beer-script-start: ').concat(visual.gradientStart || "#f0ede8", ";\n        --beer-script-mid: ").concat(visual.gradientMid || visual.gradientEnd || "#f8f5f0", ";\n        --beer-script-end: ").concat(visual.gradientEnd || "#f8f5f0", ";\n        --beer-script-color: ").concat(visual.labelColor || "rgba(56, 39, 24, 0.9)", ';\n      "\n    >\n      ').concat(visual.script ? '<span class="beer-script-visual__script">'.concat(visual.script, "</span>") : "", '\n      <span class="beer-script-visual__label">').concat(visual.label, "</span>\n    </div>\n  ");
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --beer-script-start: ').concat(visual.gradientStart || "#f0ede8", ";\n        --beer-script-mid: ").concat(visual.gradientMid || visual.gradientEnd || "#f8f5f0", ";\n        --beer-script-end: ").concat(visual.gradientEnd || "#f8f5f0", ";\n        --beer-script-color: ").concat(visual.labelColor || "rgba(56, 39, 24, 0.9)", ";\n        --beer-script-radius: ").concat(visual.radius || "34px", ";\n        --beer-script-width: ").concat(visual.width || "100%", ";\n        --beer-script-max-width: ").concat(visual.maxWidth || "none", ";\n        --beer-script-min-height: ").concat(visual.minHeight || "82px", ";\n        --beer-script-label-font: ").concat(visual.labelFontFamily || "var(--font-display)", ";\n        --beer-script-label-size: ").concat(visual.labelFontSize || "clamp(1.85rem, 7vw, 2.7rem)", ";\n        --beer-script-label-line-height: ").concat(visual.labelLineHeight || "0.88", ";\n        --beer-script-label-letter-spacing: ").concat(visual.labelLetterSpacing || "-0.14em", ";\n        --beer-script-label-order: ").concat(visual.labelOrder || "0", ";\n        --beer-script-script-font: ").concat(visual.scriptFontFamily || "var(--font-subtitle)", ";\n        --beer-script-script-size: ").concat(visual.scriptFontSize || "clamp(2.05rem, 7.7vw, 3rem)", ";\n        --beer-script-script-line-height: ").concat(visual.scriptLineHeight || "0.88", ";\n        --beer-script-script-letter-spacing: ").concat(visual.scriptLetterSpacing || "0", ";\n        --beer-script-script-transform: ").concat(visual.scriptTransform || "translate(0.08em, 0.05em)", ";\n        --beer-script-script-order: ").concat(visual.scriptOrder || "1", ';\n      "\n    >\n      ').concat(visual.script ? '<span class="beer-script-visual__script">'.concat(visual.script, "</span>") : "", '\n      <span class="beer-script-visual__label">').concat(visual.label, "</span>\n    </div>\n  ");
   }
   function renderPhotoPanelVisual(visual, context, item) {
     const classes = ["photo-panel-visual"];
@@ -2188,6 +2271,20 @@
   function getSideVisualImage(visual) {
     const assetName = visual && visual.asset ? visual.asset : "";
     return buildVersionedPath("./menu-assets/items/".concat(assetName));
+  }
+  function getTitleLogoImage(visual) {
+    const assetName = visual && visual.asset ? visual.asset : "";
+    return buildVersionedPath("./menu-assets/items/".concat(assetName));
+  }
+  function buildTitleLogoStyle(visual) {
+    const styles = [];
+    if (visual.width) {
+      styles.push("--title-logo-width: ".concat(visual.width));
+    }
+    if (visual.height) {
+      styles.push("--title-logo-height: ".concat(visual.height));
+    }
+    return styles.join("; ");
   }
   function getVisualType(item) {
     return item && item.visual ? item.visual.type : "placeholder-panel";
