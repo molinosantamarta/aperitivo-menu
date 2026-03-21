@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260321d";
+  const APP_VERSION = "20260322a";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -231,6 +231,10 @@
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
+  const formatShowcaseKicker = document.querySelector("#formatShowcaseKicker");
+  const formatShowcaseTitle = document.querySelector("#formatShowcaseTitle");
+  const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
+  const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();
     refreshSectionNavStickyStart();
@@ -1700,6 +1704,28 @@
     }
     initDeferredFormatCarouselAssets();
     const formatCarouselViewport = formatCarousel.querySelector(".format-carousel__viewport");
+    const slides = Array.from(formatCarouselTrack.querySelectorAll(".format-carousel__slide-link"));
+    const syncActiveFormat = (index) => {
+      const slideLink = slides[index];
+      if (!slideLink) {
+        return;
+      }
+      const formatTitle = slideLink.dataset.formatTitle || slideLink.getAttribute("aria-label") || "";
+      if (formatShowcaseKicker) {
+        formatShowcaseKicker.textContent = slideLink.dataset.formatKicker || "Format del Molino";
+      }
+      if (formatShowcaseTitle) {
+        formatShowcaseTitle.textContent = formatTitle;
+      }
+      if (formatShowcaseCopy) {
+        formatShowcaseCopy.textContent = slideLink.dataset.formatDescription || "";
+      }
+      if (formatShowcaseLink) {
+        formatShowcaseLink.textContent = formatTitle ? "Apri ".concat(formatTitle) : "Apri la pagina";
+        formatShowcaseLink.setAttribute("aria-label", slideLink.dataset.formatCta || "Apri la pagina del format");
+        formatShowcaseLink.setAttribute("href", slideLink.getAttribute("href") || "#");
+      }
+    };
     initAutoplayCarousel({
       root: formatCarousel,
       swipeElement: formatCarouselViewport,
@@ -1709,7 +1735,8 @@
       dotClassName: "format-carousel__dot",
       dotAriaLabelPrefix: "Vai al format",
       interval: 2600,
-      visibilityThreshold: 0.45
+      visibilityThreshold: 0.45,
+      onChange: syncActiveFormat
     });
   }
   function initAutoplayCarousel({
@@ -1721,7 +1748,8 @@
     dotClassName,
     dotAriaLabelPrefix,
     interval,
-    visibilityThreshold
+    visibilityThreshold,
+    onChange = null
   }) {
     if (!root || !track || !dotsContainer) {
       return;
@@ -1749,6 +1777,9 @@
         dot.classList.toggle("is-active", isActive);
         dot.setAttribute("aria-pressed", isActive ? "true" : "false");
       });
+      if (typeof onChange === "function") {
+        onChange(activeIndex, slides[activeIndex]);
+      }
     };
     const goToSlide = (index) => {
       activeIndex = (index + slides.length) % slides.length;
