@@ -52,11 +52,11 @@
     />
     <link
       rel="preload"
-      href="./menu-assets/sgb-molino-black.png?v=20260321c"
+      href="./menu-assets/sgb-molino-black.png?v=20260321d"
       as="image"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260321c" />
+    <link rel="stylesheet" href="./styles.css?v=20260321d" />
   </head>
   <body class="is-loading fonts-critical-loading loader-fonts-loading">
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
@@ -111,7 +111,7 @@
               <img
                 class="hero-butterfly__image"
                 data-shell-asset
-                src="./farfalla-bianca.gif?v=20260321c"
+                src="./farfalla-bianca.gif?v=20260321d"
                 alt=""
                 decoding="async"
                 fetchpriority="high"
@@ -121,9 +121,8 @@
           </div>
           <p class="intro">
             La Domenica al Molino è un invito a rallentare e stare insieme:
-            <strong>aperitivi artigianali</strong>, taglieri da condividere,
-            <strong>agri-gelato km zero</strong> e tutta la semplicità
-            autentica della campagna, tra natura e relax.
+            aperitivi artigianali, taglieri da condividere, agri-gelato km 0 e
+            tutta la semplicità autentica della campagna, tra natura e relax.
           </p>
         </div>
       </header>
@@ -185,22 +184,8 @@
             </div>
             <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
               <div class="promo-agri__video-carousel" id="promoAgriCarousel">
-                <div class="promo-agri__video-wrap">
-                  <div
-                    class="promo-agri__video-swipe-surface"
-                    id="promoAgriSwipeSurface"
-                    aria-hidden="true"
-                  ></div>
-                  <iframe
-                    class="promo-agri__video"
-                    id="promoAgriVideoFrame"
-                    src="https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
-                    title="Video Agri-Eventi 1"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen
-                  ></iframe>
+                <div class="promo-agri__video-viewport" id="promoAgriViewport">
+                  <div class="promo-agri__video-track" id="promoAgriVideoTrack"></div>
                 </div>
                 <div
                   class="promo-agri__video-dots"
@@ -217,7 +202,7 @@
                 <span class="utility-btn__icon" aria-hidden="true">
                   <img
                     data-shell-asset
-                    src="./menu-assets/instagram-logo.webp?v=20260321c"
+                    src="./menu-assets/instagram-logo.webp?v=20260321d"
                     alt=""
                   />
                 </span>
@@ -418,6 +403,43 @@
       </main>
     </div>
 
+    <div class="promo-agri-lightbox" id="promoAgriLightbox" aria-hidden="true" hidden>
+      <button
+        class="promo-agri-lightbox__backdrop"
+        id="promoAgriLightboxBackdrop"
+        type="button"
+        aria-label="Chiudi il video"
+      ></button>
+      <div
+        class="promo-agri-lightbox__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="promoAgriLightboxTitle"
+      >
+        <div class="promo-agri-lightbox__header">
+          <p class="promo-agri-lightbox__eyebrow" id="promoAgriLightboxTitle">Agri-Eventi</p>
+          <button
+            class="promo-agri-lightbox__close"
+            id="promoAgriLightboxClose"
+            type="button"
+            aria-label="Chiudi il video"
+          >
+            Chiudi
+          </button>
+        </div>
+        <iframe
+          class="promo-agri-lightbox__frame"
+          id="promoAgriLightboxFrame"
+          src="about:blank"
+          title="Video Agri-Eventi"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+
     <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine">
       <span class="cart-fab__label">Riepilogo</span>
       <span class="cart-fab__count" id="cartCount" aria-live="polite">0</span>
@@ -495,9 +517,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260321c";
+          script.src = "./main.js?v=20260321d";
         } else {
-          script.src = "./main.runtime.js?v=20260321c";
+          script.src = "./main.runtime.js?v=20260321d";
         }
 
         document.body.appendChild(script);

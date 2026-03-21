@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260321c";
+  const APP_VERSION = "20260321d";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -65,14 +65,17 @@
   const PROMO_AGRI_VIDEOS = [
     {
       title: "Video Agri-Eventi 1",
+      eyebrow: "BBQ sotto le stelle",
       src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
     },
     {
       title: "Video Agri-Eventi 2",
+      eyebrow: "Molino Country Party",
       src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1"
     },
     {
       title: "Video Agri-Eventi 3",
+      eyebrow: "Molino Apr\xE8s-ski",
       src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     }
   ];
@@ -218,9 +221,13 @@
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
-  const promoAgriSwipeSurface = document.querySelector("#promoAgriSwipeSurface");
-  const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
+  const promoAgriViewport = document.querySelector("#promoAgriViewport");
+  const promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
+  const promoAgriLightbox = document.querySelector("#promoAgriLightbox");
+  const promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
+  const promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
+  const promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -1439,28 +1446,33 @@
     }, 320);
   }
   function initPromoAgriCarousel() {
-    if (!promoAgriCarousel || !promoAgriVideoFrame || !promoAgriCarouselDots || !PROMO_AGRI_VIDEOS.length) {
+    if (!promoAgriCarousel || !promoAgriViewport || !promoAgriVideoTrack || !promoAgriCarouselDots || !PROMO_AGRI_VIDEOS.length) {
       return;
     }
     let activeIndex = 0;
     let autoplayId = null;
     let carouselVisible = false;
     let carouselPaused = false;
+    let lastTriggerButton = null;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const swipeTarget = promoAgriSwipeSurface || promoAgriCarousel;
+    const swipeTarget = promoAgriViewport;
+    promoAgriVideoTrack.innerHTML = PROMO_AGRI_VIDEOS.map(
+      (video, index) => '\n      <button\n        class="promo-agri__video-slide"\n        type="button"\n        data-slide-index="'.concat(index, '"\n        aria-label="Guarda ').concat(video.title, '"\n      >\n        <span\n          class="promo-agri__video-poster"\n          style="--promo-agri-video-poster: url(\'').concat(getPromoAgriVideoPoster(video), '\');"\n        >\n          <span class="promo-agri__video-meta">\n            <span class="promo-agri__video-kicker">').concat(video.eyebrow || "Agri-Eventi", '</span>\n          </span>\n          <span class="promo-agri__video-cta">Guarda il video</span>\n        </span>\n      </button>\n    ')
+    ).join("");
     promoAgriCarouselDots.innerHTML = PROMO_AGRI_VIDEOS.map(
       (_, index) => '\n      <button\n        class="promo-agri__video-dot"\n        type="button"\n        aria-label="Vai al video '.concat(index + 1, '"\n        data-slide-index="').concat(index, '"\n      ></button>\n    ')
     ).join("");
+    const slides = Array.from(promoAgriVideoTrack.querySelectorAll(".promo-agri__video-slide"));
     const dots = Array.from(promoAgriCarouselDots.querySelectorAll(".promo-agri__video-dot"));
     const syncCarousel = () => {
       const video = PROMO_AGRI_VIDEOS[activeIndex];
       if (!video) {
         return;
       }
-      if (promoAgriVideoFrame.getAttribute("src") !== video.src) {
-        promoAgriVideoFrame.setAttribute("src", video.src);
-      }
-      promoAgriVideoFrame.setAttribute("title", video.title);
+      promoAgriVideoTrack.style.transform = "translateX(-".concat(activeIndex * 100, "%)");
+      slides.forEach((slide, index) => {
+        slide.classList.toggle("is-active", index === activeIndex);
+      });
       dots.forEach((dot, index) => {
         const isActive = index === activeIndex;
         dot.classList.toggle("is-active", isActive);
@@ -1485,6 +1497,42 @@
         goToSlide(activeIndex + 1);
       }, 4200);
     };
+    const openLightbox = (index, triggerButton = null) => {
+      const video = PROMO_AGRI_VIDEOS[index];
+      if (!video || !promoAgriLightbox || !promoAgriLightboxFrame) {
+        return;
+      }
+      lastTriggerButton = triggerButton;
+      goToSlide(index);
+      carouselPaused = true;
+      stopAutoplay();
+      promoAgriLightbox.hidden = false;
+      promoAgriLightbox.setAttribute("aria-hidden", "false");
+      promoAgriLightboxFrame.setAttribute("src", getPromoAgriEmbedSrc(video, { autoplay: true }));
+      promoAgriLightboxFrame.setAttribute("title", video.title);
+      pageBody.classList.add("modal-open");
+      promoAgriLightboxClose == null ? void 0 : promoAgriLightboxClose.focus();
+    };
+    const closeLightbox = () => {
+      if (!promoAgriLightbox || promoAgriLightbox.hidden) {
+        return;
+      }
+      promoAgriLightbox.hidden = true;
+      promoAgriLightbox.setAttribute("aria-hidden", "true");
+      if (promoAgriLightboxFrame) {
+        promoAgriLightboxFrame.setAttribute("src", "about:blank");
+      }
+      pageBody.classList.remove("modal-open");
+      carouselPaused = false;
+      startAutoplay();
+      lastTriggerButton == null ? void 0 : lastTriggerButton.focus();
+      lastTriggerButton = null;
+    };
+    slides.forEach((slide) => {
+      slide.addEventListener("click", () => {
+        openLightbox(Number(slide.dataset.slideIndex || 0), slide);
+      });
+    });
     dots.forEach((dot) => {
       dot.addEventListener("click", () => {
         goToSlide(Number(dot.dataset.slideIndex || 0));
@@ -1535,6 +1583,13 @@
       carouselPaused = false;
       startAutoplay();
     });
+    promoAgriLightboxBackdrop == null ? void 0 : promoAgriLightboxBackdrop.addEventListener("click", closeLightbox);
+    promoAgriLightboxClose == null ? void 0 : promoAgriLightboxClose.addEventListener("click", closeLightbox);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+    });
     if ("IntersectionObserver" in window) {
       const visibilityObserver = new IntersectionObserver(
         (entries) => {
@@ -1557,6 +1612,32 @@
       startAutoplay();
     }
     syncCarousel();
+  }
+  function getPromoAgriVideoPoster(video) {
+    const videoId = getPromoAgriVideoId(video);
+    return videoId ? "https://i.ytimg.com/vi/".concat(videoId, "/hqdefault.jpg") : "";
+  }
+  function getPromoAgriVideoId(video) {
+    const source = video && video.src ? video.src : "";
+    const match = source.match(/\/embed\/([^?&/]+)/);
+    return match ? match[1] : "";
+  }
+  function getPromoAgriEmbedSrc(video, options = {}) {
+    const { autoplay = false } = options;
+    try {
+      const url = new URL(video.src);
+      url.searchParams.set("rel", "0");
+      url.searchParams.set("playsinline", "1");
+      url.searchParams.set("modestbranding", "1");
+      if (autoplay) {
+        url.searchParams.set("autoplay", "1");
+      } else {
+        url.searchParams.delete("autoplay");
+      }
+      return url.toString();
+    } catch (error) {
+      return video.src;
+    }
   }
   function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
     if (!element) {
