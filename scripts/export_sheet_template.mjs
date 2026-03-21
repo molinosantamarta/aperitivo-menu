@@ -39,10 +39,12 @@ const columns = [
 const menu = JSON.parse(await readFile(inputPath, "utf8"));
 
 const rows = menu.sections.flatMap((section) =>
-  section.items.map((item, index) => {
-    const row = {
-      id: item.id,
-      section_id: section.id,
+  section.items
+    .filter((item) => item.excludeFromSheet !== true)
+    .map((item, index) => {
+      const row = {
+        id: item.id,
+        section_id: section.id,
       position: index,
       visible: "si",
       available: item.available === false ? "no" : "si",
@@ -67,8 +69,8 @@ const rows = menu.sections.flatMap((section) =>
       row[`${baseKey}_price`] = option.price ?? "";
     });
 
-    return row;
-  })
+      return row;
+    })
 );
 
 const csv = [

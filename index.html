@@ -52,18 +52,18 @@
     />
     <link
       rel="preload"
-      href="./menu-assets/sgb-molino-black.png?v=20260318aaa"
+      href="./menu-assets/sgb-molino-black.png?v=20260321b"
       as="image"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260318aaa" />
+    <link rel="stylesheet" href="./styles.css?v=20260321b" />
   </head>
   <body class="is-loading fonts-critical-loading loader-fonts-loading">
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
       <div class="app-loader__intro" id="appLoaderIntro" aria-hidden="true">
         <img
           class="app-loader__intro-logo"
-          src="./menu-assets/sgb-molino-black.png?v=20260318aaa"
+          src="./menu-assets/sgb-molino-black.png?v=20260321b"
           alt=""
           decoding="async"
           fetchpriority="high"
@@ -110,9 +110,11 @@
             <div class="hero-butterfly hero-butterfly--brand" aria-hidden="true">
               <img
                 class="hero-butterfly__image"
-                data-src="./farfalla-bianca.gif"
+                data-shell-asset
+                src="./farfalla-bianca.gif?v=20260321b"
                 alt=""
                 decoding="async"
+                fetchpriority="high"
               />
             </div>
             <p class="hero-logo__subtitle">agrigelato e aperitivo</p>
@@ -124,150 +126,115 @@
             autentica della campagna, tra natura e relax.
           </p>
         </div>
-        <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie">
-          <span class="section-nav__placeholder">Categorie in caricamento</span>
-        </nav>
-        <div class="hero-guide" aria-label="Come usare il menu">
-          <p>
-            Sfoglia il menu, se vuoi usa la funzione riepilogo per raggruppare l'ordine del
-            tavolo da dire al cameriere.
-          </p>
-        </div>
       </header>
+      <nav class="section-nav" id="sectionNav" aria-label="Navigazione categorie">
+        <span class="section-nav__placeholder">Categorie in caricamento</span>
+      </nav>
 
       <main class="menu-stack">
-        <section class="promo-agri">
-          <div class="promo-agri__content">
-            <p class="eyebrow promo-agri__eyebrow">Agri-Eventi</p>
-            <h2>Il parco del Molino vive anche oltre l'aperitivo.</h2>
-            <p class="promo-agri__copy">
-              Ci sono luoghi in cui la natura non fa solo da sfondo, ma diventa parte
-              dell'esperienza, e il Parco del Molino è uno di questi. Picnic sul prato,
-              Cinema all'aperto, Fitness nel verde e serate a tema tutte da vivere.
-              Esperienze pensate per emozionare, sorprendere e far riscoprire il piacere
-              di condividere tempo di qualità, all'aria aperta.
-            </p>
-            <div class="promo-agri__chips" aria-label="Esperienze Agri-Eventi">
-              <a
-                class="promo-agri__chip"
-                href="https://www.molinosantamarta.it/aperitivo-agrigelato"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Aperitivo
-              </a>
-              <a
-                class="promo-agri__chip"
-                href="https://www.molinosantamarta.it/bbq-picnic"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Picnic
-              </a>
-              <a
-                class="promo-agri__chip"
-                href="https://www.molinosantamarta.it/cinema"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Cinema
-              </a>
-            </div>
-            <div class="promo-agri__actions">
-              <a
-                class="utility-btn utility-btn--accent"
-                href="https://www.molinosantamarta.it/agri-eventi"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Scopri tutti gli Agri-Eventi
-              </a>
-            </div>
-          </div>
-          <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
-            <div class="promo-agri__video-carousel" id="promoAgriCarousel">
-              <div class="promo-agri__video-wrap">
-                <iframe
-                  class="promo-agri__video"
-                  id="promoAgriVideoFrame"
-                  src="https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
-                  title="Video Agri-Eventi 1"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allowfullscreen
-                ></iframe>
-              </div>
-              <div
-                class="promo-agri__video-dots"
-                id="promoAgriCarouselDots"
-                aria-label="Seleziona video Agri-Eventi"
-              ></div>
-            </div>
-            <a
-              class="utility-btn utility-btn--instagram"
-              href="https://www.instagram.com/agri_eventi/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span class="utility-btn__icon" aria-hidden="true">
-                <img
-                  data-shell-asset
-                  src="./menu-assets/instagram-logo.webp?v=20260317zb"
-                  alt=""
-                />
-              </span>
-              <span class="utility-btn__text">Seguici su Instagram</span>
-            </a>
-            <p class="promo-agri__visual-note">
-              Per restare aggiornato su nuove iniziative, calendari, prenotazioni e
-              variazioni dell'ultimo minuto, anche in caso di maltempo.
-            </p>
-          </aside>
-        </section>
-
         <div class="menu-sections" id="menuSections"></div>
 
         <div class="page-outro" aria-label="Ultima parte della pagina">
+          <section class="promo-agri">
+            <div class="promo-agri__content">
+              <p class="eyebrow promo-agri__eyebrow">Agri-Eventi</p>
+              <h2>Il parco del Molino vive anche oltre l'aperitivo.</h2>
+              <p class="promo-agri__copy">
+                Ci sono luoghi in cui la natura non fa solo da sfondo, ma diventa parte
+                dell'esperienza, e il Parco del Molino è uno di questi. Picnic sul prato,
+                Cinema all'aperto, Fitness nel verde e serate a tema tutte da vivere.
+                Esperienze pensate per emozionare, sorprendere e far riscoprire il piacere
+                di condividere tempo di qualità, all'aria aperta.
+              </p>
+              <div class="promo-agri__chips" aria-label="Esperienze Agri-Eventi">
+                <a
+                  class="promo-agri__chip"
+                  href="https://www.molinosantamarta.it/aperitivo-agrigelato"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Aperitivo
+                </a>
+                <a
+                  class="promo-agri__chip"
+                  href="https://www.molinosantamarta.it/bbq-picnic"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Picnic
+                </a>
+                <a
+                  class="promo-agri__chip"
+                  href="https://www.molinosantamarta.it/cinema"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Cinema
+                </a>
+              </div>
+              <div class="promo-agri__actions">
+                <a
+                  class="utility-btn utility-btn--accent"
+                  href="https://www.molinosantamarta.it/agri-eventi"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Scopri tutti gli Agri-Eventi
+                </a>
+              </div>
+            </div>
+            <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
+              <div class="promo-agri__video-carousel" id="promoAgriCarousel">
+                <div class="promo-agri__video-wrap">
+                  <div
+                    class="promo-agri__video-swipe-surface"
+                    id="promoAgriSwipeSurface"
+                    aria-hidden="true"
+                  ></div>
+                  <iframe
+                    class="promo-agri__video"
+                    id="promoAgriVideoFrame"
+                    src="https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
+                    title="Video Agri-Eventi 1"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+                <div
+                  class="promo-agri__video-dots"
+                  id="promoAgriCarouselDots"
+                  aria-label="Seleziona video Agri-Eventi"
+                ></div>
+              </div>
+              <a
+                class="utility-btn utility-btn--instagram"
+                href="https://www.instagram.com/agri_eventi/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span class="utility-btn__icon" aria-hidden="true">
+                  <img
+                    data-shell-asset
+                    src="./menu-assets/instagram-logo.webp?v=20260317zb"
+                    alt=""
+                  />
+                </span>
+                <span class="utility-btn__text">Seguici su Instagram</span>
+              </a>
+              <p class="promo-agri__visual-note">
+                Per restare aggiornato su nuove iniziative, calendari, prenotazioni e
+                variazioni dell'ultimo minuto, anche in caso di maltempo.
+              </p>
+            </aside>
+          </section>
+
           <section class="format-showcase-block" aria-label="I nostri format">
             <h2 class="eyebrow format-showcase__eyebrow">I nostri format</h2>
             <div class="format-carousel" id="formatCarousel">
               <div class="format-carousel__viewport">
                 <div class="format-carousel__track" id="formatCarouselTrack">
-                  <figure class="format-carousel__slide format-carousel__slide--logo">
-                  <a
-                    class="format-carousel__slide-link"
-                    href="https://www.molinosantamarta.it/agri-eventi"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Apri Agri-Eventi"
-                  >
-                    <img
-                      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317zb"
-                      alt="Logo Agri Eventi"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                  </figure>
-                  <figure class="format-carousel__slide">
-                  <a
-                    class="format-carousel__slide-link"
-                    href="https://www.molinosantamarta.it/bbqhub"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Apri BBQ Hub"
-                  >
-                    <img
-                      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317zb"
-                      alt="Format BBQ Hub"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                  </figure>
                   <figure class="format-carousel__slide">
                   <a
                     class="format-carousel__slide-link"
@@ -370,6 +337,40 @@
                     />
                   </a>
                   </figure>
+                  <figure class="format-carousel__slide format-carousel__slide--logo">
+                  <a
+                    class="format-carousel__slide-link"
+                    href="https://www.molinosantamarta.it/agri-eventi"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Apri Agri-Eventi"
+                  >
+                    <img
+                      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260317zb"
+                      alt="Logo Agri Eventi"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                  </figure>
+                  <figure class="format-carousel__slide">
+                  <a
+                    class="format-carousel__slide-link"
+                    href="https://www.molinosantamarta.it/bbqhub"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Apri BBQ Hub"
+                  >
+                    <img
+                      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260317zb"
+                      alt="Format BBQ Hub"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                  </figure>
                 </div>
               </div>
               <div
@@ -459,9 +460,9 @@
         <p class="sheet-kicker">Riepilogo virtuale</p>
         <h2 id="cartTitle">Ordine da comunicare al cameriere</h2>
         <div class="cart-empty" id="cartEmpty">
-          Se vuoi, seleziona qui i prodotti dal menu per facilitare la presa
-          dell'ordine. Oppure consulta con calma il menu e attendi l'arrivo del
-          cameriere.
+          Se vuoi, seleziona i prodotti che desideri e aggiungili al riepilogo
+          per facilitare la presa dell'ordine. Oppure consulta con calma il
+          menu e attendi l'arrivo del cameriere.
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer" id="cartFooter" hidden>
@@ -494,9 +495,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260318aaa";
+          script.src = "./main.js?v=20260321b";
         } else {
-          script.src = "./main.runtime.js?v=20260318aaa";
+          script.src = "./main.runtime.js?v=20260321b";
         }
 
         document.body.appendChild(script);

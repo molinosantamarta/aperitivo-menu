@@ -25,10 +25,12 @@ const columns = [
 const menu = JSON.parse(await readFile(inputPath, "utf8"));
 
 const rows = menu.sections.flatMap((section) =>
-  section.items.map((item, index) => {
-    const row = {
-      "nome attuale (solo riferimento)": item.name,
-      id: item.id,
+  section.items
+    .filter((item) => item.excludeFromSheet !== true)
+    .map((item, index) => {
+      const row = {
+        "nome attuale (solo riferimento)": item.name,
+        id: item.id,
       sezione: section.id,
       [VISIBILITY_HEADER]: item.visible === false ? "nascosto" : "visibile",
       [AVAILABILITY_HEADER]: getItemAvailabilityState(item),
@@ -55,8 +57,8 @@ const rows = menu.sections.flatMap((section) =>
       });
     }
 
-    return row;
-  })
+      return row;
+    })
 );
 
 const csv = [

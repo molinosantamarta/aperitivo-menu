@@ -1102,6 +1102,7 @@
           "name": "Acqua",
           "category": "Altre bevande",
           "description": "Naturale o frizzante, bottiglia 50 cl.",
+          "hideCardVisual": true,
           "visual": {
             "type": "beer-script",
             "label": "Acqua",
@@ -1118,7 +1119,7 @@
             "height": "176px",
             "right": "18px",
             "bottom": "12px",
-            "tilt": "0deg",
+            "tilt": "10deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
@@ -1636,8 +1637,13 @@
           "id": "agri-gelato",
           "page": 2,
           "name": "Agri-gelato km 0",
+          "excludeFromSheet": true,
           "category": "Gelateria",
           "description": "Recati direttamente al carretto nel parco.",
+          "lockAvailabilityState": true,
+          "availabilityState": "self-service",
+          "unavailableLabel": "Al carretto",
+          "serviceNote": "Ordina e ritira in autonomia al carretto nel parco.",
           "visual": {
             "type": "photo-panel",
             "asset": "agri-gelato-photo.jpeg",

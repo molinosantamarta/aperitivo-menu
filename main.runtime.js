@@ -24,10 +24,10 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260318aaa";
+  const APP_VERSION = "20260321b";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
-  const LOADER_MIN_DURATION = 1e4;
+  const LOADER_MIN_DURATION = 0;
   const LOADER_FONT_TIMEOUT = 12e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -77,6 +77,14 @@
     }
   ];
   const CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
+  const SECTION_SURFACE_COLORS = {
+    birre: "#c2a03d",
+    drink: "#c97439",
+    bottiglie: "#ad6077",
+    "altre-bevande": "#82a7ca",
+    gelato: "#789556",
+    taglieri: "#bf8550"
+  };
   const FONT_BOOTSTRAP_PLAN = {
     loader: [
       {
@@ -154,6 +162,9 @@
   let deferredPhotoPanelObserver;
   let deferredSideVisualObserver;
   let deferredCanClusterObserver;
+  let activeSectionId = "";
+  let activeSectionTicking = false;
+  let sectionNavStickyStart = 0;
   let loaderProgressFrame = null;
   let loaderMessageIntervalId = null;
   let loaderMessages = [...LOADER_MESSAGES];
@@ -206,13 +217,19 @@
   const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
-  const heroButterflyImage = document.querySelector(".hero-butterfly__image");
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
+  const promoAgriSwipeSurface = document.querySelector("#promoAgriSwipeSurface");
   const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
   const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
   const formatCarousel = document.querySelector("#formatCarousel");
   const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   const formatCarouselDots = document.querySelector("#formatCarouselDots");
+  window.addEventListener("resize", () => {
+    syncSectionScrollOffset();
+    refreshSectionNavStickyStart();
+    queueActiveSectionRefresh();
+  }, { passive: true });
+  window.addEventListener("scroll", queueActiveSectionRefresh, { passive: true });
   const loaderProgressState = {
     boot: 0,
     menuData: 0,
@@ -281,6 +298,19 @@
     state.cart = [];
     persistCart();
     renderCart();
+  });
+  sectionNav == null ? void 0 : sectionNav.addEventListener("click", (event) => {
+    const link = event.target.closest(".section-nav__link");
+    if (!link) {
+      return;
+    }
+    const sectionId = link.dataset.sectionId;
+    if (!sectionId) {
+      return;
+    }
+    event.preventDefault();
+    scrollToSectionStart(sectionId);
+    setActiveSectionLink(sectionId, { ensureVisible: true });
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
@@ -351,7 +381,6 @@
         minimumLoaderPromise
       ]);
       revealApp();
-      warmNonCriticalAssets(menuData);
     } catch (error) {
       console.error("Errore durante il caricamento del menu:", error);
       await promiseAllSettledCompat([deferredFontsReadyPromise]);
@@ -560,7 +589,138 @@
     }, {});
     renderNavigation();
     renderSections();
+    syncSectionScrollOffset();
+    refreshSectionNavStickyStart();
+    initActiveSectionTracking();
     renderCart();
+  }
+  function syncSectionScrollOffset() {
+    if (!sectionNav) {
+      return;
+    }
+    const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+    const comfortableGap = 18;
+    const totalOffset = Math.max(96, navHeight + comfortableGap);
+    document.documentElement.style.setProperty("--section-scroll-offset", "".concat(totalOffset, "px"));
+  }
+  function refreshSectionNavStickyStart() {
+    if (!sectionNav) {
+      return;
+    }
+    sectionNavStickyStart = Math.max(0, sectionNav.offsetTop);
+    syncStickyNavState();
+  }
+  function initActiveSectionTracking() {
+    if (!sectionNav || !menuSections) {
+      return;
+    }
+    const sectionElements = Array.from(menuSections.querySelectorAll(".menu-section[id]"));
+    if (!sectionElements.length) {
+      return;
+    }
+    updateActiveSectionFromScroll();
+  }
+  function queueActiveSectionRefresh() {
+    if (activeSectionTicking) {
+      return;
+    }
+    activeSectionTicking = true;
+    window.requestAnimationFrame(() => {
+      activeSectionTicking = false;
+      syncStickyNavState();
+      updateActiveSectionFromScroll();
+    });
+  }
+  function syncStickyNavState() {
+    if (!sectionNav) {
+      return;
+    }
+    sectionNav.classList.toggle("is-stuck", window.scrollY > sectionNavStickyStart);
+  }
+  function updateActiveSectionFromScroll() {
+    if (!sectionNav || !menuSections) {
+      return;
+    }
+    const sectionElements = Array.from(menuSections.querySelectorAll(".menu-section[id]"));
+    if (!sectionElements.length) {
+      return;
+    }
+    const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+    const activationLine = navHeight + 28;
+    let nextActiveId = sectionElements[0].id.replace("section-", "");
+    sectionElements.forEach((section) => {
+      if (section.getBoundingClientRect().top - activationLine <= 0) {
+        nextActiveId = section.id.replace("section-", "");
+      }
+    });
+    setActiveSectionLink(nextActiveId, { ensureVisible: true });
+  }
+  function scrollToSectionStart(sectionId) {
+    const targetSection = document.querySelector("#section-".concat(sectionId));
+    if (!targetSection || !sectionNav) {
+      return;
+    }
+    const sectionTop = window.scrollY + targetSection.getBoundingClientRect().top;
+    const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+    const stickyTop = parseFloat(window.getComputedStyle(sectionNav).top) || 0;
+    const targetTop = Math.max(0, sectionTop - navHeight - stickyTop);
+    window.scrollTo({
+      top: targetTop,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+    });
+    if (window.history && typeof window.history.replaceState === "function") {
+      window.history.replaceState(null, "", "#section-".concat(sectionId));
+    }
+  }
+  function setActiveSectionLink(sectionId, options = {}) {
+    const { ensureVisible = false } = options;
+    if (!sectionNav || !sectionId) {
+      return;
+    }
+    const links = Array.from(sectionNav.querySelectorAll(".section-nav__link"));
+    if (!links.length) {
+      return;
+    }
+    const nextActiveLink = links.find((link) => link.dataset.sectionId === sectionId);
+    if (!nextActiveLink) {
+      return;
+    }
+    const hasChanged = activeSectionId !== sectionId;
+    activeSectionId = sectionId;
+    links.forEach((link) => {
+      const isActive = link === nextActiveLink;
+      link.classList.toggle("is-active", isActive);
+      if (isActive) {
+        link.setAttribute("aria-current", "true");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+    if (ensureVisible && (hasChanged || !isNavLinkComfortablyVisible(nextActiveLink))) {
+      scrollNavLinkIntoView(nextActiveLink);
+    }
+  }
+  function isNavLinkComfortablyVisible(link) {
+    if (!sectionNav || !link) {
+      return true;
+    }
+    const navRect = sectionNav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const horizontalPadding = 20;
+    return linkRect.left >= navRect.left + horizontalPadding && linkRect.right <= navRect.right - horizontalPadding;
+  }
+  function scrollNavLinkIntoView(link) {
+    if (!sectionNav || !link) {
+      return;
+    }
+    const navRect = sectionNav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const currentLeft = sectionNav.scrollLeft;
+    const targetLeft = currentLeft + (linkRect.left - navRect.left) - (navRect.width - linkRect.width) / 2;
+    sectionNav.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+    });
   }
   async function loadMenuData() {
     const response = await fetch(MENU_DATA_URL);
@@ -675,17 +835,13 @@
   }
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));
-    const sectionLookup = nextMenu.sections.reduce((lookup, section) => {
-      lookup[section.id] = section;
-      return lookup;
-    }, {});
     const rowLookup = new Map(sheetRows.map((row) => [row.id, row]));
     nextMenu.sections.forEach((section) => {
       section.items = section.items.filter((item) => {
-        const row = rowLookup.get(item.id);
+        const row = getManagedSheetRow(item, rowLookup);
         return row ? resolveSheetVisibility(row, true) : true;
       }).map((item, index) => {
-        const row = rowLookup.get(item.id);
+        const row = getManagedSheetRow(item, rowLookup);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
         nextItem.__sheetPosition = parseSheetInteger(row ? row.position : null, index);
         return nextItem;
@@ -699,6 +855,12 @@
     });
     return nextMenu;
   }
+  function getManagedSheetRow(item, rowLookup) {
+    if (!item || item.excludeFromSheet === true) {
+      return null;
+    }
+    return rowLookup.get(item.id) || null;
+  }
   function updateItemFromSheet(item, row, section) {
     const nextItem = __spreadValues({}, item);
     if (row.show_detail_hint) {
@@ -707,7 +869,9 @@
         nextItem.showDetailHint == null ? true : nextItem.showDetailHint
       );
     }
-    applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
+    if (nextItem.lockAvailabilityState !== true) {
+      applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
+    }
     const options = mergeSheetOptions(nextItem.options, row);
     if (options) {
       nextItem.options = options;
@@ -882,6 +1046,17 @@
     )) {
       return "coming-soon";
     }
+    if ([
+      "al carretto",
+      "carretto",
+      "self service",
+      "self-service",
+      "self_service",
+      "ritiro autonomo",
+      "autonomia"
+    ].includes(normalized)) {
+      return "self-service";
+    }
     if (["non disponibile", "esaurito", "unavailable", "sold out", "no", "false", "0"].includes(normalized)) {
       return "unavailable";
     }
@@ -1008,13 +1183,6 @@
     if (!hasCategories || !hasSections) {
       throw new Error("Categorie e prodotti non sono stati renderizzati correttamente.");
     }
-  }
-  function warmNonCriticalAssets(menuData) {
-    scheduleNonCriticalWork(() => {
-      window.setTimeout(() => {
-        loadDeferredHeroMedia();
-      }, 900);
-    });
   }
   function waitForDeferredFonts() {
     if (!("fonts" in document) || !DEFERRED_FONT_PLANS.length) {
@@ -1279,6 +1447,7 @@
     let carouselVisible = false;
     let carouselPaused = false;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const swipeTarget = promoAgriSwipeSurface || promoAgriCarousel;
     promoAgriCarouselDots.innerHTML = PROMO_AGRI_VIDEOS.map(
       (_, index) => '\n      <button\n        class="promo-agri__video-dot"\n        type="button"\n        aria-label="Vai al video '.concat(index + 1, '"\n        data-slide-index="').concat(index, '"\n      ></button>\n    ')
     ).join("");
@@ -1322,9 +1491,33 @@
       });
     });
     bindSwipeZone(
-      promoAgriCarousel,
+      swipeTarget,
       () => goToSlide(activeIndex - 1),
       () => goToSlide(activeIndex + 1)
+    );
+    swipeTarget.addEventListener(
+      "touchstart",
+      () => {
+        carouselPaused = true;
+        stopAutoplay();
+      },
+      { passive: true }
+    );
+    swipeTarget.addEventListener(
+      "touchend",
+      () => {
+        carouselPaused = false;
+        startAutoplay();
+      },
+      { passive: true }
+    );
+    swipeTarget.addEventListener(
+      "touchcancel",
+      () => {
+        carouselPaused = false;
+        startAutoplay();
+      },
+      { passive: true }
     );
     promoAgriCarousel.addEventListener("mouseenter", () => {
       carouselPaused = true;
@@ -1371,6 +1564,7 @@
     }
     let touchStartX = null;
     let touchStartY = null;
+    let suppressClickUntil = 0;
     element.addEventListener(
       "touchstart",
       (event) => {
@@ -1399,6 +1593,7 @@
         if (Math.abs(deltaX) < 24 || Math.abs(deltaX) < Math.abs(deltaY)) {
           return;
         }
+        suppressClickUntil = Date.now() + 420;
         if (deltaX < 0) {
           onSwipeLeft();
         } else {
@@ -1407,14 +1602,26 @@
       },
       { passive: true }
     );
+    element.addEventListener(
+      "click",
+      (event) => {
+        if (Date.now() < suppressClickUntil) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      },
+      true
+    );
   }
   function initFormatCarousel() {
     if (!formatCarousel || !formatCarouselTrack || !formatCarouselDots) {
       return;
     }
     initDeferredFormatCarouselAssets();
+    const formatCarouselViewport = formatCarousel.querySelector(".format-carousel__viewport");
     initAutoplayCarousel({
       root: formatCarousel,
+      swipeElement: formatCarouselViewport,
       track: formatCarouselTrack,
       dotsContainer: formatCarouselDots,
       slideSelector: ".format-carousel__slide",
@@ -1426,6 +1633,7 @@
   }
   function initAutoplayCarousel({
     root,
+    swipeElement = root,
     track,
     dotsContainer,
     slideSelector,
@@ -1484,6 +1692,35 @@
         goToSlide(Number(dot.dataset.slideIndex || 0));
       });
     });
+    bindSwipeZone(
+      swipeElement,
+      () => goToSlide(activeIndex - 1),
+      () => goToSlide(activeIndex + 1)
+    );
+    swipeElement.addEventListener(
+      "touchstart",
+      () => {
+        carouselPaused = true;
+        stopAutoplay();
+      },
+      { passive: true }
+    );
+    swipeElement.addEventListener(
+      "touchend",
+      () => {
+        carouselPaused = false;
+        startAutoplay();
+      },
+      { passive: true }
+    );
+    swipeElement.addEventListener(
+      "touchcancel",
+      () => {
+        carouselPaused = false;
+        startAutoplay();
+      },
+      { passive: true }
+    );
     root.addEventListener("mouseenter", () => {
       carouselPaused = true;
       stopAutoplay();
@@ -1572,23 +1809,45 @@
     formatCarousel.addEventListener("focusin", loadImages, { once: true });
     formatCarousel.addEventListener("pointerenter", loadImages, { once: true });
   }
-  function loadDeferredHeroMedia() {
-    if (!heroButterflyImage || heroButterflyImage.getAttribute("src")) {
-      return;
-    }
-    const deferredSrc = heroButterflyImage.getAttribute("data-src");
-    if (!deferredSrc) {
-      return;
-    }
-    if ("fetchPriority" in heroButterflyImage) {
-      heroButterflyImage.fetchPriority = "low";
-    }
-    heroButterflyImage.setAttribute("src", deferredSrc);
-  }
   function renderNavigation() {
     sectionNav.innerHTML = sections.map(
-      (section) => '\n        <a\n          class="section-nav__link"\n          href="#section-'.concat(section.id, '"\n          style="color: ').concat(section.accent, "; background: ").concat(section.accentSoft, ';"\n        >\n          ').concat(section.title, "\n        </a>\n      ")
+      (section) => {
+        const sectionSurface = getSectionSurfaceColor(section.id);
+        const sectionSurfaceSoft = mixHexColors(sectionSurface, "#fff8ef", 0.5);
+        const sectionSurfaceStrong = mixHexColors(sectionSurface, "#fff8ef", 0.12);
+        return '\n        <a\n          class="section-nav__link"\n          href="#section-'.concat(section.id, '"\n          data-section-id="').concat(section.id, '"\n          style="--nav-accent: ').concat(section.accent, "; --nav-accent-soft: ").concat(section.accentSoft, "; --nav-surface: ").concat(sectionSurface, "; --nav-surface-soft: ").concat(sectionSurfaceSoft, "; --nav-surface-strong: ").concat(sectionSurfaceStrong, ';"\n        >\n          ').concat(section.title, "\n        </a>\n      ");
+      }
     ).join("");
+  }
+  function getSectionSurfaceColor(sectionId) {
+    return SECTION_SURFACE_COLORS[sectionId] || "#b39a7a";
+  }
+  function mixHexColors(colorA, colorB, mixToB = 0.5) {
+    const a = hexToRgb(colorA);
+    const b = hexToRgb(colorB);
+    if (!a || !b) {
+      return colorA;
+    }
+    const weightB = Math.max(0, Math.min(1, mixToB));
+    const weightA = 1 - weightB;
+    const mixed = {
+      r: Math.round(a.r * weightA + b.r * weightB),
+      g: Math.round(a.g * weightA + b.g * weightB),
+      b: Math.round(a.b * weightA + b.b * weightB)
+    };
+    return "rgb(".concat(mixed.r, ", ").concat(mixed.g, ", ").concat(mixed.b, ")");
+  }
+  function hexToRgb(hex) {
+    const normalized = String(hex || "").trim().replace("#", "");
+    if (!/^[\da-f]{3}$|^[\da-f]{6}$/i.test(normalized)) {
+      return null;
+    }
+    const full = normalized.length === 3 ? normalized.split("").map((char) => "".concat(char).concat(char)).join("") : normalized;
+    return {
+      r: Number.parseInt(full.slice(0, 2), 16),
+      g: Number.parseInt(full.slice(2, 4), 16),
+      b: Number.parseInt(full.slice(4, 6), 16)
+    };
   }
   function renderSections() {
     menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
@@ -1770,27 +2029,53 @@
     });
   }
   function renderSection(section, isLeadSection) {
+    const sectionSurface = getSectionSurfaceColor(section.id);
     if (section.layout === "grouped" && Array.isArray(section.groups)) {
-      return '\n      <section\n        class="menu-section menu-section--grouped'.concat(isLeadSection ? " menu-section--lead" : "", '"\n        id="section-').concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n      >\n        <div class="menu-section__inner">\n          <div class="menu-section__header menu-section__header--centered">\n            <h2>').concat(section.title, '</h2>\n            <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n              ').concat(section.groups.map(
+      return '\n      <section\n        class="menu-section menu-section--grouped'.concat(isLeadSection ? " menu-section--lead" : "", '"\n        id="section-').concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n      >\n        <div class="menu-section__inner">\n          <div class="menu-section__header menu-section__header--centered">\n            <h2>').concat(section.title, '</h2>\n            <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n              ').concat(section.groups.map(
         (group) => '\n                    <a class="menu-section__group-pill" href="#section-'.concat(section.id, "-").concat(group.id, '">\n                      ').concat(group.label, "\n                    </a>\n                  ")
       ).join(""), '\n            </div>\n          </div>\n          <div class="menu-group-stack">\n            ').concat(section.groups.map((group) => {
         const items = section.items.filter((item) => item.group === group.id);
         return '\n                  <section class="menu-group" id="section-'.concat(section.id, "-").concat(group.id, '">\n                    <div class="menu-group__header">\n                      <span class="menu-group__pill">').concat(group.label, '</span>\n                      <p class="menu-group__description').concat(group.description ? "" : " menu-group__description--empty", '">\n                        ').concat(group.description || "&nbsp;", '\n                      </p>\n                    </div>\n                    <div class="menu-section__items">\n                      ').concat(items.map((item) => renderItemCard(item)).join(""), "\n                    </div>\n                  </section>\n                ");
       }).join(""), "\n          </div>\n        </div>\n      </section>\n    ");
     }
-    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n      </div>\n    </section>\n  ");
+    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n      </div>\n    </section>\n  ");
   }
   function renderItemCard(item) {
     const isArtisanalBeer = isArtisanalBeerItem(item);
     const isBeer = isBeerItem(item);
     const isDrink = isDrinkItem(item);
     const availabilityState = getItemAvailabilityState(item);
-    const isUnavailable = availabilityState !== "available";
+    const isSelectionBlocked = availabilityState !== "available";
+    const showsOnlyStatusChip = availabilityState === "coming-soon" || availabilityState === "unavailable";
     const unavailableLabel = getItemUnavailableLabel(item);
     const shouldHideCardVisual = item.hideCardVisual === true;
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : isUnavailable ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isUnavailable ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isUnavailable ? "true" : "false", '"\n      ').concat(isUnavailable ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(isUnavailable ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : getCardOptionsToDisplay(item).map(
+    const cardStyle = getItemCardStyle(item, availabilityState);
+    if (availabilityState === "self-service") {
+      return renderSelfServiceItemCard(item, unavailableLabel);
+    }
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(isSelectionBlocked ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
-    ).join(""), "\n        </div>\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+    ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+  }
+  function getItemCardStyle(item, availabilityState) {
+    if (availabilityState !== "coming-soon") {
+      return "";
+    }
+    const visual = item && item.visual ? item.visual : null;
+    const start = (visual == null ? void 0 : visual.gradientStart) || "#e0a12a";
+    const mid = (visual == null ? void 0 : visual.gradientMid) || (visual == null ? void 0 : visual.gradientEnd) || "#d66a2f";
+    const end = (visual == null ? void 0 : visual.gradientEnd) || "#b63b4a";
+    return [
+      "--coming-soon-start: ".concat(start),
+      "--coming-soon-mid: ".concat(mid),
+      "--coming-soon-end: ".concat(end)
+    ].join("; ");
+  }
+  function renderSelfServiceItemCard(item, unavailableLabel) {
+    const [primaryOption] = getCardOptionsToDisplay(item);
+    const visualMarkup = renderItemVisual(item, "card");
+    const priceMarkup = primaryOption ? '<span class="price-chip item-card__self-service-price">'.concat(formatOptionChip(item, primaryOption), "</span>") : "";
+    return '\n    <article\n      class="item-card item-card--self-service item-card--self-service-showcase"\n      aria-label="'.concat(item.name, ", ").concat(unavailableLabel.toLowerCase(), '"\n    >\n      <div class="item-card__visual item-card__visual--photo-panel item-card__visual--self-service-showcase">\n        ').concat(visualMarkup, '\n        <div class="item-card__self-service-badge-wrap">\n          <span class="price-chip price-chip--self-service">').concat(unavailableLabel, '</span>\n        </div>\n      </div>\n      <div class="item-card__self-service-content">\n        <div class="item-card__self-service-header">\n          <h3 class="item-card__self-service-title">').concat(item.name, "</h3>\n          ").concat(priceMarkup, "\n        </div>\n        ").concat(item.serviceNote ? '<p class="item-card__self-service-note">'.concat(item.serviceNote, "</p>") : "", "\n      </div>\n    </article>\n  ");
   }
   function renderItemTitle(item) {
     if (!item || !item.titleLogo || !item.titleLogo.asset) {
@@ -1828,6 +2113,9 @@
     }
     if (getItemAvailabilityState(item) === "coming-soon") {
       return "Novit\xE0 in arrivo";
+    }
+    if (getItemAvailabilityState(item) === "self-service") {
+      return "Al carretto";
     }
     return "Non disponibile";
   }

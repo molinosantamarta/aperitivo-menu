@@ -5,10 +5,10 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260318aaa";
+const APP_VERSION = "20260321b";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
-const LOADER_MIN_DURATION = 10000;
+const LOADER_MIN_DURATION = 0;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -58,6 +58,14 @@ const PROMO_AGRI_VIDEOS = [
   },
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
+const SECTION_SURFACE_COLORS = {
+  birre: "#c2a03d",
+  drink: "#c97439",
+  bottiglie: "#ad6077",
+  "altre-bevande": "#82a7ca",
+  gelato: "#789556",
+  taglieri: "#bf8550",
+};
 
 // Real font dependencies for the current UI. Keeping the source + selector map
 // here makes the bootstrap easier to maintain when CSS evolves.
@@ -139,6 +147,9 @@ let sideVisualObserver;
 let deferredPhotoPanelObserver;
 let deferredSideVisualObserver;
 let deferredCanClusterObserver;
+let activeSectionId = "";
+let activeSectionTicking = false;
+let sectionNavStickyStart = 0;
 let loaderProgressFrame = null;
 let loaderMessageIntervalId = null;
 let loaderMessages = [...LOADER_MESSAGES];
@@ -193,13 +204,21 @@ const appLoaderBar = document.querySelector("#appLoaderBar");
 const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
 const appLoaderPercent = document.querySelector("#appLoaderPercent");
 const appLoaderMessage = document.querySelector("#appLoaderMessage");
-const heroButterflyImage = document.querySelector(".hero-butterfly__image");
 const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
+const promoAgriSwipeSurface = document.querySelector("#promoAgriSwipeSurface");
 const promoAgriVideoFrame = document.querySelector("#promoAgriVideoFrame");
 const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
+
+window.addEventListener("resize", () => {
+  syncSectionScrollOffset();
+  refreshSectionNavStickyStart();
+  queueActiveSectionRefresh();
+}, { passive: true });
+window.addEventListener("scroll", queueActiveSectionRefresh, { passive: true });
+
 const loaderProgressState = {
   boot: 0,
   menuData: 0,
@@ -277,6 +296,22 @@ clearCartButton.addEventListener("click", () => {
   state.cart = [];
   persistCart();
   renderCart();
+});
+
+sectionNav?.addEventListener("click", (event) => {
+  const link = event.target.closest(".section-nav__link");
+  if (!link) {
+    return;
+  }
+
+  const sectionId = link.dataset.sectionId;
+  if (!sectionId) {
+    return;
+  }
+
+  event.preventDefault();
+  scrollToSectionStart(sectionId);
+  setActiveSectionLink(sectionId, { ensureVisible: true });
 });
 
 document.addEventListener("keydown", (event) => {
@@ -360,7 +395,6 @@ async function init() {
       minimumLoaderPromise,
     ]);
     revealApp();
-    warmNonCriticalAssets(menuData);
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
     await promiseAllSettledCompat([deferredFontsReadyPromise]);
@@ -634,7 +668,177 @@ function applyMenuData(menuData) {
 
   renderNavigation();
   renderSections();
+  syncSectionScrollOffset();
+  refreshSectionNavStickyStart();
+  initActiveSectionTracking();
   renderCart();
+}
+
+function syncSectionScrollOffset() {
+  if (!sectionNav) {
+    return;
+  }
+
+  const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+  const comfortableGap = 18;
+  const totalOffset = Math.max(96, navHeight + comfortableGap);
+
+  document.documentElement.style.setProperty("--section-scroll-offset", `${totalOffset}px`);
+}
+
+function refreshSectionNavStickyStart() {
+  if (!sectionNav) {
+    return;
+  }
+
+  sectionNavStickyStart = Math.max(0, sectionNav.offsetTop);
+  syncStickyNavState();
+}
+
+function initActiveSectionTracking() {
+  if (!sectionNav || !menuSections) {
+    return;
+  }
+
+  const sectionElements = Array.from(menuSections.querySelectorAll(".menu-section[id]"));
+
+  if (!sectionElements.length) {
+    return;
+  }
+
+  updateActiveSectionFromScroll();
+}
+
+function queueActiveSectionRefresh() {
+  if (activeSectionTicking) {
+    return;
+  }
+
+  activeSectionTicking = true;
+  window.requestAnimationFrame(() => {
+    activeSectionTicking = false;
+    syncStickyNavState();
+    updateActiveSectionFromScroll();
+  });
+}
+
+function syncStickyNavState() {
+  if (!sectionNav) {
+    return;
+  }
+
+  sectionNav.classList.toggle("is-stuck", window.scrollY > sectionNavStickyStart);
+}
+
+function updateActiveSectionFromScroll() {
+  if (!sectionNav || !menuSections) {
+    return;
+  }
+
+  const sectionElements = Array.from(menuSections.querySelectorAll(".menu-section[id]"));
+  if (!sectionElements.length) {
+    return;
+  }
+
+  const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+  const activationLine = navHeight + 28;
+  let nextActiveId = sectionElements[0].id.replace("section-", "");
+
+  sectionElements.forEach((section) => {
+    if (section.getBoundingClientRect().top - activationLine <= 0) {
+      nextActiveId = section.id.replace("section-", "");
+    }
+  });
+
+  setActiveSectionLink(nextActiveId, { ensureVisible: true });
+}
+
+function scrollToSectionStart(sectionId) {
+  const targetSection = document.querySelector(`#section-${sectionId}`);
+  if (!targetSection || !sectionNav) {
+    return;
+  }
+
+  const sectionTop = window.scrollY + targetSection.getBoundingClientRect().top;
+  const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
+  const stickyTop = parseFloat(window.getComputedStyle(sectionNav).top) || 0;
+  const targetTop = Math.max(0, sectionTop - navHeight - stickyTop);
+
+  window.scrollTo({
+    top: targetTop,
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+  });
+
+  if (window.history && typeof window.history.replaceState === "function") {
+    window.history.replaceState(null, "", `#section-${sectionId}`);
+  }
+}
+
+function setActiveSectionLink(sectionId, options = {}) {
+  const { ensureVisible = false } = options;
+
+  if (!sectionNav || !sectionId) {
+    return;
+  }
+
+  const links = Array.from(sectionNav.querySelectorAll(".section-nav__link"));
+  if (!links.length) {
+    return;
+  }
+
+  const nextActiveLink = links.find((link) => link.dataset.sectionId === sectionId);
+  if (!nextActiveLink) {
+    return;
+  }
+
+  const hasChanged = activeSectionId !== sectionId;
+  activeSectionId = sectionId;
+
+  links.forEach((link) => {
+    const isActive = link === nextActiveLink;
+    link.classList.toggle("is-active", isActive);
+    if (isActive) {
+      link.setAttribute("aria-current", "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+
+  if (ensureVisible && (hasChanged || !isNavLinkComfortablyVisible(nextActiveLink))) {
+    scrollNavLinkIntoView(nextActiveLink);
+  }
+}
+
+function isNavLinkComfortablyVisible(link) {
+  if (!sectionNav || !link) {
+    return true;
+  }
+
+  const navRect = sectionNav.getBoundingClientRect();
+  const linkRect = link.getBoundingClientRect();
+  const horizontalPadding = 20;
+
+  return (
+    linkRect.left >= navRect.left + horizontalPadding &&
+    linkRect.right <= navRect.right - horizontalPadding
+  );
+}
+
+function scrollNavLinkIntoView(link) {
+  if (!sectionNav || !link) {
+    return;
+  }
+
+  const navRect = sectionNav.getBoundingClientRect();
+  const linkRect = link.getBoundingClientRect();
+  const currentLeft = sectionNav.scrollLeft;
+  const targetLeft =
+    currentLeft + (linkRect.left - navRect.left) - (navRect.width - linkRect.width) / 2;
+
+  sectionNav.scrollTo({
+    left: Math.max(0, targetLeft),
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+  });
 }
 
 async function loadMenuData() {
@@ -783,20 +987,16 @@ function normalizeSheetHeader(value) {
 
 function applySheetRowsToMenu(baseMenu, sheetRows) {
   const nextMenu = JSON.parse(JSON.stringify(baseMenu));
-  const sectionLookup = nextMenu.sections.reduce((lookup, section) => {
-    lookup[section.id] = section;
-    return lookup;
-  }, {});
   const rowLookup = new Map(sheetRows.map((row) => [row.id, row]));
 
   nextMenu.sections.forEach((section) => {
     section.items = section.items
       .filter((item) => {
-        const row = rowLookup.get(item.id);
+        const row = getManagedSheetRow(item, rowLookup);
         return row ? resolveSheetVisibility(row, true) : true;
       })
       .map((item, index) => {
-        const row = rowLookup.get(item.id);
+        const row = getManagedSheetRow(item, rowLookup);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
         nextItem.__sheetPosition = parseSheetInteger(row ? row.position : null, index);
         return nextItem;
@@ -815,6 +1015,14 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
   return nextMenu;
 }
 
+function getManagedSheetRow(item, rowLookup) {
+  if (!item || item.excludeFromSheet === true) {
+    return null;
+  }
+
+  return rowLookup.get(item.id) || null;
+}
+
 function updateItemFromSheet(item, row, section) {
   const nextItem = { ...item };
 
@@ -824,7 +1032,9 @@ function updateItemFromSheet(item, row, section) {
       nextItem.showDetailHint == null ? true : nextItem.showDetailHint
     );
   }
-  applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
+  if (nextItem.lockAvailabilityState !== true) {
+    applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
+  }
 
   const options = mergeSheetOptions(nextItem.options, row);
   if (options) {
@@ -1070,6 +1280,20 @@ function parseAvailabilityState(value) {
     return "coming-soon";
   }
 
+  if (
+    [
+      "al carretto",
+      "carretto",
+      "self service",
+      "self-service",
+      "self_service",
+      "ritiro autonomo",
+      "autonomia",
+    ].includes(normalized)
+  ) {
+    return "self-service";
+  }
+
   if (["non disponibile", "esaurito", "unavailable", "sold out", "no", "false", "0"].includes(normalized)) {
     return "unavailable";
   }
@@ -1226,14 +1450,6 @@ async function waitForMenuRender() {
   if (!hasCategories || !hasSections) {
     throw new Error("Categorie e prodotti non sono stati renderizzati correttamente.");
   }
-}
-
-function warmNonCriticalAssets(menuData) {
-  scheduleNonCriticalWork(() => {
-    window.setTimeout(() => {
-      loadDeferredHeroMedia();
-    }, 900);
-  });
 }
 
 function waitForDeferredFonts() {
@@ -1557,6 +1773,7 @@ function initPromoAgriCarousel() {
   let carouselVisible = false;
   let carouselPaused = false;
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const swipeTarget = promoAgriSwipeSurface || promoAgriCarousel;
 
   promoAgriCarouselDots.innerHTML = PROMO_AGRI_VIDEOS.map(
     (_, index) => `
@@ -1624,9 +1841,34 @@ function initPromoAgriCarousel() {
   });
 
   bindSwipeZone(
-    promoAgriCarousel,
+    swipeTarget,
     () => goToSlide(activeIndex - 1),
     () => goToSlide(activeIndex + 1)
+  );
+
+  swipeTarget.addEventListener(
+    "touchstart",
+    () => {
+      carouselPaused = true;
+      stopAutoplay();
+    },
+    { passive: true }
+  );
+  swipeTarget.addEventListener(
+    "touchend",
+    () => {
+      carouselPaused = false;
+      startAutoplay();
+    },
+    { passive: true }
+  );
+  swipeTarget.addEventListener(
+    "touchcancel",
+    () => {
+      carouselPaused = false;
+      startAutoplay();
+    },
+    { passive: true }
   );
 
   promoAgriCarousel.addEventListener("mouseenter", () => {
@@ -1679,6 +1921,7 @@ function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
 
   let touchStartX = null;
   let touchStartY = null;
+  let suppressClickUntil = 0;
 
   element.addEventListener(
     "touchstart",
@@ -1714,6 +1957,8 @@ function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
         return;
       }
 
+      suppressClickUntil = Date.now() + 420;
+
       if (deltaX < 0) {
         onSwipeLeft();
       } else {
@@ -1721,6 +1966,17 @@ function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
       }
     },
     { passive: true }
+  );
+
+  element.addEventListener(
+    "click",
+    (event) => {
+      if (Date.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    true
   );
 }
 
@@ -1730,9 +1986,11 @@ function initFormatCarousel() {
   }
 
   initDeferredFormatCarouselAssets();
+  const formatCarouselViewport = formatCarousel.querySelector(".format-carousel__viewport");
 
   initAutoplayCarousel({
     root: formatCarousel,
+    swipeElement: formatCarouselViewport,
     track: formatCarouselTrack,
     dotsContainer: formatCarouselDots,
     slideSelector: ".format-carousel__slide",
@@ -1745,6 +2003,7 @@ function initFormatCarousel() {
 
 function initAutoplayCarousel({
   root,
+  swipeElement = root,
   track,
   dotsContainer,
   slideSelector,
@@ -1822,6 +2081,37 @@ function initAutoplayCarousel({
       goToSlide(Number(dot.dataset.slideIndex || 0));
     });
   });
+
+  bindSwipeZone(
+    swipeElement,
+    () => goToSlide(activeIndex - 1),
+    () => goToSlide(activeIndex + 1)
+  );
+
+  swipeElement.addEventListener(
+    "touchstart",
+    () => {
+      carouselPaused = true;
+      stopAutoplay();
+    },
+    { passive: true }
+  );
+  swipeElement.addEventListener(
+    "touchend",
+    () => {
+      carouselPaused = false;
+      startAutoplay();
+    },
+    { passive: true }
+  );
+  swipeElement.addEventListener(
+    "touchcancel",
+    () => {
+      carouselPaused = false;
+      startAutoplay();
+    },
+    { passive: true }
+  );
 
   root.addEventListener("mouseenter", () => {
     carouselPaused = true;
@@ -1927,36 +2217,67 @@ function initDeferredFormatCarouselAssets() {
   formatCarousel.addEventListener("pointerenter", loadImages, { once: true });
 }
 
-function loadDeferredHeroMedia() {
-  if (!heroButterflyImage || heroButterflyImage.getAttribute("src")) {
-    return;
-  }
-
-  const deferredSrc = heroButterflyImage.getAttribute("data-src");
-  if (!deferredSrc) {
-    return;
-  }
-
-  if ("fetchPriority" in heroButterflyImage) {
-    heroButterflyImage.fetchPriority = "low";
-  }
-  heroButterflyImage.setAttribute("src", deferredSrc);
-}
-
 function renderNavigation() {
   sectionNav.innerHTML = sections
     .map(
-      (section) => `
+      (section) => {
+        const sectionSurface = getSectionSurfaceColor(section.id);
+        const sectionSurfaceSoft = mixHexColors(sectionSurface, "#fff8ef", 0.5);
+        const sectionSurfaceStrong = mixHexColors(sectionSurface, "#fff8ef", 0.12);
+        return `
         <a
           class="section-nav__link"
           href="#section-${section.id}"
-          style="color: ${section.accent}; background: ${section.accentSoft};"
+          data-section-id="${section.id}"
+          style="--nav-accent: ${section.accent}; --nav-accent-soft: ${section.accentSoft}; --nav-surface: ${sectionSurface}; --nav-surface-soft: ${sectionSurfaceSoft}; --nav-surface-strong: ${sectionSurfaceStrong};"
         >
           ${section.title}
         </a>
-      `
+      `;
+      }
     )
     .join("");
+}
+
+function getSectionSurfaceColor(sectionId) {
+  return SECTION_SURFACE_COLORS[sectionId] || "#b39a7a";
+}
+
+function mixHexColors(colorA, colorB, mixToB = 0.5) {
+  const a = hexToRgb(colorA);
+  const b = hexToRgb(colorB);
+
+  if (!a || !b) {
+    return colorA;
+  }
+
+  const weightB = Math.max(0, Math.min(1, mixToB));
+  const weightA = 1 - weightB;
+
+  const mixed = {
+    r: Math.round(a.r * weightA + b.r * weightB),
+    g: Math.round(a.g * weightA + b.g * weightB),
+    b: Math.round(a.b * weightA + b.b * weightB),
+  };
+
+  return `rgb(${mixed.r}, ${mixed.g}, ${mixed.b})`;
+}
+
+function hexToRgb(hex) {
+  const normalized = String(hex || "").trim().replace("#", "");
+  if (!/^[\da-f]{3}$|^[\da-f]{6}$/i.test(normalized)) {
+    return null;
+  }
+
+  const full = normalized.length === 3
+    ? normalized.split("").map((char) => `${char}${char}`).join("")
+    : normalized;
+
+  return {
+    r: Number.parseInt(full.slice(0, 2), 16),
+    g: Number.parseInt(full.slice(2, 4), 16),
+    b: Number.parseInt(full.slice(4, 6), 16),
+  };
 }
 
 function renderSections() {
@@ -2177,12 +2498,14 @@ function loadDeferredCanClusterVisual(can) {
 }
 
 function renderSection(section, isLeadSection) {
+  const sectionSurface = getSectionSurfaceColor(section.id);
+
   if (section.layout === "grouped" && Array.isArray(section.groups)) {
     return `
       <section
         class="menu-section menu-section--grouped${isLeadSection ? " menu-section--lead" : ""}"
         id="section-${section.id}"
-        style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
+        style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft}; --section-surface: ${sectionSurface};"
       >
         <div class="menu-section__inner">
           <div class="menu-section__header menu-section__header--centered">
@@ -2228,7 +2551,7 @@ function renderSection(section, isLeadSection) {
     <section
       class="menu-section${isLeadSection ? " menu-section--lead" : ""}"
       id="section-${section.id}"
-      style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft};"
+      style="--section-accent: ${section.accent}; --section-accent-soft: ${section.accentSoft}; --section-surface: ${sectionSurface};"
     >
       <div class="menu-section__inner">
         <div class="menu-section__header">
@@ -2249,9 +2572,15 @@ function renderItemCard(item) {
   const isBeer = isBeerItem(item);
   const isDrink = isDrinkItem(item);
   const availabilityState = getItemAvailabilityState(item);
-  const isUnavailable = availabilityState !== "available";
+  const isSelectionBlocked = availabilityState !== "available";
+  const showsOnlyStatusChip = availabilityState === "coming-soon" || availabilityState === "unavailable";
   const unavailableLabel = getItemUnavailableLabel(item);
   const shouldHideCardVisual = item.hideCardVisual === true;
+  const cardStyle = getItemCardStyle(item, availabilityState);
+
+  if (availabilityState === "self-service") {
+    return renderSelfServiceItemCard(item, unavailableLabel);
+  }
 
   return `
     <button
@@ -2262,16 +2591,21 @@ function renderItemCard(item) {
       }${
         availabilityState === "coming-soon"
           ? " item-card--coming-soon"
-          : isUnavailable
+          : availabilityState === "self-service"
+            ? " item-card--self-service"
+            : isSelectionBlocked
             ? " item-card--unavailable"
             : ""
       }"
       type="button"
       data-item-id="${item.id}"
       aria-haspopup="dialog"
-      aria-label="${isUnavailable ? `${item.name} ${unavailableLabel.toLowerCase()}` : `Apri dettagli per ${item.name}`}"
-      aria-disabled="${isUnavailable ? "true" : "false"}"
-      ${isUnavailable ? "disabled" : ""}
+      aria-label="${
+        isSelectionBlocked ? `${item.name} ${unavailableLabel.toLowerCase()}` : `Apri dettagli per ${item.name}`
+      }"
+      aria-disabled="${isSelectionBlocked ? "true" : "false"}"
+      ${cardStyle ? `style="${cardStyle}"` : ""}
+      ${isSelectionBlocked ? "disabled" : ""}
     >
       ${
         shouldHideCardVisual
@@ -2291,24 +2625,83 @@ function renderItemCard(item) {
         <p>${item.description}</p>
         <div class="item-card__prices">
           ${
-            isUnavailable
+            showsOnlyStatusChip
               ? `<span class="price-chip ${
                   availabilityState === "coming-soon"
                     ? "price-chip--coming-soon"
                     : "price-chip--unavailable"
                 }">${unavailableLabel}</span>`
-              : getCardOptionsToDisplay(item)
+              : `${getCardOptionsToDisplay(item)
                   .map(
                     (option) => `
                       <span class="price-chip">${formatOptionChip(item, option)}</span>
                     `
                   )
-                  .join("")
+                  .join("")}${
+                  availabilityState === "self-service"
+                    ? `<span class="price-chip price-chip--self-service">${unavailableLabel}</span>`
+                    : ""
+                }`
           }
         </div>
+        ${
+          availabilityState === "self-service" && item.serviceNote
+            ? `<p class="item-card__service-note">${item.serviceNote}</p>`
+            : ""
+        }
         ${renderItemSideVisual(item)}
       </div>
     </button>
+  `;
+}
+
+function getItemCardStyle(item, availabilityState) {
+  if (availabilityState !== "coming-soon") {
+    return "";
+  }
+
+  const visual = item && item.visual ? item.visual : null;
+  const start = visual?.gradientStart || "#e0a12a";
+  const mid = visual?.gradientMid || visual?.gradientEnd || "#d66a2f";
+  const end = visual?.gradientEnd || "#b63b4a";
+
+  return [
+    `--coming-soon-start: ${start}`,
+    `--coming-soon-mid: ${mid}`,
+    `--coming-soon-end: ${end}`,
+  ].join("; ");
+}
+
+function renderSelfServiceItemCard(item, unavailableLabel) {
+  const [primaryOption] = getCardOptionsToDisplay(item);
+  const visualMarkup = renderItemVisual(item, "card");
+  const priceMarkup = primaryOption
+    ? `<span class="price-chip item-card__self-service-price">${formatOptionChip(item, primaryOption)}</span>`
+    : "";
+
+  return `
+    <article
+      class="item-card item-card--self-service item-card--self-service-showcase"
+      aria-label="${item.name}, ${unavailableLabel.toLowerCase()}"
+    >
+      <div class="item-card__visual item-card__visual--photo-panel item-card__visual--self-service-showcase">
+        ${visualMarkup}
+        <div class="item-card__self-service-badge-wrap">
+          <span class="price-chip price-chip--self-service">${unavailableLabel}</span>
+        </div>
+      </div>
+      <div class="item-card__self-service-content">
+        <div class="item-card__self-service-header">
+          <h3 class="item-card__self-service-title">${item.name}</h3>
+          ${priceMarkup}
+        </div>
+        ${
+          item.serviceNote
+            ? `<p class="item-card__self-service-note">${item.serviceNote}</p>`
+            : ""
+        }
+      </div>
+    </article>
   `;
 }
 
@@ -2371,6 +2764,10 @@ function getItemUnavailableLabel(item) {
 
   if (getItemAvailabilityState(item) === "coming-soon") {
     return "Novità in arrivo";
+  }
+
+  if (getItemAvailabilityState(item) === "self-service") {
+    return "Al carretto";
   }
 
   return "Non disponibile";
