@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260322b";
+const APP_VERSION = "20260322c";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
