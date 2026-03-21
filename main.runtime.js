@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260322a";
+  const APP_VERSION = "20260322b";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -191,6 +191,7 @@
   const saveSummaryLabel = "Salva e continua";
   const sectionNav = document.querySelector("#sectionNav");
   const menuSections = document.querySelector("#menuSections");
+  const pageOutro = document.querySelector(".page-outro");
   const cartFab = document.querySelector("#cartFab");
   const detailSheet = document.querySelector("#detailSheet");
   const cartSheet = document.querySelector("#cartSheet");
@@ -658,6 +659,10 @@
     }
     const navHeight = Math.ceil(sectionNav.getBoundingClientRect().height);
     const activationLine = navHeight + 28;
+    if (pageOutro && pageOutro.getBoundingClientRect().top - activationLine <= 0) {
+      setActiveSectionLink("");
+      return;
+    }
     let nextActiveId = sectionElements[0].id.replace("section-", "");
     sectionElements.forEach((section) => {
       if (section.getBoundingClientRect().top - activationLine <= 0) {
@@ -685,11 +690,19 @@
   }
   function setActiveSectionLink(sectionId, options = {}) {
     const { ensureVisible = false } = options;
-    if (!sectionNav || !sectionId) {
+    if (!sectionNav) {
       return;
     }
     const links = Array.from(sectionNav.querySelectorAll(".section-nav__link"));
     if (!links.length) {
+      return;
+    }
+    if (!sectionId) {
+      activeSectionId = "";
+      links.forEach((link) => {
+        link.classList.remove("is-active");
+        link.removeAttribute("aria-current");
+      });
       return;
     }
     const nextActiveLink = links.find((link) => link.dataset.sectionId === sectionId);
