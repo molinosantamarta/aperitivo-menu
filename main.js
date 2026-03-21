@@ -5,10 +5,10 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260321b";
+const APP_VERSION = "20260321c";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
-const LOADER_MIN_DURATION = 0;
+const LOADER_MIN_DURATION = 10000;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;

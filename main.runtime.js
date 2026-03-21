@@ -24,10 +24,10 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260321b";
+  const APP_VERSION = "20260321c";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
-  const LOADER_MIN_DURATION = 0;
+  const LOADER_MIN_DURATION = 1e4;
   const LOADER_FONT_TIMEOUT = 12e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;

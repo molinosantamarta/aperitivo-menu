@@ -17,8 +17,8 @@
           "visual": {
             "type": "beer-script",
             "label": "Bianchina",
-            "gradientStart": "#f4e5cf",
-            "gradientEnd": "#e8d1ad",
+            "gradientStart": "#e8d1ad",
+            "gradientEnd": "#f4e5cf",
             "labelColor": "#6f5036"
           },
           "sideVisual": {
@@ -1479,7 +1479,7 @@
           "page": 2,
           "name": "Grappe e amari",
           "category": "Altre bevande",
-          "description": "Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe del Molino.",
+          "description": "Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta.",
           "visual": {
             "type": "photo-panel",
             "asset": "grappe-amari-back.jpg",

@@ -1971,12 +1971,10 @@ a {
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -10px 16px color-mix(in srgb, var(--coming-soon-end, #b63b4a) 14%, transparent),
-    0 8px 16px color-mix(in srgb, var(--coming-soon-mid, #d66a2f) 18%, rgba(56, 24, 12, 0.68)),
-    0 2px 6px color-mix(in srgb, var(--coming-soon-end, #b63b4a) 12%, rgba(56, 24, 12, 0.58));
+    0 3px 8px rgba(56, 24, 12, 0.14);
   text-shadow: 0 1px 0 rgba(76, 32, 18, 0.22);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 .price-chip--coming-soon::before {
