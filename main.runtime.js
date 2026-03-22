@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260322e";
+  const APP_VERSION = "20260322f";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -194,16 +194,21 @@
   const generatedCartTitle = "Siamo pronti ad ordinare...";
   const defaultWaiterTitle = "Chiama cameriere";
   const confirmWaiterTitle = "Chiama cameriere";
-  const successWaiterTitle = "Cameriere avvisato";
+  const successWaiterTitle = "Richiesta inviata";
   const WAITER_TABLE_STORAGE_KEY = "molino-waiter-table";
   const WAITER_CALL_LOG_STORAGE_KEY = "molino-waiter-call-log";
+  const waiterCalledMessage = "A breve arriver\xE0 un operatore. Grazie.";
+  const waiterInvalidTableMessage = "Il numero del tavolo non risulta corretto.";
+  const waiterAlreadyCalledMessage = "Un operatore \xE8 gi\xE0 stato chiamato.";
+  const waiterNeutralSentMessage = "Richiesta inviata.";
   const waiterCallEndpoint = (document.body.dataset.waiterCallEndpoint || "").trim();
   const waiterState = {
     tableNumber: loadWaiterTableNumber(),
     step: "table",
     source: "primary",
     isSending: false,
-    error: ""
+    error: "",
+    successMessage: waiterCalledMessage
   };
   let isCartSummaryView = false;
   const sectionNav = document.querySelector("#sectionNav");
@@ -235,6 +240,7 @@
   const closeDetailButton = document.querySelector("#closeDetail");
   const closeCartButton = document.querySelector("#closeCart");
   const closeWaiterButton = document.querySelector("#closeWaiter");
+  const waiterSuccessCopy = document.querySelector("#waiterSuccessCopy");
   const cartCount = document.querySelector("#cartCount");
   const cartItems = document.querySelector("#cartItems");
   const cartEmpty = document.querySelector("#cartEmpty");
@@ -247,6 +253,9 @@
   const waiterChangeTableButton = document.querySelector("#waiterChangeTable");
   const waiterConfirmCallButton = document.querySelector("#waiterConfirmCall");
   const waiterDoneButton = document.querySelector("#waiterDone");
+  const waiterFallbackForm = document.querySelector("#waiterCallFallbackForm");
+  const waiterFallbackTableNumber = document.querySelector("#waiterCallFallbackTableNumber");
+  const waiterFallbackTransport = document.querySelector("#waiterCallTransport");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
   const pageBody = document.body;
@@ -2374,6 +2383,7 @@
     waiterState.source = source;
     waiterState.isSending = false;
     waiterState.error = "";
+    waiterState.successMessage = waiterCalledMessage;
     waiterState.step = waiterState.tableNumber ? "confirm" : "table";
     renderWaiterSheet();
     waiterSheet.classList.add("is-open");
@@ -2385,6 +2395,7 @@
     const { restoreFocus = true } = options;
     waiterState.isSending = false;
     waiterState.error = "";
+    waiterState.successMessage = waiterCalledMessage;
     waiterSheet.classList.remove("is-open");
     waiterSheet.setAttribute("aria-hidden", "true");
     syncModalOpenState({ restoreFocus });
@@ -2543,6 +2554,7 @@
     waiterTableInput.value = waiterState.tableNumber;
     waiterTableValue.textContent = waiterState.tableNumber || "-";
     waiterSuccessTable.textContent = waiterState.tableNumber || "-";
+    waiterSuccessCopy.textContent = waiterState.successMessage || waiterCalledMessage;
     waiterTableStep.hidden = waiterState.step !== "table";
     waiterConfirmStep.hidden = waiterState.step !== "confirm";
     waiterSuccessStep.hidden = waiterState.step !== "success";
@@ -2565,16 +2577,18 @@
     waiterState.error = "";
     renderWaiterSheet();
     const payload = createWaiterCallPayload();
-    const sent = await submitWaiterCall(payload);
+    const result = await submitWaiterCall(payload);
     waiterState.isSending = false;
-    if (!sent) {
-      waiterState.error = "Non sono riuscito a inviare la chiamata. Riprova tra un attimo.";
+    if (!result.ok) {
+      waiterState.error = result.message;
+      waiterState.step = result.code === "nexist" ? "table" : "confirm";
       renderWaiterSheet();
-      focusElement(waiterConfirmCallButton);
+      focusElement(result.code === "nexist" ? waiterTableInput : waiterConfirmCallButton);
       return;
     }
     waiterState.step = "success";
     waiterState.error = "";
+    waiterState.successMessage = result.message;
     renderWaiterSheet();
     focusElement(waiterDoneButton);
   }
@@ -2598,28 +2612,120 @@
     try {
       if (typeof window.molinoWaiterCallHandler === "function") {
         const result = await window.molinoWaiterCallHandler(payload);
-        return result !== false;
+        if (result && typeof result === "object" && "ok" in result) {
+          return result;
+        }
+        return result === false ? {
+          ok: false,
+          code: "error",
+          message: "Non sono riuscito a inviare la chiamata. Riprova tra un attimo."
+        } : {
+          ok: true,
+          code: "called",
+          message: waiterCalledMessage
+        };
       }
       if (waiterCallEndpoint) {
-        const response = await fetch(waiterCallEndpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload),
-          keepalive: true
-        });
-        if (!response.ok) {
-          throw new Error("Waiter call failed (".concat(response.status, ")"));
+        try {
+          return await submitWaiterCallViaFetch(payload);
+        } catch (error) {
+          console.warn("Fetch Comanda Assistant non leggibile, uso fallback form POST.", error);
+          return await submitWaiterCallViaHiddenForm(payload);
         }
-        return true;
       }
       queueLocalWaiterCall(payload);
       return await simulateWaiterCall();
     } catch (error) {
       console.error("Impossibile inviare la chiamata al cameriere", error);
-      return false;
+      return {
+        ok: false,
+        code: "error",
+        message: "Non sono riuscito a inviare la chiamata. Riprova tra un attimo."
+      };
     }
+  }
+  async function submitWaiterCallViaFetch(payload) {
+    const response = await fetch(waiterCallEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        Accept: "text/plain, */*"
+      },
+      body: new URLSearchParams({
+        tableNumber: payload.tableNumber
+      }).toString(),
+      keepalive: true
+    });
+    if (!response.ok) {
+      throw new Error("Waiter call failed (".concat(response.status, ")"));
+    }
+    const responseText = (await response.text()).trim();
+    return normalizeWaiterCallResult(responseText);
+  }
+  async function submitWaiterCallViaHiddenForm(payload) {
+    if (!(waiterFallbackForm instanceof HTMLFormElement) || !(waiterFallbackTableNumber instanceof HTMLInputElement)) {
+      return {
+        ok: true,
+        code: "sent",
+        message: waiterNeutralSentMessage
+      };
+    }
+    waiterFallbackTableNumber.value = payload.tableNumber;
+    await new Promise((resolve) => {
+      const transport = waiterFallbackTransport;
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        resolve();
+      };
+      const timeoutId = window.setTimeout(finish, 1600);
+      if (transport instanceof HTMLIFrameElement) {
+        const handleLoad = () => {
+          window.clearTimeout(timeoutId);
+          transport.removeEventListener("load", handleLoad);
+          finish();
+        };
+        transport.addEventListener("load", handleLoad);
+      }
+      waiterFallbackForm.submit();
+    });
+    return {
+      ok: true,
+      code: "sent",
+      message: waiterNeutralSentMessage
+    };
+  }
+  function normalizeWaiterCallResult(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+    if (normalized === "called") {
+      return {
+        ok: true,
+        code: "called",
+        message: waiterCalledMessage
+      };
+    }
+    if (normalized === "alreadycalled") {
+      return {
+        ok: true,
+        code: "alreadyCalled",
+        message: waiterAlreadyCalledMessage
+      };
+    }
+    if (normalized === "nexist") {
+      return {
+        ok: false,
+        code: "nexist",
+        message: waiterInvalidTableMessage
+      };
+    }
+    return {
+      ok: true,
+      code: "sent",
+      message: waiterNeutralSentMessage
+    };
   }
   function queueLocalWaiterCall(payload) {
     try {
@@ -2632,7 +2738,14 @@
   }
   function simulateWaiterCall() {
     return new Promise((resolve) => {
-      window.setTimeout(() => resolve(true), 420);
+      window.setTimeout(
+        () => resolve({
+          ok: true,
+          code: "sent",
+          message: waiterNeutralSentMessage
+        }),
+        420
+      );
     });
   }
   function formatCartBreakdown(entries) {
