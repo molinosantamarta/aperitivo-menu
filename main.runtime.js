@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260322g";
+  const APP_VERSION = "20260322h";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -192,22 +192,6 @@
   const editSummaryLabel = "Modifica selezione";
   const defaultCartTitle = "Da comunicare al cameriere";
   const generatedCartTitle = "Siamo pronti ad ordinare...";
-  const defaultWaiterTitle = "Chiama cameriere";
-  const confirmWaiterTitle = "Chiama cameriere";
-  const successWaiterTitle = "Continua la chiamata";
-  const COMANDA_ASSISTANT_WUC = "OqAj4Sc3UupCLlYh";
-  const COMANDA_ASSISTANT_MENU_URL = "https://www.comandaassistant.com/menu/";
-  const WAITER_TABLE_STORAGE_KEY = "molino-waiter-table";
-  const waiterHandoffMessage = "Si \xE8 aperta la chiamata su Comanda Assistant. Completa la conferma l\xEC.";
-  const waiterHandoffErrorMessage = "Non sono riuscito ad aprire la chiamata. Riprova tra un attimo.";
-  const waiterState = {
-    tableNumber: loadWaiterTableNumber(),
-    step: "table",
-    source: "primary",
-    isSending: false,
-    error: "",
-    successMessage: waiterHandoffMessage
-  };
   let isCartSummaryView = false;
   const sectionNav = document.querySelector("#sectionNav");
   const menuSections = document.querySelector("#menuSections");
@@ -215,20 +199,10 @@
   const cartFab = document.querySelector("#cartFab");
   const detailSheet = document.querySelector("#detailSheet");
   const cartSheet = document.querySelector("#cartSheet");
-  const waiterSheet = document.querySelector("#waiterSheet");
   const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
   const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
-  const waiterPanel = waiterSheet.querySelector(".sheet-panel--waiter");
   const cartKicker = document.querySelector("#cartKicker");
   const cartTitle = document.querySelector("#cartTitle");
-  const waiterTitle = document.querySelector("#waiterTitle");
-  const waiterStatus = document.querySelector("#waiterStatus");
-  const waiterTableStep = document.querySelector("#waiterTableStep");
-  const waiterConfirmStep = document.querySelector("#waiterConfirmStep");
-  const waiterSuccessStep = document.querySelector("#waiterSuccessStep");
-  const waiterTableInput = document.querySelector("#waiterTableInput");
-  const waiterTableValue = document.querySelector("#waiterTableValue");
-  const waiterSuccessTable = document.querySelector("#waiterSuccessTable");
   const detailCategory = document.querySelector("#detailCategory");
   const detailTitle = document.querySelector("#detailTitle");
   const detailDescription = document.querySelector("#detailDescription");
@@ -237,8 +211,6 @@
   const addToCartButton = document.querySelector("#addToCart");
   const closeDetailButton = document.querySelector("#closeDetail");
   const closeCartButton = document.querySelector("#closeCart");
-  const closeWaiterButton = document.querySelector("#closeWaiter");
-  const waiterSuccessCopy = document.querySelector("#waiterSuccessCopy");
   const cartCount = document.querySelector("#cartCount");
   const cartItems = document.querySelector("#cartItems");
   const cartEmpty = document.querySelector("#cartEmpty");
@@ -247,10 +219,6 @@
   const cartTotalBlock = cartFooter.querySelector(".cart-total");
   const cartTotal = document.querySelector("#cartTotal");
   const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
-  const waiterCallTriggers = document.querySelectorAll("[data-waiter-call-trigger]");
-  const waiterChangeTableButton = document.querySelector("#waiterChangeTable");
-  const waiterConfirmCallButton = document.querySelector("#waiterConfirmCall");
-  const waiterDoneButton = document.querySelector("#waiterDone");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
   const pageBody = document.body;
@@ -295,7 +263,6 @@
   cartFab.addEventListener("click", openCart);
   closeDetailButton.addEventListener("click", closeDetail);
   closeCartButton.addEventListener("click", closeCart);
-  closeWaiterButton.addEventListener("click", () => closeWaiterSheet());
   detailSheet.addEventListener("click", (event) => {
     if (event.target === detailSheet) {
       closeDetail();
@@ -304,11 +271,6 @@
   cartSheet.addEventListener("click", (event) => {
     if (event.target === cartSheet) {
       closeCart();
-    }
-  });
-  waiterSheet.addEventListener("click", (event) => {
-    if (event.target === waiterSheet) {
-      closeWaiterSheet();
     }
   });
   addToCartButton.addEventListener("click", () => {
@@ -352,33 +314,6 @@
     persistCart();
     renderCart();
   });
-  waiterCallTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", () => openWaiterCallFlow(trigger.dataset.waiterCallTrigger || "primary"));
-  });
-  waiterTableStep.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const normalizedTable = normalizeWaiterTableNumber(waiterTableInput.value);
-    if (!normalizedTable) {
-      waiterState.error = "Inserisci il numero del tavolo.";
-      renderWaiterSheet();
-      focusElement(waiterTableInput);
-      return;
-    }
-    waiterState.tableNumber = normalizedTable;
-    persistWaiterTableNumber();
-    waiterState.step = "confirm";
-    waiterState.error = "";
-    renderWaiterSheet();
-    focusElement(waiterConfirmCallButton);
-  });
-  waiterChangeTableButton.addEventListener("click", () => {
-    waiterState.step = "table";
-    waiterState.error = "";
-    renderWaiterSheet();
-    focusElement(waiterTableInput);
-  });
-  waiterConfirmCallButton.addEventListener("click", submitWaiterCallFromFlow);
-  waiterDoneButton.addEventListener("click", () => closeWaiterSheet());
   sectionNav == null ? void 0 : sectionNav.addEventListener("click", (event) => {
     const link = event.target.closest(".section-nav__link");
     if (!link) {
@@ -394,10 +329,6 @@
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      if (waiterSheet.classList.contains("is-open")) {
-        closeWaiterSheet();
-        return;
-      }
       closeDetail();
       closeCart();
       return;
@@ -2363,38 +2294,6 @@
     cartSheet.setAttribute("aria-hidden", "true");
     syncModalOpenState({ restoreFocus });
   }
-  function openWaiterCallFlow(source = "primary") {
-    if (source === "summary" && cartFab instanceof HTMLElement) {
-      lastFocusedElement = cartFab;
-    } else {
-      rememberLastFocusedElement();
-    }
-    if (cartSheet.classList.contains("is-open")) {
-      closeCart({ restoreFocus: false });
-    }
-    if (detailSheet.classList.contains("is-open")) {
-      closeDetail({ restoreFocus: false });
-    }
-    waiterState.source = source;
-    waiterState.isSending = false;
-    waiterState.error = "";
-    waiterState.successMessage = waiterHandoffMessage;
-    waiterState.step = waiterState.tableNumber ? "confirm" : "table";
-    renderWaiterSheet();
-    waiterSheet.classList.add("is-open");
-    waiterSheet.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    focusElement(waiterState.step === "confirm" ? waiterConfirmCallButton : waiterTableInput);
-  }
-  function closeWaiterSheet(options = {}) {
-    const { restoreFocus = true } = options;
-    waiterState.isSending = false;
-    waiterState.error = "";
-    waiterState.successMessage = waiterHandoffMessage;
-    waiterSheet.classList.remove("is-open");
-    waiterSheet.setAttribute("aria-hidden", "true");
-    syncModalOpenState({ restoreFocus });
-  }
   function renderOptions(item) {
     detailOptions.innerHTML = "";
     const selectionGroups = getSelectionGroups(item);
@@ -2545,82 +2444,6 @@
     const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
     return hasMeaningfulOptions ? entry.optionLabel : "";
   }
-  function renderWaiterSheet() {
-    waiterTableInput.value = waiterState.tableNumber;
-    waiterTableValue.textContent = waiterState.tableNumber || "-";
-    waiterSuccessTable.textContent = waiterState.tableNumber || "-";
-    waiterSuccessCopy.textContent = waiterState.successMessage || waiterHandoffMessage;
-    waiterTableStep.hidden = waiterState.step !== "table";
-    waiterConfirmStep.hidden = waiterState.step !== "confirm";
-    waiterSuccessStep.hidden = waiterState.step !== "success";
-    waiterTitle.textContent = waiterState.step === "success" ? successWaiterTitle : waiterState.step === "confirm" ? confirmWaiterTitle : defaultWaiterTitle;
-    waiterStatus.hidden = !waiterState.error;
-    waiterStatus.textContent = waiterState.error;
-    waiterStatus.classList.toggle("is-error", Boolean(waiterState.error));
-    waiterStatus.classList.toggle("is-success", false);
-    waiterTableInput.disabled = waiterState.isSending;
-    waiterConfirmCallButton.disabled = waiterState.isSending;
-    waiterChangeTableButton.disabled = waiterState.isSending;
-    closeWaiterButton.disabled = waiterState.isSending;
-    waiterConfirmCallButton.textContent = waiterState.isSending ? "Sto aprendo..." : "Apri chiamata";
-  }
-  function submitWaiterCallFromFlow() {
-    if (!waiterState.tableNumber || waiterState.isSending) {
-      return;
-    }
-    waiterState.isSending = true;
-    waiterState.error = "";
-    renderWaiterSheet();
-    const result = handoffWaiterCallToComandaAssistant(waiterState.tableNumber);
-    waiterState.isSending = false;
-    if (!result.ok) {
-      waiterState.error = result.message;
-      waiterState.step = "confirm";
-      renderWaiterSheet();
-      focusElement(waiterConfirmCallButton);
-      return;
-    }
-    if (result.mode === "same-tab") {
-      return;
-    }
-    waiterState.step = "success";
-    waiterState.error = "";
-    waiterState.successMessage = result.message;
-    renderWaiterSheet();
-    focusElement(waiterDoneButton);
-  }
-  function handoffWaiterCallToComandaAssistant(tableNumber) {
-    try {
-      const handoffUrl = buildComandaAssistantWaiterUrl(tableNumber);
-      const handoffWindow = window.open(handoffUrl, "_blank", "noopener,noreferrer");
-      if (handoffWindow) {
-        return {
-          ok: true,
-          mode: "popup",
-          message: waiterHandoffMessage
-        };
-      }
-      window.location.assign(handoffUrl);
-      return {
-        ok: true,
-        mode: "same-tab",
-        message: waiterHandoffMessage
-      };
-    } catch (error) {
-      console.error("Impossibile aprire il flusso Comanda Assistant", error);
-      return {
-        ok: false,
-        mode: "error",
-        message: waiterHandoffErrorMessage
-      };
-    }
-  }
-  function buildComandaAssistantWaiterUrl(tableNumber) {
-    const url = new URL(COMANDA_ASSISTANT_MENU_URL);
-    url.searchParams.set("wuc", COMANDA_ASSISTANT_WUC);
-    url.searchParams.set("tb", tableNumber);
-    return url.toString();
-  }
   function formatCartBreakdown(entries) {
     const breakdown = entries.reduce(
       (totals, entry) => {
@@ -2737,9 +2560,6 @@
     });
   }
   function getOpenModalPanel() {
-    if (waiterSheet.classList.contains("is-open")) {
-      return waiterPanel;
-    }
     if (detailSheet.classList.contains("is-open")) {
       return detailPanel;
     }
@@ -2749,7 +2569,7 @@
     return null;
   }
   function hasOpenModal() {
-    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || waiterSheet.classList.contains("is-open");
+    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open");
   }
   function syncModalOpenState(options = {}) {
     const { restoreFocus = true } = options;
@@ -2806,26 +2626,6 @@
       window.localStorage.setItem("molino-cart", JSON.stringify(state.cart));
     } catch (error) {
     }
-  }
-  function loadWaiterTableNumber() {
-    try {
-      return normalizeWaiterTableNumber(window.localStorage.getItem(WAITER_TABLE_STORAGE_KEY) || "");
-    } catch (error) {
-      return "";
-    }
-  }
-  function persistWaiterTableNumber() {
-    try {
-      if (!waiterState.tableNumber) {
-        window.localStorage.removeItem(WAITER_TABLE_STORAGE_KEY);
-        return;
-      }
-      window.localStorage.setItem(WAITER_TABLE_STORAGE_KEY, waiterState.tableNumber);
-    } catch (error) {
-    }
-  }
-  function normalizeWaiterTableNumber(value) {
-    return String(value || "").replace(/\s+/g, " ").trim().toUpperCase();
   }
   function formatPrice(value) {
     return priceFormatter.format(value);
