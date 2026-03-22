@@ -24,7 +24,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260322c";
+  const APP_VERSION = "20260322d";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -188,7 +188,11 @@
     selectedQuantity: 1,
     cart: loadCart()
   };
-  const saveSummaryLabel = "Salva e continua";
+  const generateSummaryLabel = "Genera riepilogo";
+  const editSummaryLabel = "Modifica selezione";
+  const defaultCartTitle = "Da comunicare al cameriere";
+  const generatedCartTitle = "Siamo pronti ad ordinare...";
+  let isCartSummaryView = false;
   const sectionNav = document.querySelector("#sectionNav");
   const menuSections = document.querySelector("#menuSections");
   const pageOutro = document.querySelector(".page-outro");
@@ -197,6 +201,8 @@
   const cartSheet = document.querySelector("#cartSheet");
   const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
   const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
+  const cartKicker = document.querySelector("#cartKicker");
+  const cartTitle = document.querySelector("#cartTitle");
   const detailCategory = document.querySelector("#detailCategory");
   const detailTitle = document.querySelector("#detailTitle");
   const detailDescription = document.querySelector("#detailDescription");
@@ -208,9 +214,11 @@
   const cartCount = document.querySelector("#cartCount");
   const cartItems = document.querySelector("#cartItems");
   const cartEmpty = document.querySelector("#cartEmpty");
+  const cartGenerated = document.querySelector("#cartGenerated");
   const cartFooter = document.querySelector("#cartFooter");
+  const cartTotalBlock = cartFooter.querySelector(".cart-total");
   const cartTotal = document.querySelector("#cartTotal");
-  const copySummaryButton = document.querySelector("#copySummary");
+  const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
   const pageBody = document.body;
@@ -292,19 +300,14 @@
     closeDetail();
     openCart();
   });
-  copySummaryButton.addEventListener("click", async () => {
-    const summary = buildSummary();
-    blurActiveElement();
-    closeCart();
-    if (!summary) {
-      copySummaryButton.textContent = saveSummaryLabel;
+  toggleSummaryViewButton.addEventListener("click", () => {
+    if (!state.cart.length) {
+      toggleSummaryViewButton.textContent = generateSummaryLabel;
       return;
     }
-    const saved = await saveSummary(summary);
-    copySummaryButton.textContent = saved ? "Salvato" : "Continua";
-    window.setTimeout(() => {
-      copySummaryButton.textContent = saveSummaryLabel;
-    }, 1600);
+    blurActiveElement();
+    isCartSummaryView = !isCartSummaryView;
+    renderCart();
   });
   clearCartButton.addEventListener("click", () => {
     state.cart = [];
@@ -2280,6 +2283,8 @@
   }
   function openCart() {
     rememberLastFocusedElement();
+    isCartSummaryView = false;
+    renderCart();
     cartSheet.classList.add("is-open");
     cartSheet.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
@@ -2375,26 +2380,39 @@
   }
   function renderCart() {
     cartItems.innerHTML = "";
+    cartGenerated.innerHTML = "";
+    toggleSummaryViewButton.textContent = generateSummaryLabel;
     const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
     cartCount.textContent = cartQuantity;
-    if (state.cart.length === 0) {
-      cartEmpty.hidden = false;
-      cartItems.hidden = true;
-      cartFooter.hidden = true;
-    } else {
-      cartEmpty.hidden = true;
-      cartItems.hidden = false;
-      cartFooter.hidden = false;
+    const hasItems = state.cart.length > 0;
+    const showGeneratedSummary = isCartSummaryView && hasItems;
+    if (hasItems) {
       state.cart.forEach((entry) => {
         const row = document.createElement("article");
         row.className = "cart-item";
-        row.innerHTML = "\n        <div>\n          <strong>".concat(entry.name, "</strong>\n          <p>").concat(entry.optionLabel, " \xB7 ").concat(formatPrice(entry.price), '</p>\n        </div>\n        <div class="cart-item-controls">\n          <button class="qty-btn" type="button" aria-label="Rimuovi una quantit\xE0">\u2212</button>\n          <span>').concat(entry.quantity, '</span>\n          <button class="qty-btn" type="button" aria-label="Aggiungi una quantit\xE0">+</button>\n        </div>\n      ');
+        const metaParts = [entry.optionLabel, "".concat(formatPrice(entry.price), " cad.")].filter(Boolean);
+        row.innerHTML = '\n        <div class="cart-item__copy">\n          <strong>'.concat(entry.name, '</strong>\n          <p class="cart-item__meta">').concat(metaParts.join(" \xB7 "), '</p>\n        </div>\n        <div class="cart-item__actions">\n          <div class="cart-item-controls">\n            <button class="qty-btn" type="button" aria-label="Rimuovi una quantit\xE0">\u2212</button>\n            <span class="cart-item__quantity">').concat(entry.quantity, '</span>\n            <button class="qty-btn" type="button" aria-label="Aggiungi una quantit\xE0">+</button>\n          </div>\n          <button class="cart-item__remove" type="button" aria-label="Rimuovi ').concat(entry.name, '">\n            Rimuovi\n          </button>\n        </div>\n      ');
         const [decreaseButton, increaseButton] = row.querySelectorAll(".qty-btn");
+        const removeButton = row.querySelector(".cart-item__remove");
         decreaseButton.addEventListener("click", () => updateQuantity(entry.entryId, -1));
         increaseButton.addEventListener("click", () => updateQuantity(entry.entryId, 1));
+        removeButton == null ? void 0 : removeButton.addEventListener("click", () => removeCartEntry(entry.entryId));
         cartItems.append(row);
       });
     }
+    if (showGeneratedSummary) {
+      renderGeneratedCartSummary();
+    }
+    cartPanel.classList.toggle("is-generated", showGeneratedSummary);
+    cartKicker.hidden = showGeneratedSummary;
+    cartTitle.textContent = showGeneratedSummary ? generatedCartTitle : defaultCartTitle;
+    cartEmpty.hidden = hasItems;
+    cartItems.hidden = !hasItems || showGeneratedSummary;
+    cartGenerated.hidden = !showGeneratedSummary;
+    cartFooter.hidden = !hasItems;
+    cartTotalBlock.hidden = showGeneratedSummary;
+    clearCartButton.hidden = showGeneratedSummary;
+    toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
     cartTotal.textContent = formatCartBreakdown(state.cart);
   }
   function updateQuantity(entryId, delta) {
@@ -2407,15 +2425,27 @@
     persistCart();
     renderCart();
   }
-  function buildSummary() {
-    if (state.cart.length === 0) {
+  function removeCartEntry(entryId) {
+    state.cart = state.cart.filter((cartEntry) => cartEntry.entryId !== entryId);
+    persistCart();
+    renderCart();
+  }
+  function renderGeneratedCartSummary() {
+    state.cart.forEach((entry) => {
+      const summaryItem = document.createElement("article");
+      summaryItem.className = "cart-generated-item";
+      const detail = getGeneratedCartEntryDetail(entry);
+      summaryItem.innerHTML = '\n      <span class="cart-generated-item__quantity">'.concat(entry.quantity, '\xD7</span>\n      <div class="cart-generated-item__copy">\n        <strong>').concat(entry.name, "</strong>\n        ").concat(detail ? "<p>".concat(detail, "</p>") : "", "\n      </div>\n    ");
+      cartGenerated.append(summaryItem);
+    });
+  }
+  function getGeneratedCartEntryDetail(entry) {
+    const item = itemLookup[entry.itemId];
+    if (!item || !entry.optionLabel) {
       return "";
     }
-    const lines = state.cart.map(
-      (entry) => "".concat(entry.quantity, "x ").concat(entry.name, " (").concat(entry.optionLabel, ")")
-    );
-    lines.push("Totale: ".concat(formatCartBreakdown(state.cart)));
-    return lines.join("\n");
+    const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
+    return hasMeaningfulOptions ? entry.optionLabel : "";
   }
   function formatCartBreakdown(entries) {
     const breakdown = entries.reduce(
@@ -2498,46 +2528,6 @@
   }
   function normalizeLabel(value) {
     return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-  }
-  async function saveSummary(text) {
-    blurActiveElement();
-    if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch (error) {
-      }
-    }
-    if (shouldSkipClipboardFallback()) {
-      return false;
-    }
-    return copyTextFallback(text);
-  }
-  function shouldSkipClipboardFallback() {
-    const touchPoints = navigator.maxTouchPoints || 0;
-    const coarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-    const mobileUserAgent = /iphone|ipad|ipod|android|mobile/i.test(navigator.userAgent || "");
-    return touchPoints > 0 || coarsePointer || mobileUserAgent;
-  }
-  function copyTextFallback(text) {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.top = "-9999px";
-    textarea.style.left = "-9999px";
-    textarea.style.opacity = "0";
-    document.body.append(textarea);
-    textarea.select();
-    textarea.setSelectionRange(0, text.length);
-    let copied = false;
-    try {
-      copied = document.execCommand("copy");
-    } catch (error) {
-      copied = false;
-    }
-    textarea.remove();
-    return copied;
   }
   function blurActiveElement() {
     if (document.activeElement && typeof document.activeElement.blur === "function") {

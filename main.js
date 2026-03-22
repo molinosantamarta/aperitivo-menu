@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260322c";
+const APP_VERSION = "20260322d";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -174,7 +174,11 @@ const state = {
   cart: loadCart(),
 };
 
-const saveSummaryLabel = "Salva e continua";
+const generateSummaryLabel = "Genera riepilogo";
+const editSummaryLabel = "Modifica selezione";
+const defaultCartTitle = "Da comunicare al cameriere";
+const generatedCartTitle = "Siamo pronti ad ordinare...";
+let isCartSummaryView = false;
 
 const sectionNav = document.querySelector("#sectionNav");
 const menuSections = document.querySelector("#menuSections");
@@ -184,6 +188,8 @@ const detailSheet = document.querySelector("#detailSheet");
 const cartSheet = document.querySelector("#cartSheet");
 const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
 const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
+const cartKicker = document.querySelector("#cartKicker");
+const cartTitle = document.querySelector("#cartTitle");
 const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
@@ -195,9 +201,11 @@ const closeCartButton = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const cartEmpty = document.querySelector("#cartEmpty");
+const cartGenerated = document.querySelector("#cartGenerated");
 const cartFooter = document.querySelector("#cartFooter");
+const cartTotalBlock = cartFooter.querySelector(".cart-total");
 const cartTotal = document.querySelector("#cartTotal");
-const copySummaryButton = document.querySelector("#copySummary");
+const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const pageBody = document.body;
@@ -287,21 +295,15 @@ addToCartButton.addEventListener("click", () => {
   openCart();
 });
 
-copySummaryButton.addEventListener("click", async () => {
-  const summary = buildSummary();
-  blurActiveElement();
-  closeCart();
-
-  if (!summary) {
-    copySummaryButton.textContent = saveSummaryLabel;
+toggleSummaryViewButton.addEventListener("click", () => {
+  if (!state.cart.length) {
+    toggleSummaryViewButton.textContent = generateSummaryLabel;
     return;
   }
 
-  const saved = await saveSummary(summary);
-  copySummaryButton.textContent = saved ? "Salvato" : "Continua";
-  window.setTimeout(() => {
-    copySummaryButton.textContent = saveSummaryLabel;
-  }, 1600);
+  blurActiveElement();
+  isCartSummaryView = !isCartSummaryView;
+  renderCart();
 });
 
 clearCartButton.addEventListener("click", () => {
@@ -2980,6 +2982,8 @@ function closeDetail() {
 
 function openCart() {
   rememberLastFocusedElement();
+  isCartSummaryView = false;
+  renderCart();
   cartSheet.classList.add("is-open");
   cartSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -3128,40 +3132,59 @@ function createOptionGroup(label, compact = false) {
 
 function renderCart() {
   cartItems.innerHTML = "";
+  cartGenerated.innerHTML = "";
+  toggleSummaryViewButton.textContent = generateSummaryLabel;
   const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
   cartCount.textContent = cartQuantity;
+  const hasItems = state.cart.length > 0;
+  const showGeneratedSummary = isCartSummaryView && hasItems;
 
-  if (state.cart.length === 0) {
-    cartEmpty.hidden = false;
-    cartItems.hidden = true;
-    cartFooter.hidden = true;
-  } else {
-    cartEmpty.hidden = true;
-    cartItems.hidden = false;
-    cartFooter.hidden = false;
-
+  if (hasItems) {
     state.cart.forEach((entry) => {
       const row = document.createElement("article");
       row.className = "cart-item";
+      const metaParts = [entry.optionLabel, `${formatPrice(entry.price)} cad.`].filter(Boolean);
       row.innerHTML = `
-        <div>
+        <div class="cart-item__copy">
           <strong>${entry.name}</strong>
-          <p>${entry.optionLabel} · ${formatPrice(entry.price)}</p>
+          <p class="cart-item__meta">${metaParts.join(" · ")}</p>
         </div>
-        <div class="cart-item-controls">
-          <button class="qty-btn" type="button" aria-label="Rimuovi una quantità">−</button>
-          <span>${entry.quantity}</span>
-          <button class="qty-btn" type="button" aria-label="Aggiungi una quantità">+</button>
+        <div class="cart-item__actions">
+          <div class="cart-item-controls">
+            <button class="qty-btn" type="button" aria-label="Rimuovi una quantità">−</button>
+            <span class="cart-item__quantity">${entry.quantity}</span>
+            <button class="qty-btn" type="button" aria-label="Aggiungi una quantità">+</button>
+          </div>
+          <button class="cart-item__remove" type="button" aria-label="Rimuovi ${entry.name}">
+            Rimuovi
+          </button>
         </div>
       `;
 
       const [decreaseButton, increaseButton] = row.querySelectorAll(".qty-btn");
+      const removeButton = row.querySelector(".cart-item__remove");
       decreaseButton.addEventListener("click", () => updateQuantity(entry.entryId, -1));
       increaseButton.addEventListener("click", () => updateQuantity(entry.entryId, 1));
+      removeButton?.addEventListener("click", () => removeCartEntry(entry.entryId));
 
       cartItems.append(row);
     });
   }
+
+  if (showGeneratedSummary) {
+    renderGeneratedCartSummary();
+  }
+
+  cartPanel.classList.toggle("is-generated", showGeneratedSummary);
+  cartKicker.hidden = showGeneratedSummary;
+  cartTitle.textContent = showGeneratedSummary ? generatedCartTitle : defaultCartTitle;
+  cartEmpty.hidden = hasItems;
+  cartItems.hidden = !hasItems || showGeneratedSummary;
+  cartGenerated.hidden = !showGeneratedSummary;
+  cartFooter.hidden = !hasItems;
+  cartTotalBlock.hidden = showGeneratedSummary;
+  clearCartButton.hidden = showGeneratedSummary;
+  toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
 }
@@ -3178,16 +3201,36 @@ function updateQuantity(entryId, delta) {
   renderCart();
 }
 
-function buildSummary() {
-  if (state.cart.length === 0) {
+function removeCartEntry(entryId) {
+  state.cart = state.cart.filter((cartEntry) => cartEntry.entryId !== entryId);
+  persistCart();
+  renderCart();
+}
+
+function renderGeneratedCartSummary() {
+  state.cart.forEach((entry) => {
+    const summaryItem = document.createElement("article");
+    summaryItem.className = "cart-generated-item";
+    const detail = getGeneratedCartEntryDetail(entry);
+    summaryItem.innerHTML = `
+      <span class="cart-generated-item__quantity">${entry.quantity}×</span>
+      <div class="cart-generated-item__copy">
+        <strong>${entry.name}</strong>
+        ${detail ? `<p>${detail}</p>` : ""}
+      </div>
+    `;
+    cartGenerated.append(summaryItem);
+  });
+}
+
+function getGeneratedCartEntryDetail(entry) {
+  const item = itemLookup[entry.itemId];
+  if (!item || !entry.optionLabel) {
     return "";
   }
 
-  const lines = state.cart.map(
-    (entry) => `${entry.quantity}x ${entry.name} (${entry.optionLabel})`
-  );
-  lines.push(`Totale: ${formatCartBreakdown(state.cart)}`);
-  return lines.join("\n");
+  const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
+  return hasMeaningfulOptions ? entry.optionLabel : "";
 }
 
 function formatCartBreakdown(entries) {
@@ -3313,57 +3356,6 @@ function normalizeLabel(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
-}
-
-async function saveSummary(text) {
-  blurActiveElement();
-
-  if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (error) {
-      // Continue with a fallback for browsers that block the first clipboard write.
-    }
-  }
-
-  if (shouldSkipClipboardFallback()) {
-    return false;
-  }
-
-  return copyTextFallback(text);
-}
-
-function shouldSkipClipboardFallback() {
-  const touchPoints = navigator.maxTouchPoints || 0;
-  const coarsePointer =
-    window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-  const mobileUserAgent = /iphone|ipad|ipod|android|mobile/i.test(navigator.userAgent || "");
-  return touchPoints > 0 || coarsePointer || mobileUserAgent;
-}
-
-function copyTextFallback(text) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.top = "-9999px";
-  textarea.style.left = "-9999px";
-  textarea.style.opacity = "0";
-  document.body.append(textarea);
-  textarea.select();
-  textarea.setSelectionRange(0, text.length);
-
-  let copied = false;
-
-  try {
-    copied = document.execCommand("copy");
-  } catch (error) {
-    copied = false;
-  }
-
-  textarea.remove();
-  return copied;
 }
 
 function blurActiveElement() {
