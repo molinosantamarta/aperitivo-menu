@@ -5,7 +5,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260322d";
+const APP_VERSION = "20260322e";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -178,6 +178,19 @@ const generateSummaryLabel = "Genera riepilogo";
 const editSummaryLabel = "Modifica selezione";
 const defaultCartTitle = "Da comunicare al cameriere";
 const generatedCartTitle = "Siamo pronti ad ordinare...";
+const defaultWaiterTitle = "Chiama cameriere";
+const confirmWaiterTitle = "Chiama cameriere";
+const successWaiterTitle = "Cameriere avvisato";
+const WAITER_TABLE_STORAGE_KEY = "molino-waiter-table";
+const WAITER_CALL_LOG_STORAGE_KEY = "molino-waiter-call-log";
+const waiterCallEndpoint = (document.body.dataset.waiterCallEndpoint || "").trim();
+const waiterState = {
+  tableNumber: loadWaiterTableNumber(),
+  step: "table",
+  source: "primary",
+  isSending: false,
+  error: "",
+};
 let isCartSummaryView = false;
 
 const sectionNav = document.querySelector("#sectionNav");
@@ -186,10 +199,20 @@ const pageOutro = document.querySelector(".page-outro");
 const cartFab = document.querySelector("#cartFab");
 const detailSheet = document.querySelector("#detailSheet");
 const cartSheet = document.querySelector("#cartSheet");
+const waiterSheet = document.querySelector("#waiterSheet");
 const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
 const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
+const waiterPanel = waiterSheet.querySelector(".sheet-panel--waiter");
 const cartKicker = document.querySelector("#cartKicker");
 const cartTitle = document.querySelector("#cartTitle");
+const waiterTitle = document.querySelector("#waiterTitle");
+const waiterStatus = document.querySelector("#waiterStatus");
+const waiterTableStep = document.querySelector("#waiterTableStep");
+const waiterConfirmStep = document.querySelector("#waiterConfirmStep");
+const waiterSuccessStep = document.querySelector("#waiterSuccessStep");
+const waiterTableInput = document.querySelector("#waiterTableInput");
+const waiterTableValue = document.querySelector("#waiterTableValue");
+const waiterSuccessTable = document.querySelector("#waiterSuccessTable");
 const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
@@ -198,6 +221,7 @@ const detailQuantity = document.querySelector("#detailQuantity");
 const addToCartButton = document.querySelector("#addToCart");
 const closeDetailButton = document.querySelector("#closeDetail");
 const closeCartButton = document.querySelector("#closeCart");
+const closeWaiterButton = document.querySelector("#closeWaiter");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const cartEmpty = document.querySelector("#cartEmpty");
@@ -206,6 +230,10 @@ const cartFooter = document.querySelector("#cartFooter");
 const cartTotalBlock = cartFooter.querySelector(".cart-total");
 const cartTotal = document.querySelector("#cartTotal");
 const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
+const waiterCallTriggers = document.querySelectorAll("[data-waiter-call-trigger]");
+const waiterChangeTableButton = document.querySelector("#waiterChangeTable");
+const waiterConfirmCallButton = document.querySelector("#waiterConfirmCall");
+const waiterDoneButton = document.querySelector("#waiterDone");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
 const pageBody = document.body;
@@ -253,6 +281,7 @@ const loaderProgressState = {
 cartFab.addEventListener("click", openCart);
 closeDetailButton.addEventListener("click", closeDetail);
 closeCartButton.addEventListener("click", closeCart);
+closeWaiterButton.addEventListener("click", () => closeWaiterSheet());
 detailSheet.addEventListener("click", (event) => {
   if (event.target === detailSheet) {
     closeDetail();
@@ -261,6 +290,11 @@ detailSheet.addEventListener("click", (event) => {
 cartSheet.addEventListener("click", (event) => {
   if (event.target === cartSheet) {
     closeCart();
+  }
+});
+waiterSheet.addEventListener("click", (event) => {
+  if (event.target === waiterSheet) {
+    closeWaiterSheet();
   }
 });
 
@@ -312,6 +346,38 @@ clearCartButton.addEventListener("click", () => {
   renderCart();
 });
 
+waiterCallTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", () => openWaiterCallFlow(trigger.dataset.waiterCallTrigger || "primary"));
+});
+
+waiterTableStep.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const normalizedTable = normalizeWaiterTableNumber(waiterTableInput.value);
+  if (!normalizedTable) {
+    waiterState.error = "Inserisci il numero del tavolo.";
+    renderWaiterSheet();
+    focusElement(waiterTableInput);
+    return;
+  }
+
+  waiterState.tableNumber = normalizedTable;
+  persistWaiterTableNumber();
+  waiterState.step = "confirm";
+  waiterState.error = "";
+  renderWaiterSheet();
+  focusElement(waiterConfirmCallButton);
+});
+
+waiterChangeTableButton.addEventListener("click", () => {
+  waiterState.step = "table";
+  waiterState.error = "";
+  renderWaiterSheet();
+  focusElement(waiterTableInput);
+});
+
+waiterConfirmCallButton.addEventListener("click", submitWaiterCallFromFlow);
+waiterDoneButton.addEventListener("click", () => closeWaiterSheet());
+
 sectionNav?.addEventListener("click", (event) => {
   const link = event.target.closest(".section-nav__link");
   if (!link) {
@@ -330,6 +396,11 @@ sectionNav?.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    if (waiterSheet.classList.contains("is-open")) {
+      closeWaiterSheet();
+      return;
+    }
+
     closeDetail();
     closeCart();
     return;
@@ -2969,15 +3040,13 @@ function openDetail(itemId) {
   focusElement(closeDetailButton);
 }
 
-function closeDetail() {
+function closeDetail(options = {}) {
+  const { restoreFocus = true } = options;
   detailPanel.classList.remove("sheet-panel--selection-groups");
   detailPanel.classList.remove("sheet-panel--long-options");
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
-  if (!cartSheet.classList.contains("is-open")) {
-    document.body.classList.remove("modal-open");
-    restoreLastFocusedElement();
-  }
+  syncModalOpenState({ restoreFocus });
 }
 
 function openCart() {
@@ -2990,13 +3059,46 @@ function openCart() {
   focusElement(closeCartButton);
 }
 
-function closeCart() {
+function closeCart(options = {}) {
+  const { restoreFocus = true } = options;
   cartSheet.classList.remove("is-open");
   cartSheet.setAttribute("aria-hidden", "true");
-  if (!detailSheet.classList.contains("is-open")) {
-    document.body.classList.remove("modal-open");
-    restoreLastFocusedElement();
+  syncModalOpenState({ restoreFocus });
+}
+
+function openWaiterCallFlow(source = "primary") {
+  if (source === "summary" && cartFab instanceof HTMLElement) {
+    lastFocusedElement = cartFab;
+  } else {
+    rememberLastFocusedElement();
   }
+
+  if (cartSheet.classList.contains("is-open")) {
+    closeCart({ restoreFocus: false });
+  }
+
+  if (detailSheet.classList.contains("is-open")) {
+    closeDetail({ restoreFocus: false });
+  }
+
+  waiterState.source = source;
+  waiterState.isSending = false;
+  waiterState.error = "";
+  waiterState.step = waiterState.tableNumber ? "confirm" : "table";
+  renderWaiterSheet();
+  waiterSheet.classList.add("is-open");
+  waiterSheet.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  focusElement(waiterState.step === "confirm" ? waiterConfirmCallButton : waiterTableInput);
+}
+
+function closeWaiterSheet(options = {}) {
+  const { restoreFocus = true } = options;
+  waiterState.isSending = false;
+  waiterState.error = "";
+  waiterSheet.classList.remove("is-open");
+  waiterSheet.setAttribute("aria-hidden", "true");
+  syncModalOpenState({ restoreFocus });
 }
 
 function renderOptions(item) {
@@ -3181,9 +3283,10 @@ function renderCart() {
   cartEmpty.hidden = hasItems;
   cartItems.hidden = !hasItems || showGeneratedSummary;
   cartGenerated.hidden = !showGeneratedSummary;
-  cartFooter.hidden = !hasItems;
-  cartTotalBlock.hidden = showGeneratedSummary;
-  clearCartButton.hidden = showGeneratedSummary;
+  cartFooter.hidden = false;
+  cartTotalBlock.hidden = !hasItems || showGeneratedSummary;
+  toggleSummaryViewButton.hidden = !hasItems;
+  clearCartButton.hidden = !hasItems || showGeneratedSummary;
   toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
@@ -3231,6 +3334,123 @@ function getGeneratedCartEntryDetail(entry) {
 
   const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
   return hasMeaningfulOptions ? entry.optionLabel : "";
+}
+
+function renderWaiterSheet() {
+  waiterTableInput.value = waiterState.tableNumber;
+  waiterTableValue.textContent = waiterState.tableNumber || "-";
+  waiterSuccessTable.textContent = waiterState.tableNumber || "-";
+
+  waiterTableStep.hidden = waiterState.step !== "table";
+  waiterConfirmStep.hidden = waiterState.step !== "confirm";
+  waiterSuccessStep.hidden = waiterState.step !== "success";
+
+  waiterTitle.textContent =
+    waiterState.step === "success" ? successWaiterTitle : waiterState.step === "confirm" ? confirmWaiterTitle : defaultWaiterTitle;
+
+  waiterStatus.hidden = !waiterState.error;
+  waiterStatus.textContent = waiterState.error;
+  waiterStatus.classList.toggle("is-error", Boolean(waiterState.error));
+  waiterStatus.classList.toggle("is-success", false);
+
+  waiterTableInput.disabled = waiterState.isSending;
+  waiterConfirmCallButton.disabled = waiterState.isSending;
+  waiterChangeTableButton.disabled = waiterState.isSending;
+  closeWaiterButton.disabled = waiterState.isSending;
+  waiterConfirmCallButton.textContent = waiterState.isSending ? "Sto avvisando..." : "Conferma chiamata";
+}
+
+async function submitWaiterCallFromFlow() {
+  if (!waiterState.tableNumber || waiterState.isSending) {
+    return;
+  }
+
+  waiterState.isSending = true;
+  waiterState.error = "";
+  renderWaiterSheet();
+
+  const payload = createWaiterCallPayload();
+  const sent = await submitWaiterCall(payload);
+
+  waiterState.isSending = false;
+
+  if (!sent) {
+    waiterState.error = "Non sono riuscito a inviare la chiamata. Riprova tra un attimo.";
+    renderWaiterSheet();
+    focusElement(waiterConfirmCallButton);
+    return;
+  }
+
+  waiterState.step = "success";
+  waiterState.error = "";
+  renderWaiterSheet();
+  focusElement(waiterDoneButton);
+}
+
+function createWaiterCallPayload() {
+  return {
+    tableNumber: waiterState.tableNumber,
+    source: waiterState.source,
+    requestedAt: new Date().toISOString(),
+    selectionSummary: formatCartBreakdown(state.cart),
+    selectionItems: state.cart.map((entry) => ({
+      itemId: entry.itemId,
+      name: entry.name,
+      optionLabel: entry.optionLabel,
+      quantity: entry.quantity,
+      price: entry.price,
+    })),
+    pageUrl: window.location.href,
+  };
+}
+
+async function submitWaiterCall(payload) {
+  try {
+    if (typeof window.molinoWaiterCallHandler === "function") {
+      const result = await window.molinoWaiterCallHandler(payload);
+      return result !== false;
+    }
+
+    if (waiterCallEndpoint) {
+      const response = await fetch(waiterCallEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Waiter call failed (${response.status})`);
+      }
+
+      return true;
+    }
+
+    queueLocalWaiterCall(payload);
+    return await simulateWaiterCall();
+  } catch (error) {
+    console.error("Impossibile inviare la chiamata al cameriere", error);
+    return false;
+  }
+}
+
+function queueLocalWaiterCall(payload) {
+  try {
+    const raw = window.localStorage.getItem(WAITER_CALL_LOG_STORAGE_KEY);
+    const calls = raw ? JSON.parse(raw) : [];
+    calls.push(payload);
+    window.localStorage.setItem(WAITER_CALL_LOG_STORAGE_KEY, JSON.stringify(calls.slice(-20)));
+  } catch (error) {
+    // Ignore storage failures for fallback-only local logs.
+  }
+}
+
+function simulateWaiterCall() {
+  return new Promise((resolve) => {
+    window.setTimeout(() => resolve(true), 420);
+  });
 }
 
 function formatCartBreakdown(entries) {
@@ -3364,8 +3584,8 @@ function blurActiveElement() {
   }
 }
 
-function rememberLastFocusedElement() {
-  if (detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open")) {
+function rememberLastFocusedElement(force = false) {
+  if (!force && hasOpenModal()) {
     return;
   }
 
@@ -3399,6 +3619,10 @@ function focusElement(element) {
 }
 
 function getOpenModalPanel() {
+  if (waiterSheet.classList.contains("is-open")) {
+    return waiterPanel;
+  }
+
   if (detailSheet.classList.contains("is-open")) {
     return detailPanel;
   }
@@ -3408,6 +3632,28 @@ function getOpenModalPanel() {
   }
 
   return null;
+}
+
+function hasOpenModal() {
+  return (
+    detailSheet.classList.contains("is-open") ||
+    cartSheet.classList.contains("is-open") ||
+    waiterSheet.classList.contains("is-open")
+  );
+}
+
+function syncModalOpenState(options = {}) {
+  const { restoreFocus = true } = options;
+
+  if (hasOpenModal()) {
+    document.body.classList.add("modal-open");
+    return;
+  }
+
+  document.body.classList.remove("modal-open");
+  if (restoreFocus) {
+    restoreLastFocusedElement();
+  }
 }
 
 function getFocusableElements(container) {
@@ -3462,6 +3708,34 @@ function persistCart() {
   } catch (error) {
     // Ignore storage failures on browsers with restricted storage access.
   }
+}
+
+function loadWaiterTableNumber() {
+  try {
+    return normalizeWaiterTableNumber(window.localStorage.getItem(WAITER_TABLE_STORAGE_KEY) || "");
+  } catch (error) {
+    return "";
+  }
+}
+
+function persistWaiterTableNumber() {
+  try {
+    if (!waiterState.tableNumber) {
+      window.localStorage.removeItem(WAITER_TABLE_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(WAITER_TABLE_STORAGE_KEY, waiterState.tableNumber);
+  } catch (error) {
+    // Ignore storage failures on browsers with restricted storage access.
+  }
+}
+
+function normalizeWaiterTableNumber(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toUpperCase();
 }
 
 function formatPrice(value) {

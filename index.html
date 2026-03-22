@@ -52,18 +52,21 @@
     />
     <link
       rel="preload"
-      href="./menu-assets/sgb-molino-black.png?v=20260322d"
+      href="./menu-assets/sgb-molino-black.png?v=20260322e"
       as="image"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260322d" />
+    <link rel="stylesheet" href="./styles.css?v=20260322e" />
   </head>
-  <body class="is-loading fonts-critical-loading loader-fonts-loading">
+  <body
+    class="is-loading fonts-critical-loading loader-fonts-loading"
+    data-waiter-call-endpoint=""
+  >
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
       <div class="app-loader__intro" id="appLoaderIntro" aria-hidden="true">
         <img
           class="app-loader__intro-logo"
-          src="./menu-assets/sgb-molino-black.png?v=20260322d"
+          src="./menu-assets/sgb-molino-black.png?v=20260322e"
           alt=""
           decoding="async"
           fetchpriority="high"
@@ -111,7 +114,7 @@
               <img
                 class="hero-butterfly__image"
                 data-shell-asset
-                src="./farfalla-bianca.gif?v=20260322d"
+                src="./farfalla-bianca.gif?v=20260322e"
                 alt=""
                 decoding="async"
                 fetchpriority="high"
@@ -168,7 +171,7 @@
                 <span class="utility-btn__icon" aria-hidden="true">
                   <img
                     data-shell-asset
-                    src="./menu-assets/instagram-logo.webp?v=20260322d"
+                    src="./menu-assets/instagram-logo.webp?v=20260322e"
                     alt=""
                   />
                 </span>
@@ -203,7 +206,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/bbq-picnic.png?v=20260322e"
                       alt="Format BBQ Picnic"
                       loading="lazy"
                       decoding="async"
@@ -224,7 +227,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/bbq-stelle.png?v=20260322e"
                       alt="Format BBQ sotto le stelle"
                       loading="lazy"
                       decoding="async"
@@ -245,7 +248,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/cinema.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/cinema.png?v=20260322e"
                       alt="Format Cinema"
                       loading="lazy"
                       decoding="async"
@@ -266,7 +269,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/country.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/country.png?v=20260322e"
                       alt="Format Country"
                       loading="lazy"
                       decoding="async"
@@ -287,7 +290,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/dam.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/dam.png?v=20260322e"
                       alt="Format Domenica al Molino"
                       loading="lazy"
                       decoding="async"
@@ -308,7 +311,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/ig-agrieventi.png?v=20260322e"
                       alt="Instagram Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -329,7 +332,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/agrieventi-logo.png?v=20260322e"
                       alt="Logo Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -350,7 +353,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260322d"
+                      data-deferred-src="./carosello%20format/bbq-hub.png?v=20260322e"
                       alt="Format BBQ Hub"
                       loading="lazy"
                       decoding="async"
@@ -412,7 +415,7 @@
           >
             <img
               data-shell-asset
-              src="./menu-assets/sgb-molino-black.png?v=20260322d"
+              src="./menu-assets/sgb-molino-black.png?v=20260322e"
               alt="Agriturismo Molino Santa Marta"
             />
           </a>
@@ -517,11 +520,97 @@
             <strong id="cartTotal">0 prodotti</strong>
           </div>
           <div class="cart-footer__actions">
+            <button
+              class="utility-btn utility-btn--ink cw-call-trigger cw-call-from-summary"
+              id="waiterCallFromSummary"
+              type="button"
+              data-waiter-call-trigger="summary"
+            >
+              Chiama cameriere
+            </button>
             <button class="utility-btn utility-btn--accent" id="toggleSummaryView" type="button">
               Genera riepilogo
             </button>
             <button class="utility-btn" id="clearCart" type="button">
               Svuota tutto
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="sheet-backdrop sheet-backdrop--waiter" id="waiterSheet" aria-hidden="true">
+      <section
+        class="sheet-panel sheet-panel--waiter"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="waiterTitle"
+      >
+        <button class="sheet-close" id="closeWaiter" type="button" aria-label="Chiudi">
+          ✕
+        </button>
+        <p class="sheet-kicker" id="waiterKicker">Assistenza al tavolo</p>
+        <h2 id="waiterTitle">Chiama cameriere</h2>
+        <p class="waiter-call__status" id="waiterStatus" hidden></p>
+
+        <form class="waiter-call__step" id="waiterTableStep" novalidate>
+          <p class="waiter-call__copy">
+            Per aiutarti più velocemente, inserisci il numero del tuo tavolo.
+          </p>
+          <label class="waiter-call__field" for="waiterTableInput">
+            <span class="waiter-call__label">Tavolo</span>
+            <input
+              class="waiter-call__input"
+              id="waiterTableInput"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="8"
+              placeholder="Es. 12"
+            />
+          </label>
+          <p class="waiter-call__note">
+            Lo ricordiamo su questo dispositivo, così la prossima volta fai prima.
+          </p>
+          <div class="waiter-call__actions">
+            <button class="utility-btn utility-btn--ink" id="waiterTableContinue" type="submit">
+              Continua
+            </button>
+          </div>
+        </form>
+
+        <div class="waiter-call__step" id="waiterConfirmStep" hidden>
+          <p class="waiter-call__copy">
+            Stai per richiedere assistenza al tavolo.
+          </p>
+          <div class="waiter-call__table-card">
+            <span class="waiter-call__table-label">Tavolo</span>
+            <strong class="waiter-call__table-value" id="waiterTableValue">-</strong>
+          </div>
+          <p class="waiter-call__note">
+            Avviseremo il personale per farti raggiungere direttamente al tavolo.
+          </p>
+          <div class="waiter-call__actions waiter-call__actions--split">
+            <button class="utility-btn" id="waiterChangeTable" type="button">
+              Cambia tavolo
+            </button>
+            <button class="utility-btn utility-btn--ink" id="waiterConfirmCall" type="button">
+              Conferma chiamata
+            </button>
+          </div>
+        </div>
+
+        <div class="waiter-call__step" id="waiterSuccessStep" hidden>
+          <p class="waiter-call__copy" id="waiterSuccessCopy">
+            Il personale è stato avvisato e passerà il prima possibile.
+          </p>
+          <div class="waiter-call__table-card waiter-call__table-card--success">
+            <span class="waiter-call__table-label">Tavolo</span>
+            <strong class="waiter-call__table-value" id="waiterSuccessTable">-</strong>
+          </div>
+          <div class="waiter-call__actions">
+            <button class="utility-btn utility-btn--ink" id="waiterDone" type="button">
+              Perfetto
             </button>
           </div>
         </div>
@@ -543,9 +632,9 @@
         script.defer = true;
         if (isLocalHost) {
           script.type = "module";
-          script.src = "./main.js?v=20260322d";
+          script.src = "./main.js?v=20260322e";
         } else {
-          script.src = "./main.runtime.js?v=20260322d";
+          script.src = "./main.runtime.js?v=20260322e";
         }
 
         document.body.appendChild(script);
