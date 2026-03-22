@@ -184,8 +184,6 @@ const successWaiterTitle = "Richiesta inviata";
 const WAITER_TABLE_STORAGE_KEY = "molino-waiter-table";
 const WAITER_CALL_LOG_STORAGE_KEY = "molino-waiter-call-log";
 const waiterCalledMessage = "A breve arriverà un operatore. Grazie.";
-const waiterInvalidTableMessage = "Il numero del tavolo non risulta corretto.";
-const waiterAlreadyCalledMessage = "Un operatore è già stato chiamato.";
 const waiterNeutralSentMessage = "Richiesta inviata.";
 const waiterCallEndpoint = (document.body.dataset.waiterCallEndpoint || "").trim();
 const waiterState = {
@@ -3440,12 +3438,7 @@ async function submitWaiterCall(payload) {
     }
 
     if (waiterCallEndpoint) {
-      try {
-        return await submitWaiterCallViaFetch(payload);
-      } catch (error) {
-        console.warn("Fetch Comanda Assistant non leggibile, uso fallback form POST.", error);
-        return await submitWaiterCallViaHiddenForm(payload);
-      }
+      return await submitWaiterCallViaHiddenForm(payload);
     }
 
     queueLocalWaiterCall(payload);
@@ -3458,27 +3451,6 @@ async function submitWaiterCall(payload) {
       message: "Non sono riuscito a inviare la chiamata. Riprova tra un attimo.",
     };
   }
-}
-
-async function submitWaiterCallViaFetch(payload) {
-  const response = await fetch(waiterCallEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      Accept: "text/plain, */*",
-    },
-    body: new URLSearchParams({
-      tableNumber: payload.tableNumber,
-    }).toString(),
-    keepalive: true,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Waiter call failed (${response.status})`);
-  }
-
-  const responseText = (await response.text()).trim();
-  return normalizeWaiterCallResult(responseText);
 }
 
 async function submitWaiterCallViaHiddenForm(payload) {
@@ -3519,40 +3491,6 @@ async function submitWaiterCallViaHiddenForm(payload) {
 
     waiterFallbackForm.submit();
   });
-
-  return {
-    ok: true,
-    code: "sent",
-    message: waiterNeutralSentMessage,
-  };
-}
-
-function normalizeWaiterCallResult(value) {
-  const normalized = String(value || "").trim().toLowerCase();
-
-  if (normalized === "called") {
-    return {
-      ok: true,
-      code: "called",
-      message: waiterCalledMessage,
-    };
-  }
-
-  if (normalized === "alreadycalled") {
-    return {
-      ok: true,
-      code: "alreadyCalled",
-      message: waiterAlreadyCalledMessage,
-    };
-  }
-
-  if (normalized === "nexist") {
-    return {
-      ok: false,
-      code: "nexist",
-      message: waiterInvalidTableMessage,
-    };
-  }
 
   return {
     ok: true,
