@@ -194,19 +194,19 @@
   const generatedCartTitle = "Siamo pronti ad ordinare...";
   const defaultWaiterTitle = "Chiama cameriere";
   const confirmWaiterTitle = "Chiama cameriere";
-  const successWaiterTitle = "Richiesta inviata";
+  const successWaiterTitle = "Continua la chiamata";
+  const COMANDA_ASSISTANT_WUC = "OqAj4Sc3UupCLlYh";
+  const COMANDA_ASSISTANT_MENU_URL = "https://www.comandaassistant.com/menu/";
   const WAITER_TABLE_STORAGE_KEY = "molino-waiter-table";
-  const WAITER_CALL_LOG_STORAGE_KEY = "molino-waiter-call-log";
-  const waiterCalledMessage = "A breve arriver\xE0 un operatore. Grazie.";
-  const waiterNeutralSentMessage = "Richiesta inviata.";
-  const waiterCallEndpoint = (document.body.dataset.waiterCallEndpoint || "").trim();
+  const waiterHandoffMessage = "Si \xE8 aperta la chiamata su Comanda Assistant. Completa la conferma l\xEC.";
+  const waiterHandoffErrorMessage = "Non sono riuscito ad aprire la chiamata. Riprova tra un attimo.";
   const waiterState = {
     tableNumber: loadWaiterTableNumber(),
     step: "table",
     source: "primary",
     isSending: false,
     error: "",
-    successMessage: waiterCalledMessage
+    successMessage: waiterHandoffMessage
   };
   let isCartSummaryView = false;
   const sectionNav = document.querySelector("#sectionNav");
@@ -251,9 +251,6 @@
   const waiterChangeTableButton = document.querySelector("#waiterChangeTable");
   const waiterConfirmCallButton = document.querySelector("#waiterConfirmCall");
   const waiterDoneButton = document.querySelector("#waiterDone");
-  const waiterFallbackForm = document.querySelector("#waiterCallFallbackForm");
-  const waiterFallbackTableNumber = document.querySelector("#waiterCallFallbackTableNumber");
-  const waiterFallbackTransport = document.querySelector("#waiterCallTransport");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
   const pageBody = document.body;
@@ -2381,7 +2378,7 @@
     waiterState.source = source;
     waiterState.isSending = false;
     waiterState.error = "";
-    waiterState.successMessage = waiterCalledMessage;
+    waiterState.successMessage = waiterHandoffMessage;
     waiterState.step = waiterState.tableNumber ? "confirm" : "table";
     renderWaiterSheet();
     waiterSheet.classList.add("is-open");
@@ -2393,7 +2390,7 @@
     const { restoreFocus = true } = options;
     waiterState.isSending = false;
     waiterState.error = "";
-    waiterState.successMessage = waiterCalledMessage;
+    waiterState.successMessage = waiterHandoffMessage;
     waiterSheet.classList.remove("is-open");
     waiterSheet.setAttribute("aria-hidden", "true");
     syncModalOpenState({ restoreFocus });
@@ -2552,7 +2549,7 @@
     waiterTableInput.value = waiterState.tableNumber;
     waiterTableValue.textContent = waiterState.tableNumber || "-";
     waiterSuccessTable.textContent = waiterState.tableNumber || "-";
-    waiterSuccessCopy.textContent = waiterState.successMessage || waiterCalledMessage;
+    waiterSuccessCopy.textContent = waiterState.successMessage || waiterHandoffMessage;
     waiterTableStep.hidden = waiterState.step !== "table";
     waiterConfirmStep.hidden = waiterState.step !== "confirm";
     waiterSuccessStep.hidden = waiterState.step !== "success";
@@ -2565,23 +2562,25 @@
     waiterConfirmCallButton.disabled = waiterState.isSending;
     waiterChangeTableButton.disabled = waiterState.isSending;
     closeWaiterButton.disabled = waiterState.isSending;
-    waiterConfirmCallButton.textContent = waiterState.isSending ? "Sto avvisando..." : "Conferma chiamata";
+    waiterConfirmCallButton.textContent = waiterState.isSending ? "Sto aprendo..." : "Apri chiamata";
   }
-  async function submitWaiterCallFromFlow() {
+  function submitWaiterCallFromFlow() {
     if (!waiterState.tableNumber || waiterState.isSending) {
       return;
     }
     waiterState.isSending = true;
     waiterState.error = "";
     renderWaiterSheet();
-    const payload = createWaiterCallPayload();
-    const result = await submitWaiterCall(payload);
+    const result = handoffWaiterCallToComandaAssistant(waiterState.tableNumber);
     waiterState.isSending = false;
     if (!result.ok) {
       waiterState.error = result.message;
-      waiterState.step = result.code === "nexist" ? "table" : "confirm";
+      waiterState.step = "confirm";
       renderWaiterSheet();
-      focusElement(result.code === "nexist" ? waiterTableInput : waiterConfirmCallButton);
+      focusElement(waiterConfirmCallButton);
+      return;
+    }
+    if (result.mode === "same-tab") {
       return;
     }
     waiterState.step = "success";
@@ -2590,109 +2589,37 @@
     renderWaiterSheet();
     focusElement(waiterDoneButton);
   }
-  function createWaiterCallPayload() {
-    return {
-      tableNumber: waiterState.tableNumber,
-      source: waiterState.source,
-      requestedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      selectionSummary: formatCartBreakdown(state.cart),
-      selectionItems: state.cart.map((entry) => ({
-        itemId: entry.itemId,
-        name: entry.name,
-        optionLabel: entry.optionLabel,
-        quantity: entry.quantity,
-        price: entry.price
-      })),
-      pageUrl: window.location.href
-    };
-  }
-  async function submitWaiterCall(payload) {
+  function handoffWaiterCallToComandaAssistant(tableNumber) {
     try {
-      if (typeof window.molinoWaiterCallHandler === "function") {
-        const result = await window.molinoWaiterCallHandler(payload);
-        if (result && typeof result === "object" && "ok" in result) {
-          return result;
-        }
-        return result === false ? {
-          ok: false,
-          code: "error",
-          message: "Non sono riuscito a inviare la chiamata. Riprova tra un attimo."
-        } : {
+      const handoffUrl = buildComandaAssistantWaiterUrl(tableNumber);
+      const handoffWindow = window.open(handoffUrl, "_blank", "noopener,noreferrer");
+      if (handoffWindow) {
+        return {
           ok: true,
-          code: "called",
-          message: waiterCalledMessage
+          mode: "popup",
+          message: waiterHandoffMessage
         };
       }
-      if (waiterCallEndpoint) {
-        return await submitWaiterCallViaHiddenForm(payload);
-      }
-      queueLocalWaiterCall(payload);
-      return await simulateWaiterCall();
-    } catch (error) {
-      console.error("Impossibile inviare la chiamata al cameriere", error);
-      return {
-        ok: false,
-        code: "error",
-        message: "Non sono riuscito a inviare la chiamata. Riprova tra un attimo."
-      };
-    }
-  }
-  async function submitWaiterCallViaHiddenForm(payload) {
-    if (!(waiterFallbackForm instanceof HTMLFormElement) || !(waiterFallbackTableNumber instanceof HTMLInputElement)) {
+      window.location.assign(handoffUrl);
       return {
         ok: true,
-        code: "sent",
-        message: waiterNeutralSentMessage
+        mode: "same-tab",
+        message: waiterHandoffMessage
       };
-    }
-    waiterFallbackTableNumber.value = payload.tableNumber;
-    await new Promise((resolve) => {
-      const transport = waiterFallbackTransport;
-      let settled = false;
-      const finish = () => {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        resolve();
-      };
-      const timeoutId = window.setTimeout(finish, 1600);
-      if (transport instanceof HTMLIFrameElement) {
-        const handleLoad = () => {
-          window.clearTimeout(timeoutId);
-          transport.removeEventListener("load", handleLoad);
-          finish();
-        };
-        transport.addEventListener("load", handleLoad);
-      }
-      waiterFallbackForm.submit();
-    });
-    return {
-      ok: true,
-      code: "sent",
-      message: waiterNeutralSentMessage
-    };
-  }
-  function queueLocalWaiterCall(payload) {
-    try {
-      const raw = window.localStorage.getItem(WAITER_CALL_LOG_STORAGE_KEY);
-      const calls = raw ? JSON.parse(raw) : [];
-      calls.push(payload);
-      window.localStorage.setItem(WAITER_CALL_LOG_STORAGE_KEY, JSON.stringify(calls.slice(-20)));
     } catch (error) {
+      console.error("Impossibile aprire il flusso Comanda Assistant", error);
+      return {
+        ok: false,
+        mode: "error",
+        message: waiterHandoffErrorMessage
+      };
     }
   }
-  function simulateWaiterCall() {
-    return new Promise((resolve) => {
-      window.setTimeout(
-        () => resolve({
-          ok: true,
-          code: "sent",
-          message: waiterNeutralSentMessage
-        }),
-        420
-      );
-    });
+  function buildComandaAssistantWaiterUrl(tableNumber) {
+    const url = new URL(COMANDA_ASSISTANT_MENU_URL);
+    url.searchParams.set("wuc", COMANDA_ASSISTANT_WUC);
+    url.searchParams.set("tb", tableNumber);
+    return url.toString();
   }
   function formatCartBreakdown(entries) {
     const breakdown = entries.reduce(

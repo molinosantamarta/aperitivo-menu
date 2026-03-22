@@ -58,10 +58,7 @@
     />
     <link rel="stylesheet" href="./styles.css?v=20260322f" />
   </head>
-  <body
-    class="is-loading fonts-critical-loading loader-fonts-loading"
-    data-waiter-call-endpoint="https://www.comandaassistant.com/menu/func/callOperator.php?wuc=OqAj4Sc3UupCLlYh"
-  >
+  <body class="is-loading fonts-critical-loading loader-fonts-loading">
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
       <div class="app-loader__intro" id="appLoaderIntro" aria-hidden="true">
         <img
@@ -588,21 +585,21 @@
             <strong class="waiter-call__table-value" id="waiterTableValue">-</strong>
           </div>
           <p class="waiter-call__note">
-            Avviseremo il personale per farti raggiungere direttamente al tavolo.
+            Apriremo il flusso ufficiale di Comanda Assistant con il tavolo gi&agrave; impostato.
           </p>
           <div class="waiter-call__actions waiter-call__actions--split">
             <button class="utility-btn" id="waiterChangeTable" type="button">
               Cambia tavolo
             </button>
             <button class="utility-btn utility-btn--ink" id="waiterConfirmCall" type="button">
-              Conferma chiamata
+              Apri chiamata
             </button>
           </div>
         </div>
 
         <div class="waiter-call__step" id="waiterSuccessStep" hidden>
           <p class="waiter-call__copy" id="waiterSuccessCopy">
-            Il personale è stato avvisato e passerà il prima possibile.
+            Si &egrave; aperta la chiamata su Comanda Assistant. Completa la conferma l&igrave;.
           </p>
           <div class="waiter-call__table-card waiter-call__table-card--success">
             <span class="waiter-call__table-label">Tavolo</span>
@@ -610,24 +607,12 @@
           </div>
           <div class="waiter-call__actions">
             <button class="utility-btn utility-btn--ink" id="waiterDone" type="button">
-              Perfetto
+              Torna al menu
             </button>
           </div>
         </div>
       </section>
     </div>
-
-    <form
-      id="waiterCallFallbackForm"
-      action="https://www.comandaassistant.com/menu/func/callOperator.php?wuc=OqAj4Sc3UupCLlYh"
-      method="POST"
-      target="waiterCallTransport"
-      hidden
-      aria-hidden="true"
-    >
-      <input id="waiterCallFallbackTableNumber" name="tableNumber" type="hidden" value="" />
-    </form>
-    <iframe id="waiterCallTransport" name="waiterCallTransport" hidden aria-hidden="true" tabindex="-1"></iframe>
 
     <script>
       (function () {
