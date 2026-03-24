@@ -6,20 +6,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const inputPath = path.join(rootDir, "data", "menu-data.json");
 const outputPath = path.join(rootDir, "data", "google-sheet-template-semplice.csv");
-const MAX_SIMPLE_OPTIONS = 6;
 const VISIBILITY_HEADER = "visibilita (visibile/nascosto)";
 const AVAILABILITY_HEADER = "disponibilita (disponibile/non disponibile/in arrivo)";
 
 const columns = [
   "nome attuale (solo riferimento)",
   "id",
-  "sezione",
   VISIBILITY_HEADER,
   AVAILABILITY_HEADER,
-  "varianti",
-  "prezzo_unico",
-  ...Array.from({ length: MAX_SIMPLE_OPTIONS }, (_, index) => [`variante_${index + 1}`, `prezzo_${index + 1}`]).flat(),
-  "varianti_extra",
+  "prezzo",
 ];
 
 const menu = JSON.parse(await readFile(inputPath, "utf8"));
@@ -31,31 +26,10 @@ const rows = menu.sections.flatMap((section) =>
       const row = {
         "nome attuale (solo riferimento)": item.name,
         id: item.id,
-      sezione: section.id,
-      [VISIBILITY_HEADER]: item.visible === false ? "nascosto" : "visibile",
-      [AVAILABILITY_HEADER]: getItemAvailabilityState(item),
-      varianti: "",
-      prezzo_unico: "",
-      varianti_extra: "",
-    };
-
-    const options = item.options || [];
-    const hasUniformPrice =
-      options.length > 0 && options.every((option) => option.price === options[0].price);
-
-    if (hasUniformPrice) {
-      row.prezzo_unico = options[0].price ?? "";
-      row.varianti = options
-        .map((option) => option.label || option.displayLabel || "")
-        .filter(Boolean)
-        .join(" | ");
-    } else {
-      row.varianti_extra = buildExtraVariants(options);
-      options.slice(0, MAX_SIMPLE_OPTIONS).forEach((option, optionIndex) => {
-        row[`variante_${optionIndex + 1}`] = option.label ?? "";
-        row[`prezzo_${optionIndex + 1}`] = option.price ?? "";
-      });
-    }
+        [VISIBILITY_HEADER]: item.visible === false ? "nascosto" : "visibile",
+        [AVAILABILITY_HEADER]: getItemAvailabilityState(item),
+        prezzo: resolveSimplePrice(item),
+      };
 
       return row;
     })
@@ -69,20 +43,42 @@ const csv = [
 await writeFile(outputPath, csv);
 console.log(`Creato ${outputPath}`);
 
-function buildExtraVariants(options) {
-  return options
-    .slice(MAX_SIMPLE_OPTIONS)
-    .map((option) => option.label || "")
-    .filter(Boolean)
-    .join(" | ");
-}
-
 function getItemAvailabilityState(item) {
   if (item?.availabilityState === "coming-soon") {
     return "in arrivo";
   }
 
   return item?.available === false ? "non disponibile" : "disponibile";
+}
+
+function resolveSimplePrice(item) {
+  const options = Array.isArray(item?.options) ? item.options : [];
+  if (!options.length) {
+    return "";
+  }
+
+  const firstPrice = options[0]?.price;
+  if (firstPrice == null) {
+    return "";
+  }
+
+  const hasUniformPrice = options.every((option) => option.price === firstPrice);
+  return hasUniformPrice ? formatSheetPrice(firstPrice) : "";
+}
+
+function formatSheetPrice(value) {
+  if (value == null || value === "") {
+    return "";
+  }
+
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return String(value);
+  }
+
+  return Number.isInteger(numericValue)
+    ? String(numericValue)
+    : String(numericValue).replace(".", ",");
 }
 
 function escapeCsv(value) {

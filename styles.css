@@ -163,6 +163,22 @@ a {
   visibility: hidden;
 }
 
+.app-loader__build {
+  position: absolute;
+  left: 50%;
+  bottom: max(58px, calc(env(safe-area-inset-bottom) + 10vh));
+  z-index: 1;
+  margin: 0;
+  transform: translateX(-50%);
+  color: rgba(93, 79, 68, 0.58);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
 .app-loader__intro {
   position: absolute;
   inset: 0;
@@ -490,6 +506,11 @@ a {
 @media (max-width: 420px) {
   .app-loader {
     padding: 18px;
+  }
+
+  .app-loader__build {
+    bottom: max(42px, calc(env(safe-area-inset-bottom) + 8vh));
+    font-size: 0.86rem;
   }
 
   .app-loader__intro {

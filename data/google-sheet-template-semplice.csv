@@ -1,30 +1,30 @@
-nome attuale (solo riferimento),id,sezione,visibilita (visibile/nascosto),disponibilita (disponibile/non disponibile/in arrivo),varianti,prezzo_unico,variante_1,prezzo_1,variante_2,prezzo_2,variante_3,prezzo_3,variante_4,prezzo_4,variante_5,prezzo_5,variante_6,prezzo_6,varianti_extra
-Bianchina,bianchina,birre,visibile,disponibile,33 cl,6,,,,,,,,,,,,,
-Ghe Sem,ghe-sem,birre,visibile,disponibile,33 cl,6,,,,,,,,,,,,,
-Tel Chi,tel-chi,birre,visibile,disponibile,33 cl,6,,,,,,,,,,,,,
-Casciaball,casciaball,birre,visibile,disponibile,33 cl,6,,,,,,,,,,,,,
-Ciapa Fià,ciapa-fia,birre,visibile,disponibile,33 cl,6,,,,,,,,,,,,,
-Moretti,moretti,birre,visibile,disponibile,33 cl,4,,,,,,,,,,,,,
-Birra alla spina,spina,birre,visibile,non disponibile,"0,4 L",5,,,,,,,,,,,,,
-Aperol Spritz,aperol,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Campari Spritz,campari,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Sarti Spritz,sarti,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Hugo Spritz,hugo,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Gin Tonic,gin-tonic,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Gin Tropical,gin-tonic-special,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Gin Lemon,gin-lemon,drink,visibile,disponibile,1 drink,6,,,,,,,,,,,,,
-Oltrepò Pavese,oltrepo,bottiglie,visibile,disponibile,,,Bottiglia,12,Calice,4,,,,,,,,,
-Rosso del Lupo,rosso-del-lupo,bottiglie,visibile,disponibile,Bottiglia,26,,,,,,,,,,,,,
-"Pinot, spumante extra dry",pinot-extra-dry,bottiglie,visibile,disponibile,,,Bottiglia,16,Calice,4.5,,,,,,,,,
-Quarantalune,quarantalune,bottiglie,visibile,disponibile,Bottiglia,35,,,,,,,,,,,,,
-Spumante dealcolato,glera-zero,bottiglie,visibile,disponibile,Bottiglia,18,,,,,,,,,,,,,
-Rosè n°5 Feral,rose-n5,bottiglie,visibile,disponibile,Bottiglia,25,,,,,,,,,,,,,
-Acqua,acqua,altre-bevande,visibile,disponibile,,1.5,,,,,,,,,,,,,
-Bibite,bibite,altre-bevande,visibile,disponibile,,4,,,,,,,,,,,,,
-Aranciata rossa,frutta-bio,altre-bevande,visibile,disponibile,,4.5,,,,,,,,,,,,,
-Kombucha limone,kombucha,altre-bevande,visibile,disponibile,,4.5,,,,,,,,,,,,,
-Caffè,caffe,altre-bevande,visibile,disponibile,Normale | Lungo | Orzo | Decaffeinato | Macchiato,1.5,,,,,,,,,,,,,
-Iced Latte,iced-coffee,altre-bevande,visibile,disponibile,,4,,,,,,,,,,,,,
-Grappe e amari,grappe-amari,altre-bevande,visibile,disponibile,Amaro alle erbe Molino Santa Marta | Amaro del Capo | Averna | Brancamenta | Braulio | Fernet | Grappa barricata | Grappa morbida | Jägermeister | Limoncello | Liquirizia | Mirto | Montenegro | Unicum | San Simone,4,,,,,,,,,,,,,
-Metro del Molino,metro-del-molino,taglieri,visibile,disponibile,,18,,,,,,,,,,,,,
-1/2 Metro,mezzo-metro,taglieri,visibile,disponibile,,12,,,,,,,,,,,,,
+nome attuale (solo riferimento),id,visibilita (visibile/nascosto),disponibilita (disponibile/non disponibile/in arrivo),prezzo
+Bianchina,bianchina,visibile,disponibile,6
+Ghe Sem,ghe-sem,visibile,disponibile,6
+Tel Chi,tel-chi,visibile,disponibile,6
+Casciaball,casciaball,visibile,disponibile,6
+Ciapa Fià,ciapa-fia,visibile,disponibile,6
+Moretti,moretti,visibile,disponibile,4
+Birra alla spina,spina,visibile,non disponibile,5
+Aperol Spritz,aperol,visibile,disponibile,6
+Campari Spritz,campari,visibile,disponibile,6
+Sarti Spritz,sarti,visibile,disponibile,6
+Hugo Spritz,hugo,visibile,disponibile,6
+Gin Tonic,gin-tonic,visibile,disponibile,6
+Gin Tropical,gin-tonic-special,visibile,disponibile,6
+Gin Lemon,gin-lemon,visibile,disponibile,6
+Oltrepò Pavese,oltrepo,visibile,disponibile,
+Rosso del Lupo,rosso-del-lupo,visibile,disponibile,26
+"Pinot, spumante extra dry",pinot-extra-dry,visibile,disponibile,
+Quarantalune,quarantalune,visibile,disponibile,35
+Spumante dealcolato,glera-zero,visibile,disponibile,18
+Rosè n°5 Feral,rose-n5,visibile,disponibile,25
+Acqua,acqua,visibile,disponibile,"1,5"
+Bibite,bibite,visibile,disponibile,"4,5"
+Aranciata rossa,frutta-bio,visibile,disponibile,"4,5"
+Kombucha limone,kombucha,visibile,disponibile,4
+Caffè,caffe,visibile,disponibile,"1,5"
+Iced Latte,iced-coffee,visibile,disponibile,4
+Grappe e amari,grappe-amari,visibile,disponibile,4
+Metro del Molino,metro-del-molino,visibile,disponibile,18
+1/2 Metro,mezzo-metro,visibile,disponibile,12

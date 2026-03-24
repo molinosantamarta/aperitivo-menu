@@ -66,7 +66,7 @@ const rows = menu.sections.flatMap((section) =>
       const baseKey = `option_${optionIndex + 1}`;
       row[`${baseKey}_label`] = option.label ?? "";
       row[`${baseKey}_display_label`] = option.displayLabel ?? "";
-      row[`${baseKey}_price`] = option.price ?? "";
+      row[`${baseKey}_price`] = formatSheetPrice(option.price);
     });
 
       return row;
@@ -80,6 +80,21 @@ const csv = [
 
 await writeFile(outputPath, csv);
 console.log(`Creato ${outputPath}`);
+
+function formatSheetPrice(value) {
+  if (value == null || value === "") {
+    return "";
+  }
+
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return String(value);
+  }
+
+  return Number.isInteger(numericValue)
+    ? String(numericValue)
+    : String(numericValue).replace(".", ",");
+}
 
 function escapeCsv(value) {
   const text = String(value);

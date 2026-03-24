@@ -24,7 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260322h";
+  const APP_VERSION = "20260324a";
+  const APP_BUILD_LABEL = "V.1.0";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -355,6 +356,7 @@
   const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
   const appLoaderPercent = document.querySelector("#appLoaderPercent");
   const appLoaderMessage = document.querySelector("#appLoaderMessage");
+  const appLoaderBuild = document.querySelector("#appLoaderBuild");
   const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
   const promoAgriViewport = document.querySelector("#promoAgriViewport");
   const promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
@@ -370,6 +372,9 @@
   const formatShowcaseTitle = document.querySelector("#formatShowcaseTitle");
   const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
   const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
+  if (appLoaderBuild) {
+    appLoaderBuild.textContent = APP_BUILD_LABEL;
+  }
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();
     refreshSectionNavStickyStart();
