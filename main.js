@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260324f";
-const APP_BUILD_LABEL = "V.1.663";
+const APP_VERSION = "20260324g";
+const APP_BUILD_LABEL = "V.1.664";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -290,7 +290,7 @@ const state = {
 
 const generateSummaryLabel = "Genera riepilogo";
 const editSummaryLabel = "Modifica";
-const defaultCartTitle = "Modifica l'ordine del tavolo";
+const defaultCartTitle = "Modifica l'ordine";
 const generatedCartTitle = "Siamo pronti per ordinare...";
 let isCartSummaryView = false;
 
@@ -3775,11 +3775,19 @@ function getGeneratedCartEntryDetail(entry) {
     return "";
   }
 
+  if (entry.itemId === "caffe") {
+    return "";
+  }
+
   if (entry.itemId === "grappe-amari") {
     return getDigestifEntrySubtitle(item, entry.optionLabel);
   }
 
   const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+  if (item && isBottleSectionItem(item) && normalizeLabel(configuration.optionLabel) === "calice") {
+    return "";
+  }
+
   const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
   if (!hasMeaningfulOptions) {
     return "";
@@ -3798,11 +3806,22 @@ function getGeneratedCartEntryTitle(entry) {
     return entry.name;
   }
 
+  if (entry.itemId === "caffe" && entry.optionLabel) {
+    return `Caffè ${entry.optionLabel}`;
+  }
+
   if (entry.itemId === "grappe-amari" && entry.optionLabel) {
     return entry.optionLabel;
   }
 
   const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+  if (item && isBottleSectionItem(item) && normalizeLabel(configuration.optionLabel) === "calice") {
+    const glassSubject = configuration.selectionLabels.length > 0
+      ? configuration.selectionLabels.join(" · ")
+      : item.name;
+    return `Calice di ${glassSubject}`;
+  }
+
   if (configuration.selectionLabels.length > 0) {
     return configuration.selectionLabels.join(" · ");
   }
@@ -3812,20 +3831,7 @@ function getGeneratedCartEntryTitle(entry) {
 
 function getDigestifEntrySubtitle(item, optionLabel) {
   const option = findItemOptionByLabel(item, optionLabel);
-  if (option?.subtitle) {
-    return option.subtitle;
-  }
-
-  const normalizedLabel = normalizeLabel(optionLabel);
-  if (normalizedLabel.startsWith("grappa")) {
-    return "Grappa";
-  }
-
-  if (["limoncello", "liquirizia", "mirto"].includes(normalizedLabel)) {
-    return "Liquore";
-  }
-
-  return "Amaro";
+  return option?.subtitle || "";
 }
 
 function getCartEntryConfigurationParts(item, optionLabel) {
