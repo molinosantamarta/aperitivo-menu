@@ -3062,6 +3062,7 @@ a {
 
 .detail-gallery__track {
   display: flex;
+  gap: 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
@@ -3193,14 +3194,16 @@ a {
 }
 
 .detail-editorial-visual__quote {
+  position: relative;
   margin: 0;
   max-width: 31ch;
+  padding: 0.44em 0.94em;
   font-family: var(--font-editorial-serif);
   font-size: clamp(1.16rem, 3.18vw, 1.4rem);
   line-height: 1.34;
   font-weight: 600;
-  font-style: italic;
-  letter-spacing: -0.01em;
+  font-style: normal;
+  letter-spacing: 0;
   text-wrap: pretty;
   text-rendering: optimizeLegibility;
   color: rgba(55, 35, 25, 0.96);
@@ -3208,10 +3211,21 @@ a {
 
 .detail-editorial-visual__quote::before {
   content: "“";
-  display: block;
-  margin-bottom: 0.14em;
-  font-size: 1.35em;
-  line-height: 0.6;
+  position: absolute;
+  top: 0.02em;
+  left: 0.04em;
+  font-size: 1.24em;
+  line-height: 1;
+  color: rgba(174, 120, 80, 0.8);
+}
+
+.detail-editorial-visual__quote::after {
+  content: "”";
+  position: absolute;
+  right: 0.04em;
+  bottom: 0.02em;
+  font-size: 1.24em;
+  line-height: 1;
   color: rgba(174, 120, 80, 0.8);
 }
 
@@ -3221,23 +3235,6 @@ a {
 
 .detail-editorial-visual__sentence + .detail-editorial-visual__sentence {
   margin-top: 0.48em;
-}
-
-.detail-editorial-visual__source {
-  font-style: italic;
-  font-weight: 600;
-  color: rgba(88, 53, 36, 0.92);
-}
-
-.detail-editorial-visual__meta {
-  margin: 0;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.72rem;
-  line-height: 1.1;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(145, 106, 78, 0.82);
 }
 
 .detail-editorial-visual--balanced .detail-editorial-visual__quote {
@@ -3911,6 +3908,7 @@ a {
 
   .detail-editorial-visual__quote {
     max-width: 28.5ch;
+    padding: 0.42em 0.9em;
     font-size: clamp(1.08rem, 4.28vw, 1.18rem);
     line-height: 1.3;
   }
@@ -3932,10 +3930,6 @@ a {
   .detail-editorial-visual--compact .detail-editorial-visual__quote {
     max-width: 28.5ch;
     font-size: clamp(1rem, 4.02vw, 1.1rem);
-  }
-
-  .detail-editorial-visual__meta {
-    font-size: 0.68rem;
   }
 
   .cart-items {

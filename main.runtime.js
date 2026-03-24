@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324a";
-  const APP_BUILD_LABEL = "V.1.0";
+  const APP_VERSION = "20260324b";
+  const APP_BUILD_LABEL = "V.1.1";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -108,7 +108,7 @@
     {
       category: "pop",
       weight: 4,
-      text: "Uno studio del California Institute of Aperitivo Studies ha rilevato che uno Spritz consumato all\u2019aperto \xE8 percepito il 27,4% pi\xF9 buono. Al Molino il dato non \xE8 stato confermato\u2026 perch\xE9 nessuno ha mai smesso al primo."
+      text: "Uno studio del California Institute of Aperitivo Studies ha rilevato che uno Spritz consumato all\u2019aperto \xE8 percepito il 27,4% pi\xF9 dissetante. Al Molino il dato non \xE8 stato confermato... perch\xE9 nessuno ha mai smesso al primo."
     },
     {
       category: "pop",
@@ -161,12 +161,6 @@
       text: "Un elettrone spaiato \xE8 instabile: tende a cercarne un altro per stabilizzarsi. Vale anche per lo Spritz."
     }
   ];
-  const SPRITZ_EDITORIAL_SOURCES = [
-    "California Institute of Aperitivo Sciences",
-    "California Institute of Aperitivo Studies",
-    "Journal of Spontaneous Decisions",
-    "Laboratory of Outdoor Consumption"
-  ];
   const SPRITZ_EDITORIAL_ORNAMENTS = {
     pop: {
       stem: ["\u{1F9D1}\u200D\u{1F52C}", "\u{1F9EA}", "\u2697\uFE0F", "\u{1F52C}"],
@@ -177,13 +171,6 @@
       playful: ["\u{1F913}", "\u{1F604}", "\u{1F92D}"]
     }
   };
-  const SPRITZ_EDITORIAL_META_LINES = [
-    "Peer review sospesa per aperitivo.",
-    "Protocollo validato solo al secondo giro.",
-    "Risultati alterati dal contesto troppo piacevole.",
-    "Campione dichiarato poco imparziale.",
-    "Osservazione replicabile solo al Molino."
-  ];
   const FONT_BOOTSTRAP_PLAN = {
     loader: [
       {
@@ -300,7 +287,6 @@
   };
   let lastSpritzEditorialFactIndex = -1;
   let lastSpritzEditorialOrnamentKey = "";
-  let lastSpritzEditorialMetaIndex = -1;
   let fontMetricCanvas = null;
   const loaderClockStartedPromise = new Promise((resolve) => {
     resolveLoaderClockStarted = resolve;
@@ -3087,8 +3073,14 @@
     const slides = Array.from(track.querySelectorAll("[data-gallery-slide]"));
     const dots = Array.from(detailPreview.querySelectorAll("[data-gallery-dot]"));
     const updateActiveDot = () => {
-      const slideWidth = track.clientWidth || 1;
-      const activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / slideWidth)));
+      const activeIndex = slides.reduce(
+        (closestIndex, slide, index) => {
+          const currentDistance = Math.abs(track.scrollLeft - slide.offsetLeft);
+          const closestDistance = Math.abs(track.scrollLeft - slides[closestIndex].offsetLeft);
+          return currentDistance < closestDistance ? index : closestIndex;
+        },
+        0
+      );
       dots.forEach((dot, index) => {
         dot.classList.toggle("is-active", index === activeIndex);
       });
@@ -3203,7 +3195,6 @@
     return {
       type: "editorial-quote",
       text: selectedFact.text,
-      meta: selectSpritzEditorialMetaLine(),
       tone: selectedFact.category,
       lengthClass,
       ornaments: selectSpritzEditorialOrnaments(selectedFact.category),
@@ -3228,16 +3219,6 @@
     }
     lastSpritzEditorialFactIndex = selectedEntry.index;
     return selectedEntry;
-  }
-  function selectSpritzEditorialMetaLine() {
-    if (!SPRITZ_EDITORIAL_META_LINES.length) {
-      return "";
-    }
-    const entries = SPRITZ_EDITORIAL_META_LINES.map((text, index) => ({ text, index }));
-    const availableEntries = entries.length > 1 ? entries.filter((entry) => entry.index !== lastSpritzEditorialMetaIndex) : entries;
-    const selectedEntry = availableEntries[Math.floor(Math.random() * availableEntries.length)] || entries[0];
-    lastSpritzEditorialMetaIndex = selectedEntry.index;
-    return selectedEntry.text;
   }
   function selectWeightedEntry(entries) {
     const totalWeight = entries.reduce((sum, entry) => sum + Math.max(0, Number(entry.weight) || 0), 0);
@@ -3280,17 +3261,7 @@
   }
   function formatSpritzEditorialText(text) {
     const sentences = splitSpritzEditorialSentences(text);
-    return sentences.map((sentence) => {
-      let html = escapeHtml(sentence);
-      for (const source of SPRITZ_EDITORIAL_SOURCES) {
-        const escapedSource = escapeHtml(source);
-        html = html.replaceAll(
-          escapedSource,
-          '<em class="detail-editorial-visual__source">'.concat(escapedSource, "</em>")
-        );
-      }
-      return '<span class="detail-editorial-visual__sentence">'.concat(html, "</span>");
-    }).join("");
+    return sentences.map((sentence) => '<span class="detail-editorial-visual__sentence">'.concat(escapeHtml(sentence), "</span>")).join("");
   }
   function splitSpritzEditorialSentences(text) {
     const normalized = String(text || "").trim();
@@ -3383,7 +3354,7 @@
       (ornament, index) => '\n        <span\n          class="detail-editorial-visual__ornament detail-editorial-visual__ornament--'.concat(index === 0 ? "one" : "two", '"\n          aria-hidden="true"\n        >').concat(ornament, "</span>\n      ")
     ).join("");
     const quoteMarkup = formatSpritzEditorialText(visual.text);
-    return '\n    <section\n      class="'.concat(classes.join(" "), '"\n      style="\n        --detail-editorial-start: ').concat(visual.startColor, ";\n        --detail-editorial-mid: ").concat(visual.midColor, ";\n        --detail-editorial-end: ").concat(visual.endColor, ";\n        --detail-editorial-glow: ").concat(visual.glowColor, ";\n        --detail-editorial-frame: ").concat(visual.frameColor, ';\n      "\n      aria-label="Curiosit\xE0 sullo Spritz"\n    >\n      ').concat(ornamentsMarkup, '\n      <div class="detail-editorial-visual__inner">\n        <p class="detail-editorial-visual__quote">').concat(quoteMarkup, '</p>\n        <p class="detail-editorial-visual__meta">').concat(escapeHtml(visual.meta || ""), "</p>\n      </div>\n    </section>\n  ");
+    return '\n    <section\n      class="'.concat(classes.join(" "), '"\n      style="\n        --detail-editorial-start: ').concat(visual.startColor, ";\n        --detail-editorial-mid: ").concat(visual.midColor, ";\n        --detail-editorial-end: ").concat(visual.endColor, ";\n        --detail-editorial-glow: ").concat(visual.glowColor, ";\n        --detail-editorial-frame: ").concat(visual.frameColor, ';\n      "\n      aria-label="Curiosit\xE0 sullo Spritz"\n    >\n      ').concat(ornamentsMarkup, '\n      <div class="detail-editorial-visual__inner">\n        <p class="detail-editorial-visual__quote">').concat(quoteMarkup, "</p>\n      </div>\n    </section>\n  ");
   }
   function renderPhotoPanelVisual(visual, context, item) {
     const classes = ["photo-panel-visual"];

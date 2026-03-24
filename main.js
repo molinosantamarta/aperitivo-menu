@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260324a";
-const APP_BUILD_LABEL = "V.1.0";
+const APP_VERSION = "20260324b";
+const APP_BUILD_LABEL = "V.1.1";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -91,7 +91,7 @@ const SPRITZ_EDITORIAL_FACTS = [
   {
     category: "pop",
     weight: 4,
-    text: "Uno studio del California Institute of Aperitivo Studies ha rilevato che uno Spritz consumato all’aperto è percepito il 27,4% più buono. Al Molino il dato non è stato confermato… perché nessuno ha mai smesso al primo.",
+    text: "Uno studio del California Institute of Aperitivo Studies ha rilevato che uno Spritz consumato all’aperto è percepito il 27,4% più dissetante. Al Molino il dato non è stato confermato... perché nessuno ha mai smesso al primo.",
   },
   {
     category: "pop",
@@ -144,12 +144,6 @@ const SPRITZ_EDITORIAL_FACTS = [
     text: "Un elettrone spaiato è instabile: tende a cercarne un altro per stabilizzarsi. Vale anche per lo Spritz.",
   },
 ];
-const SPRITZ_EDITORIAL_SOURCES = [
-  "California Institute of Aperitivo Sciences",
-  "California Institute of Aperitivo Studies",
-  "Journal of Spontaneous Decisions",
-  "Laboratory of Outdoor Consumption",
-];
 const SPRITZ_EDITORIAL_ORNAMENTS = {
   pop: {
     stem: ["🧑‍🔬", "🧪", "⚗️", "🔬"],
@@ -160,13 +154,6 @@ const SPRITZ_EDITORIAL_ORNAMENTS = {
     playful: ["🤓", "😄", "🤭"],
   },
 };
-const SPRITZ_EDITORIAL_META_LINES = [
-  "Peer review sospesa per aperitivo.",
-  "Protocollo validato solo al secondo giro.",
-  "Risultati alterati dal contesto troppo piacevole.",
-  "Campione dichiarato poco imparziale.",
-  "Osservazione replicabile solo al Molino.",
-];
 
 // Real font dependencies for the current UI. Keeping the source + selector map
 // here makes the bootstrap easier to maintain when CSS evolves.
@@ -286,7 +273,6 @@ let loaderCardRevealPromise = null;
 let resolveLoaderClockStarted = () => {};
 let lastSpritzEditorialFactIndex = -1;
 let lastSpritzEditorialOrnamentKey = "";
-let lastSpritzEditorialMetaIndex = -1;
 let fontMetricCanvas = null;
 const loaderClockStartedPromise = new Promise((resolve) => {
   resolveLoaderClockStarted = resolve;
@@ -4071,8 +4057,14 @@ function setupDetailGallery() {
   const dots = Array.from(detailPreview.querySelectorAll("[data-gallery-dot]"));
 
   const updateActiveDot = () => {
-    const slideWidth = track.clientWidth || 1;
-    const activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / slideWidth)));
+    const activeIndex = slides.reduce(
+      (closestIndex, slide, index) => {
+        const currentDistance = Math.abs(track.scrollLeft - slide.offsetLeft);
+        const closestDistance = Math.abs(track.scrollLeft - slides[closestIndex].offsetLeft);
+        return currentDistance < closestDistance ? index : closestIndex;
+      },
+      0
+    );
 
     dots.forEach((dot, index) => {
       dot.classList.toggle("is-active", index === activeIndex);
@@ -4224,7 +4216,6 @@ function buildDetailEditorialSlide(item) {
   return {
     type: "editorial-quote",
     text: selectedFact.text,
-    meta: selectSpritzEditorialMetaLine(),
     tone: selectedFact.category,
     lengthClass,
     ornaments: selectSpritzEditorialOrnaments(selectedFact.category),
@@ -4257,23 +4248,6 @@ function selectSpritzEditorialFact() {
 
   lastSpritzEditorialFactIndex = selectedEntry.index;
   return selectedEntry;
-}
-
-function selectSpritzEditorialMetaLine() {
-  if (!SPRITZ_EDITORIAL_META_LINES.length) {
-    return "";
-  }
-
-  const entries = SPRITZ_EDITORIAL_META_LINES.map((text, index) => ({ text, index }));
-  const availableEntries =
-    entries.length > 1
-      ? entries.filter((entry) => entry.index !== lastSpritzEditorialMetaIndex)
-      : entries;
-  const selectedEntry =
-    availableEntries[Math.floor(Math.random() * availableEntries.length)] || entries[0];
-
-  lastSpritzEditorialMetaIndex = selectedEntry.index;
-  return selectedEntry.text;
 }
 
 function selectWeightedEntry(entries) {
@@ -4340,19 +4314,7 @@ function formatSpritzEditorialText(text) {
   const sentences = splitSpritzEditorialSentences(text);
 
   return sentences
-    .map((sentence) => {
-      let html = escapeHtml(sentence);
-
-      for (const source of SPRITZ_EDITORIAL_SOURCES) {
-        const escapedSource = escapeHtml(source);
-        html = html.replaceAll(
-          escapedSource,
-          `<em class="detail-editorial-visual__source">${escapedSource}</em>`
-        );
-      }
-
-      return `<span class="detail-editorial-visual__sentence">${html}</span>`;
-    })
+    .map((sentence) => `<span class="detail-editorial-visual__sentence">${escapeHtml(sentence)}</span>`)
     .join("");
 }
 
@@ -4559,7 +4521,6 @@ function renderEditorialQuoteVisual(visual, context) {
       ${ornamentsMarkup}
       <div class="detail-editorial-visual__inner">
         <p class="detail-editorial-visual__quote">${quoteMarkup}</p>
-        <p class="detail-editorial-visual__meta">${escapeHtml(visual.meta || "")}</p>
       </div>
     </section>
   `;
