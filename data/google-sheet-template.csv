@@ -22,7 +22,7 @@ rose-n5,bottiglie,5,si,si,Rosè n°5 Feral,"Rosè di erbe ribelli, fermentazione
 acqua,altre-bevande,0,si,si,Acqua,"Naturale o frizzante, bottiglia 50 cl.",Altre bevande,,,1.5,,,,,,,si,inherit,,,,,,,
 bibite,altre-bevande,1,si,si,Bibite,"Coca-Cola, Coca Zero, Estathè Limone o Pesca. 33 cl.",Altre bevande,,,4,,,,,,,si,inherit,,,,,,,
 frutta-bio,altre-bevande,2,si,si,Aranciata rossa,"Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula. 27,5 cl.",Altre bevande,,,4.5,,,,,,,si,inherit,,,,,,,
-kombucha,altre-bevande,3,si,si,Kombucha limone,"Tè fermentato frizzante, analcolico, gusto limone.",Artigianale,,,4,,,,,,,si,inherit,,,,,,,
+kombucha,altre-bevande,3,si,si,Kombucha limone,"Tè fermentato frizzante, analcolico, gusto limone.",Artigianale,,,4.5,,,,,,,si,inherit,,,,,,,
 caffe,altre-bevande,4,si,si,Caffè,"Normale, lungo, orzo, decaffeinato o macchiato.",Altre bevande,Normale,,1.5,Lungo,,1.5,Orzo,,1.5,si,inherit,,,,,,,
 iced-coffee,altre-bevande,5,si,si,Iced Latte,"Caffè shakerato freddo con latte nostrano, cremoso e dissetante.",Altre bevande,,,4,,,,,,,si,inherit,,,,,,,
 grappe-amari,altre-bevande,6,si,si,Grappe e amari,"Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta.",Altre bevande,Amaro alle erbe Molino Santa Marta,,4,Amaro del Capo,,4,Averna,,4,si,inherit,,,,,,,

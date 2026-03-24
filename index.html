@@ -38,6 +38,13 @@
     />
     <link
       rel="preload"
+      href="./fonts/housky-demo.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link
+      rel="preload"
       href="./fonts/factually-handwriting.otf"
       as="font"
       type="font/otf"
@@ -45,9 +52,8 @@
     />
     <link
       rel="preload"
-      href="./fonts/housky-demo.ttf"
+      href="./fonts/sign-painter.ttc"
       as="font"
-      type="font/ttf"
       crossorigin
     />
     <link
@@ -479,6 +485,7 @@
         <div class="sheet-preview" id="detailPreview"></div>
         <h2 id="detailTitle"></h2>
         <p class="sheet-description" id="detailDescription"></p>
+        <div class="detail-meta" id="detailMeta" hidden></div>
         <div class="option-list" id="detailOptions"></div>
         <div class="detail-quantity" id="detailQuantity"></div>
         <div class="sheet-actions">
@@ -499,7 +506,7 @@
         <button class="sheet-close" id="closeCart" type="button" aria-label="Chiudi">
           ✕
         </button>
-        <p class="sheet-kicker" id="cartKicker">Riepilogo per il tavolo</p>
+        <p class="sheet-kicker" id="cartKicker">Riepilogo del tavolo</p>
         <h2 id="cartTitle">Da comunicare al cameriere</h2>
         <div class="cart-empty" id="cartEmpty">
           <p class="cart-empty__lead">
@@ -517,10 +524,13 @@
             <strong id="cartTotal">0 prodotti</strong>
           </div>
           <div class="cart-footer__actions">
-            <button class="utility-btn utility-btn--accent" id="toggleSummaryView" type="button">
+            <button class="utility-btn utility-btn--accent" id="saveCart" type="button">
+              Salva e continua
+            </button>
+            <button class="utility-btn utility-btn--secondary" id="toggleSummaryView" type="button">
               Genera riepilogo
             </button>
-            <button class="utility-btn" id="clearCart" type="button">
+            <button class="utility-btn utility-btn--ghost" id="clearCart" type="button">
               Svuota tutto
             </button>
           </div>

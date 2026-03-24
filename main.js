@@ -69,6 +69,103 @@ const SECTION_SURFACE_COLORS = {
   gelato: "#789556",
   taglieri: "#bf8550",
 };
+// Weighted list so the most immediate lines surface more often,
+// while the nerdier ones stay rarer and feel like a real easter egg.
+const SPRITZ_EDITORIAL_FACTS = [
+  {
+    category: "pop",
+    weight: 4,
+    text: "Il bilanciamento tra acidità e dolcezza determina la bevibilità. Il contesto del Molino determina quante volte lo ordini.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "Secondo uno studio del California Institute of Aperitivo Sciences, lo Spritz bevuto all’aperto è percepito il 27% più buono. Qui al Molino saliamo al 41%.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "Studi indipendenti dimostrano che uno Spritz nel verde riduce lo stress. Al Molino abbiamo osservato anche una riduzione della voglia di tornare a casa.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "Uno studio del California Institute of Aperitivo Studies ha rilevato che uno Spritz consumato all’aperto è percepito il 27,4% più buono. Al Molino il dato non è stato confermato… perché nessuno ha mai smesso al primo.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "I dati suggeriscono che il gusto dello Spritz migliora in funzione del contesto. Al Molino la variabile dominante è il tempo: rallenta.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "In condizioni standard (25°C, zero traffico, aria buona, persone giuste), lo Spritz mostra performance significativamente superiori. Il test è replicabile qui.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "La probabilità di apprezzare uno Spritz aumenta all’aperto. Al Molino aumenta anche la probabilità di restare.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "Studio preliminare del Laboratory of Outdoor Consumption: Spritz + aria aperta → aumento del piacere percepito del 26,8%. Variabile fuori controllo: il secondo giro.",
+  },
+  {
+    category: "pop",
+    weight: 4,
+    text: "Secondo il Journal of Spontaneous Decisions, dopo il primo Spritz aumenta del 42% la probabilità di restare. Dopo il secondo il campione collabora troppo.",
+  },
+  {
+    category: "nerd",
+    weight: 1,
+    text: "Il costo marginale del primo Spritz è alto. Dal secondo in poi smetti di considerarlo.",
+  },
+  {
+    category: "nerd",
+    weight: 1,
+    text: "Dopo il primo Spritz sei in moto. Fermarsi richiede una forza esterna.",
+  },
+  {
+    category: "nerd",
+    weight: 1,
+    text: "Ogni reazione ha bisogno di energia di attivazione. Il primo Spritz la abbassa.",
+  },
+  {
+    category: "nerd",
+    weight: 1,
+    text: "Senza elicasi il DNA resta chiuso. Senza il primo Spritz, anche tu.",
+  },
+  {
+    category: "nerd",
+    weight: 1,
+    text: "Un elettrone spaiato è instabile: tende a cercarne un altro per stabilizzarsi. Vale anche per lo Spritz.",
+  },
+];
+const SPRITZ_EDITORIAL_SOURCES = [
+  "California Institute of Aperitivo Sciences",
+  "California Institute of Aperitivo Studies",
+  "Journal of Spontaneous Decisions",
+  "Laboratory of Outdoor Consumption",
+];
+const SPRITZ_EDITORIAL_ORNAMENTS = {
+  pop: {
+    stem: ["🧑‍🔬", "🧪", "⚗️", "🔬"],
+    playful: ["😄", "🤭", "🤪"],
+  },
+  nerd: {
+    stem: ["🧑‍🔬", "🔬", "⚗️", "🧪"],
+    playful: ["🤓", "😄", "🤭"],
+  },
+};
+const SPRITZ_EDITORIAL_META_LINES = [
+  "Peer review sospesa per aperitivo.",
+  "Protocollo validato solo al secondo giro.",
+  "Risultati alterati dal contesto troppo piacevole.",
+  "Campione dichiarato poco imparziale.",
+  "Osservazione replicabile solo al Molino.",
+];
 
 // Real font dependencies for the current UI. Keeping the source + selector map
 // here makes the bootstrap easier to maintain when CSS evolves.
@@ -78,6 +175,11 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Lulo Clean",
       descriptor: '700 1rem "Lulo Clean"',
       sample: "DOMENICA AL MOLINO",
+      verifyMetrics: true,
+      metricDescriptor: '700 48px "Lulo Clean", "Montserrat", sans-serif',
+      metricFallbackDescriptor: '700 48px "Montserrat", sans-serif',
+      metricSample: "DOMENICA AL MOLINO MENU DIGITALE APERITIVO ARTIGIANALE",
+      metricMinDelta: 12,
       selectors: "loader title, hero headings, section titles",
       source: "local preload",
     },
@@ -94,6 +196,11 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Housky Demo",
       descriptor: '400 1rem "Housky Demo"',
       sample: "al Molino",
+      verifyMetrics: true,
+      metricDescriptor: '400 52px "Housky Demo", Georgia, serif',
+      metricFallbackDescriptor: '400 52px Georgia, serif',
+      metricSample: "al Molino domenica nel parco",
+      metricMinDelta: 10,
       selectors: "hero connector wordmark and decorative script accents",
       source: "local preload",
     },
@@ -101,6 +208,11 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Factually Handwriting",
       descriptor: '400 1rem "Factually Handwriting"',
       sample: "Aperitivo e agrigelato",
+      verifyMetrics: true,
+      metricDescriptor: '400 46px "Factually Handwriting", "Times New Roman", serif',
+      metricFallbackDescriptor: '400 46px "Times New Roman", serif',
+      metricSample: "agrigelato e aperitivo domenica al molino",
+      metricMinDelta: 10,
       selectors: "subtitles, descriptive script accents",
       source: "local preload",
     },
@@ -108,6 +220,11 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "SignPainter",
       descriptor: '400 1rem "SignPainter"',
       sample: "Iced Latte Tropical",
+      verifyMetrics: true,
+      metricDescriptor: '400 50px "SignPainter", Georgia, serif',
+      metricFallbackDescriptor: '400 50px Georgia, serif',
+      metricSample: "Spritz Tropical Iced Latte Bianchina",
+      metricMinDelta: 10,
       selectors: "beer-script visuals and label treatments",
       source: "local file",
     },
@@ -141,6 +258,10 @@ const REQUIRED_FONT_PLANS = dedupeFontPlans([
   ...FONT_BOOTSTRAP_PLAN.loader,
   ...FONT_BOOTSTRAP_PLAN.critical,
 ]);
+const BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(isCustomBlockingFontPlan);
+const NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(
+  (plan) => !isCustomBlockingFontPlan(plan)
+);
 const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
 
 let sections = [];
@@ -162,6 +283,10 @@ let appHasRevealed = false;
 let lastFocusedElement = null;
 let loaderCardRevealPromise = null;
 let resolveLoaderClockStarted = () => {};
+let lastSpritzEditorialFactIndex = -1;
+let lastSpritzEditorialOrnamentKey = "";
+let lastSpritzEditorialMetaIndex = -1;
+let fontMetricCanvas = null;
 const loaderClockStartedPromise = new Promise((resolve) => {
   resolveLoaderClockStarted = resolve;
 });
@@ -171,6 +296,7 @@ const state = {
   selectedOptionIndex: 0,
   selectedSelections: {},
   selectedQuantity: 1,
+  detailEditorialSlide: null,
   cart: loadCart(),
 };
 
@@ -193,6 +319,7 @@ const cartTitle = document.querySelector("#cartTitle");
 const detailCategory = document.querySelector("#detailCategory");
 const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
+const detailMeta = document.querySelector("#detailMeta");
 const detailOptions = document.querySelector("#detailOptions");
 const detailQuantity = document.querySelector("#detailQuantity");
 const addToCartButton = document.querySelector("#addToCart");
@@ -205,6 +332,7 @@ const cartGenerated = document.querySelector("#cartGenerated");
 const cartFooter = document.querySelector("#cartFooter");
 const cartTotalBlock = cartFooter.querySelector(".cart-total");
 const cartTotal = document.querySelector("#cartTotal");
+const saveCartButton = document.querySelector("#saveCart");
 const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
@@ -277,8 +405,9 @@ addToCartButton.addEventListener("click", () => {
 
   if (existing) {
     existing.quantity += state.selectedQuantity;
+    moveCartEntryToFront(entryId);
   } else {
-    state.cart.push({
+    state.cart.unshift({
       entryId,
       itemId: item.id,
       name: item.name,
@@ -304,6 +433,10 @@ toggleSummaryViewButton.addEventListener("click", () => {
   blurActiveElement();
   isCartSummaryView = !isCartSummaryView;
   renderCart();
+});
+
+saveCartButton.addEventListener("click", () => {
+  closeCart();
 });
 
 clearCartButton.addEventListener("click", () => {
@@ -1385,40 +1518,68 @@ function parseSheetNumber(value) {
 }
 
 async function waitForRequiredFonts() {
-  if (!("fonts" in document)) {
-    pageBody.classList.remove("fonts-critical-loading");
-    pageBody.classList.add("fonts-critical-ready", "loader-fonts-ready");
-    return;
-  }
+  const blockingMetricPlans = BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
+  const nonBlockingMetricPlans = NON_BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
 
-  await Promise.all(
-    REQUIRED_FONT_PLANS.map((plan) =>
-      waitForFontLoad(plan, {
-        strict: true,
-        timeout: STRICT_FONT_LOAD_TIMEOUT,
-      })
-    )
-  );
+  if ("fonts" in document) {
+    await Promise.all([
+      ...BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
+        waitForFontLoad(plan, {
+          strict: true,
+          persist: true,
+          timeout: STRICT_FONT_LOAD_TIMEOUT,
+        })
+      ),
+      ...NON_BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
+        waitForFontLoad(plan, {
+          timeout: FONT_LOAD_TIMEOUT,
+        })
+      ),
+    ]);
 
-  if (document.fonts.ready) {
-    try {
-      await waitWithTimeout(document.fonts.ready, STRICT_FONT_LOAD_TIMEOUT);
-    } catch (error) {
-      if (!REQUIRED_FONT_PLANS.every((plan) => document.fonts.check(plan.descriptor))) {
-        throw new Error("I font critici della pagina non sono ancora pronti.");
+    if (document.fonts.ready) {
+      try {
+        await waitWithTimeout(document.fonts.ready, STRICT_FONT_LOAD_TIMEOUT);
+      } catch (error) {
+        // Keep going: the blocking custom fonts are verified with dedicated
+        // metric checks below and must resolve before reveal.
       }
     }
   }
+
+  await Promise.all([
+    ...blockingMetricPlans.map((plan) =>
+      waitForFontMetrics(plan, {
+        strict: true,
+        persist: true,
+        timeout: STRICT_FONT_LOAD_TIMEOUT,
+      })
+    ),
+    ...nonBlockingMetricPlans.map((plan) =>
+      waitForFontMetrics(plan, {
+        timeout: FONT_LOAD_TIMEOUT,
+      })
+    ),
+  ]);
 }
 
 async function waitForLoaderFonts() {
-  if (!("fonts" in document) || !LOADER_FONT_PLANS.length) {
-    return;
+  const metricPlans = LOADER_FONT_PLANS.filter((plan) => plan.verifyMetrics);
+
+  if ("fonts" in document && LOADER_FONT_PLANS.length) {
+    await Promise.all(
+      LOADER_FONT_PLANS.map((plan) =>
+        waitForFontLoad(plan, {
+          strict: true,
+          timeout: LOADER_FONT_TIMEOUT,
+        })
+      )
+    );
   }
 
   await Promise.all(
-    LOADER_FONT_PLANS.map((plan) =>
-      waitForFontLoad(plan, {
+    metricPlans.map((plan) =>
+      waitForFontMetrics(plan, {
         strict: true,
         timeout: LOADER_FONT_TIMEOUT,
       })
@@ -1427,7 +1588,7 @@ async function waitForLoaderFonts() {
 }
 
 async function waitForFontLoad(fontPlan, options = {}) {
-  const { strict = false, timeout = FONT_LOAD_TIMEOUT } = options;
+  const { strict = false, persist = false, timeout = FONT_LOAD_TIMEOUT } = options;
   const deadline = performance.now() + timeout;
   const descriptor = fontPlan.descriptor;
   const sample = fontPlan.sample || "BESbswy 0123456789";
@@ -1451,6 +1612,11 @@ async function waitForFontLoad(fontPlan, options = {}) {
 
     if (performance.now() >= deadline) {
       if (strict) {
+        if (persist) {
+          await wait(220);
+          continue;
+        }
+
         throw new Error(`Timeout nel caricamento del font critico: ${fontPlan.family}`);
       }
 
@@ -1460,6 +1626,98 @@ async function waitForFontLoad(fontPlan, options = {}) {
 
     await wait(140);
   }
+}
+
+async function waitForFontMetrics(fontPlan, options = {}) {
+  if (!fontPlan?.verifyMetrics) {
+    return;
+  }
+
+  const { strict = false, persist = false, timeout = FONT_LOAD_TIMEOUT } = options;
+  const deadline = performance.now() + timeout;
+
+  while (true) {
+    if (isFontMetricReady(fontPlan)) {
+      return;
+    }
+
+    if ("fonts" in document && document.fonts?.load) {
+      try {
+        await waitWithTimeout(
+          document.fonts.load(
+            fontPlan.metricDescriptor || fontPlan.descriptor,
+            fontPlan.metricSample || fontPlan.sample || "BESbswy 0123456789"
+          ),
+          1800
+        );
+      } catch (error) {
+        if (strict && performance.now() >= deadline) {
+          throw new Error(`Timeout nella verifica metrica del font: ${fontPlan.family}`);
+        }
+      }
+    }
+
+    if (isFontMetricReady(fontPlan)) {
+      return;
+    }
+
+    if (performance.now() >= deadline) {
+      if (strict) {
+        if (persist) {
+          await wait(220);
+          continue;
+        }
+
+        throw new Error(`Metriche del font non confermate: ${fontPlan.family}`);
+      }
+
+      console.warn(`Metriche del font non confermate: ${fontPlan.family}`);
+      return;
+    }
+
+    await wait(120);
+  }
+}
+
+function isFontMetricReady(fontPlan) {
+  const sample = fontPlan.metricSample || fontPlan.sample || "BESbswy 0123456789";
+  const primaryDescriptor =
+    fontPlan.metricDescriptor || `${fontPlan.descriptor}, "Montserrat", sans-serif`;
+  const fallbackDescriptor =
+    fontPlan.metricFallbackDescriptor || '700 48px "Montserrat", sans-serif';
+  const isDeclaredReady =
+    "fonts" in document ? document.fonts.check(fontPlan.descriptor, sample) : true;
+
+  if (!isDeclaredReady) {
+    return false;
+  }
+
+  const primaryWidth = measureFontTextWidth(primaryDescriptor, sample);
+  const fallbackWidth = measureFontTextWidth(fallbackDescriptor, sample);
+
+  if (primaryWidth == null || fallbackWidth == null) {
+    return isDeclaredReady;
+  }
+
+  return Math.abs(primaryWidth - fallbackWidth) >= (fontPlan.metricMinDelta || 1);
+}
+
+function measureFontTextWidth(fontDescriptor, sample) {
+  if (!fontDescriptor || !sample || !("document" in window)) {
+    return null;
+  }
+
+  if (!fontMetricCanvas) {
+    fontMetricCanvas = document.createElement("canvas");
+  }
+
+  const context = fontMetricCanvas.getContext("2d");
+  if (!context) {
+    return null;
+  }
+
+  context.font = fontDescriptor;
+  return context.measureText(sample).width;
 }
 
 async function waitMinimumLoaderTime(duration) {
@@ -1751,6 +2009,10 @@ function dedupeFontPlans(plans) {
     seen.add(plan.descriptor);
     return true;
   });
+}
+
+function isCustomBlockingFontPlan(plan) {
+  return Boolean(plan?.source && /^local\b/i.test(plan.source));
 }
 
 function revealApp() {
@@ -2905,6 +3167,15 @@ function isDrinkItem(item) {
   return findSectionTitleForItem(item.id).toLowerCase() === "drink";
 }
 
+function isSpritzItem(item) {
+  if (!item) {
+    return false;
+  }
+
+  const visualScript = String(item.visual?.script || "").trim().toLowerCase();
+  return visualScript === "spritz" || /spritz/i.test(String(item.name || ""));
+}
+
 function isBottleSectionItem(item) {
   return findSectionTitleForItem(item.id).toLowerCase() === "bottiglie";
 }
@@ -2950,17 +3221,14 @@ function openDetail(itemId) {
   initializeDetailState(item);
   detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
   detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
+  detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
+  detailPanel.classList.toggle("sheet-panel--can-selector", shouldUseCanSelectorLayout(item));
   detailPanel.scrollTop = 0;
   detailCategory.textContent = formatDetailCategoryLabel(item);
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
-  detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}${
-    hasDetailGallery(item) ? " sheet-preview--gallery" : ""
-  }${
-    isArtisanalBeerItem(item) || isDrinkItem(item) ? " sheet-preview--beer-script-framed" : ""
-  }`;
-  detailPreview.innerHTML = renderDetailPreview(item);
-  setupDetailGallery();
+  renderDetailMeta(item);
+  refreshDetailPreview(item);
   renderOptions(item);
   renderQuantityControl();
   detailSheet.classList.add("is-open");
@@ -2973,9 +3241,78 @@ function closeDetail(options = {}) {
   const { restoreFocus = true } = options;
   detailPanel.classList.remove("sheet-panel--selection-groups");
   detailPanel.classList.remove("sheet-panel--long-options");
+  detailPanel.classList.remove("sheet-panel--compact-options");
+  detailPanel.classList.remove("sheet-panel--can-selector");
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   syncModalOpenState({ restoreFocus });
+}
+
+function renderDetailMeta(item) {
+  if (!detailMeta) {
+    return;
+  }
+
+  const mention = item?.producerMention;
+  const resources = Array.isArray(item?.producerResources)
+    ? item.producerResources.filter((resource) => resource && resource.href && resource.label)
+    : [];
+
+  if ((!mention || !mention.handle || !mention.href) && resources.length === 0) {
+    detailMeta.innerHTML = "";
+    detailMeta.hidden = true;
+    return;
+  }
+
+  const parts = [];
+
+  if (mention && mention.handle && mention.href) {
+    const normalizedHandle = String(mention.handle).trim().replace(/^@+/, "");
+    const safeHandle = escapeHtml(normalizedHandle);
+    const safeHref = escapeHtml(mention.href);
+    const safeAria = escapeHtml(
+      mention.ariaLabel || `Apri il profilo Instagram @${normalizedHandle}`
+    );
+
+    parts.push(`
+      <a
+        class="producer-mention"
+        href="${safeHref}"
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="${safeAria}"
+      >
+        <span class="producer-mention__at" aria-hidden="true">@</span>
+        <span class="producer-mention__handle">${safeHandle}</span>
+      </a>
+    `);
+  }
+
+  resources.forEach((resource) => {
+    const safeHref = escapeHtml(resource.href);
+    const safeLabel = escapeHtml(resource.label);
+    const safeAria = escapeHtml(resource.ariaLabel || `Apri ${resource.label}`);
+    const resourceKindClass = resource.kind
+      ? ` producer-resource--${escapeHtml(resource.kind)}`
+      : "";
+    const icon = resource.kind === "video" ? "▶" : "↗";
+
+    parts.push(`
+      <a
+        class="producer-resource${resourceKindClass}"
+        href="${safeHref}"
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="${safeAria}"
+      >
+        <span class="producer-resource__icon" aria-hidden="true">${icon}</span>
+        <span class="producer-resource__label">${safeLabel}</span>
+      </a>
+    `);
+  });
+
+  detailMeta.innerHTML = parts.join("");
+  detailMeta.hidden = false;
 }
 
 function openCart() {
@@ -3022,6 +3359,7 @@ function renderOptions(item) {
       optionButton.innerHTML = `<span class="option-label option-label--solo">${selectionOption.label}</span>`;
       optionButton.addEventListener("click", () => {
         state.selectedSelections[group.id] = index;
+        refreshDetailPreview(item);
         renderOptions(item);
       });
       groupNode.options.append(optionButton);
@@ -3034,19 +3372,32 @@ function renderOptions(item) {
     return;
   }
 
-  const formatGroup = createOptionGroup(selectionGroups.length ? "Formato" : "");
+  const formatGroup = createOptionGroup(
+    selectionGroups.length ? "Formato" : "",
+    shouldUseCompactDetailOptions(item)
+  );
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
     const displayLabel = getOptionModalLabel(item, option);
+    const optionSubtitle = getOptionModalSubtitle(option);
+    const toneClass = getOptionToneClass(option);
+    const layoutClass = getOptionLayoutClass(option);
 
     optionButton.type = "button";
-    optionButton.className = `option-btn${index === state.selectedOptionIndex ? " is-selected" : ""}${
+    optionButton.className = `option-btn${toneClass ? ` ${toneClass}` : ""}${
+      layoutClass ? ` ${layoutClass}` : ""
+    }${
+      optionSubtitle ? " option-btn--with-subtitle" : ""
+    }${index === state.selectedOptionIndex ? " is-selected" : ""}${
       displayLabel ? "" : " option-btn--price-only"
     }`;
     optionButton.innerHTML = displayLabel
       ? `
-          <span class="option-label">${displayLabel}</span>
+          <span class="option-copy">
+            <span class="option-label">${displayLabel}</span>
+            ${optionSubtitle ? `<span class="option-subtitle">${optionSubtitle}</span>` : ""}
+          </span>
           <span class="option-price">${formatPrice(option.price)}</span>
         `
       : `
@@ -3102,10 +3453,27 @@ function initializeDetailState(item) {
   state.selectedOptionIndex = 0;
   state.selectedQuantity = 1;
   state.selectedSelections = {};
+  state.detailEditorialSlide = buildDetailEditorialSlide(item);
 
   getSelectionGroups(item).forEach((group) => {
     state.selectedSelections[group.id] = 0;
   });
+}
+
+function refreshDetailPreview(item) {
+  if (!detailPreview || !item) {
+    return;
+  }
+
+  detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}${
+    hasDetailPreviewGallery(item) ? " sheet-preview--gallery" : ""
+  }${
+    state.detailEditorialSlide ? " sheet-preview--editorial-gallery" : ""
+  }${
+    isArtisanalBeerItem(item) || isDrinkItem(item) ? " sheet-preview--beer-script-framed" : ""
+  }`;
+  detailPreview.innerHTML = renderDetailPreview(item);
+  setupDetailGallery();
 }
 
 function createOptionGroup(label, compact = false) {
@@ -3177,13 +3545,26 @@ function renderCart() {
   cartEmpty.hidden = hasItems;
   cartItems.hidden = !hasItems || showGeneratedSummary;
   cartGenerated.hidden = !showGeneratedSummary;
-  cartFooter.hidden = false;
+  cartFooter.hidden = !hasItems;
   cartTotalBlock.hidden = !hasItems || showGeneratedSummary;
+  saveCartButton.hidden = !hasItems;
   toggleSummaryViewButton.hidden = !hasItems;
   clearCartButton.hidden = !hasItems || showGeneratedSummary;
   toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
+}
+
+function moveCartEntryToFront(entryId) {
+  const entryIndex = state.cart.findIndex((entry) => entry.entryId === entryId);
+  if (entryIndex <= 0) {
+    return;
+  }
+
+  const [entry] = state.cart.splice(entryIndex, 1);
+  if (entry) {
+    state.cart.unshift(entry);
+  }
 }
 
 function updateQuantity(entryId, delta) {
@@ -3479,6 +3860,15 @@ function persistCart() {
   }
 }
 
+function rgbaFromHex(color, alpha) {
+  const rgb = hexToRgb(color);
+  if (!rgb) {
+    return `rgba(255, 176, 120, ${alpha})`;
+  }
+
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+}
+
 function formatPrice(value) {
   return priceFormatter.format(value);
 }
@@ -3568,6 +3958,32 @@ function getOptionModalLabel(item, option) {
   return option.label;
 }
 
+function getOptionModalSubtitle(option) {
+  if (!option || option.subtitle == null) {
+    return "";
+  }
+
+  return String(option.subtitle).trim();
+}
+
+function getOptionToneClass(option) {
+  if (!option || typeof option.tone !== "string") {
+    return "";
+  }
+
+  const normalizedTone = normalizeLabel(option.tone).replace(/\s+/g, "-");
+  return normalizedTone ? `option-btn--${normalizedTone}` : "";
+}
+
+function getOptionLayoutClass(option) {
+  if (!option || typeof option.layout !== "string") {
+    return "";
+  }
+
+  const normalizedLayout = normalizeLabel(option.layout).replace(/\s+/g, "-");
+  return normalizedLayout ? `option-btn--${normalizedLayout}` : "";
+}
+
 function getCardOptionsToDisplay(item) {
   if (!item || !Array.isArray(item.options) || item.options.length <= 1) {
     return item?.options || [];
@@ -3602,6 +4018,20 @@ function hasLongOptionList(item) {
   return Boolean(item && Array.isArray(item.options) && item.options.length >= 6);
 }
 
+function shouldUseCompactDetailOptions(item) {
+  return Boolean(item && item.compactDetailOptions === true);
+}
+
+function shouldUseCanSelectorLayout(item) {
+  return Boolean(
+    item &&
+      item.visual?.type === "can-cluster" &&
+      getSelectionGroups(item).length === 1 &&
+      Array.isArray(item.visual?.items) &&
+      item.visual.items.length > 1
+  );
+}
+
 function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
 }
@@ -3619,6 +4049,10 @@ function formatOptionChip(item, option) {
 
 function hasDetailGallery(item) {
   return item && Array.isArray(item.detailGallery) && item.detailGallery.length > 1;
+}
+
+function hasDetailPreviewGallery(item) {
+  return getDetailPreviewSlides(item).length > 1;
 }
 
 function setupDetailGallery() {
@@ -3764,28 +4198,200 @@ function renderPlaceholderPanelVisual(context) {
   return `<div class="${classes.join(" ")}" aria-hidden="true"></div>`;
 }
 
-function renderDetailPreview(item) {
-  if (!hasDetailGallery(item)) {
-    return renderItemVisual(item, "detail");
+function buildDetailEditorialSlide(item) {
+  if (!isSpritzItem(item)) {
+    return null;
   }
 
-  const slides = item.detailGallery
+  const selectedFact = selectSpritzEditorialFact();
+  if (!selectedFact) {
+    return null;
+  }
+
+  const visual = item.visual || {};
+  const gradientStart = visual.gradientStart || "#ff7f43";
+  const gradientMid = visual.gradientMid || visual.gradientEnd || gradientStart;
+  const gradientEnd = visual.gradientEnd || "#ffd8bf";
+  const lengthClass =
+    selectedFact.text.length > 165 ? "compact" : selectedFact.text.length > 115 ? "balanced" : "airy";
+
+  return {
+    type: "editorial-quote",
+    text: selectedFact.text,
+    meta: selectSpritzEditorialMetaLine(),
+    tone: selectedFact.category,
+    lengthClass,
+    ornaments: selectSpritzEditorialOrnaments(selectedFact.category),
+    startColor: mixHexColors(gradientStart, "#fff7f1", 0.28),
+    midColor: mixHexColors(gradientMid, "#fff2ea", 0.4),
+    endColor: mixHexColors(gradientEnd, "#fffdf9", 0.18),
+    glowColor: rgbaFromHex(gradientMid, selectedFact.category === "nerd" ? 0.16 : 0.24),
+    frameColor: rgbaFromHex(gradientStart, 0.14),
+  };
+}
+
+function selectSpritzEditorialFact() {
+  if (!SPRITZ_EDITORIAL_FACTS.length) {
+    return null;
+  }
+
+  const entries = SPRITZ_EDITORIAL_FACTS.map((fact, index) => ({
+    ...fact,
+    index,
+  }));
+  const availableEntries =
+    entries.length > 1
+      ? entries.filter((entry) => entry.index !== lastSpritzEditorialFactIndex)
+      : entries;
+  const selectedEntry = selectWeightedEntry(availableEntries);
+
+  if (!selectedEntry) {
+    return null;
+  }
+
+  lastSpritzEditorialFactIndex = selectedEntry.index;
+  return selectedEntry;
+}
+
+function selectSpritzEditorialMetaLine() {
+  if (!SPRITZ_EDITORIAL_META_LINES.length) {
+    return "";
+  }
+
+  const entries = SPRITZ_EDITORIAL_META_LINES.map((text, index) => ({ text, index }));
+  const availableEntries =
+    entries.length > 1
+      ? entries.filter((entry) => entry.index !== lastSpritzEditorialMetaIndex)
+      : entries;
+  const selectedEntry =
+    availableEntries[Math.floor(Math.random() * availableEntries.length)] || entries[0];
+
+  lastSpritzEditorialMetaIndex = selectedEntry.index;
+  return selectedEntry.text;
+}
+
+function selectWeightedEntry(entries) {
+  const totalWeight = entries.reduce((sum, entry) => sum + Math.max(0, Number(entry.weight) || 0), 0);
+  if (!entries.length || totalWeight <= 0) {
+    return entries[0] || null;
+  }
+
+  let threshold = Math.random() * totalWeight;
+
+  for (const entry of entries) {
+    threshold -= Math.max(0, Number(entry.weight) || 0);
+    if (threshold <= 0) {
+      return entry;
+    }
+  }
+
+  return entries[entries.length - 1] || null;
+}
+
+function selectSpritzEditorialOrnaments(category) {
+  const config = SPRITZ_EDITORIAL_ORNAMENTS[category] || SPRITZ_EDITORIAL_ORNAMENTS.pop;
+  const stemPool = [...new Set(config?.stem || [])];
+  const playfulPool = [...new Set(config?.playful || [])];
+
+  if (!stemPool.length || !playfulPool.length) {
+    return [];
+  }
+
+  const combinations = buildSpritzOrnamentCombinations(stemPool, playfulPool);
+  const availableCombinations =
+    combinations.length > 1
+      ? combinations.filter((combination) => combination.join("|") !== lastSpritzEditorialOrnamentKey)
+      : combinations;
+  const selectedCombination =
+    availableCombinations[Math.floor(Math.random() * availableCombinations.length)] || combinations[0] || [];
+
+  lastSpritzEditorialOrnamentKey = selectedCombination.join("|");
+  return selectedCombination;
+}
+
+function buildSpritzOrnamentCombinations(stemPool, playfulPool) {
+  const combinations = [];
+
+  for (const stem of stemPool) {
+    for (const playful of playfulPool) {
+      combinations.push([stem, playful]);
+    }
+  }
+
+  return combinations;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function formatSpritzEditorialText(text) {
+  const sentences = splitSpritzEditorialSentences(text);
+
+  return sentences
+    .map((sentence) => {
+      let html = escapeHtml(sentence);
+
+      for (const source of SPRITZ_EDITORIAL_SOURCES) {
+        const escapedSource = escapeHtml(source);
+        html = html.replaceAll(
+          escapedSource,
+          `<em class="detail-editorial-visual__source">${escapedSource}</em>`
+        );
+      }
+
+      return `<span class="detail-editorial-visual__sentence">${html}</span>`;
+    })
+    .join("");
+}
+
+function splitSpritzEditorialSentences(text) {
+  const normalized = String(text || "").trim();
+  if (!normalized) {
+    return [];
+  }
+
+  const sentences = normalized
+    .split(/(?<=[.!?…])\s+(?=[A-ZÀ-ÖØ-Þ])/u)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  return sentences.length ? sentences : [normalized];
+}
+
+function renderDetailPreview(item) {
+  const slides = getDetailPreviewSlides(item);
+
+  if (slides.length <= 1) {
+    const [singleSlide] = slides;
+    return singleSlide ? renderVisualByType(singleSlide, "detail") : renderItemVisual(item, "detail");
+  }
+
+  const slideMarkup = slides
     .map(
-      (visual, index) => `
-        <div class="detail-gallery__slide" data-gallery-slide="${index}">
-          ${renderVisualByType(visual, "detail")}
+      (slide, index) => `
+        <div
+          class="detail-gallery__slide${slide.type === "editorial-quote" ? " detail-gallery__slide--editorial" : ""}"
+          data-gallery-slide="${index}"
+        >
+          ${renderVisualByType(slide, "detail")}
         </div>
       `
     )
     .join("");
 
-  const dots = item.detailGallery
+  const dots = slides
     .map(
-      (_, index) => `
+      (slide, index) => `
         <button
           class="detail-gallery__dot${index === 0 ? " is-active" : ""}"
           type="button"
-          aria-label="Vai all'immagine ${index + 1}"
+          aria-label="${getDetailPreviewDotLabel(slide, index)}"
           data-gallery-dot="${index}"
         ></button>
       `
@@ -3795,7 +4401,7 @@ function renderDetailPreview(item) {
   return `
     <div class="detail-gallery">
       <div class="detail-gallery__track" data-detail-gallery-track>
-        ${slides}
+        ${slideMarkup}
       </div>
       <div class="detail-gallery__dots" aria-label="Più immagini disponibili">
         ${dots}
@@ -3825,7 +4431,44 @@ function renderVisualByType(visual, context) {
     return renderTextPanelVisual(visual, context);
   }
 
+  if (visual.type === "editorial-quote") {
+    return renderEditorialQuoteVisual(visual, context);
+  }
+
   return renderPlaceholderPanelVisual(context);
+}
+
+function getDetailPreviewSlides(item) {
+  const baseSlides = hasDetailGallery(item)
+    ? item.detailGallery.filter(Boolean)
+    : item.visual
+      ? [item.visual]
+      : [];
+  const orderedBaseSlides = reorderDetailPreviewSlides(baseSlides, item?.detailPreviewStartIndex);
+  const editorialSlide = item.id === state.selectedItemId ? state.detailEditorialSlide : null;
+
+  return editorialSlide ? [...orderedBaseSlides, editorialSlide] : orderedBaseSlides;
+}
+
+function reorderDetailPreviewSlides(slides, startIndex) {
+  if (!Array.isArray(slides) || slides.length <= 1) {
+    return Array.isArray(slides) ? [...slides] : [];
+  }
+
+  const normalizedIndex = Number.parseInt(startIndex, 10);
+  if (!Number.isInteger(normalizedIndex) || normalizedIndex <= 0 || normalizedIndex >= slides.length) {
+    return [...slides];
+  }
+
+  return [...slides.slice(normalizedIndex), ...slides.slice(0, normalizedIndex)];
+}
+
+function getDetailPreviewDotLabel(slide, index) {
+  if (slide?.type === "editorial-quote") {
+    return "Vai alla curiosità sullo Spritz";
+  }
+
+  return `Vai all'immagine ${index + 1}`;
 }
 
 function renderBeerScriptVisual(visual, context) {
@@ -3868,6 +4511,54 @@ function renderBeerScriptVisual(visual, context) {
   `;
 }
 
+function renderEditorialQuoteVisual(visual, context) {
+  const classes = [
+    "detail-editorial-visual",
+    `detail-editorial-visual--${visual.lengthClass || "airy"}`,
+  ];
+
+  if (context === "detail") {
+    classes.push("detail-editorial-visual--detail");
+  }
+
+  if (visual.tone) {
+    classes.push(`detail-editorial-visual--${visual.tone}`);
+  }
+
+  const ornaments = Array.isArray(visual.ornaments) ? visual.ornaments.slice(0, 2) : [];
+  const ornamentsMarkup = ornaments
+    .map(
+      (ornament, index) => `
+        <span
+          class="detail-editorial-visual__ornament detail-editorial-visual__ornament--${index === 0 ? "one" : "two"}"
+          aria-hidden="true"
+        >${ornament}</span>
+      `
+    )
+    .join("");
+  const quoteMarkup = formatSpritzEditorialText(visual.text);
+
+  return `
+    <section
+      class="${classes.join(" ")}"
+      style="
+        --detail-editorial-start: ${visual.startColor};
+        --detail-editorial-mid: ${visual.midColor};
+        --detail-editorial-end: ${visual.endColor};
+        --detail-editorial-glow: ${visual.glowColor};
+        --detail-editorial-frame: ${visual.frameColor};
+      "
+      aria-label="Curiosità sullo Spritz"
+    >
+      ${ornamentsMarkup}
+      <div class="detail-editorial-visual__inner">
+        <p class="detail-editorial-visual__quote">${quoteMarkup}</p>
+        <p class="detail-editorial-visual__meta">${escapeHtml(visual.meta || "")}</p>
+      </div>
+    </section>
+  `;
+}
+
 function renderPhotoPanelVisual(visual, context, item) {
   const classes = ["photo-panel-visual"];
   if (context === "detail") {
@@ -3907,28 +4598,43 @@ function renderCanClusterVisual(visual, context, item = null) {
   }
 
   const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
+  const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
   const cans = Array.isArray(visual.items)
     ? visual.items
         .map(
-          (item) => `
+          (canItem, index) => `
             <img
-              class="can-cluster-visual__can${shouldDeferImages ? " can-cluster-visual__can--deferred" : ""}"
-              ${shouldDeferImages ? `data-can-image="${getVisualAsset(item.asset)}" data-can-loaded="false"` : ""}
-              ${shouldDeferImages ? "" : `src="${getVisualAsset(item.asset)}"`}
+              class="can-cluster-visual__can${
+                shouldDeferImages ? " can-cluster-visual__can--deferred" : ""
+              }${
+                activeCanIndex >= 0
+                  ? index === activeCanIndex
+                    ? " is-selected"
+                    : " is-secondary"
+                  : ""
+              }"
+              ${shouldDeferImages ? `data-can-image="${getVisualAsset(canItem.asset)}" data-can-loaded="false"` : ""}
+              ${shouldDeferImages ? "" : `src="${getVisualAsset(canItem.asset)}"`}
               alt=""
               aria-hidden="true"
               loading="lazy"
               decoding="async"
               style="
-                --can-left: ${item.left || "50%"};
-                --can-bottom: ${item.bottom || "-18%"};
-                --can-width: ${item.width || "auto"};
-                --can-height: ${item.height || "auto"};
-                --can-rotate: ${item.rotate || "0deg"};
-                --can-z: ${item.zIndex || 1};
-                --can-float-distance: ${item.floatDistance || "5px"};
-                --can-float-duration: ${item.floatDuration || "4.2s"};
-                --can-float-delay: ${item.floatDelay || "0s"};
+                --can-left: ${canItem.left || "50%"};
+                --can-bottom: ${canItem.bottom || "-18%"};
+                --can-width: ${canItem.width || "auto"};
+                --can-height: ${canItem.height || "auto"};
+                --can-rotate: ${canItem.rotate || "0deg"};
+                --can-z: ${
+                  activeCanIndex >= 0 && index === activeCanIndex
+                    ? Number(canItem.zIndex || 1) + 4
+                    : canItem.zIndex || 1
+                };
+                --can-float-distance: ${canItem.floatDistance || "5px"};
+                --can-float-duration: ${canItem.floatDuration || "4.2s"};
+                --can-float-delay: ${canItem.floatDelay || "0s"};
+                --can-extra-lift: ${activeCanIndex >= 0 && index === activeCanIndex ? "28px" : "0px"};
+                --can-scale: ${activeCanIndex >= 0 && index === activeCanIndex ? "1.18" : "0.82"};
               "
             />
           `
@@ -3946,10 +4652,41 @@ function renderCanClusterVisual(visual, context, item = null) {
   `;
 }
 
+function getActiveCanClusterIndex(item, visual) {
+  if (
+    !item ||
+    !visual ||
+    !Array.isArray(visual.items) ||
+    !visual.items.length
+  ) {
+    return -1;
+  }
+
+  const selectionGroups = getSelectionGroups(item);
+  if (selectionGroups.length !== 1) {
+    return -1;
+  }
+
+  const [group] = selectionGroups;
+  if (!group || !Array.isArray(group.options) || group.options.length !== visual.items.length) {
+    return -1;
+  }
+
+  const selectedIndex = getSelectedSelectionIndex(group);
+  return selectedIndex >= 0 && selectedIndex < visual.items.length ? selectedIndex : -1;
+}
+
 function renderTextPanelVisual(visual, context) {
   const classes = ["text-panel-visual"];
   if (context === "detail") {
     classes.push("text-panel-visual--detail");
+  }
+
+  const bodyLines = Array.isArray(visual.bodyLines)
+    ? visual.bodyLines.map((line) => String(line).trim()).filter(Boolean)
+    : [];
+  if (bodyLines.length) {
+    classes.push("text-panel-visual--copy");
   }
 
   return `
@@ -3960,10 +4697,23 @@ function renderTextPanelVisual(visual, context) {
         --text-panel-end: ${visual.gradientEnd || "#a67343"};
         --text-panel-label: ${visual.labelColor || "#fffdf8"};
         --text-panel-script: ${visual.scriptColor || "rgba(17, 17, 17, 0.72)"};
+        --text-panel-body: ${visual.bodyColor || visual.labelColor || "#fffdf8"};
       "
     >
-      ${visual.script ? `<span class="text-panel-visual__script">${visual.script}</span>` : ""}
-      <span class="text-panel-visual__label">${visual.label}</span>
+      ${
+        bodyLines.length
+          ? `
+        <div class="text-panel-visual__copy">
+          ${bodyLines
+            .map((line) => `<span class="text-panel-visual__copy-line">${escapeHtml(line)}</span>`)
+            .join("")}
+        </div>
+      `
+          : `
+        ${visual.script ? `<span class="text-panel-visual__script">${visual.script}</span>` : ""}
+        <span class="text-panel-visual__label">${visual.label}</span>
+      `
+      }
     </div>
   `;
 }

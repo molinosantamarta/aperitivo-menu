@@ -479,7 +479,13 @@
           "name": "Sarti Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Sarti Rosa: arancia rossa di Sicilia e frutto della passione.",
+          "description": "Sarti Rosa: arancia rossa di Sicilia, mango e frutto della passione. Un'esplosione di freschezza tropicale con un’anima italiana.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@sartispritz",
+            "href": "https://www.instagram.com/sartispritz/",
+            "ariaLabel": "Apri il profilo Instagram Sarti Spritz"
+          },
           "visual": {
             "type": "beer-script",
             "label": "Sarti",
@@ -533,7 +539,7 @@
           "name": "Hugo Spritz",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Spumante extra dry e sciroppo ai fiori di sambuco, foglie di melissa.",
+          "description": "Spumante extra dry e sciroppo ai fiori di sambuco, estratto di melissa.",
           "visual": {
             "type": "beer-script",
             "label": "Hugo",
@@ -1034,8 +1040,22 @@
           "id": "rose-n5",
           "page": 1,
           "name": "Rosè n°5 Feral",
-          "category": "Special",
-          "description": "Rosè di erbe ribelli, fermentazione ancestrale (0 alcol), bollicina elegante, Dolomiti.",
+          "category": "Special Edition",
+          "description": "Rosè di piante ribelli, fermentazione ancestrale (0 alcol), bollicina elegante, dalle Dolomiti.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@feral_drinks",
+            "href": "https://www.instagram.com/feral_drinks/",
+            "ariaLabel": "Apri il profilo Instagram Feral Drinks"
+          },
+          "producerResources": [
+            {
+              "kind": "video",
+              "label": "video",
+              "href": "https://www.instagram.com/p/DMpWjPdKsuW/",
+              "ariaLabel": "Apri il video esterno di presentazione del prodotto"
+            }
+          ],
           "visual": {
             "type": "photo-panel",
             "asset": "feral-back.webp",
@@ -1056,6 +1076,7 @@
               "size": "cover"
             }
           ],
+          "detailPreviewStartIndex": 1,
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "rose-n5-floating.webp",
@@ -1241,7 +1262,7 @@
           "options": [
             {
               "label": "",
-              "price": 4
+              "price": 4.5
             }
           ],
           "rect": [
@@ -1320,13 +1341,42 @@
           "page": 2,
           "name": "Kombucha limone",
           "category": "Artigianale",
-          "description": "Tè fermentato frizzante, analcolico, gusto limone.",
+          "description": "Tè fermentato frizzante analcolico con succo di limone bio, prodotto in Lombardia.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@mia_kombucha",
+            "href": "https://www.instagram.com/mia_kombucha/",
+            "ariaLabel": "Apri il profilo Instagram Mia Kombucha"
+          },
           "visual": {
             "type": "photo-panel",
             "asset": "kombucha-back.jpg",
             "position": "center center",
             "size": "cover"
           },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-back.jpg",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Mal di pancia? Acqua e limone.",
+                "Mal di testa? Acqua e limone.",
+                "Male al malleolo? Acqua e limone.",
+                "Ma che è? O' miracolo?",
+                "Non berti tutte le cose che ti dicono.",
+                "Beviti Mia.",
+                "Sai che la fanno anche al limone?"
+              ],
+              "gradientStart": "#7f7c90",
+              "gradientEnd": "#727083",
+              "bodyColor": "#fffdfb"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "kombucha-limone-floating.png",
@@ -1479,6 +1529,7 @@
           "page": 2,
           "name": "Grappe e amari",
           "category": "Altre bevande",
+          "compactDetailOptions": true,
           "description": "Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta.",
           "visual": {
             "type": "photo-panel",
@@ -1487,11 +1538,6 @@
             "size": "cover"
           },
           "options": [
-            {
-              "label": "Amaro alle erbe Molino Santa Marta",
-              "displayLabel": "",
-              "price": 4
-            },
             {
               "label": "Amaro del Capo",
               "displayLabel": "",
@@ -1542,11 +1588,11 @@
               "price": 4
             },
             {
-              "label": "Unicum",
-              "price": 4
-            },
-            {
-              "label": "San Simone",
+              "label": "Nanin",
+              "displayLabel": "Nanin",
+              "subtitle": "L'amaro alle erbe del Molino",
+              "tone": "herbal-green",
+              "layout": "full-row",
               "price": 4
             }
           ]
