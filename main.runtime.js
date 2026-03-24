@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324b";
-  const APP_BUILD_LABEL = "V.1.1";
+  const APP_VERSION = "20260324c";
+  const APP_BUILD_LABEL = "V.1.659";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -3261,7 +3261,16 @@
   }
   function formatSpritzEditorialText(text) {
     const sentences = splitSpritzEditorialSentences(text);
-    return sentences.map((sentence) => '<span class="detail-editorial-visual__sentence">'.concat(escapeHtml(sentence), "</span>")).join("");
+    return sentences.map((sentence, index) => {
+      let content = escapeHtml(sentence);
+      if (index === 0) {
+        content = '<span class="detail-editorial-visual__mark detail-editorial-visual__mark--open" aria-hidden="true">\u201C</span>'.concat(content);
+      }
+      if (index === sentences.length - 1) {
+        content = "".concat(content, '<span class="detail-editorial-visual__mark detail-editorial-visual__mark--close" aria-hidden="true">\u201D</span>');
+      }
+      return '<span class="detail-editorial-visual__sentence">'.concat(content, "</span>");
+    }).join("");
   }
   function splitSpritzEditorialSentences(text) {
     const normalized = String(text || "").trim();
