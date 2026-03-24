@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324c";
-  const APP_BUILD_LABEL = "V.1.659";
+  const APP_VERSION = "20260324d";
+  const APP_BUILD_LABEL = "V.1.660";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -3261,8 +3261,19 @@
   }
   function formatSpritzEditorialText(text) {
     const sentences = splitSpritzEditorialSentences(text);
+    const emphasizedSources = [
+      "California Institute of Aperitivo Studies",
+      "Laboratory of Outdoor Consumption"
+    ];
     return sentences.map((sentence, index) => {
       let content = escapeHtml(sentence);
+      emphasizedSources.forEach((source) => {
+        const escapedSource = escapeHtml(source);
+        content = content.replaceAll(
+          escapedSource,
+          '<em class="detail-editorial-visual__source">'.concat(escapedSource, "</em>")
+        );
+      });
       if (index === 0) {
         content = '<span class="detail-editorial-visual__mark detail-editorial-visual__mark--open" aria-hidden="true">\u201C</span>'.concat(content);
       }
