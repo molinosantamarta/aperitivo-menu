@@ -1051,7 +1051,7 @@
           "producerResources": [
             {
               "kind": "video",
-              "label": "video",
+              "label": "Cos'è?",
               "href": "https://www.instagram.com/p/DMpWjPdKsuW/",
               "ariaLabel": "Apri il video esterno di presentazione del prodotto"
             }
@@ -1263,7 +1263,7 @@
           "options": [
             {
               "label": "",
-              "price": 4.5
+              "price": 4
             }
           ],
           "rect": [

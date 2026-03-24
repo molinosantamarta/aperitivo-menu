@@ -6,7 +6,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 });
 
 const APP_VERSION = "20260324f";
-const APP_BUILD_LABEL = "V.1.662";
+const APP_BUILD_LABEL = "V.1.663";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -288,12 +288,10 @@ const state = {
   cart: loadCart(),
 };
 
-const saveCartLabel = "Salva e continua";
-const closeGeneratedSummaryLabel = "Chiudi";
 const generateSummaryLabel = "Genera riepilogo";
 const editSummaryLabel = "Modifica";
-const defaultCartTitle = "Da comunicare al cameriere";
-const generatedCartTitle = "Siamo pronti ad ordinare...";
+const defaultCartTitle = "Modifica l'ordine del tavolo";
+const generatedCartTitle = "Siamo pronti per ordinare...";
 let isCartSummaryView = false;
 
 const sectionNav = document.querySelector("#sectionNav");
@@ -322,7 +320,6 @@ const cartGenerated = document.querySelector("#cartGenerated");
 const cartFooter = document.querySelector("#cartFooter");
 const cartTotalBlock = cartFooter.querySelector(".cart-total");
 const cartTotal = document.querySelector("#cartTotal");
-const saveCartButton = document.querySelector("#saveCart");
 const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
 const clearCartButton = document.querySelector("#clearCart");
 const detailPreview = document.querySelector("#detailPreview");
@@ -416,7 +413,6 @@ addToCartButton.addEventListener("click", () => {
   persistCart();
   renderCart();
   closeDetail();
-  openCart();
 });
 
 toggleSummaryViewButton.addEventListener("click", () => {
@@ -425,13 +421,7 @@ toggleSummaryViewButton.addEventListener("click", () => {
     return;
   }
 
-  blurActiveElement();
-  isCartSummaryView = !isCartSummaryView;
-  renderCart();
-});
-
-saveCartButton.addEventListener("click", () => {
-  closeCart();
+  setCartSummaryView(!isCartSummaryView);
 });
 
 clearCartButton.addEventListener("click", () => {
@@ -3296,6 +3286,7 @@ function renderDetailMeta(item) {
     const resourceKindClass = resource.kind
       ? ` producer-resource--${escapeHtml(resource.kind)}`
       : "";
+    const isVideoResource = resource.kind === "video";
     const icon = resource.kind === "video" ? "▶" : "↗";
 
     parts.push(`
@@ -3306,8 +3297,9 @@ function renderDetailMeta(item) {
         rel="noreferrer noopener"
         aria-label="${safeAria}"
       >
-        <span class="producer-resource__icon" aria-hidden="true">${icon}</span>
-        <span class="producer-resource__label">${safeLabel}</span>
+        ${isVideoResource
+          ? `<span class="producer-resource__label">${safeLabel}</span><span class="producer-resource__icon" aria-hidden="true">${icon}</span>`
+          : `<span class="producer-resource__icon" aria-hidden="true">${icon}</span><span class="producer-resource__label">${safeLabel}</span>`}
       </a>
     `);
   });
@@ -3360,7 +3352,9 @@ function renderOptions(item) {
       optionButton.innerHTML = `<span class="option-label option-label--solo">${selectionOption.label}</span>`;
       optionButton.addEventListener("click", () => {
         state.selectedSelections[group.id] = index;
-        refreshDetailPreview(item);
+        if (!updateDetailPreviewSelectionState(item)) {
+          refreshDetailPreview(item);
+        }
         renderOptions(item);
       });
       groupNode.options.append(optionButton);
@@ -3480,6 +3474,42 @@ function refreshDetailPreview(item) {
   setupDetailGallery();
 }
 
+function updateDetailPreviewSelectionState(item) {
+  if (!detailPreview || !item) {
+    return false;
+  }
+
+  const canClusterVisual = getPrimaryCanClusterVisual(item);
+  if (!canClusterVisual) {
+    return false;
+  }
+
+  const canNodes = Array.from(
+    detailPreview.querySelectorAll(".can-cluster-visual--detail .can-cluster-visual__can")
+  );
+  if (!canNodes.length) {
+    return false;
+  }
+
+  const activeCanIndex = getActiveCanClusterIndex(item, canClusterVisual);
+
+  canNodes.forEach((canNode, index) => {
+    const canConfig = canClusterVisual.items[index] || {};
+    const isSelected = activeCanIndex >= 0 && index === activeCanIndex;
+
+    canNode.classList.toggle("is-selected", isSelected);
+    canNode.classList.toggle("is-secondary", activeCanIndex >= 0 && !isSelected);
+    canNode.style.setProperty(
+      "--can-z",
+      String(isSelected ? Number(canConfig.zIndex || 1) + 4 : canConfig.zIndex || 1)
+    );
+    canNode.style.setProperty("--can-extra-lift", isSelected ? canConfig.selectedLift || "4px" : "0px");
+    canNode.style.setProperty("--can-scale", isSelected ? "1.12" : "0.74");
+  });
+
+  return true;
+}
+
 function createOptionGroup(label, compact = false) {
   const wrapper = document.createElement("section");
   wrapper.className = "option-group";
@@ -3498,10 +3528,23 @@ function createOptionGroup(label, compact = false) {
   return { wrapper, options };
 }
 
+function getPrimaryCanClusterVisual(item) {
+  if (item?.visual?.type === "can-cluster" && Array.isArray(item.visual.items)) {
+    return item.visual;
+  }
+
+  if (Array.isArray(item?.detailGallery)) {
+    return item.detailGallery.find(
+      (visual) => visual?.type === "can-cluster" && Array.isArray(visual.items)
+    ) || null;
+  }
+
+  return null;
+}
+
 function renderCart() {
   cartItems.innerHTML = "";
   cartGenerated.innerHTML = "";
-  saveCartButton.textContent = saveCartLabel;
   toggleSummaryViewButton.textContent = generateSummaryLabel;
   const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
   cartCount.textContent = cartQuantity;
@@ -3550,15 +3593,28 @@ function renderCart() {
   cartEmpty.hidden = hasItems;
   cartItems.hidden = !hasItems || showGeneratedSummary;
   cartGenerated.hidden = !showGeneratedSummary;
-  cartFooter.hidden = !hasItems;
+  cartFooter.hidden = !hasItems || showGeneratedSummary;
   cartTotalBlock.hidden = !hasItems || showGeneratedSummary;
-  saveCartButton.hidden = !hasItems;
   toggleSummaryViewButton.hidden = !hasItems;
   clearCartButton.hidden = !hasItems || showGeneratedSummary;
-  saveCartButton.textContent = showGeneratedSummary ? closeGeneratedSummaryLabel : saveCartLabel;
+  closeCartButton.hidden = showGeneratedSummary;
   toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
+  toggleSummaryViewButton.classList.toggle("utility-btn--accent", !showGeneratedSummary);
+  toggleSummaryViewButton.classList.toggle("utility-btn--secondary", showGeneratedSummary);
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
+}
+
+function setCartSummaryView(nextValue) {
+  if (!state.cart.length) {
+    isCartSummaryView = false;
+    renderCart();
+    return;
+  }
+
+  blurActiveElement();
+  isCartSummaryView = Boolean(nextValue);
+  renderCart();
 }
 
 function moveCartEntryToFront(entryId) {
@@ -3607,11 +3663,12 @@ function renderGeneratedCartSummary() {
     group.entries.forEach((entry) => {
       const summaryItem = document.createElement("article");
       summaryItem.className = "cart-generated-item";
+      const title = getGeneratedCartEntryTitle(entry);
       const detail = getGeneratedCartEntryDetail(entry);
       summaryItem.innerHTML = `
         <span class="cart-generated-item__quantity">${entry.quantity}×</span>
         <div class="cart-generated-item__copy">
-          <strong>${entry.name}</strong>
+          <strong>${title}</strong>
           ${detail ? `<p>${detail}</p>` : ""}
         </div>
       `;
@@ -3620,6 +3677,26 @@ function renderGeneratedCartSummary() {
 
     cartGenerated.append(groupSection);
   });
+
+  const actions = document.createElement("div");
+  actions.className = "cart-generated-actions";
+  actions.innerHTML = `
+    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">
+      ${editSummaryLabel}
+    </button>
+    <button class="utility-btn utility-btn--accent" type="button" data-generated-action="close">
+      Chiudi
+    </button>
+  `;
+
+  actions.querySelector('[data-generated-action="edit"]')?.addEventListener("click", () => {
+    setCartSummaryView(false);
+  });
+  actions.querySelector('[data-generated-action="close"]')?.addEventListener("click", () => {
+    closeCart();
+  });
+
+  cartGenerated.append(actions);
 }
 
 function groupGeneratedCartEntries(entries) {
@@ -3657,6 +3734,24 @@ function compareGeneratedCartEntries(left, right) {
 }
 
 function getGeneratedCartGroup(entry) {
+  const item = itemLookup[entry.itemId];
+  const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+
+  if (entry.itemId === "caffe") {
+    return { key: "caffe", label: "Caffè", order: 50 };
+  }
+
+  if (entry.itemId === "grappe-amari") {
+    return { key: "grappe-amari", label: "Digestivi", order: 60 };
+  }
+
+  if (item && isBottleSectionItem(item) && configuration.optionLabel) {
+    const normalizedOptionLabel = normalizeLabel(configuration.optionLabel);
+    if (normalizedOptionLabel === "calice") {
+      return { key: "drink", label: "Drink", order: 20 };
+    }
+  }
+
   const sectionTitle = normalizeLabel(findSectionTitleForItem(entry.itemId));
 
   const groupMap = {
@@ -3680,8 +3775,102 @@ function getGeneratedCartEntryDetail(entry) {
     return "";
   }
 
+  if (entry.itemId === "grappe-amari") {
+    return getDigestifEntrySubtitle(item, entry.optionLabel);
+  }
+
+  const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
   const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
-  return hasMeaningfulOptions ? entry.optionLabel : "";
+  if (!hasMeaningfulOptions) {
+    return "";
+  }
+
+  if (configuration.selectionLabels.length > 0) {
+    return [item.name, configuration.optionLabel].filter(Boolean).join(", ");
+  }
+
+  return entry.optionLabel;
+}
+
+function getGeneratedCartEntryTitle(entry) {
+  const item = itemLookup[entry.itemId];
+  if (!item) {
+    return entry.name;
+  }
+
+  if (entry.itemId === "grappe-amari" && entry.optionLabel) {
+    return entry.optionLabel;
+  }
+
+  const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+  if (configuration.selectionLabels.length > 0) {
+    return configuration.selectionLabels.join(" · ");
+  }
+
+  return entry.name;
+}
+
+function getDigestifEntrySubtitle(item, optionLabel) {
+  const option = findItemOptionByLabel(item, optionLabel);
+  if (option?.subtitle) {
+    return option.subtitle;
+  }
+
+  const normalizedLabel = normalizeLabel(optionLabel);
+  if (normalizedLabel.startsWith("grappa")) {
+    return "Grappa";
+  }
+
+  if (["limoncello", "liquirizia", "mirto"].includes(normalizedLabel)) {
+    return "Liquore";
+  }
+
+  return "Amaro";
+}
+
+function getCartEntryConfigurationParts(item, optionLabel) {
+  if (!item || !optionLabel) {
+    return { selectionLabels: [], optionLabel: "" };
+  }
+
+  const parts = String(optionLabel)
+    .split("·")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (!parts.length) {
+    return { selectionLabels: [], optionLabel: "" };
+  }
+
+  const optionLabels = new Set(
+    Array.isArray(item.options)
+      ? item.options
+          .map((option) => normalizeLabel(option?.label || ""))
+          .filter(Boolean)
+      : []
+  );
+
+  const lastPart = parts[parts.length - 1];
+  if (optionLabels.has(normalizeLabel(lastPart))) {
+    return {
+      selectionLabels: parts.slice(0, -1),
+      optionLabel: lastPart,
+    };
+  }
+
+  return {
+    selectionLabels: parts,
+    optionLabel: "",
+  };
+}
+
+function findItemOptionByLabel(item, optionLabel) {
+  if (!item || !Array.isArray(item.options) || !optionLabel) {
+    return null;
+  }
+
+  const normalizedTarget = normalizeLabel(optionLabel);
+  return item.options.find((option) => normalizeLabel(option?.label || "") === normalizedTarget) || null;
 }
 
 function formatCartBreakdown(entries) {
@@ -3693,6 +3882,10 @@ function formatCartBreakdown(entries) {
         totals.bevande += entry.quantity;
       } else if (bucket === "bottiglie") {
         totals.bottiglie += entry.quantity;
+      } else if (bucket === "caffe") {
+        totals.caffe += entry.quantity;
+      } else if (bucket === "digestivi") {
+        totals.digestivi += entry.quantity;
       } else if (bucket === "taglieri") {
         totals.taglieri += entry.quantity;
       } else if (bucket === "ignored") {
@@ -3703,7 +3896,7 @@ function formatCartBreakdown(entries) {
 
       return totals;
     },
-    { bevande: 0, bottiglie: 0, taglieri: 0, ignored: 0, other: 0 }
+    { bevande: 0, bottiglie: 0, caffe: 0, digestivi: 0, taglieri: 0, ignored: 0, other: 0 }
   );
 
   const parts = [];
@@ -3714,6 +3907,14 @@ function formatCartBreakdown(entries) {
 
   if (breakdown.bottiglie > 0) {
     parts.push(`${breakdown.bottiglie} ${pluralize(breakdown.bottiglie, "bottiglia", "bottiglie")}`);
+  }
+
+  if (breakdown.caffe > 0) {
+    parts.push(`${breakdown.caffe} caffè`);
+  }
+
+  if (breakdown.digestivi > 0) {
+    parts.push(`${breakdown.digestivi} ${pluralize(breakdown.digestivi, "digestivo", "digestivi")}`);
   }
 
   if (breakdown.taglieri > 0) {
@@ -3733,6 +3934,14 @@ function getCartSummaryBucket(entry) {
   const category = getItemCategoryLabel(item, entry).toLowerCase();
   const sectionTitle = findSectionTitleForItem(entry.itemId).toLowerCase();
   const optionLabel = (entry.optionLabel || "").toLowerCase();
+
+  if (entry.itemId === "caffe") {
+    return "caffe";
+  }
+
+  if (entry.itemId === "grappe-amari") {
+    return "digestivi";
+  }
 
   if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
     return "ignored";

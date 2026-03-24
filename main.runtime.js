@@ -25,7 +25,7 @@
     maximumFractionDigits: 2
   });
   const APP_VERSION = "20260324f";
-  const APP_BUILD_LABEL = "V.1.662";
+  const APP_BUILD_LABEL = "V.1.663";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -300,12 +300,10 @@
     detailEditorialSlide: null,
     cart: loadCart()
   };
-  const saveCartLabel = "Salva e continua";
-  const closeGeneratedSummaryLabel = "Chiudi";
   const generateSummaryLabel = "Genera riepilogo";
   const editSummaryLabel = "Modifica";
-  const defaultCartTitle = "Da comunicare al cameriere";
-  const generatedCartTitle = "Siamo pronti ad ordinare...";
+  const defaultCartTitle = "Modifica l'ordine del tavolo";
+  const generatedCartTitle = "Siamo pronti per ordinare...";
   let isCartSummaryView = false;
   const sectionNav = document.querySelector("#sectionNav");
   const menuSections = document.querySelector("#menuSections");
@@ -333,7 +331,6 @@
   const cartFooter = document.querySelector("#cartFooter");
   const cartTotalBlock = cartFooter.querySelector(".cart-total");
   const cartTotal = document.querySelector("#cartTotal");
-  const saveCartButton = document.querySelector("#saveCart");
   const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
   const clearCartButton = document.querySelector("#clearCart");
   const detailPreview = document.querySelector("#detailPreview");
@@ -419,19 +416,13 @@
     persistCart();
     renderCart();
     closeDetail();
-    openCart();
   });
   toggleSummaryViewButton.addEventListener("click", () => {
     if (!state.cart.length) {
       toggleSummaryViewButton.textContent = generateSummaryLabel;
       return;
     }
-    blurActiveElement();
-    isCartSummaryView = !isCartSummaryView;
-    renderCart();
-  });
-  saveCartButton.addEventListener("click", () => {
-    closeCart();
+    setCartSummaryView(!isCartSummaryView);
   });
   clearCartButton.addEventListener("click", () => {
     state.cart = [];
@@ -2549,8 +2540,9 @@
       const safeLabel = escapeHtml(resource.label);
       const safeAria = escapeHtml(resource.ariaLabel || "Apri ".concat(resource.label));
       const resourceKindClass = resource.kind ? " producer-resource--".concat(escapeHtml(resource.kind)) : "";
+      const isVideoResource = resource.kind === "video";
       const icon = resource.kind === "video" ? "\u25B6" : "\u2197";
-      parts.push('\n      <a\n        class="producer-resource'.concat(resourceKindClass, '"\n        href="').concat(safeHref, '"\n        target="_blank"\n        rel="noreferrer noopener"\n        aria-label="').concat(safeAria, '"\n      >\n        <span class="producer-resource__icon" aria-hidden="true">').concat(icon, '</span>\n        <span class="producer-resource__label">').concat(safeLabel, "</span>\n      </a>\n    "));
+      parts.push('\n      <a\n        class="producer-resource'.concat(resourceKindClass, '"\n        href="').concat(safeHref, '"\n        target="_blank"\n        rel="noreferrer noopener"\n        aria-label="').concat(safeAria, '"\n      >\n        ').concat(isVideoResource ? '<span class="producer-resource__label">'.concat(safeLabel, '</span><span class="producer-resource__icon" aria-hidden="true">').concat(icon, "</span>") : '<span class="producer-resource__icon" aria-hidden="true">'.concat(icon, '</span><span class="producer-resource__label">').concat(safeLabel, "</span>"), "\n      </a>\n    "));
     });
     detailMeta.innerHTML = parts.join("");
     detailMeta.hidden = false;
@@ -2590,7 +2582,9 @@
         optionButton.innerHTML = '<span class="option-label option-label--solo">'.concat(selectionOption.label, "</span>");
         optionButton.addEventListener("click", () => {
           state.selectedSelections[group.id] = index;
-          refreshDetailPreview(item);
+          if (!updateDetailPreviewSelectionState(item)) {
+            refreshDetailPreview(item);
+          }
           renderOptions(item);
         });
         groupNode.options.append(optionButton);
@@ -2653,6 +2647,35 @@
     detailPreview.innerHTML = renderDetailPreview(item);
     setupDetailGallery();
   }
+  function updateDetailPreviewSelectionState(item) {
+    if (!detailPreview || !item) {
+      return false;
+    }
+    const canClusterVisual = getPrimaryCanClusterVisual(item);
+    if (!canClusterVisual) {
+      return false;
+    }
+    const canNodes = Array.from(
+      detailPreview.querySelectorAll(".can-cluster-visual--detail .can-cluster-visual__can")
+    );
+    if (!canNodes.length) {
+      return false;
+    }
+    const activeCanIndex = getActiveCanClusterIndex(item, canClusterVisual);
+    canNodes.forEach((canNode, index) => {
+      const canConfig = canClusterVisual.items[index] || {};
+      const isSelected = activeCanIndex >= 0 && index === activeCanIndex;
+      canNode.classList.toggle("is-selected", isSelected);
+      canNode.classList.toggle("is-secondary", activeCanIndex >= 0 && !isSelected);
+      canNode.style.setProperty(
+        "--can-z",
+        String(isSelected ? Number(canConfig.zIndex || 1) + 4 : canConfig.zIndex || 1)
+      );
+      canNode.style.setProperty("--can-extra-lift", isSelected ? canConfig.selectedLift || "4px" : "0px");
+      canNode.style.setProperty("--can-scale", isSelected ? "1.12" : "0.74");
+    });
+    return true;
+  }
   function createOptionGroup(label, compact = false) {
     const wrapper = document.createElement("section");
     wrapper.className = "option-group";
@@ -2667,10 +2690,21 @@
     wrapper.append(options);
     return { wrapper, options };
   }
+  function getPrimaryCanClusterVisual(item) {
+    var _a;
+    if (((_a = item == null ? void 0 : item.visual) == null ? void 0 : _a.type) === "can-cluster" && Array.isArray(item.visual.items)) {
+      return item.visual;
+    }
+    if (Array.isArray(item == null ? void 0 : item.detailGallery)) {
+      return item.detailGallery.find(
+        (visual) => (visual == null ? void 0 : visual.type) === "can-cluster" && Array.isArray(visual.items)
+      ) || null;
+    }
+    return null;
+  }
   function renderCart() {
     cartItems.innerHTML = "";
     cartGenerated.innerHTML = "";
-    saveCartButton.textContent = saveCartLabel;
     toggleSummaryViewButton.textContent = generateSummaryLabel;
     const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
     cartCount.textContent = cartQuantity;
@@ -2699,14 +2733,25 @@
     cartEmpty.hidden = hasItems;
     cartItems.hidden = !hasItems || showGeneratedSummary;
     cartGenerated.hidden = !showGeneratedSummary;
-    cartFooter.hidden = !hasItems;
+    cartFooter.hidden = !hasItems || showGeneratedSummary;
     cartTotalBlock.hidden = !hasItems || showGeneratedSummary;
-    saveCartButton.hidden = !hasItems;
     toggleSummaryViewButton.hidden = !hasItems;
     clearCartButton.hidden = !hasItems || showGeneratedSummary;
-    saveCartButton.textContent = showGeneratedSummary ? closeGeneratedSummaryLabel : saveCartLabel;
+    closeCartButton.hidden = showGeneratedSummary;
     toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
+    toggleSummaryViewButton.classList.toggle("utility-btn--accent", !showGeneratedSummary);
+    toggleSummaryViewButton.classList.toggle("utility-btn--secondary", showGeneratedSummary);
     cartTotal.textContent = formatCartBreakdown(state.cart);
+  }
+  function setCartSummaryView(nextValue) {
+    if (!state.cart.length) {
+      isCartSummaryView = false;
+      renderCart();
+      return;
+    }
+    blurActiveElement();
+    isCartSummaryView = Boolean(nextValue);
+    renderCart();
   }
   function moveCartEntryToFront(entryId) {
     const entryIndex = state.cart.findIndex((entry2) => entry2.entryId === entryId);
@@ -2734,6 +2779,7 @@
     renderCart();
   }
   function renderGeneratedCartSummary() {
+    var _a, _b;
     const groupedEntries = groupGeneratedCartEntries(state.cart);
     groupedEntries.forEach((group) => {
       const groupSection = document.createElement("section");
@@ -2743,12 +2789,23 @@
       group.entries.forEach((entry) => {
         const summaryItem = document.createElement("article");
         summaryItem.className = "cart-generated-item";
+        const title = getGeneratedCartEntryTitle(entry);
         const detail = getGeneratedCartEntryDetail(entry);
-        summaryItem.innerHTML = '\n        <span class="cart-generated-item__quantity">'.concat(entry.quantity, '\xD7</span>\n        <div class="cart-generated-item__copy">\n          <strong>').concat(entry.name, "</strong>\n          ").concat(detail ? "<p>".concat(detail, "</p>") : "", "\n        </div>\n      ");
+        summaryItem.innerHTML = '\n        <span class="cart-generated-item__quantity">'.concat(entry.quantity, '\xD7</span>\n        <div class="cart-generated-item__copy">\n          <strong>').concat(title, "</strong>\n          ").concat(detail ? "<p>".concat(detail, "</p>") : "", "\n        </div>\n      ");
         itemsContainer == null ? void 0 : itemsContainer.append(summaryItem);
       });
       cartGenerated.append(groupSection);
     });
+    const actions = document.createElement("div");
+    actions.className = "cart-generated-actions";
+    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--accent" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
+    (_a = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _a.addEventListener("click", () => {
+      setCartSummaryView(false);
+    });
+    (_b = actions.querySelector('[data-generated-action="close"]')) == null ? void 0 : _b.addEventListener("click", () => {
+      closeCart();
+    });
+    cartGenerated.append(actions);
   }
   function groupGeneratedCartEntries(entries) {
     const groups = /* @__PURE__ */ new Map();
@@ -2775,6 +2832,20 @@
     return left.name.localeCompare(right.name, "it");
   }
   function getGeneratedCartGroup(entry) {
+    const item = itemLookup[entry.itemId];
+    const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+    if (entry.itemId === "caffe") {
+      return { key: "caffe", label: "Caff\xE8", order: 50 };
+    }
+    if (entry.itemId === "grappe-amari") {
+      return { key: "grappe-amari", label: "Digestivi", order: 60 };
+    }
+    if (item && isBottleSectionItem(item) && configuration.optionLabel) {
+      const normalizedOptionLabel = normalizeLabel(configuration.optionLabel);
+      if (normalizedOptionLabel === "calice") {
+        return { key: "drink", label: "Drink", order: 20 };
+      }
+    }
     const sectionTitle = normalizeLabel(findSectionTitleForItem(entry.itemId));
     const groupMap = {
       birre: { key: "birre", label: "Birre", order: 10 },
@@ -2793,8 +2864,76 @@
     if (!item || !entry.optionLabel) {
       return "";
     }
+    if (entry.itemId === "grappe-amari") {
+      return getDigestifEntrySubtitle(item, entry.optionLabel);
+    }
+    const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
     const hasMeaningfulOptions = item.options.length > 1 || getSelectionGroups(item).length > 0;
-    return hasMeaningfulOptions ? entry.optionLabel : "";
+    if (!hasMeaningfulOptions) {
+      return "";
+    }
+    if (configuration.selectionLabels.length > 0) {
+      return [item.name, configuration.optionLabel].filter(Boolean).join(", ");
+    }
+    return entry.optionLabel;
+  }
+  function getGeneratedCartEntryTitle(entry) {
+    const item = itemLookup[entry.itemId];
+    if (!item) {
+      return entry.name;
+    }
+    if (entry.itemId === "grappe-amari" && entry.optionLabel) {
+      return entry.optionLabel;
+    }
+    const configuration = getCartEntryConfigurationParts(item, entry.optionLabel);
+    if (configuration.selectionLabels.length > 0) {
+      return configuration.selectionLabels.join(" \xB7 ");
+    }
+    return entry.name;
+  }
+  function getDigestifEntrySubtitle(item, optionLabel) {
+    const option = findItemOptionByLabel(item, optionLabel);
+    if (option == null ? void 0 : option.subtitle) {
+      return option.subtitle;
+    }
+    const normalizedLabel = normalizeLabel(optionLabel);
+    if (normalizedLabel.startsWith("grappa")) {
+      return "Grappa";
+    }
+    if (["limoncello", "liquirizia", "mirto"].includes(normalizedLabel)) {
+      return "Liquore";
+    }
+    return "Amaro";
+  }
+  function getCartEntryConfigurationParts(item, optionLabel) {
+    if (!item || !optionLabel) {
+      return { selectionLabels: [], optionLabel: "" };
+    }
+    const parts = String(optionLabel).split("\xB7").map((part) => part.trim()).filter(Boolean);
+    if (!parts.length) {
+      return { selectionLabels: [], optionLabel: "" };
+    }
+    const optionLabels = new Set(
+      Array.isArray(item.options) ? item.options.map((option) => normalizeLabel((option == null ? void 0 : option.label) || "")).filter(Boolean) : []
+    );
+    const lastPart = parts[parts.length - 1];
+    if (optionLabels.has(normalizeLabel(lastPart))) {
+      return {
+        selectionLabels: parts.slice(0, -1),
+        optionLabel: lastPart
+      };
+    }
+    return {
+      selectionLabels: parts,
+      optionLabel: ""
+    };
+  }
+  function findItemOptionByLabel(item, optionLabel) {
+    if (!item || !Array.isArray(item.options) || !optionLabel) {
+      return null;
+    }
+    const normalizedTarget = normalizeLabel(optionLabel);
+    return item.options.find((option) => normalizeLabel((option == null ? void 0 : option.label) || "") === normalizedTarget) || null;
   }
   function formatCartBreakdown(entries) {
     const breakdown = entries.reduce(
@@ -2804,6 +2943,10 @@
           totals.bevande += entry.quantity;
         } else if (bucket === "bottiglie") {
           totals.bottiglie += entry.quantity;
+        } else if (bucket === "caffe") {
+          totals.caffe += entry.quantity;
+        } else if (bucket === "digestivi") {
+          totals.digestivi += entry.quantity;
         } else if (bucket === "taglieri") {
           totals.taglieri += entry.quantity;
         } else if (bucket === "ignored") {
@@ -2813,7 +2956,7 @@
         }
         return totals;
       },
-      { bevande: 0, bottiglie: 0, taglieri: 0, ignored: 0, other: 0 }
+      { bevande: 0, bottiglie: 0, caffe: 0, digestivi: 0, taglieri: 0, ignored: 0, other: 0 }
     );
     const parts = [];
     if (breakdown.bevande > 0) {
@@ -2821,6 +2964,12 @@
     }
     if (breakdown.bottiglie > 0) {
       parts.push("".concat(breakdown.bottiglie, " ").concat(pluralize(breakdown.bottiglie, "bottiglia", "bottiglie")));
+    }
+    if (breakdown.caffe > 0) {
+      parts.push("".concat(breakdown.caffe, " caff\xE8"));
+    }
+    if (breakdown.digestivi > 0) {
+      parts.push("".concat(breakdown.digestivi, " ").concat(pluralize(breakdown.digestivi, "digestivo", "digestivi")));
     }
     if (breakdown.taglieri > 0) {
       parts.push("".concat(breakdown.taglieri, " ").concat(pluralize(breakdown.taglieri, "tagliere", "taglieri")));
@@ -2836,6 +2985,12 @@
     const category = getItemCategoryLabel(item, entry).toLowerCase();
     const sectionTitle = findSectionTitleForItem(entry.itemId).toLowerCase();
     const optionLabel = (entry.optionLabel || "").toLowerCase();
+    if (entry.itemId === "caffe") {
+      return "caffe";
+    }
+    if (entry.itemId === "grappe-amari") {
+      return "digestivi";
+    }
     if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
       return "ignored";
     }
