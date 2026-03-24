@@ -1825,7 +1825,7 @@ a {
 }
 
 .can-cluster-visual--detail {
-  min-height: 182px;
+  min-height: 146px;
 }
 
 .can-cluster-visual__can {
@@ -1853,15 +1853,24 @@ a {
 }
 
 .can-cluster-visual--detail .can-cluster-visual__can {
+  bottom: calc(var(--can-bottom, -18%) + 18%);
   filter: drop-shadow(0 16px 18px rgba(42, 31, 18, 0.18));
 }
 
 .can-cluster-visual--detail .can-cluster-visual__can.is-selected {
-  filter: drop-shadow(0 24px 30px rgba(42, 31, 18, 0.24));
+  filter: drop-shadow(0 28px 34px rgba(42, 31, 18, 0.28));
 }
 
 .can-cluster-visual--detail .can-cluster-visual__can.is-secondary {
-  opacity: 0.54;
+  opacity: 0.42;
+}
+
+.item-card[data-item-id="bibite"] .can-cluster-visual {
+  min-height: 118px;
+}
+
+.item-card[data-item-id="bibite"] .can-cluster-visual__can {
+  bottom: calc(var(--can-bottom, -18%) + 12%);
 }
 
 @keyframes can-cluster-float {
@@ -3046,6 +3055,13 @@ a {
   margin-bottom: 12px;
 }
 
+.sheet-panel--detail.sheet-panel--can-selector .sheet-preview {
+  margin-bottom: 10px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 .sheet-panel--detail.sheet-panel--long-options .sheet-preview {
   margin-bottom: 12px;
 }
@@ -3334,18 +3350,18 @@ a {
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options {
-  gap: 8px;
+  gap: 6px;
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-btn {
   grid-template-columns: 1fr;
-  align-content: start;
-  justify-items: start;
-  gap: 5px;
-  min-height: 70px;
-  padding: 12px 12px 11px;
-  border-radius: 16px;
-  text-align: left;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  min-height: 60px;
+  padding: 9px 9px 8px;
+  border-radius: 14px;
+  text-align: center;
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-btn--full-row {
@@ -3353,7 +3369,18 @@ a {
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-label {
+  font-size: 0.96rem;
   line-height: 1.18;
+}
+
+.sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-copy {
+  gap: 1px;
+  justify-items: center;
+  text-align: center;
+}
+
+.sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-subtitle {
+  text-align: center;
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-price {
@@ -3534,6 +3561,12 @@ a {
   padding: 14px 16px;
   color: var(--ink);
   background: rgba(17, 17, 17, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.07);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
 }
 
 .sheet-panel--detail.sheet-panel--selection-groups .option-btn {
@@ -3574,24 +3607,41 @@ a {
 }
 
 .option-btn.is-selected {
-  color: #fff;
-  background: #171717;
+  color: var(--ink);
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow:
+    inset 0 0 0 2px rgba(34, 28, 22, 0.78),
+    0 10px 18px rgba(42, 31, 18, 0.08);
+  transform: translateY(-1px);
+}
+
+.option-btn.is-selected .option-subtitle {
+  color: rgba(72, 57, 44, 0.84);
 }
 
 .option-btn--wine-red.is-selected {
-  color: #fff7f8;
-  background: #8a2d3b;
+  color: rgba(85, 29, 39, 0.96);
+  background: linear-gradient(180deg, rgba(255, 247, 248, 0.98), rgba(249, 231, 235, 0.98));
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-    0 10px 18px rgba(96, 27, 39, 0.2);
+    inset 0 0 0 2px rgba(138, 45, 59, 0.92),
+    0 10px 18px rgba(96, 27, 39, 0.12);
+}
+
+.option-btn--wine-red.is-selected .option-label,
+.option-btn--wine-red.is-selected .option-price {
+  color: rgba(85, 29, 39, 0.96);
+}
+
+.option-btn--wine-red.is-selected .option-subtitle {
+  color: rgba(110, 48, 59, 0.84);
 }
 
 .option-btn--wine-white.is-selected {
-  color: #4d3714;
-  background: #e7cf82;
+  color: #5a4111;
+  background: linear-gradient(180deg, rgba(255, 250, 229, 0.98), rgba(244, 231, 180, 0.98));
   box-shadow:
-    inset 0 0 0 1px rgba(126, 95, 22, 0.14),
-    0 10px 18px rgba(145, 115, 42, 0.14);
+    inset 0 0 0 2px rgba(145, 115, 42, 0.78),
+    0 10px 18px rgba(145, 115, 42, 0.1);
 }
 
 .option-btn--herbal-green {
@@ -3609,20 +3659,20 @@ a {
 }
 
 .option-btn--herbal-green.is-selected {
-  color: #f7f4eb;
-  background: linear-gradient(180deg, #3c5335, #2d4127);
+  color: rgba(41, 58, 37, 0.96);
+  background: linear-gradient(180deg, rgba(244, 248, 241, 0.98), rgba(226, 235, 220, 0.98));
   box-shadow:
-    inset 0 0 0 1px rgba(255, 250, 236, 0.12),
-    0 10px 18px rgba(42, 59, 33, 0.24);
+    inset 0 0 0 2px rgba(58, 79, 52, 0.82),
+    0 10px 18px rgba(42, 59, 33, 0.12);
 }
 
 .option-btn--herbal-green.is-selected .option-label,
 .option-btn--herbal-green.is-selected .option-price {
-  color: #fffaf0;
+  color: rgba(41, 58, 37, 0.96);
 }
 
 .option-btn--herbal-green.is-selected .option-subtitle {
-  color: rgba(239, 230, 205, 0.88);
+  color: rgba(63, 85, 57, 0.82);
 }
 
 .option-copy {
@@ -3664,8 +3714,28 @@ a {
 .cart-generated {
   overflow: auto;
   display: grid;
-  gap: 0;
+  gap: 14px;
   padding: 14px 0 6px;
+}
+
+.cart-generated-group {
+  display: grid;
+  gap: 4px;
+}
+
+.cart-generated-group__title {
+  margin: 0;
+  padding-bottom: 4px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(110, 84, 58, 0.76);
+}
+
+.cart-generated-group__items {
+  display: grid;
+  gap: 0;
 }
 
 .cart-item {
@@ -3818,6 +3888,11 @@ a {
   gap: 10px;
 }
 
+.sheet-panel--cart.is-generated .cart-footer__actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
 .cart-footer {
   padding-top: 12px;
   border-top: 1px solid rgba(17, 17, 17, 0.08);
@@ -3831,6 +3906,14 @@ a {
   width: auto;
   justify-self: center;
   padding-inline: 8px;
+}
+
+.sheet-panel--cart.is-generated #toggleSummaryView {
+  order: 1;
+}
+
+.sheet-panel--cart.is-generated #saveCart {
+  order: 2;
 }
 
 .cart-empty {
@@ -3940,6 +4023,7 @@ a {
   }
 
   .cart-generated {
+    gap: 12px;
     padding: 12px 0 4px;
   }
 

@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260324d";
-const APP_BUILD_LABEL = "V.1.660";
+const APP_VERSION = "20260324e";
+const APP_BUILD_LABEL = "V.1.661";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -255,6 +255,7 @@ const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
 let sections = [];
 let itemLookup = {};
 let itemSectionLookup = {};
+let itemMenuOrderLookup = {};
 let sideVisualObserver;
 let deferredPhotoPanelObserver;
 let deferredSideVisualObserver;
@@ -287,8 +288,10 @@ const state = {
   cart: loadCart(),
 };
 
+const saveCartLabel = "Salva e continua";
+const closeGeneratedSummaryLabel = "Chiudi";
 const generateSummaryLabel = "Genera riepilogo";
-const editSummaryLabel = "Modifica selezione";
+const editSummaryLabel = "Modifica";
 const defaultCartTitle = "Da comunicare al cameriere";
 const generatedCartTitle = "Siamo pronti ad ordinare...";
 let isCartSummaryView = false;
@@ -801,6 +804,12 @@ function applyMenuData(menuData) {
   itemSectionLookup = sections.reduce((lookup, section) => {
     section.items.forEach((item) => {
       lookup[item.id] = section.title;
+    });
+    return lookup;
+  }, {});
+  itemMenuOrderLookup = sections.reduce((lookup, section, sectionIndex) => {
+    section.items.forEach((item, itemIndex) => {
+      lookup[item.id] = sectionIndex * 1000 + itemIndex;
     });
     return lookup;
   }, {});
@@ -3375,12 +3384,15 @@ function renderOptions(item) {
     const optionSubtitle = getOptionModalSubtitle(option);
     const toneClass = getOptionToneClass(option);
     const layoutClass = getOptionLayoutClass(option);
+    const hidePrice = shouldHideDetailOptionPrices(item);
 
     optionButton.type = "button";
     optionButton.className = `option-btn${toneClass ? ` ${toneClass}` : ""}${
       layoutClass ? ` ${layoutClass}` : ""
     }${
       optionSubtitle ? " option-btn--with-subtitle" : ""
+    }${
+      hidePrice && displayLabel ? " option-btn--label-only" : ""
     }${index === state.selectedOptionIndex ? " is-selected" : ""}${
       displayLabel ? "" : " option-btn--price-only"
     }`;
@@ -3390,7 +3402,7 @@ function renderOptions(item) {
             <span class="option-label">${displayLabel}</span>
             ${optionSubtitle ? `<span class="option-subtitle">${optionSubtitle}</span>` : ""}
           </span>
-          <span class="option-price">${formatPrice(option.price)}</span>
+          ${hidePrice ? "" : `<span class="option-price">${formatPrice(option.price)}</span>`}
         `
       : `
           <span class="option-price option-price--solo">${formatPrice(option.price)}</span>
@@ -3489,6 +3501,7 @@ function createOptionGroup(label, compact = false) {
 function renderCart() {
   cartItems.innerHTML = "";
   cartGenerated.innerHTML = "";
+  saveCartButton.textContent = saveCartLabel;
   toggleSummaryViewButton.textContent = generateSummaryLabel;
   const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
   cartCount.textContent = cartQuantity;
@@ -3542,6 +3555,7 @@ function renderCart() {
   saveCartButton.hidden = !hasItems;
   toggleSummaryViewButton.hidden = !hasItems;
   clearCartButton.hidden = !hasItems || showGeneratedSummary;
+  saveCartButton.textContent = showGeneratedSummary ? closeGeneratedSummaryLabel : saveCartLabel;
   toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
@@ -3578,19 +3592,86 @@ function removeCartEntry(entryId) {
 }
 
 function renderGeneratedCartSummary() {
-  state.cart.forEach((entry) => {
-    const summaryItem = document.createElement("article");
-    summaryItem.className = "cart-generated-item";
-    const detail = getGeneratedCartEntryDetail(entry);
-    summaryItem.innerHTML = `
-      <span class="cart-generated-item__quantity">${entry.quantity}×</span>
-      <div class="cart-generated-item__copy">
-        <strong>${entry.name}</strong>
-        ${detail ? `<p>${detail}</p>` : ""}
-      </div>
+  const groupedEntries = groupGeneratedCartEntries(state.cart);
+
+  groupedEntries.forEach((group) => {
+    const groupSection = document.createElement("section");
+    groupSection.className = "cart-generated-group";
+    groupSection.innerHTML = `
+      <p class="cart-generated-group__title">${group.label}</p>
+      <div class="cart-generated-group__items"></div>
     `;
-    cartGenerated.append(summaryItem);
+
+    const itemsContainer = groupSection.querySelector(".cart-generated-group__items");
+
+    group.entries.forEach((entry) => {
+      const summaryItem = document.createElement("article");
+      summaryItem.className = "cart-generated-item";
+      const detail = getGeneratedCartEntryDetail(entry);
+      summaryItem.innerHTML = `
+        <span class="cart-generated-item__quantity">${entry.quantity}×</span>
+        <div class="cart-generated-item__copy">
+          <strong>${entry.name}</strong>
+          ${detail ? `<p>${detail}</p>` : ""}
+        </div>
+      `;
+      itemsContainer?.append(summaryItem);
+    });
+
+    cartGenerated.append(groupSection);
   });
+}
+
+function groupGeneratedCartEntries(entries) {
+  const groups = new Map();
+
+  entries.forEach((entry) => {
+    const groupInfo = getGeneratedCartGroup(entry);
+    if (!groups.has(groupInfo.key)) {
+      groups.set(groupInfo.key, {
+        ...groupInfo,
+        entries: [],
+      });
+    }
+
+    groups.get(groupInfo.key)?.entries.push(entry);
+  });
+
+  return Array.from(groups.values())
+    .sort((left, right) => left.order - right.order)
+    .map((group) => ({
+      ...group,
+      entries: [...group.entries].sort(compareGeneratedCartEntries),
+    }));
+}
+
+function compareGeneratedCartEntries(left, right) {
+  const leftOrder = getItemMenuOrder(left.itemId);
+  const rightOrder = getItemMenuOrder(right.itemId);
+
+  if (leftOrder !== rightOrder) {
+    return leftOrder - rightOrder;
+  }
+
+  return left.name.localeCompare(right.name, "it");
+}
+
+function getGeneratedCartGroup(entry) {
+  const sectionTitle = normalizeLabel(findSectionTitleForItem(entry.itemId));
+
+  const groupMap = {
+    birre: { key: "birre", label: "Birre", order: 10 },
+    drink: { key: "drink", label: "Drink", order: 20 },
+    bottiglie: { key: "bottiglie", label: "Bottiglie", order: 30 },
+    "altre bevande": { key: "altre-bevande", label: "Altre bevande", order: 40 },
+    taglieri: { key: "taglieri", label: "Taglieri", order: 90 },
+  };
+
+  return groupMap[sectionTitle] || { key: "altri", label: "Altri prodotti", order: 100 };
+}
+
+function getItemMenuOrder(itemId) {
+  return Number.isFinite(itemMenuOrderLookup[itemId]) ? itemMenuOrderLookup[itemId] : Number.MAX_SAFE_INTEGER;
 }
 
 function getGeneratedCartEntryDetail(entry) {
@@ -3714,7 +3795,7 @@ function formatDetailCategoryLabel(item) {
       return sectionTitle;
     }
 
-    return `${sectionTitle} ${categoryLabel}`;
+    return `${sectionTitle}, ${categoryLabel}`;
   }
 
   return categoryLabel || sectionTitle;
@@ -4012,6 +4093,10 @@ function hasLongOptionList(item) {
 
 function shouldUseCompactDetailOptions(item) {
   return Boolean(item && item.compactDetailOptions === true);
+}
+
+function shouldHideDetailOptionPrices(item) {
+  return Boolean(item && item.hideOptionPricesInDetail === true);
 }
 
 function shouldUseCanSelectorLayout(item) {
@@ -4313,6 +4398,7 @@ function escapeHtml(value) {
 function formatSpritzEditorialText(text) {
   const sentences = splitSpritzEditorialSentences(text);
   const emphasizedSources = [
+    "California Institute of Aperitivo Sciences",
     "California Institute of Aperitivo Studies",
     "Laboratory of Outdoor Consumption",
   ];
@@ -4361,7 +4447,7 @@ function renderDetailPreview(item) {
 
   if (slides.length <= 1) {
     const [singleSlide] = slides;
-    return singleSlide ? renderVisualByType(singleSlide, "detail") : renderItemVisual(item, "detail");
+    return singleSlide ? renderVisualByType(singleSlide, "detail", item) : renderItemVisual(item, "detail");
   }
 
   const slideMarkup = slides
@@ -4371,7 +4457,7 @@ function renderDetailPreview(item) {
           class="detail-gallery__slide${slide.type === "editorial-quote" ? " detail-gallery__slide--editorial" : ""}"
           data-gallery-slide="${index}"
         >
-          ${renderVisualByType(slide, "detail")}
+          ${renderVisualByType(slide, "detail", item)}
         </div>
       `
     )
@@ -4402,7 +4488,7 @@ function renderDetailPreview(item) {
   `;
 }
 
-function renderVisualByType(visual, context) {
+function renderVisualByType(visual, context, item = null) {
   if (!visual || !visual.type) {
     return renderPlaceholderPanelVisual(context);
   }
@@ -4412,11 +4498,11 @@ function renderVisualByType(visual, context) {
   }
 
   if (visual.type === "photo-panel") {
-    return renderPhotoPanelVisual(visual, context, null);
+    return renderPhotoPanelVisual(visual, context, item);
   }
 
   if (visual.type === "can-cluster") {
-    return renderCanClusterVisual(visual, context, null);
+    return renderCanClusterVisual(visual, context, item);
   }
 
   if (visual.type === "text-panel") {
@@ -4624,8 +4710,8 @@ function renderCanClusterVisual(visual, context, item = null) {
                 --can-float-distance: ${canItem.floatDistance || "5px"};
                 --can-float-duration: ${canItem.floatDuration || "4.2s"};
                 --can-float-delay: ${canItem.floatDelay || "0s"};
-                --can-extra-lift: ${activeCanIndex >= 0 && index === activeCanIndex ? "28px" : "0px"};
-                --can-scale: ${activeCanIndex >= 0 && index === activeCanIndex ? "1.18" : "0.82"};
+                --can-extra-lift: ${activeCanIndex >= 0 && index === activeCanIndex ? "4px" : "0px"};
+                --can-scale: ${activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74"};
               "
             />
           `

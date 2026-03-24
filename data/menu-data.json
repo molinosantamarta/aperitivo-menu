@@ -1216,7 +1216,7 @@
                 "floatDelay": "-1.2s"
               },
               {
-                "asset": "bibite-te-pesca.png",
+                "asset": "bibite-te-limone.png",
                 "left": "60%",
                 "bottom": "-30%",
                 "height": "126px",
@@ -1227,7 +1227,7 @@
                 "floatDelay": "-0.4s"
               },
               {
-                "asset": "bibite-te-limone.png",
+                "asset": "bibite-te-pesca.png",
                 "left": "80%",
                 "bottom": "-28%",
                 "height": "126px",
@@ -1530,7 +1530,8 @@
           "name": "Grappe e amari",
           "category": "Altre bevande",
           "compactDetailOptions": true,
-          "description": "Amari, grappe e liquori da fine pasto. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta.",
+          "hideOptionPricesInDetail": true,
+          "description": "Amari, grappe, distillati e liquori. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta. (4€/cad.)",
           "visual": {
             "type": "photo-panel",
             "asset": "grappe-amari-back.jpg",

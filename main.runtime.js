@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324d";
-  const APP_BUILD_LABEL = "V.1.660";
+  const APP_VERSION = "20260324e";
+  const APP_BUILD_LABEL = "V.1.661";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -268,6 +268,7 @@
   let sections = [];
   let itemLookup = {};
   let itemSectionLookup = {};
+  let itemMenuOrderLookup = {};
   let sideVisualObserver;
   let deferredPhotoPanelObserver;
   let deferredSideVisualObserver;
@@ -299,8 +300,10 @@
     detailEditorialSlide: null,
     cart: loadCart()
   };
+  const saveCartLabel = "Salva e continua";
+  const closeGeneratedSummaryLabel = "Chiudi";
   const generateSummaryLabel = "Genera riepilogo";
-  const editSummaryLabel = "Modifica selezione";
+  const editSummaryLabel = "Modifica";
   const defaultCartTitle = "Da comunicare al cameriere";
   const generatedCartTitle = "Siamo pronti ad ordinare...";
   let isCartSummaryView = false;
@@ -720,6 +723,12 @@
     itemSectionLookup = sections.reduce((lookup, section) => {
       section.items.forEach((item) => {
         lookup[item.id] = section.title;
+      });
+      return lookup;
+    }, {});
+    itemMenuOrderLookup = sections.reduce((lookup, section, sectionIndex) => {
+      section.items.forEach((item, itemIndex) => {
+        lookup[item.id] = sectionIndex * 1e3 + itemIndex;
       });
       return lookup;
     }, {});
@@ -2601,9 +2610,10 @@
       const optionSubtitle = getOptionModalSubtitle(option);
       const toneClass = getOptionToneClass(option);
       const layoutClass = getOptionLayoutClass(option);
+      const hidePrice = shouldHideDetailOptionPrices(item);
       optionButton.type = "button";
-      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(index === state.selectedOptionIndex ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
-      optionButton.innerHTML = displayLabel ? '\n          <span class="option-copy">\n            <span class="option-label">'.concat(displayLabel, "</span>\n            ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(optionSubtitle, "</span>") : "", '\n          </span>\n          <span class="option-price">').concat(formatPrice(option.price), "</span>\n        ") : '\n          <span class="option-price option-price--solo">'.concat(formatPrice(option.price), "</span>\n        ");
+      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(hidePrice && displayLabel ? " option-btn--label-only" : "").concat(index === state.selectedOptionIndex ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
+      optionButton.innerHTML = displayLabel ? '\n          <span class="option-copy">\n            <span class="option-label">'.concat(displayLabel, "</span>\n            ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(optionSubtitle, "</span>") : "", "\n          </span>\n          ").concat(hidePrice ? "" : '<span class="option-price">'.concat(formatPrice(option.price), "</span>"), "\n        ") : '\n          <span class="option-price option-price--solo">'.concat(formatPrice(option.price), "</span>\n        ");
       optionButton.addEventListener("click", () => {
         state.selectedOptionIndex = index;
         renderOptions(item);
@@ -2660,6 +2670,7 @@
   function renderCart() {
     cartItems.innerHTML = "";
     cartGenerated.innerHTML = "";
+    saveCartButton.textContent = saveCartLabel;
     toggleSummaryViewButton.textContent = generateSummaryLabel;
     const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
     cartCount.textContent = cartQuantity;
@@ -2693,6 +2704,7 @@
     saveCartButton.hidden = !hasItems;
     toggleSummaryViewButton.hidden = !hasItems;
     clearCartButton.hidden = !hasItems || showGeneratedSummary;
+    saveCartButton.textContent = showGeneratedSummary ? closeGeneratedSummaryLabel : saveCartLabel;
     toggleSummaryViewButton.textContent = showGeneratedSummary ? editSummaryLabel : generateSummaryLabel;
     cartTotal.textContent = formatCartBreakdown(state.cart);
   }
@@ -2722,13 +2734,59 @@
     renderCart();
   }
   function renderGeneratedCartSummary() {
-    state.cart.forEach((entry) => {
-      const summaryItem = document.createElement("article");
-      summaryItem.className = "cart-generated-item";
-      const detail = getGeneratedCartEntryDetail(entry);
-      summaryItem.innerHTML = '\n      <span class="cart-generated-item__quantity">'.concat(entry.quantity, '\xD7</span>\n      <div class="cart-generated-item__copy">\n        <strong>').concat(entry.name, "</strong>\n        ").concat(detail ? "<p>".concat(detail, "</p>") : "", "\n      </div>\n    ");
-      cartGenerated.append(summaryItem);
+    const groupedEntries = groupGeneratedCartEntries(state.cart);
+    groupedEntries.forEach((group) => {
+      const groupSection = document.createElement("section");
+      groupSection.className = "cart-generated-group";
+      groupSection.innerHTML = '\n      <p class="cart-generated-group__title">'.concat(group.label, '</p>\n      <div class="cart-generated-group__items"></div>\n    ');
+      const itemsContainer = groupSection.querySelector(".cart-generated-group__items");
+      group.entries.forEach((entry) => {
+        const summaryItem = document.createElement("article");
+        summaryItem.className = "cart-generated-item";
+        const detail = getGeneratedCartEntryDetail(entry);
+        summaryItem.innerHTML = '\n        <span class="cart-generated-item__quantity">'.concat(entry.quantity, '\xD7</span>\n        <div class="cart-generated-item__copy">\n          <strong>').concat(entry.name, "</strong>\n          ").concat(detail ? "<p>".concat(detail, "</p>") : "", "\n        </div>\n      ");
+        itemsContainer == null ? void 0 : itemsContainer.append(summaryItem);
+      });
+      cartGenerated.append(groupSection);
     });
+  }
+  function groupGeneratedCartEntries(entries) {
+    const groups = /* @__PURE__ */ new Map();
+    entries.forEach((entry) => {
+      var _a;
+      const groupInfo = getGeneratedCartGroup(entry);
+      if (!groups.has(groupInfo.key)) {
+        groups.set(groupInfo.key, __spreadProps(__spreadValues({}, groupInfo), {
+          entries: []
+        }));
+      }
+      (_a = groups.get(groupInfo.key)) == null ? void 0 : _a.entries.push(entry);
+    });
+    return Array.from(groups.values()).sort((left, right) => left.order - right.order).map((group) => __spreadProps(__spreadValues({}, group), {
+      entries: [...group.entries].sort(compareGeneratedCartEntries)
+    }));
+  }
+  function compareGeneratedCartEntries(left, right) {
+    const leftOrder = getItemMenuOrder(left.itemId);
+    const rightOrder = getItemMenuOrder(right.itemId);
+    if (leftOrder !== rightOrder) {
+      return leftOrder - rightOrder;
+    }
+    return left.name.localeCompare(right.name, "it");
+  }
+  function getGeneratedCartGroup(entry) {
+    const sectionTitle = normalizeLabel(findSectionTitleForItem(entry.itemId));
+    const groupMap = {
+      birre: { key: "birre", label: "Birre", order: 10 },
+      drink: { key: "drink", label: "Drink", order: 20 },
+      bottiglie: { key: "bottiglie", label: "Bottiglie", order: 30 },
+      "altre bevande": { key: "altre-bevande", label: "Altre bevande", order: 40 },
+      taglieri: { key: "taglieri", label: "Taglieri", order: 90 }
+    };
+    return groupMap[sectionTitle] || { key: "altri", label: "Altri prodotti", order: 100 };
+  }
+  function getItemMenuOrder(itemId) {
+    return Number.isFinite(itemMenuOrderLookup[itemId]) ? itemMenuOrderLookup[itemId] : Number.MAX_SAFE_INTEGER;
   }
   function getGeneratedCartEntryDetail(entry) {
     const item = itemLookup[entry.itemId];
@@ -2813,7 +2871,7 @@
       if (normalizedSection.includes(normalizedCategory)) {
         return sectionTitle;
       }
-      return "".concat(sectionTitle, " ").concat(categoryLabel);
+      return "".concat(sectionTitle, ", ").concat(categoryLabel);
     }
     return categoryLabel || sectionTitle;
   }
@@ -3043,6 +3101,9 @@
   function shouldUseCompactDetailOptions(item) {
     return Boolean(item && item.compactDetailOptions === true);
   }
+  function shouldHideDetailOptionPrices(item) {
+    return Boolean(item && item.hideOptionPricesInDetail === true);
+  }
   function shouldUseCanSelectorLayout(item) {
     var _a, _b;
     return Boolean(
@@ -3262,6 +3323,7 @@
   function formatSpritzEditorialText(text) {
     const sentences = splitSpritzEditorialSentences(text);
     const emphasizedSources = [
+      "California Institute of Aperitivo Sciences",
       "California Institute of Aperitivo Studies",
       "Laboratory of Outdoor Consumption"
     ];
@@ -3295,17 +3357,17 @@
     const slides = getDetailPreviewSlides(item);
     if (slides.length <= 1) {
       const [singleSlide] = slides;
-      return singleSlide ? renderVisualByType(singleSlide, "detail") : renderItemVisual(item, "detail");
+      return singleSlide ? renderVisualByType(singleSlide, "detail", item) : renderItemVisual(item, "detail");
     }
     const slideMarkup = slides.map(
-      (slide, index) => '\n        <div\n          class="detail-gallery__slide'.concat(slide.type === "editorial-quote" ? " detail-gallery__slide--editorial" : "", '"\n          data-gallery-slide="').concat(index, '"\n        >\n          ').concat(renderVisualByType(slide, "detail"), "\n        </div>\n      ")
+      (slide, index) => '\n        <div\n          class="detail-gallery__slide'.concat(slide.type === "editorial-quote" ? " detail-gallery__slide--editorial" : "", '"\n          data-gallery-slide="').concat(index, '"\n        >\n          ').concat(renderVisualByType(slide, "detail", item), "\n        </div>\n      ")
     ).join("");
     const dots = slides.map(
       (slide, index) => '\n        <button\n          class="detail-gallery__dot'.concat(index === 0 ? " is-active" : "", '"\n          type="button"\n          aria-label="').concat(getDetailPreviewDotLabel(slide, index), '"\n          data-gallery-dot="').concat(index, '"\n        ></button>\n      ')
     ).join("");
     return '\n    <div class="detail-gallery">\n      <div class="detail-gallery__track" data-detail-gallery-track>\n        '.concat(slideMarkup, '\n      </div>\n      <div class="detail-gallery__dots" aria-label="Pi\xF9 immagini disponibili">\n        ').concat(dots, "\n      </div>\n    </div>\n  ");
   }
-  function renderVisualByType(visual, context) {
+  function renderVisualByType(visual, context, item = null) {
     if (!visual || !visual.type) {
       return renderPlaceholderPanelVisual(context);
     }
@@ -3313,10 +3375,10 @@
       return renderBeerScriptVisual(visual, context);
     }
     if (visual.type === "photo-panel") {
-      return renderPhotoPanelVisual(visual, context, null);
+      return renderPhotoPanelVisual(visual, context, item);
     }
     if (visual.type === "can-cluster") {
-      return renderCanClusterVisual(visual, context, null);
+      return renderCanClusterVisual(visual, context, item);
     }
     if (visual.type === "text-panel") {
       return renderTextPanelVisual(visual, context);
@@ -3396,7 +3458,7 @@
     const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
     const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
     const cans = Array.isArray(visual.items) ? visual.items.map(
-      (canItem, index) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "").concat(activeCanIndex >= 0 ? index === activeCanIndex ? " is-selected" : " is-secondary" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(canItem.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(canItem.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(canItem.left || "50%", ";\n                --can-bottom: ").concat(canItem.bottom || "-18%", ";\n                --can-width: ").concat(canItem.width || "auto", ";\n                --can-height: ").concat(canItem.height || "auto", ";\n                --can-rotate: ").concat(canItem.rotate || "0deg", ";\n                --can-z: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? Number(canItem.zIndex || 1) + 4 : canItem.zIndex || 1, ";\n                --can-float-distance: ").concat(canItem.floatDistance || "5px", ";\n                --can-float-duration: ").concat(canItem.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(canItem.floatDelay || "0s", ";\n                --can-extra-lift: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "28px" : "0px", ";\n                --can-scale: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "1.18" : "0.82", ';\n              "\n            />\n          ')
+      (canItem, index) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "").concat(activeCanIndex >= 0 ? index === activeCanIndex ? " is-selected" : " is-secondary" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(canItem.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(canItem.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(canItem.left || "50%", ";\n                --can-bottom: ").concat(canItem.bottom || "-18%", ";\n                --can-width: ").concat(canItem.width || "auto", ";\n                --can-height: ").concat(canItem.height || "auto", ";\n                --can-rotate: ").concat(canItem.rotate || "0deg", ";\n                --can-z: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? Number(canItem.zIndex || 1) + 4 : canItem.zIndex || 1, ";\n                --can-float-distance: ").concat(canItem.floatDistance || "5px", ";\n                --can-float-duration: ").concat(canItem.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(canItem.floatDelay || "0s", ";\n                --can-extra-lift: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "4px" : "0px", ";\n                --can-scale: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74", ';\n              "\n            />\n          ')
     ).join("") : "";
     return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="--can-cluster-bg: ').concat(visual.backgroundColor || "#d8dee8", ';"\n    >\n      ').concat(cans, "\n    </div>\n  ");
   }
