@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260324e";
-const APP_BUILD_LABEL = "V.1.661";
+const APP_VERSION = "20260324f";
+const APP_BUILD_LABEL = "V.1.662";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -47,7 +47,7 @@ const LOADER_MESSAGES = [
 const PROMO_AGRI_VIDEOS = [
   {
     title: "Video Agri-Eventi 1",
-    eyebrow: "BBQ sotto le stelle",
+    eyebrow: "BBQ sotto le Stelle",
     src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1",
   },
   {
@@ -57,7 +57,7 @@ const PROMO_AGRI_VIDEOS = [
   },
   {
     title: "Video Agri-Eventi 3",
-    eyebrow: "Molino Après-ski",
+    eyebrow: "Molino Après-Ski",
     src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1",
   },
 ];
@@ -4710,7 +4710,9 @@ function renderCanClusterVisual(visual, context, item = null) {
                 --can-float-distance: ${canItem.floatDistance || "5px"};
                 --can-float-duration: ${canItem.floatDuration || "4.2s"};
                 --can-float-delay: ${canItem.floatDelay || "0s"};
-                --can-extra-lift: ${activeCanIndex >= 0 && index === activeCanIndex ? "4px" : "0px"};
+                --can-extra-lift: ${
+                  activeCanIndex >= 0 && index === activeCanIndex ? canItem.selectedLift || "4px" : "0px"
+                };
                 --can-scale: ${activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74"};
               "
             />

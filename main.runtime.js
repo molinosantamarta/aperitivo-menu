@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324e";
-  const APP_BUILD_LABEL = "V.1.661";
+  const APP_VERSION = "20260324f";
+  const APP_BUILD_LABEL = "V.1.662";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -66,7 +66,7 @@
   const PROMO_AGRI_VIDEOS = [
     {
       title: "Video Agri-Eventi 1",
-      eyebrow: "BBQ sotto le stelle",
+      eyebrow: "BBQ sotto le Stelle",
       src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1"
     },
     {
@@ -76,7 +76,7 @@
     },
     {
       title: "Video Agri-Eventi 3",
-      eyebrow: "Molino Apr\xE8s-ski",
+      eyebrow: "Molino Apr\xE8s-Ski",
       src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     }
   ];
@@ -3458,7 +3458,7 @@
     const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
     const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
     const cans = Array.isArray(visual.items) ? visual.items.map(
-      (canItem, index) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "").concat(activeCanIndex >= 0 ? index === activeCanIndex ? " is-selected" : " is-secondary" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(canItem.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(canItem.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(canItem.left || "50%", ";\n                --can-bottom: ").concat(canItem.bottom || "-18%", ";\n                --can-width: ").concat(canItem.width || "auto", ";\n                --can-height: ").concat(canItem.height || "auto", ";\n                --can-rotate: ").concat(canItem.rotate || "0deg", ";\n                --can-z: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? Number(canItem.zIndex || 1) + 4 : canItem.zIndex || 1, ";\n                --can-float-distance: ").concat(canItem.floatDistance || "5px", ";\n                --can-float-duration: ").concat(canItem.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(canItem.floatDelay || "0s", ";\n                --can-extra-lift: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "4px" : "0px", ";\n                --can-scale: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74", ';\n              "\n            />\n          ')
+      (canItem, index) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "").concat(activeCanIndex >= 0 ? index === activeCanIndex ? " is-selected" : " is-secondary" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(canItem.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(canItem.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(canItem.left || "50%", ";\n                --can-bottom: ").concat(canItem.bottom || "-18%", ";\n                --can-width: ").concat(canItem.width || "auto", ";\n                --can-height: ").concat(canItem.height || "auto", ";\n                --can-rotate: ").concat(canItem.rotate || "0deg", ";\n                --can-z: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? Number(canItem.zIndex || 1) + 4 : canItem.zIndex || 1, ";\n                --can-float-distance: ").concat(canItem.floatDistance || "5px", ";\n                --can-float-duration: ").concat(canItem.floatDuration || "4.2s", ";\n                --can-float-delay: ").concat(canItem.floatDelay || "0s", ";\n                --can-extra-lift: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? canItem.selectedLift || "4px" : "0px", ";\n                --can-scale: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74", ';\n              "\n            />\n          ')
     ).join("") : "";
     return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="--can-cluster-bg: ').concat(visual.backgroundColor || "#d8dee8", ';"\n    >\n      ').concat(cans, "\n    </div>\n  ");
   }

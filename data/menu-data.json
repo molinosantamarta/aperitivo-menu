@@ -1218,8 +1218,8 @@
               {
                 "asset": "bibite-te-limone.png",
                 "left": "60%",
-                "bottom": "-30%",
-                "height": "126px",
+                "bottom": "-34%",
+                "height": "132px",
                 "rotate": "4deg",
                 "zIndex": 3,
                 "floatDistance": "5px",
@@ -1229,10 +1229,11 @@
               {
                 "asset": "bibite-te-pesca.png",
                 "left": "80%",
-                "bottom": "-28%",
-                "height": "126px",
+                "bottom": "-32%",
+                "height": "132px",
                 "rotate": "9deg",
                 "zIndex": 1,
+                "selectedLift": "1px",
                 "floatDistance": "4px",
                 "floatDuration": "4.7s",
                 "floatDelay": "-1.6s"
@@ -1392,7 +1393,7 @@
           "options": [
             {
               "label": "",
-              "price": 4
+              "price": 4.5
             }
           ],
           "rect": [
@@ -1419,7 +1420,9 @@
           "page": 2,
           "name": "Caffè",
           "category": "Altre bevande",
-          "description": "Normale, lungo, orzo, decaffeinato o macchiato.",
+          "compactDetailOptions": true,
+          "hideOptionPricesInDetail": true,
+          "description": "Normale, lungo, deca o macchiato. (1,50€/cad.)",
           "cardPriceOverride": 1.5,
           "visual": {
             "type": "photo-panel",
@@ -1437,11 +1440,7 @@
               "price": 1.5
             },
             {
-              "label": "Orzo",
-              "price": 1.5
-            },
-            {
-              "label": "Decaffeinato",
+              "label": "Deca",
               "price": 1.5
             },
             {
