@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325f";
-const APP_BUILD_LABEL = "V.1.670";
+const APP_VERSION = "20260325g";
+const APP_BUILD_LABEL = "V.1.671";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -490,6 +490,7 @@ if ("fonts" in document && typeof document.fonts?.addEventListener === "function
 initLoaderProgress();
 initPromoAgriCarousel();
 initFormatCarousel();
+registerServiceWorker();
 init();
 
 async function init() {
@@ -572,6 +573,29 @@ async function init() {
 
     showBootstrapFailureState(error);
   }
+}
+
+function registerServiceWorker() {
+  const host = window.location.hostname;
+  const isLocalHost =
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "0.0.0.0" ||
+    host.indexOf("192.168.") === 0 ||
+    host.indexOf("10.") === 0 ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+
+  if (!("serviceWorker" in navigator) || !window.isSecureContext || isLocalHost) {
+    return;
+  }
+
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register(`./service-worker.js?v=${APP_VERSION}`)
+      .catch((error) => {
+        console.warn("Service worker non registrato.", error);
+      });
+  });
 }
 
 function initLoaderProgress() {
