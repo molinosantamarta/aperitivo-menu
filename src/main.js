@@ -1,11 +1,11 @@
+import { APP_BUILD_LABEL } from "./generated/build-meta.js";
+
 const priceFormatter = new Intl.NumberFormat("it-IT", {
   style: "currency",
   currency: "EUR",
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
-
-import { APP_BUILD_LABEL } from "./generated/build-meta.js";
 
 const APP_VERSION = "20260325j";
 const LOADER_CARD_DELAY = 2800;

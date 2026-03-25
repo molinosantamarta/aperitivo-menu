@@ -9,7 +9,7 @@
     "extract": "python3 scripts/assets/extract_ape_assets.py",
     "sheet:template": "node scripts/sheets/export_sheet_template.mjs",
     "sheet:template:simple": "node scripts/sheets/export_sheet_template_simple.mjs",
-    "build:pages-runtime": "npm run build:meta && mkdir -p public/generated && esbuild src/main.js --platform=browser --format=iife --target=safari11 --outfile=public/generated/main.runtime.js && npm run build:compat",
+    "build:pages-runtime": "npm run build:meta && mkdir -p public/generated && esbuild src/main.js --bundle --platform=browser --format=iife --target=safari11 --outfile=public/generated/main.runtime.js && npm run build:compat",
     "dev": "npm run build:meta && npm run build:compat && vite --host 0.0.0.0 --port 4173",
     "build": "npm run build:pages-runtime && vite build && npm run build:compat",
     "preview": "npm run build:meta && vite preview --host 0.0.0.0 --port 4174"

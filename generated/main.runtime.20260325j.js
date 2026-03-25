@@ -18,28 +18,32 @@
     return a;
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
-  var import_build_meta = require("./generated/build-meta.js");
-  const priceFormatter = new Intl.NumberFormat("it-IT", {
+
+  // src/generated/build-meta.js
+  var APP_BUILD_LABEL = "V.1.678";
+
+  // src/main.js
+  var priceFormatter = new Intl.NumberFormat("it-IT", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260325j";
-  const LOADER_CARD_DELAY = 2800;
-  const LOADER_INTRO_OUTRO_DURATION = 760;
-  const LOADER_MIN_DURATION = 1e4;
-  const LOADER_FONT_TIMEOUT = 12e3;
-  const FONT_LOAD_TIMEOUT = 2e4;
-  const STRICT_FONT_LOAD_TIMEOUT = 45e3;
-  const DISPLAY_FONT_REVEAL_CONFIRMATIONS = 3;
-  const CRITICAL_IMAGE_LOAD_TIMEOUT = 22e3;
-  const CRITICAL_IMAGE_RETRY_COUNT = 2;
-  const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
-  const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
-  const LOADER_MESSAGE_INTERVAL = 1900;
-  const LOADER_MESSAGE_FADE_DURATION = 420;
-  const LOADER_PROGRESS_WEIGHTS = {
+  var APP_VERSION = "20260325j";
+  var LOADER_CARD_DELAY = 2800;
+  var LOADER_INTRO_OUTRO_DURATION = 760;
+  var LOADER_MIN_DURATION = 1e4;
+  var LOADER_FONT_TIMEOUT = 12e3;
+  var FONT_LOAD_TIMEOUT = 2e4;
+  var STRICT_FONT_LOAD_TIMEOUT = 45e3;
+  var DISPLAY_FONT_REVEAL_CONFIRMATIONS = 3;
+  var CRITICAL_IMAGE_LOAD_TIMEOUT = 22e3;
+  var CRITICAL_IMAGE_RETRY_COUNT = 2;
+  var MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
+  var SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+  var LOADER_MESSAGE_INTERVAL = 1900;
+  var LOADER_MESSAGE_FADE_DURATION = 420;
+  var LOADER_PROGRESS_WEIGHTS = {
     boot: 6,
     menuData: 20,
     render: 16,
@@ -49,8 +53,8 @@
     shellAssets: 8,
     timeGate: 8
   };
-  const SHEET_OPTION_INDEXES = Array.from({ length: 12 }, (_, index) => index + 1);
-  const LOADER_MESSAGES = [
+  var SHEET_OPTION_INDEXES = Array.from({ length: 12 }, (_, index) => index + 1);
+  var LOADER_MESSAGES = [
     "sistemo i tavoli nel parco",
     "nel verde, tutto rallenta un po'",
     "metto in fresco le birre",
@@ -64,7 +68,7 @@
     "scoppiettano i popcorn",
     "il parco si accende lentamente"
   ];
-  const PROMO_AGRI_VIDEOS = [
+  var PROMO_AGRI_VIDEOS = [
     {
       title: "Video Agri-Eventi 1",
       eyebrow: "BBQ sotto le Stelle",
@@ -81,8 +85,8 @@
       src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     }
   ];
-  const CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
-  const SECTION_SURFACE_COLORS = {
+  var CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
+  var SECTION_SURFACE_COLORS = {
     birre: "#c2a03d",
     drink: "#c97439",
     bottiglie: "#ad6077",
@@ -90,7 +94,7 @@
     gelato: "#789556",
     taglieri: "#bf8550"
   };
-  const SPRITZ_EDITORIAL_FACTS = [
+  var SPRITZ_EDITORIAL_FACTS = [
     {
       category: "pop",
       weight: 4,
@@ -162,7 +166,7 @@
       text: "Un elettrone spaiato \xE8 instabile: tende a cercarne un altro per stabilizzarsi. Vale anche per lo Spritz."
     }
   ];
-  const SPRITZ_EDITORIAL_ORNAMENTS = {
+  var SPRITZ_EDITORIAL_ORNAMENTS = {
     pop: {
       stem: ["\u{1F9D1}\u200D\u{1F52C}", "\u{1F9EA}", "\u2697\uFE0F", "\u{1F52C}"],
       playful: ["\u{1F604}", "\u{1F92D}", "\u{1F92A}"]
@@ -172,7 +176,7 @@
       playful: ["\u{1F913}", "\u{1F604}", "\u{1F92D}"]
     }
   };
-  const FONT_BOOTSTRAP_PLAN = {
+  var FONT_BOOTSTRAP_PLAN = {
     loader: [
       {
         family: "Lulo Clean",
@@ -256,57 +260,57 @@
       }
     ]
   };
-  const DISPLAY_FONT_READY_VARS = {
+  var DISPLAY_FONT_READY_VARS = {
     "--font-display-letter-spacing": "-0.2em",
     "--hero-logo-letter-spacing": "-0.15em"
   };
-  const DISPLAY_FONT_FALLBACK_VARS = {
+  var DISPLAY_FONT_FALLBACK_VARS = {
     "--font-display-letter-spacing": "-0.08em",
     "--hero-logo-letter-spacing": "-0.06em"
   };
-  const DISPLAY_FONT_FAMILY = "Lulo Clean";
-  const LOADER_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.loader);
-  const REQUIRED_FONT_PLANS = dedupeFontPlans([
+  var DISPLAY_FONT_FAMILY = "Lulo Clean";
+  var LOADER_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.loader);
+  var REQUIRED_FONT_PLANS = dedupeFontPlans([
     ...FONT_BOOTSTRAP_PLAN.loader,
     ...FONT_BOOTSTRAP_PLAN.critical
   ]);
-  const BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(isCustomBlockingFontPlan);
-  const NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(
+  var BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(isCustomBlockingFontPlan);
+  var NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(
     (plan) => !isCustomBlockingFontPlan(plan)
   );
-  const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
-  const displayFontPlan = [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
+  var DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
+  var displayFontPlan = [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
     (plan) => plan.family === DISPLAY_FONT_FAMILY
   ) || null;
-  let sections = [];
-  let itemLookup = {};
-  let itemSectionLookup = {};
-  let itemMenuOrderLookup = {};
-  let sideVisualObserver;
-  let deferredPhotoPanelObserver;
-  let deferredSideVisualObserver;
-  let deferredCanClusterObserver;
-  let activeSectionId = "";
-  let activeSectionTicking = false;
-  let sectionNavStickyStart = 0;
-  let loaderProgressFrame = null;
-  let loaderMessageIntervalId = null;
-  let loaderMessages = [...LOADER_MESSAGES];
-  let loaderMessageIndex = 0;
-  let loaderStartedAt = null;
-  let appHasRevealed = false;
-  let lastFocusedElement = null;
-  let loaderCardRevealPromise = null;
-  let resolveLoaderClockStarted = () => {
+  var sections = [];
+  var itemLookup = {};
+  var itemSectionLookup = {};
+  var itemMenuOrderLookup = {};
+  var sideVisualObserver;
+  var deferredPhotoPanelObserver;
+  var deferredSideVisualObserver;
+  var deferredCanClusterObserver;
+  var activeSectionId = "";
+  var activeSectionTicking = false;
+  var sectionNavStickyStart = 0;
+  var loaderProgressFrame = null;
+  var loaderMessageIntervalId = null;
+  var loaderMessages = [...LOADER_MESSAGES];
+  var loaderMessageIndex = 0;
+  var loaderStartedAt = null;
+  var appHasRevealed = false;
+  var lastFocusedElement = null;
+  var loaderCardRevealPromise = null;
+  var resolveLoaderClockStarted = () => {
   };
-  let lastSpritzEditorialFactIndex = -1;
-  let lastSpritzEditorialOrnamentKey = "";
-  let fontMetricCanvas = null;
-  let lastRenderedCartQuantity = null;
-  const loaderClockStartedPromise = new Promise((resolve) => {
+  var lastSpritzEditorialFactIndex = -1;
+  var lastSpritzEditorialOrnamentKey = "";
+  var fontMetricCanvas = null;
+  var lastRenderedCartQuantity = null;
+  var loaderClockStartedPromise = new Promise((resolve) => {
     resolveLoaderClockStarted = resolve;
   });
-  const state = {
+  var state = {
     selectedItemId: null,
     selectedOptionIndex: 0,
     selectedOptionQuantities: {},
@@ -315,68 +319,68 @@
     detailEditorialSlide: null,
     cart: loadCart()
   };
-  const generateSummaryLabel = "Genera riepilogo";
-  const editSummaryLabel = "Modifica";
-  const emptyCartKicker = "Riepilogo del tavolo";
-  const emptyCartTitle = "Come funziona";
-  const defaultCartTitle = "Modifica l'ordine";
-  const generatedCartTitle = "Siamo pronti per ordinare...";
-  let isCartSummaryView = false;
-  const sectionNav = document.querySelector("#sectionNav");
-  const menuSections = document.querySelector("#menuSections");
-  const pageOutro = document.querySelector(".page-outro");
-  const cartFab = document.querySelector("#cartFab");
-  const detailSheet = document.querySelector("#detailSheet");
-  const cartSheet = document.querySelector("#cartSheet");
-  const detailPanel = detailSheet.querySelector(".sheet-panel--detail");
-  const cartPanel = cartSheet.querySelector(".sheet-panel--cart");
-  const cartKicker = document.querySelector("#cartKicker");
-  const cartTitle = document.querySelector("#cartTitle");
-  const detailCategory = document.querySelector("#detailCategory");
-  const detailTitle = document.querySelector("#detailTitle");
-  const detailDescription = document.querySelector("#detailDescription");
-  const detailMeta = document.querySelector("#detailMeta");
-  const detailOptions = document.querySelector("#detailOptions");
-  const detailQuantity = document.querySelector("#detailQuantity");
-  const addToCartButton = document.querySelector("#addToCart");
-  const closeDetailButton = document.querySelector("#closeDetail");
-  const closeCartButton = document.querySelector("#closeCart");
-  const cartCount = document.querySelector("#cartCount");
-  const cartItems = document.querySelector("#cartItems");
-  const cartEmpty = document.querySelector("#cartEmpty");
-  const cartGenerated = document.querySelector("#cartGenerated");
-  const cartFooter = document.querySelector("#cartFooter");
-  const cartTotalBlock = cartFooter.querySelector(".cart-total");
-  const cartTotal = document.querySelector("#cartTotal");
-  const toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
-  const clearCartButton = document.querySelector("#clearCart");
-  const detailPreview = document.querySelector("#detailPreview");
-  const pageBody = document.body;
-  const appLoader = document.querySelector("#appLoader");
-  const appLoaderIntro = document.querySelector("#appLoaderIntro");
-  const appLoaderCard = (appLoader == null ? void 0 : appLoader.querySelector(".app-loader__card")) || null;
-  const appLoaderBar = document.querySelector("#appLoaderBar");
-  const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
-  const appLoaderPercent = document.querySelector("#appLoaderPercent");
-  const appLoaderMessage = document.querySelector("#appLoaderMessage");
-  const appLoaderBuild = document.querySelector("#appLoaderBuild");
-  const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
-  const promoAgriViewport = document.querySelector("#promoAgriViewport");
-  const promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
-  const promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
-  const promoAgriLightbox = document.querySelector("#promoAgriLightbox");
-  const promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
-  const promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
-  const promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
-  const formatCarousel = document.querySelector("#formatCarousel");
-  const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
-  const formatCarouselDots = document.querySelector("#formatCarouselDots");
-  const formatShowcaseKicker = document.querySelector("#formatShowcaseKicker");
-  const formatShowcaseTitle = document.querySelector("#formatShowcaseTitle");
-  const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
-  const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
+  var generateSummaryLabel = "Genera riepilogo";
+  var editSummaryLabel = "Modifica";
+  var emptyCartKicker = "Riepilogo del tavolo";
+  var emptyCartTitle = "Come funziona";
+  var defaultCartTitle = "Modifica l'ordine";
+  var generatedCartTitle = "Siamo pronti per ordinare...";
+  var isCartSummaryView = false;
+  var sectionNav = document.querySelector("#sectionNav");
+  var menuSections = document.querySelector("#menuSections");
+  var pageOutro = document.querySelector(".page-outro");
+  var cartFab = document.querySelector("#cartFab");
+  var detailSheet = document.querySelector("#detailSheet");
+  var cartSheet = document.querySelector("#cartSheet");
+  var detailPanel = detailSheet.querySelector(".sheet-panel--detail");
+  var cartPanel = cartSheet.querySelector(".sheet-panel--cart");
+  var cartKicker = document.querySelector("#cartKicker");
+  var cartTitle = document.querySelector("#cartTitle");
+  var detailCategory = document.querySelector("#detailCategory");
+  var detailTitle = document.querySelector("#detailTitle");
+  var detailDescription = document.querySelector("#detailDescription");
+  var detailMeta = document.querySelector("#detailMeta");
+  var detailOptions = document.querySelector("#detailOptions");
+  var detailQuantity = document.querySelector("#detailQuantity");
+  var addToCartButton = document.querySelector("#addToCart");
+  var closeDetailButton = document.querySelector("#closeDetail");
+  var closeCartButton = document.querySelector("#closeCart");
+  var cartCount = document.querySelector("#cartCount");
+  var cartItems = document.querySelector("#cartItems");
+  var cartEmpty = document.querySelector("#cartEmpty");
+  var cartGenerated = document.querySelector("#cartGenerated");
+  var cartFooter = document.querySelector("#cartFooter");
+  var cartTotalBlock = cartFooter.querySelector(".cart-total");
+  var cartTotal = document.querySelector("#cartTotal");
+  var toggleSummaryViewButton = document.querySelector("#toggleSummaryView");
+  var clearCartButton = document.querySelector("#clearCart");
+  var detailPreview = document.querySelector("#detailPreview");
+  var pageBody = document.body;
+  var appLoader = document.querySelector("#appLoader");
+  var appLoaderIntro = document.querySelector("#appLoaderIntro");
+  var appLoaderCard = (appLoader == null ? void 0 : appLoader.querySelector(".app-loader__card")) || null;
+  var appLoaderBar = document.querySelector("#appLoaderBar");
+  var appLoaderBarFill = document.querySelector("#appLoaderBarFill");
+  var appLoaderPercent = document.querySelector("#appLoaderPercent");
+  var appLoaderMessage = document.querySelector("#appLoaderMessage");
+  var appLoaderBuild = document.querySelector("#appLoaderBuild");
+  var promoAgriCarousel = document.querySelector("#promoAgriCarousel");
+  var promoAgriViewport = document.querySelector("#promoAgriViewport");
+  var promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
+  var promoAgriCarouselDots = document.querySelector("#promoAgriCarouselDots");
+  var promoAgriLightbox = document.querySelector("#promoAgriLightbox");
+  var promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
+  var promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
+  var promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
+  var formatCarousel = document.querySelector("#formatCarousel");
+  var formatCarouselTrack = document.querySelector("#formatCarouselTrack");
+  var formatCarouselDots = document.querySelector("#formatCarouselDots");
+  var formatShowcaseKicker = document.querySelector("#formatShowcaseKicker");
+  var formatShowcaseTitle = document.querySelector("#formatShowcaseTitle");
+  var formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
+  var formatShowcaseLink = document.querySelector("#formatShowcaseLink");
   if (appLoaderBuild) {
-    appLoaderBuild.textContent = import_build_meta.APP_BUILD_LABEL;
+    appLoaderBuild.textContent = APP_BUILD_LABEL;
   }
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();
@@ -384,7 +388,7 @@
     queueActiveSectionRefresh();
   }, { passive: true });
   window.addEventListener("scroll", queueActiveSectionRefresh, { passive: true });
-  const loaderProgressState = {
+  var loaderProgressState = {
     boot: 0,
     menuData: 0,
     render: 0,
