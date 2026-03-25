@@ -2,7 +2,7 @@
    confirms they are ready, instead of letting fallback fonts alter the layout. */
 @font-face {
   font-family: "Lulo Clean";
-  src: url("./fonts/lulo-clean-bold.ttf") format("truetype");
+  src: url("./fonts/lulo-clean-bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: block;
@@ -10,9 +10,7 @@
 
 @font-face {
   font-family: "Housky Demo";
-  src:
-    url("./fonts/housky-demo.ttf") format("truetype"),
-    local("Housky Demo");
+  src: url("./fonts/housky-demo.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
@@ -20,7 +18,7 @@
 
 @font-face {
   font-family: "Factually Handwriting";
-  src: url("./fonts/factually-handwriting.otf") format("opentype");
+  src: url("./fonts/factually-handwriting.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
@@ -28,7 +26,7 @@
 
 @font-face {
   font-family: "SignPainter";
-  src: url("./fonts/sign-painter.ttc") format("collection");
+  src: url("./fonts/sign-painter.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
@@ -211,12 +209,11 @@ a {
 }
 
 .app-loader__intro::after {
-  inset: 8px;
-  border-radius: 36px;
+  inset: 0;
   background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0), rgba(28, 22, 16, 0.05) 82%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
-  opacity: 0.9;
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(38, 29, 20, 0.04));
+  opacity: 0.62;
 }
 
 .app-loader__intro-logo,
@@ -516,11 +513,6 @@ a {
   .app-loader__intro {
     gap: 18px;
     padding: 24px;
-  }
-
-  .app-loader__intro::after {
-    inset: 8px;
-    border-radius: 28px;
   }
 
   .app-loader__intro-logo {
@@ -3072,6 +3064,11 @@ a {
   overflow: hidden;
 }
 
+.sheet-panel--cart.is-empty {
+  max-height: min(84vh, 720px);
+  padding: 26px 22px 20px;
+}
+
 .sheet-panel--cart h2 {
   font-size: 1.38rem;
   padding-right: 56px;
@@ -4142,26 +4139,27 @@ a {
 
 .cart-empty {
   display: grid;
-  gap: 8px;
-  padding: 12px 2px 2px;
+  gap: 12px;
+  padding: 16px 6px 6px;
 }
 
 .sheet-panel--cart.is-empty .sheet-kicker {
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   color: rgba(125, 98, 80, 0.8);
 }
 
 .sheet-panel--cart.is-empty h2 {
-  max-width: 13ch;
+  max-width: 14.5ch;
   padding-right: 64px;
-  font-size: 1.34rem;
-  line-height: 1.02;
+  font-size: 1.4rem;
+  line-height: 1.06;
+  text-wrap: balance;
 }
 
 .sheet-panel--cart.is-empty .cart-empty {
-  max-width: 33ch;
-  gap: 10px;
-  padding: 14px 0 6px;
+  max-width: 36ch;
+  gap: 16px;
+  padding: 18px 10px 10px;
 }
 
 .cart-empty[hidden],
@@ -4181,15 +4179,16 @@ a {
 .cart-empty__lead {
   color: var(--ink);
   font-weight: 700;
-  font-size: 0.98rem;
-  line-height: 1.34;
+  max-width: 27ch;
+  font-size: 1.02rem;
+  line-height: 1.46;
   text-wrap: balance;
 }
 
 .cart-empty__steps {
   display: grid;
-  gap: 8px;
-  margin: 2px 0 0;
+  gap: 11px;
+  margin: 6px 0;
   padding: 0;
   list-style: none;
 }
@@ -4198,40 +4197,55 @@ a {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: start;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
 }
 
 .cart-empty__step-index {
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   background: rgba(33, 28, 24, 0.08);
   color: rgba(33, 28, 24, 0.76);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 700;
   line-height: 1;
 }
 
 .cart-empty__step-copy {
   color: rgba(53, 43, 36, 0.94);
-  font-size: 0.94rem;
-  line-height: 1.38;
+  font-size: 0.97rem;
+  line-height: 1.42;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
 .cart-empty__note {
-  color: rgba(93, 79, 68, 0.82);
-  font-size: 0.84rem;
-  line-height: 1.4;
+  color: var(--ink);
+  display: grid;
+  gap: 4px;
+  justify-self: center;
+  max-width: 26ch;
+  padding-top: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.46;
+  text-align: center;
   text-wrap: balance;
 }
 
-.sheet-panel--cart.is-empty .cart-empty__note strong {
-  color: var(--ink);
+.cart-empty__note-emphasis {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.cart-empty__note-detail {
+  color: rgba(73, 60, 50, 0.9);
+  font-size: 0.84em;
+  font-weight: 500;
+  line-height: 1.38;
 }
 
 @media (max-width: 420px) {
@@ -4248,6 +4262,11 @@ a {
     max-height: min(84vh, 760px);
   }
 
+  .sheet-panel--cart.is-empty {
+    max-height: min(87vh, 760px);
+    padding: 24px 18px 18px;
+  }
+
   .sheet-panel--cart .sheet-kicker,
   .sheet-panel--cart h2 {
     padding-right: 60px;
@@ -4259,35 +4278,41 @@ a {
   }
 
   .cart-empty {
-    gap: 8px;
-    padding-top: 12px;
+    gap: 9px;
+    padding: 13px 4px 4px;
   }
 
   .sheet-panel--cart.is-empty h2 {
-    max-width: 12.5ch;
-    font-size: 1.22rem;
-    line-height: 1.04;
+    max-width: 14ch;
+    font-size: 1.28rem;
+    line-height: 1.08;
   }
 
   .sheet-panel--cart.is-empty .cart-empty {
-    max-width: 31ch;
-    gap: 9px;
-    padding-top: 12px;
+    max-width: 33ch;
+    gap: 13px;
+    padding: 16px 8px 8px;
   }
 
   .cart-empty__step {
-    gap: 9px;
+    gap: 10px;
   }
 
   .cart-empty__step-index {
-    width: 21px;
-    height: 21px;
-    font-size: 0.72rem;
+    width: 22px;
+    height: 22px;
+    font-size: 0.74rem;
   }
 
   .cart-empty__step-copy {
-    font-size: 0.92rem;
-    line-height: 1.34;
+    font-size: 0.96rem;
+    line-height: 1.4;
+  }
+
+  .cart-empty__note {
+    max-width: 24ch;
+    font-size: 0.98rem;
+    line-height: 1.42;
   }
 
   .detail-gallery {

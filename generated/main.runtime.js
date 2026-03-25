@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.682";
+  var APP_BUILD_LABEL = "V.1.683";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -323,7 +323,7 @@
   var generateSummaryLabel = "Genera riepilogo";
   var editSummaryLabel = "Modifica";
   var emptyCartKicker = "Riepilogo del tavolo";
-  var emptyCartTitle = "Come funziona";
+  var emptyCartTitle = "Come funziona?";
   var defaultCartTitle = "Modifica l'ordine";
   var generatedCartTitle = "Siamo pronti per ordinare...";
   var isCartSummaryView = false;

@@ -50,29 +50,30 @@
     />
     <link
       rel="preload"
-      href="./src/fonts/lulo-clean-bold.ttf"
+      href="./src/fonts/lulo-clean-bold.woff2"
       as="font"
-      type="font/ttf"
+      type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="./src/fonts/housky-demo.ttf"
+      href="./src/fonts/housky-demo.woff2"
       as="font"
-      type="font/ttf"
+      type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="./src/fonts/factually-handwriting.otf"
+      href="./src/fonts/factually-handwriting.woff2"
       as="font"
-      type="font/otf"
+      type="font/woff2"
       crossorigin
     />
     <link
       rel="preload"
-      href="./src/fonts/sign-painter.ttc"
+      href="./src/fonts/sign-painter.woff2"
       as="font"
+      type="font/woff2"
       crossorigin
     />
     <link
@@ -527,19 +528,19 @@
           ✕
         </button>
         <p class="sheet-kicker" id="cartKicker">Riepilogo del tavolo</p>
-        <h2 id="cartTitle">Come funziona</h2>
+        <h2 id="cartTitle">Come funziona?</h2>
         <div class="cart-empty" id="cartEmpty">
           <p class="cart-empty__lead">
-            Una persona del tavolo puo raccogliere qui le scelte di tutti.
+            Una persona del tavolo può raccogliere qui le scelte di tutti.
           </p>
           <ol class="cart-empty__steps" aria-label="Come usare il riepilogo">
             <li class="cart-empty__step">
               <span class="cart-empty__step-index" aria-hidden="true">1</span>
-              <span class="cart-empty__step-copy">Apri un prodotto dal menu</span>
+              <span class="cart-empty__step-copy">Scrollate il menu con calma</span>
             </li>
             <li class="cart-empty__step">
               <span class="cart-empty__step-index" aria-hidden="true">2</span>
-              <span class="cart-empty__step-copy">Aggiungilo qui man mano</span>
+              <span class="cart-empty__step-copy">Aggiungete qui le scelte, man mano</span>
             </li>
             <li class="cart-empty__step">
               <span class="cart-empty__step-index" aria-hidden="true">3</span>
@@ -547,7 +548,8 @@
             </li>
           </ol>
           <p class="cart-empty__note">
-            <strong>Non è un'ordinazione digitale.</strong>
+            <span class="cart-empty__note-emphasis">Non è un'ordinazione digitale.</span>
+            <span class="cart-empty__note-detail">Così, quando arriva il cameriere, avete già tutto più chiaro.</span>
           </p>
         </div>
         <div class="cart-items" id="cartItems"></div>

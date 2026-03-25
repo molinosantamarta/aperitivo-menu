@@ -1,6 +1,5 @@
 node_modules
 dist
 .DS_Store
-SignPainter.ttc
 public/generated
 agri-menu.png
