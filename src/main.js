@@ -7,7 +7,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 
 import { APP_BUILD_LABEL } from "./generated/build-meta.js";
 
-const APP_VERSION = "20260325h";
+const APP_VERSION = "20260325i";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
