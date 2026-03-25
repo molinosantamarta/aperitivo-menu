@@ -24,8 +24,8 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260325c";
-  const APP_BUILD_LABEL = "V.1.667";
+  const APP_VERSION = "20260325d";
+  const APP_BUILD_LABEL = "V.1.668";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -1681,8 +1681,14 @@
     window.setTimeout(runTask, 180);
   }
   function buildVersionedPath(path) {
-    const separator = path.includes("?") ? "&" : "?";
-    return "".concat(path).concat(separator, "v=").concat(APP_VERSION);
+    try {
+      const resolvedUrl = new URL(path, window.location.href);
+      resolvedUrl.searchParams.set("v", APP_VERSION);
+      return resolvedUrl.toString();
+    } catch (error) {
+      const separator = path.includes("?") ? "&" : "?";
+      return "".concat(path).concat(separator, "v=").concat(APP_VERSION);
+    }
   }
   function wait(duration) {
     return new Promise((resolve) => window.setTimeout(resolve, duration));
