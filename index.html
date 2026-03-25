@@ -585,14 +585,29 @@
           script.src = "./src/main.js?v=20260325j";
           document.body.appendChild(script);
         } else {
+          var moduleFallbackLoaded = false;
           var runtimeCandidates = [
             { src: "./generated/main.runtime.20260325j.js" },
             { src: "./generated/main.runtime.js?v=20260325j" }
           ];
           var candidateIndex = 0;
 
+          var loadModuleFallback = function () {
+            if (moduleFallbackLoaded || window.__agriMenuRuntimeLoaded) {
+              return;
+            }
+
+            moduleFallbackLoaded = true;
+            var moduleScript = document.createElement("script");
+            moduleScript.defer = true;
+            moduleScript.type = "module";
+            moduleScript.src = "./src/main.js?v=20260325j";
+            document.body.appendChild(moduleScript);
+          };
+
           var loadRuntime = function () {
             if (candidateIndex >= runtimeCandidates.length) {
+              loadModuleFallback();
               return;
             }
 
@@ -601,6 +616,13 @@
             runtimeScript.defer = true;
             runtimeScript.src = candidate.src;
             runtimeScript.onerror = loadRuntime;
+            runtimeScript.onload = function () {
+              window.setTimeout(function () {
+                if (!window.__agriMenuRuntimeLoaded) {
+                  loadRuntime();
+                }
+              }, 1200);
+            };
             document.body.appendChild(runtimeScript);
           };
 

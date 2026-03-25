@@ -1,5 +1,7 @@
 import { APP_BUILD_LABEL } from "./generated/build-meta.js";
 
+window.__agriMenuRuntimeLoaded = true;
+
 const priceFormatter = new Intl.NumberFormat("it-IT", {
   style: "currency",
   currency: "EUR",
