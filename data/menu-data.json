@@ -1,0 +1,1736 @@
+{
+  "sections": [
+    {
+      "id": "birre",
+      "title": "Birre",
+      "kicker": "Artigianali, classiche & alla spina",
+      "description": "Bionde, ambrate, leggere o più aromatiche: una selezione pensata per accompagnare gusti e momenti diversi.",
+      "accent": "#b98f1f",
+      "accentSoft": "#f2e4b7",
+      "items": [
+        {
+          "id": "bianchina",
+          "page": 1,
+          "name": "Bianchina",
+          "category": "Artigianali",
+          "description": "Blanche 4% vol. 33 cl.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Bianchina",
+            "gradientStart": "#e8d1ad",
+            "gradientEnd": "#f4e5cf",
+            "labelColor": "#6f5036"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "bianchina-floating.png",
+            "width": "124px",
+            "height": "259px",
+            "right": "14px",
+            "bottom": "18px",
+            "tilt": "12deg"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            68,
+            340,
+            312,
+            440
+          ],
+          "cropRect": [
+            90,
+            360,
+            319,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "ghe-sem",
+          "page": 1,
+          "name": "Ghe Sem",
+          "category": "Artigianali",
+          "description": "Marzen 6% vol. 33 cl.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Ghe Sem",
+            "gradientStart": "#8d1713",
+            "gradientMid": "#d9492a",
+            "gradientEnd": "#ff7b52",
+            "labelColor": "#fff5ef"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "ghe-sem-floating.png",
+            "width": "124px",
+            "height": "259px",
+            "right": "14px",
+            "bottom": "18px",
+            "tilt": "12deg"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            324,
+            340,
+            575,
+            440
+          ],
+          "cropRect": [
+            345,
+            360,
+            578,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "tel-chi",
+          "page": 1,
+          "name": "Tel Chi",
+          "category": "Artigianali",
+          "description": "IPA gluten free 4,5% vol. 33 cl.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Tel Chi",
+            "gradientStart": "#3d8f8d",
+            "gradientEnd": "#7ec8c3",
+            "labelColor": "#f7fffd"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "tel-chi-floating.png",
+            "width": "124px",
+            "height": "259px",
+            "right": "14px",
+            "bottom": "18px",
+            "tilt": "12deg"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            584,
+            340,
+            830,
+            440
+          ],
+          "cropRect": [
+            603,
+            360,
+            838,
+            437
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "casciaball",
+          "page": 1,
+          "name": "Casciaball",
+          "category": "Artigianali",
+          "description": "German Ale 4,8% vol. 33 cl.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Casciaball",
+            "gradientStart": "#b85a24",
+            "gradientEnd": "#e19742",
+            "labelColor": "#fff6eb"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "casciaball-floating.png",
+            "width": "124px",
+            "height": "259px",
+            "right": "14px",
+            "bottom": "18px",
+            "tilt": "12deg"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            840,
+            332,
+            1092,
+            440
+          ],
+          "cropRect": [
+            858,
+            354,
+            1090,
+            437
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "ciapa-fia",
+          "page": 1,
+          "name": "Ciapa Fià",
+          "category": "Artigianali",
+          "description": "Ordinary Bitter 3,8% vol. 33 cl.",
+          "showDetailHint": false,
+          "visual": {
+            "type": "beer-script",
+            "label": "Ciapa Fià",
+            "gradientStart": "#c9562e",
+            "gradientMid": "#ef7b45",
+            "gradientEnd": "#ffaf72",
+            "labelColor": "#fff7ef"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "ciapafia-floating.png",
+            "width": "106px",
+            "height": "222px",
+            "right": "24px",
+            "bottom": "18px",
+            "tilt": "12deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            840,
+            332,
+            1092,
+            440
+          ],
+          "cropRect": [
+            858,
+            354,
+            1090,
+            437
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "moretti",
+          "page": 1,
+          "name": "Moretti",
+          "category": "Classiche",
+          "description": "In bottiglia, 33 cl.",
+          "showDetailHint": false,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "moretti-back.png",
+            "deferAsset": true,
+            "position": "center center",
+            "size": "28% auto",
+            "backgroundColor": "#ddc98b"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "moretti-33.png",
+            "width": "106px",
+            "height": "223px",
+            "right": "16px",
+            "bottom": "18px",
+            "tilt": "0deg",
+            "backgroundSize": "136% auto",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            34,
+            542,
+            430,
+            624
+          ],
+          "cropRect": [
+            58,
+            556,
+            419,
+            622
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "spina",
+          "page": 1,
+          "name": "Birra alla spina",
+          "category": "Alla spina",
+          "available": false,
+          "description": "Sonnenberg 4,8% vol. 0,4.",
+          "showDetailHint": false,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "birra-spina-back.jpg",
+            "position": "center center"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "birra-spina.png",
+            "width": "112px",
+            "height": "236px",
+            "right": "8px",
+            "bottom": "4px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "0,4 L",
+              "displayLabel": "",
+              "price": 5
+            }
+          ],
+          "rect": [
+            34,
+            644,
+            790,
+            742
+          ],
+          "cropRect": [
+            60,
+            664,
+            724,
+            739
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drink",
+      "title": "Drink",
+      "kicker": "Spritz & classici",
+      "description": "I grandi classici dell'aperitivo: freschi, immediati e perfetti da sorseggiare all'aperto.",
+      "accent": "#d96b20",
+      "accentSoft": "#ffd9be",
+      "items": [
+        {
+          "id": "aperol",
+          "page": 1,
+          "name": "Aperol Spritz",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Classico Aperol Spritz.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Aperol",
+            "gradientStart": "#ff120d",
+            "gradientMid": "#ff5b12",
+            "gradientEnd": "#ff9e18",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "aperol-floating.png",
+            "width": "142px",
+            "height": "298px",
+            "right": "-10px",
+            "bottom": "8px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            46,
+            874,
+            256,
+            982
+          ],
+          "cropRect": [
+            96,
+            904,
+            274,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "campari",
+          "page": 1,
+          "name": "Campari Spritz",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Classico Campari Spritz.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Campari",
+            "gradientStart": "#9c0f1e",
+            "gradientMid": "#d2272d",
+            "gradientEnd": "#ff6c3a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "campari-floating.png",
+            "width": "99px",
+            "height": "209px",
+            "right": "2px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            262,
+            874,
+            480,
+            982
+          ],
+          "cropRect": [
+            300,
+            904,
+            496,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "sarti",
+          "page": 1,
+          "name": "Sarti Spritz",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Sarti Rosa: arancia rossa di Sicilia, mango e frutto della passione. Un'esplosione di freschezza tropicale con un’anima italiana.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@sartispritz",
+            "href": "https://www.instagram.com/sartispritz/",
+            "ariaLabel": "Apri il profilo Instagram Sarti Spritz"
+          },
+          "visual": {
+            "type": "beer-script",
+            "label": "Sarti",
+            "gradientStart": "#d61f5f",
+            "gradientMid": "#f2556f",
+            "gradientEnd": "#ff9a57",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "sarti-floating.png",
+            "width": "99px",
+            "height": "209px",
+            "right": "2px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            484,
+            874,
+            678,
+            982
+          ],
+          "cropRect": [
+            516,
+            904,
+            682,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "hugo",
+          "page": 1,
+          "name": "Hugo Spritz",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Spumante extra dry e sciroppo ai fiori di sambuco, estratto di melissa.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Hugo",
+            "gradientStart": "#2a70c9",
+            "gradientMid": "#4ea0ef",
+            "gradientEnd": "#99d5ff",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Spritz"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.png",
+            "width": "80px",
+            "height": "200px",
+            "right": "22px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-accent",
+            "asset": "sambuco-floating.png",
+            "width": "117px",
+            "height": "117px",
+            "right": "56px",
+            "bottom": "46px",
+            "zIndex": "2",
+            "tilt": "-6deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center center"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            938,
+            874,
+            1116,
+            982
+          ],
+          "cropRect": [
+            940,
+            904,
+            1088,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "gin-tonic",
+          "page": 1,
+          "name": "Gin Tonic",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Gin tonic.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#d8c870",
+            "gradientMid": "#efe1a2",
+            "gradientEnd": "#fff9de",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Tonic"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "gin-floating.png",
+            "width": "65px",
+            "height": "180px",
+            "right": "28px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "fever-tonica-cutout.png",
+            "width": "35px",
+            "height": "125px",
+            "right": "76px",
+            "bottom": "10px",
+            "zIndex": "5",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "gin-tonic-special",
+          "page": 1,
+          "name": "Gin Tropical",
+          "category": "Limited Edition",
+          "available": true,
+          "showDetailHint": false,
+          "description": "Mix esotico di sapori, mango maturato al sole, lime fresco per un gusto vibrante agrumato dei tropici.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#cc4e12",
+            "gradientMid": "#f39a18",
+            "gradientEnd": "#ffd74a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Tropical"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.png",
+            "width": "86px",
+            "height": "218px",
+            "right": "16px",
+            "bottom": "12px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "gin-lemon",
+          "page": 1,
+          "name": "Gin Lemon",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Gin e Lemon soda.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#c9a90f",
+            "gradientMid": "#efd23a",
+            "gradientEnd": "#fff3a6",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Lemon"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "gin-floating.png",
+            "width": "65px",
+            "height": "180px",
+            "right": "28px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-accent",
+            "asset": "lemon-floating.png",
+            "width": "72px",
+            "height": "66px",
+            "right": "78px",
+            "bottom": "46px",
+            "tilt": "-8deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center center"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bottiglie",
+      "title": "Bottiglie",
+      "kicker": "Vino, bollicine e selezione zero",
+      "description": "Una piccola cantina selezionata da noi, tra calici, bottiglie e proposte zero pensate per tutti.",
+      "accent": "#9c5566",
+      "accentSoft": "#f1d7dc",
+      "items": [
+        {
+          "id": "oltrepo",
+          "page": 1,
+          "name": "Oltrepò Pavese",
+          "category": "Vino",
+          "description": "Bonarda, Barbera, Chardonnay, Pinot Grigio.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "oltrepo-back.png",
+            "position": "center center",
+            "size": "cover"
+          },
+          "selectionGroups": [
+            {
+              "id": "wine-style",
+              "label": "Tipologia",
+              "options": [
+                {
+                  "label": "Bonarda"
+                },
+                {
+                  "label": "Barbera"
+                },
+                {
+                  "label": "Chardonnay"
+                },
+                {
+                  "label": "Pinot Grigio"
+                }
+              ]
+            }
+          ],
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 12
+            },
+            {
+              "label": "Calice",
+              "price": 4
+            }
+          ],
+          "rect": [
+            40,
+            1186,
+            356,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "rosso-del-lupo",
+          "page": 1,
+          "name": "Rosso del Lupo",
+          "category": "Vino",
+          "description": "Valcalepio rosso fermo DOC, BIO.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "rossodelupo-back.png",
+            "position": "39% center",
+            "size": "82% auto",
+            "backgroundColor": "#6b2030",
+            "blendMode": "screen"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "rosso-del-lupo-floating.png",
+            "width": "96px",
+            "height": "266px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 26
+            }
+          ],
+          "rect": [
+            40,
+            1424,
+            356,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "pinot-extra-dry",
+          "page": 1,
+          "name": "Pinot, spumante extra dry",
+          "category": "Bollicine",
+          "description": "Metodo Charmat, Az. Brega, Oltrepò Pavese.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "photo-panel",
+            "backgroundColor": "#efe8de"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.png",
+            "width": "101px",
+            "height": "251px",
+            "right": "8px",
+            "bottom": "0px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 16
+            },
+            {
+              "label": "Calice",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            390,
+            1186,
+            746,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "quarantalune",
+          "page": 1,
+          "name": "Quarantalune",
+          "category": "Bollicine",
+          "description": "Brut metodo classico, 40 mesi sui lieviti, millesimato, Lombardia.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "40lune-back.jpeg",
+            "position": "center 18%",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "40lune-back.jpeg",
+              "position": "center 18%",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "quarantalune-tonneau.jpg",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "quarantalune-floating.png",
+            "width": "98px",
+            "height": "256px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 35
+            }
+          ],
+          "rect": [
+            390,
+            1424,
+            746,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "glera-zero",
+          "page": 1,
+          "name": "Spumante dealcolato",
+          "category": "Selezione Zero",
+          "description": "Uve Glera, spumante dry, Borgo Molino, Veneto/Friuli.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "photo-panel",
+            "backgroundColor": "#efe8de"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "glera-zero-floating.png",
+            "width": "74px",
+            "height": "201px",
+            "right": "24px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 18
+            }
+          ],
+          "rect": [
+            772,
+            1186,
+            1096,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "rose-n5",
+          "page": 1,
+          "name": "Rosè n°5 Feral",
+          "category": "Special Edition",
+          "description": "Rosè di piante ribelli, fermentazione ancestrale (0 alcol), bollicina elegante, dalle Dolomiti.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@feral_drinks",
+            "href": "https://www.instagram.com/feral_drinks/",
+            "ariaLabel": "Apri il profilo Instagram Feral Drinks"
+          },
+          "producerResources": [
+            {
+              "kind": "video",
+              "label": "Cos'è?",
+              "href": "https://www.instagram.com/p/DMpWjPdKsuW/",
+              "ariaLabel": "Apri il video esterno di presentazione del prodotto"
+            }
+          ],
+          "visual": {
+            "type": "photo-panel",
+            "asset": "feral-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "feral-back.webp",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "feral-2.webp",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "detailPreviewStartIndex": 1,
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "rose-n5-floating.webp",
+            "width": "134px",
+            "height": "284px",
+            "right": "8px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 25
+            }
+          ],
+          "rect": [
+            772,
+            1424,
+            1096,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        }
+      ]
+    },
+    {
+      "id": "altre-bevande",
+      "title": "Altre Bevande",
+      "kicker": "Acqua, bibite & altro",
+      "description": "Dalle proposte analcoliche tra acqua, succhi e bibite, fino alle bevande da caffetteria con caffè, amari, grappe e liquori: una selezione semplice da scegliere in ogni momento.",
+      "accent": "#2349a0",
+      "accentSoft": "#dbe5ff",
+      "items": [
+        {
+          "id": "acqua",
+          "page": 2,
+          "name": "Acqua",
+          "category": "Altre bevande",
+          "description": "Naturale o frizzante, bottiglia 50 cl.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "beer-script",
+            "label": "Acqua",
+            "gradientStart": "#8fc8e6",
+            "gradientMid": "#bfe0f2",
+            "gradientEnd": "#edf8ff",
+            "labelColor": "#fdfcff",
+            "radius": "22px"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "acqua-naturale-floating.png",
+            "width": "67px",
+            "height": "167px",
+            "right": "18px",
+            "bottom": "12px",
+            "tilt": "10deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "selectionGroups": [
+            {
+              "id": "water-type",
+              "label": "Tipologia",
+              "options": [
+                {
+                  "label": "Naturale"
+                },
+                {
+                  "label": "Frizzante"
+                }
+              ]
+            }
+          ],
+          "options": [
+            {
+              "label": "",
+              "price": 1.5
+            }
+          ],
+          "rect": [
+            44,
+            136,
+            292,
+            226
+          ],
+          "cropRect": [
+            92,
+            160,
+            258,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "bibite",
+          "page": 2,
+          "name": "Bibite",
+          "category": "Altre bevande",
+          "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca. 33 cl.",
+          "visual": {
+            "type": "can-cluster",
+            "backgroundColor": "#cfd7e4",
+            "items": [
+              {
+                "asset": "bibite-coca.png",
+                "left": "27%",
+                "detailLeft": "24%",
+                "bottom": "-31%",
+                "height": "132px",
+                "rotate": "-8deg",
+                "zIndex": 2,
+                "detailSelectedLift": "-2px",
+                "floatDistance": "4px",
+                "floatDuration": "3.9s",
+                "floatDelay": "-0.8s"
+              },
+              {
+                "asset": "bibite-coca-zero.png",
+                "left": "42%",
+                "detailLeft": "42%",
+                "bottom": "-29%",
+                "height": "132px",
+                "rotate": "-2deg",
+                "zIndex": 4,
+                "detailSelectedLift": "-2px",
+                "floatDistance": "6px",
+                "floatDuration": "4.4s",
+                "floatDelay": "-1.2s"
+              },
+              {
+                "asset": "bibite-te-limone.png",
+                "left": "60%",
+                "detailLeft": "60%",
+                "bottom": "-34%",
+                "height": "138px",
+                "rotate": "4deg",
+                "zIndex": 3,
+                "detailSelectedLift": "-2px",
+                "floatDistance": "5px",
+                "floatDuration": "4.1s",
+                "floatDelay": "-0.4s"
+              },
+              {
+                "asset": "bibite-te-pesca.png",
+                "left": "75%",
+                "detailLeft": "78%",
+                "bottom": "-32%",
+                "height": "138px",
+                "rotate": "9deg",
+                "zIndex": 1,
+                "selectedLift": "1px",
+                "detailSelectedLift": "-2px",
+                "floatDistance": "4px",
+                "floatDuration": "4.7s",
+                "floatDelay": "-1.6s"
+              }
+            ]
+          },
+          "selectionGroups": [
+            {
+              "id": "bibita",
+              "label": "Bibita",
+              "options": [
+                {
+                  "label": "Coca-Cola"
+                },
+                {
+                  "label": "Coca Zero"
+                },
+                {
+                  "label": "Estathè Limone"
+                },
+                {
+                  "label": "Estathè Pesca"
+                }
+              ]
+            }
+          ],
+          "options": [
+            {
+              "label": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            42,
+            246,
+            276,
+            334
+          ],
+          "cropRect": [
+            92,
+            268,
+            250,
+            330
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "frutta-bio",
+          "page": 2,
+          "name": "Aranciata rossa",
+          "category": "Altre bevande",
+          "titleLogo": {
+            "asset": "lurisia-logo-cutout.png",
+            "width": "50px"
+          },
+          "description": "Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula. 27,5 cl.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "aranciata-rossa-lurisia-back.jpg",
+            "position": "center 54%",
+            "size": "cover"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "aranciata-rossa-lurisia-floating.png",
+            "width": "177px",
+            "height": "426px",
+            "right": "-18px",
+            "bottom": "18px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            44,
+            350,
+            490,
+            438
+          ],
+          "cropRect": [
+            92,
+            372,
+            494,
+            435
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "kombucha",
+          "page": 2,
+          "name": "Kombucha limone",
+          "category": "Artigianale",
+          "description": "Tè fermentato frizzante analcolico con succo di limone bio, prodotto in Lombardia.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@mia_kombucha",
+            "href": "https://www.instagram.com/mia_kombucha/",
+            "ariaLabel": "Apri il profilo Instagram Mia Kombucha"
+          },
+          "visual": {
+            "type": "photo-panel",
+            "asset": "kombucha-back.jpg",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-back.jpg",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Mal di pancia? Acqua e limone.",
+                "Mal di testa? Acqua e limone.",
+                "Male al malleolo? Acqua e limone.",
+                "Ma che è? O' miracolo?",
+                "Non berti tutte le cose che ti dicono.",
+                "Beviti Mia.",
+                "Sai che la fanno anche al limone?"
+              ],
+              "gradientStart": "#7f7c90",
+              "gradientEnd": "#727083",
+              "bodyColor": "#fffdfb"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "kombucha-limone-floating.png",
+            "deferAsset": true,
+            "width": "82px",
+            "height": "176px",
+            "right": "38px",
+            "bottom": "24px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "6deg"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            48,
+            442,
+            470,
+            526
+          ],
+          "cropRect": [
+            92,
+            462,
+            472,
+            526
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "caffe",
+          "page": 2,
+          "name": "Caffè",
+          "category": "Altre bevande",
+          "compactDetailOptions": true,
+          "hideOptionPricesInDetail": true,
+          "description": "Normale, lungo, deca o macchiato. (1,50€/cad.)",
+          "cardPriceOverride": 1.5,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "caffe-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "options": [
+            {
+              "label": "Normale",
+              "price": 1.5
+            },
+            {
+              "label": "Lungo",
+              "price": 1.5
+            },
+            {
+              "label": "Deca",
+              "price": 1.5
+            },
+            {
+              "label": "Macchiato",
+              "price": 1.5
+            }
+          ],
+          "rect": [
+            466,
+            136,
+            632,
+            226
+          ],
+          "cropRect": [
+            490,
+            160,
+            624,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "iced-coffee",
+          "page": 2,
+          "name": "Iced Latte",
+          "category": "Altre bevande",
+          "description": "Caffè shakerato freddo con latte nostrano, cremoso e dissetante.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Iced",
+            "gradientStart": "#8d6247",
+            "gradientMid": "#b98562",
+            "gradientEnd": "#ebd3bf",
+            "labelColor": "#fff9f2",
+            "textStyle": "display",
+            "script": "Latte",
+            "width": "72%",
+            "maxWidth": "184px",
+            "minHeight": "64px",
+            "radius": "999px"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "iced-coffee-floating.png",
+            "width": "86px",
+            "height": "164px",
+            "right": "14px",
+            "bottom": "10px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            466,
+            136,
+            632,
+            226
+          ],
+          "cropRect": [
+            490,
+            160,
+            624,
+            222
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "grappe-amari",
+          "page": 2,
+          "name": "Grappe e amari",
+          "category": "Altre bevande",
+          "compactDetailOptions": true,
+          "detailMultiOptionQuantities": true,
+          "hideOptionPricesInDetail": true,
+          "description": "Amari, grappe, distillati e liquori. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta. (4€/cad.)",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "grappe-amari-back.jpg",
+            "position": "center 18%",
+            "size": "cover"
+          },
+          "options": [
+            {
+              "label": "Amaro del Capo",
+              "displayLabel": "",
+              "price": 4
+            },
+            {
+              "label": "Averna",
+              "price": 4
+            },
+            {
+              "label": "Brancamenta",
+              "price": 4
+            },
+            {
+              "label": "Braulio",
+              "price": 4
+            },
+            {
+              "label": "Fernet",
+              "price": 4
+            },
+            {
+              "label": "Grappa barricata",
+              "price": 4
+            },
+            {
+              "label": "Grappa morbida",
+              "price": 4
+            },
+            {
+              "label": "Jägermeister",
+              "price": 4
+            },
+            {
+              "label": "Limoncello",
+              "price": 4
+            },
+            {
+              "label": "Liquirizia",
+              "price": 4
+            },
+            {
+              "label": "Mirto",
+              "price": 4
+            },
+            {
+              "label": "Montenegro",
+              "price": 4
+            },
+            {
+              "label": "Nanin",
+              "displayLabel": "Nanin",
+              "subtitle": "L'amaro alle erbe del Molino",
+              "tone": "herbal-green",
+              "layout": "full-row",
+              "price": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taglieri",
+      "title": "Taglieri",
+      "kicker": "Taglieri & sfiziosità",
+      "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate da gustare insieme.",
+      "accent": "#c96f11",
+      "accentSoft": "#ffe0ba",
+      "items": [
+        {
+          "id": "metro-del-molino",
+          "page": 2,
+          "name": "Metro del Molino",
+          "category": "Taglieri & sfiziosità",
+          "description": "Il tagliere da 1 m con sfiziosità del Molino, salumi, affettati e altre golosità da condividere.",
+          "options": [
+            {
+              "label": "",
+              "price": 18
+            }
+          ],
+          "rect": [
+            48,
+            778,
+            942,
+            866
+          ],
+          "cropRect": [
+            90,
+            820,
+            1110,
+            892
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "mezzo-metro",
+          "page": 2,
+          "name": "1/2 Metro",
+          "category": "Taglieri & sfiziosità",
+          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del Molino.",
+          "options": [
+            {
+              "label": "",
+              "price": 12
+            }
+          ],
+          "rect": [
+            48,
+            894,
+            942,
+            984
+          ],
+          "cropRect": [
+            90,
+            936,
+            1110,
+            1006
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gelato",
+      "title": "Agri-Gelato",
+      "kicker": "Dal latte al cono",
+      "description": "Il momento più dolce della Domenica: l'agri-gelato con il latte fresco della nostra cascina, da gustare al carretto nel parco.",
+      "accent": "#0f6b33",
+      "accentSoft": "#d7ead8",
+      "items": [
+        {
+          "id": "agri-gelato",
+          "page": 2,
+          "name": "Agri-gelato km 0",
+          "excludeFromSheet": true,
+          "category": "Gelateria",
+          "description": "Recati direttamente al carretto nel parco.",
+          "lockAvailabilityState": true,
+          "availabilityState": "self-service",
+          "unavailableLabel": "Al carretto",
+          "serviceNote": "Ordina e ritira in autonomia al carretto nel parco.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "agri-gelato-photo.jpeg",
+            "position": "center 72%",
+            "size": "cover"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 3
+            }
+          ],
+          "rect": [
+            26,
+            520,
+            1164,
+            620
+          ],
+          "cropRect": [
+            60,
+            548,
+            1112,
+            612
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        }
+      ]
+    }
+  ]
+}
