@@ -580,10 +580,20 @@
         return;
       }
       appLoader.classList.add("app-loader--card-hidden");
+      const loaderFontsGate = waitForLoaderFonts().then(() => "ready").catch(() => "fallback");
       try {
-        await Promise.all([wait(LOADER_CARD_DELAY), waitForLoaderFonts()]);
+        await wait(LOADER_CARD_DELAY);
+        const loaderFontState = await Promise.race([
+          loaderFontsGate,
+          wait(1100).then(() => "fallback")
+        ]);
         pageBody.classList.remove("loader-fonts-loading");
-        pageBody.classList.add("loader-fonts-ready");
+        if (loaderFontState === "ready") {
+          pageBody.classList.add("loader-fonts-ready");
+        } else {
+          pageBody.classList.add("loader-fonts-fallback");
+          appLoader.classList.add("app-loader--font-fallback");
+        }
       } catch (error) {
         pageBody.classList.remove("loader-fonts-loading");
         pageBody.classList.add("loader-fonts-fallback");

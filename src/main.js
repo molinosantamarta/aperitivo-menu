@@ -7,7 +7,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 
 import { APP_BUILD_LABEL } from "./generated/build-meta.js";
 
-const APP_VERSION = "20260325i";
+const APP_VERSION = "20260325j";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -619,10 +619,25 @@ function revealLoaderCardAfterDelay() {
 
     appLoader.classList.add("app-loader--card-hidden");
 
+    const loaderFontsGate = waitForLoaderFonts()
+      .then(() => "ready")
+      .catch(() => "fallback");
+
     try {
-      await Promise.all([wait(LOADER_CARD_DELAY), waitForLoaderFonts()]);
+      await wait(LOADER_CARD_DELAY);
+
+      const loaderFontState = await Promise.race([
+        loaderFontsGate,
+        wait(1100).then(() => "fallback"),
+      ]);
+
       pageBody.classList.remove("loader-fonts-loading");
-      pageBody.classList.add("loader-fonts-ready");
+      if (loaderFontState === "ready") {
+        pageBody.classList.add("loader-fonts-ready");
+      } else {
+        pageBody.classList.add("loader-fonts-fallback");
+        appLoader.classList.add("app-loader--font-fallback");
+      }
     } catch (error) {
       pageBody.classList.remove("loader-fonts-loading");
       pageBody.classList.add("loader-fonts-fallback");
