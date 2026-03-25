@@ -55,7 +55,7 @@
   --font-script-letter-spacing: 0;
   --font-script-size-adjust: -2px;
   --font-script-scale: 2;
-  --description-font-size: 0.96rem;
+  --description-font-size: 0.98rem;
   --description-line-height: 1.56;
   --shell-max-width: 480px;
   --shell-side-padding: 14px;
@@ -677,7 +677,7 @@ a {
 
 .eyebrow {
   margin: 0 0 18px;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -777,7 +777,7 @@ a {
   padding: 0 16px;
   border-radius: 999px;
   white-space: nowrap;
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: var(--nav-accent, var(--ink));
   text-decoration: none;
@@ -811,7 +811,7 @@ a {
   padding: 0 16px;
   border-radius: 999px;
   white-space: nowrap;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 800;
   color: rgba(23, 23, 23, 0.72);
   background: rgba(255, 255, 255, 0.66);
@@ -1128,7 +1128,7 @@ a {
   min-height: 26px;
   padding: 0 10px;
   border-radius: 999px;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1150,7 +1150,7 @@ a {
   min-height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1231,7 +1231,7 @@ a {
 
 .promo-agri-lightbox__eyebrow {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -1349,7 +1349,7 @@ a {
   padding: 8px 14px 7px;
   border-radius: 999px;
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: -0.15em;
   line-height: 1;
@@ -1384,7 +1384,7 @@ a {
   min-height: 36px;
   padding: 0 14px;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: var(--section-accent, #b98f1f);
   text-decoration: none;
@@ -1417,7 +1417,7 @@ a {
   min-height: 38px;
   padding: 0 16px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -2042,7 +2042,7 @@ a {
 }
 
 .item-card__label {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2127,7 +2127,7 @@ a {
 
 .item-card--artisanal-beer p {
   margin-top: 6px;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   line-height: 1.4;
   white-space: nowrap;
   text-wrap: nowrap;
@@ -2160,7 +2160,7 @@ a {
   min-height: 36px;
   padding: 0 12px;
   border-radius: 999px;
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: #151515;
   background: var(--section-accent-soft, #f4ead8);
@@ -2641,7 +2641,7 @@ a {
 .format-showcase__active-kicker {
   margin: 0;
   min-height: 1.1em;
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2668,7 +2668,7 @@ a {
   align-items: center;
   justify-content: center;
   color: rgba(93, 79, 68, 0.94);
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   line-height: 1.44;
   text-wrap: balance;
   text-align: center;
@@ -2681,7 +2681,7 @@ a {
   min-height: 1.4em;
   padding: 0;
   border-radius: 0;
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   color: #8e1f22;
@@ -2704,7 +2704,7 @@ a {
 
 .review-card__title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.94rem;
   letter-spacing: 0.06em;
 }
 
@@ -3898,7 +3898,7 @@ a {
 }
 
 .option-subtitle {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   line-height: 1.2;
   font-weight: 600;
   color: rgba(88, 70, 55, 0.76);
@@ -3940,7 +3940,7 @@ a {
 .cart-generated-group__title {
   margin: 0;
   padding-bottom: 4px;
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -3979,7 +3979,7 @@ a {
 .cart-item__meta {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
@@ -4028,7 +4028,7 @@ a {
   border: 0;
   background: transparent;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -4087,7 +4087,7 @@ a {
 
 .cart-generated-item__copy p {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   line-height: 1.12;
   overflow-wrap: anywhere;
 }

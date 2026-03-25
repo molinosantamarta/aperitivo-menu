@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325l";
+const APP_VERSION = "20260325m";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -268,6 +268,113 @@ const displayFontPlan =
   [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
     (plan) => plan.family === DISPLAY_FONT_FAMILY
   ) || null;
+
+function getClarityApi() {
+  return typeof window !== "undefined" && typeof window.clarity === "function"
+    ? window.clarity
+    : null;
+}
+
+function normalizeClarityValue(value) {
+  if (value == null) {
+    return "";
+  }
+
+  return String(value).replace(/\s+/g, " ").trim().slice(0, 255);
+}
+
+function setClarityTag(key, value) {
+  const clarity = getClarityApi();
+  const normalizedValue = normalizeClarityValue(value);
+
+  if (!clarity || !key || !normalizedValue) {
+    return;
+  }
+
+  try {
+    clarity("set", key, normalizedValue);
+  } catch (error) {
+    // Ignore analytics failures to keep the UI resilient.
+  }
+}
+
+function trackClarityEvent(name, tags = {}) {
+  const clarity = getClarityApi();
+  if (!clarity || !name) {
+    return;
+  }
+
+  try {
+    clarity("event", name);
+  } catch (error) {
+    // Ignore analytics failures to keep the UI resilient.
+  }
+
+  Object.entries(tags).forEach(([key, value]) => {
+    setClarityTag(key, value);
+  });
+}
+
+function trackDetailModalOpen(item) {
+  if (!item) {
+    return;
+  }
+
+  trackClarityEvent("product_modal_open", {
+    current_modal: "product_detail",
+    product_id: item.id,
+    product_name: item.name,
+    product_category: item.category || item.sectionId || "menu",
+  });
+}
+
+function trackDetailModalClose() {
+  const item = itemLookup[state.selectedItemId];
+
+  trackClarityEvent("product_modal_close", {
+    current_modal: "none",
+    product_id: item?.id || "none",
+    product_name: item?.name || "none",
+  });
+}
+
+function trackCartModalOpen() {
+  trackClarityEvent("cart_modal_open", {
+    current_modal: "cart",
+    cart_items: String(state.cart.length),
+    cart_quantity: String(state.cart.reduce((sum, entry) => sum + entry.quantity, 0)),
+  });
+}
+
+function trackCartModalClose() {
+  trackClarityEvent(isCartSummaryView ? "cart_summary_close" : "cart_modal_close", {
+    current_modal: "none",
+    cart_items: String(state.cart.length),
+    cart_quantity: String(state.cart.reduce((sum, entry) => sum + entry.quantity, 0)),
+  });
+}
+
+function trackCartSummaryViewChange(isSummaryView) {
+  trackClarityEvent(isSummaryView ? "cart_summary_open" : "cart_summary_edit", {
+    current_modal: isSummaryView ? "cart_summary" : "cart",
+    cart_items: String(state.cart.length),
+    cart_quantity: String(state.cart.reduce((sum, entry) => sum + entry.quantity, 0)),
+  });
+}
+
+function trackAddToCart(item, option, quantity) {
+  if (!item || !option || !Number.isFinite(quantity) || quantity <= 0) {
+    return;
+  }
+
+  trackClarityEvent("add_to_cart", {
+    product_id: item.id,
+    product_name: item.name,
+    product_option: buildSelectionSummaryLabel(item, option) || option.label || "default",
+    add_quantity: String(quantity),
+    cart_items: String(state.cart.length),
+  });
+}
 
 let sections = [];
 let itemLookup = {};
@@ -3365,6 +3472,7 @@ function openDetail(itemId) {
   detailSheet.classList.add("is-open");
   detailSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+  trackDetailModalOpen(item);
   focusElement(closeDetailButton);
 }
 
@@ -3375,6 +3483,7 @@ function closeDetail(options = {}) {
   detailPanel.classList.remove("sheet-panel--compact-options");
   detailPanel.classList.remove("sheet-panel--can-selector");
   detailPanel.classList.remove("sheet-panel--multi-quantities");
+  trackDetailModalClose();
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   syncModalOpenState({ restoreFocus });
@@ -3456,11 +3565,13 @@ function openCart() {
   cartSheet.classList.add("is-open");
   cartSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+  trackCartModalOpen();
   focusElement(closeCartButton);
 }
 
 function closeCart(options = {}) {
   const { restoreFocus = true } = options;
+  trackCartModalClose();
   cartSheet.classList.remove("is-open");
   cartSheet.setAttribute("aria-hidden", "true");
   syncModalOpenState({ restoreFocus });
@@ -3478,6 +3589,7 @@ function addItemToCart(item, option, quantity) {
   if (existing) {
     existing.quantity += quantity;
     moveCartEntryToFront(entryId);
+    trackAddToCart(item, option, quantity);
     return;
   }
 
@@ -3490,6 +3602,8 @@ function addItemToCart(item, option, quantity) {
     price: option.price,
     quantity,
   });
+
+  trackAddToCart(item, option, quantity);
 }
 
 function renderOptions(item) {
@@ -3999,6 +4113,7 @@ function setCartSummaryView(nextValue) {
   blurActiveElement();
   isCartSummaryView = Boolean(nextValue);
   renderCart();
+  trackCartSummaryViewChange(isCartSummaryView);
 }
 
 function moveCartEntryToFront(entryId) {
