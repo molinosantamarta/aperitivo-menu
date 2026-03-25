@@ -578,17 +578,34 @@
           host.indexOf("192.168.") === 0 ||
           host.indexOf("10.") === 0 ||
           /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
-        var script = document.createElement("script");
-
-        script.defer = true;
         if (isLocalHost) {
+          var script = document.createElement("script");
+          script.defer = true;
           script.type = "module";
           script.src = "./src/main.js?v=20260325j";
+          document.body.appendChild(script);
         } else {
-          script.src = "./generated/main.runtime.20260325j.js";
-        }
+          var runtimeCandidates = [
+            { src: "./generated/main.runtime.20260325j.js" },
+            { src: "./generated/main.runtime.js?v=20260325j" }
+          ];
+          var candidateIndex = 0;
 
-        document.body.appendChild(script);
+          var loadRuntime = function () {
+            if (candidateIndex >= runtimeCandidates.length) {
+              return;
+            }
+
+            var candidate = runtimeCandidates[candidateIndex++];
+            var runtimeScript = document.createElement("script");
+            runtimeScript.defer = true;
+            runtimeScript.src = candidate.src;
+            runtimeScript.onerror = loadRuntime;
+            document.body.appendChild(runtimeScript);
+          };
+
+          loadRuntime();
+        }
       })();
     </script>
   </body>
