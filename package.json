@@ -4,13 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "extract": "python3 scripts/extract_ape_assets.py",
-    "sheet:template": "node scripts/export_sheet_template.mjs",
-    "sheet:template:simple": "node scripts/export_sheet_template_simple.mjs",
-    "build:pages-runtime": "esbuild main.js --platform=browser --format=iife --target=safari11 --outfile=main.runtime.js",
-    "build:pages-assets": "node scripts/prepare_dist.mjs",
+    "extract": "python3 scripts/assets/extract_ape_assets.py",
+    "sheet:template": "node scripts/sheets/export_sheet_template.mjs",
+    "sheet:template:simple": "node scripts/sheets/export_sheet_template_simple.mjs",
+    "build:pages-runtime": "mkdir -p public/generated && esbuild src/main.js --platform=browser --format=iife --target=safari11 --outfile=public/generated/main.runtime.js",
     "dev": "vite --host 0.0.0.0 --port 4173",
-    "build": "npm run build:pages-runtime && vite build && npm run build:pages-assets",
+    "build": "npm run build:pages-runtime && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 4174"
   },
   "devDependencies": {

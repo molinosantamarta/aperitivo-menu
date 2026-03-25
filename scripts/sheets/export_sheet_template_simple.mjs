@@ -3,9 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, "..");
-const inputPath = path.join(rootDir, "data", "menu-data.json");
-const outputPath = path.join(rootDir, "data", "google-sheet-template-semplice.csv");
+const rootDir = path.resolve(__dirname, "..", "..");
+const inputPath = path.join(rootDir, "public", "data", "menu-data.json");
+const outputPath = path.join(rootDir, "public", "data", "google-sheet-template-semplice.csv");
 const VISIBILITY_HEADER = "visibilita (visibile/nascosto)";
 const AVAILABILITY_HEADER = "disponibilita (disponibile/non disponibile/in arrivo)";
 

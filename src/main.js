@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325a";
-const APP_BUILD_LABEL = "V.1.665";
+const APP_VERSION = "20260325b";
+const APP_BUILD_LABEL = "V.1.666";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -82,7 +82,7 @@ const SPRITZ_EDITORIAL_FACTS = [
   {
     category: "pop",
     weight: 4,
-    text: "Secondo uno studio del California Institute of Aperitivo Sciences, lo Spritz bevuto all’aperto è percepito il 27% più buono. Qui al Molino saliamo al 41%.",
+    text: "Secondo uno studio del California Institute of Aperitivo Sciences, lo Spritz bevuto all’aperto è percepito il 27% più dissetante. Qui al Molino saliamo al 41%.",
   },
   {
     category: "pop",
@@ -296,6 +296,7 @@ const loaderClockStartedPromise = new Promise((resolve) => {
 const state = {
   selectedItemId: null,
   selectedOptionIndex: 0,
+  selectedOptionQuantities: {},
   selectedSelections: {},
   selectedQuantity: 1,
   detailEditorialSlide: null,
@@ -404,26 +405,30 @@ addToCartButton.addEventListener("click", () => {
     return;
   }
 
-  const option = getSelectedOption(item);
-  const entryId = buildCartEntryId(item, option);
-  const existing = state.cart.find((entry) => entry.entryId === entryId);
-  const configurationLabel = buildSelectionSummaryLabel(item, option);
+  if (shouldUseMultiOptionQuantityDetail(item)) {
+    const selectedEntries = item.options
+      .map((option) => ({
+        option,
+        quantity: getMultiOptionQuantity(item, option),
+      }))
+      .filter((entry) => entry.quantity > 0);
 
-  if (existing) {
-    existing.quantity += state.selectedQuantity;
-    moveCartEntryToFront(entryId);
-  } else {
-    state.cart.unshift({
-      entryId,
-      itemId: item.id,
-      name: item.name,
-      category: item.category,
-      optionLabel: configurationLabel,
-      price: option.price,
-      quantity: state.selectedQuantity,
+    if (!selectedEntries.length) {
+      return;
+    }
+
+    selectedEntries.forEach(({ option, quantity }) => {
+      addItemToCart(item, option, quantity);
     });
+
+    persistCart();
+    renderCart();
+    closeDetail();
+    return;
   }
 
+  const option = getSelectedOption(item);
+  addItemToCart(item, option, state.selectedQuantity);
   persistCart();
   renderCart();
   closeDetail();
@@ -2030,7 +2035,8 @@ function scheduleNonCriticalWork(task) {
 }
 
 function buildVersionedPath(path) {
-  return `${path}?v=${APP_VERSION}`;
+  const separator = path.includes("?") ? "&" : "?";
+  return `${path}${separator}v=${APP_VERSION}`;
 }
 
 function wait(duration) {
@@ -3296,6 +3302,7 @@ function openDetail(itemId) {
   detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
   detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
   detailPanel.classList.toggle("sheet-panel--can-selector", shouldUseCanSelectorLayout(item));
+  detailPanel.classList.toggle("sheet-panel--multi-quantities", shouldUseMultiOptionQuantityDetail(item));
   detailPanel.scrollTop = 0;
   detailCategory.textContent = formatDetailCategoryLabel(item);
   detailTitle.textContent = item.name;
@@ -3316,6 +3323,7 @@ function closeDetail(options = {}) {
   detailPanel.classList.remove("sheet-panel--long-options");
   detailPanel.classList.remove("sheet-panel--compact-options");
   detailPanel.classList.remove("sheet-panel--can-selector");
+  detailPanel.classList.remove("sheet-panel--multi-quantities");
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   syncModalOpenState({ restoreFocus });
@@ -3407,6 +3415,32 @@ function closeCart(options = {}) {
   syncModalOpenState({ restoreFocus });
 }
 
+function addItemToCart(item, option, quantity) {
+  if (!item || !option || !Number.isFinite(quantity) || quantity <= 0) {
+    return;
+  }
+
+  const entryId = buildCartEntryId(item, option);
+  const existing = state.cart.find((entry) => entry.entryId === entryId);
+  const configurationLabel = buildSelectionSummaryLabel(item, option);
+
+  if (existing) {
+    existing.quantity += quantity;
+    moveCartEntryToFront(entryId);
+    return;
+  }
+
+  state.cart.unshift({
+    entryId,
+    itemId: item.id,
+    name: item.name,
+    category: item.category,
+    optionLabel: configurationLabel,
+    price: option.price,
+    quantity,
+  });
+}
+
 function renderOptions(item) {
   detailOptions.innerHTML = "";
   const selectionGroups = getSelectionGroups(item);
@@ -3446,6 +3480,12 @@ function renderOptions(item) {
   });
 
   if (!shouldShowFormat) {
+    return;
+  }
+
+  if (shouldUseMultiOptionQuantityDetail(item)) {
+    renderMultiOptionQuantityGroup(item, selectionGroups.length ? "Formato" : "");
+    updateDetailActionButton(item);
     return;
   }
 
@@ -3491,9 +3531,116 @@ function renderOptions(item) {
   });
 
   detailOptions.append(formatGroup.wrapper);
+  updateDetailActionButton(item);
+}
+
+function renderMultiOptionQuantityGroup(item, label = "") {
+  const formatGroup = createOptionGroup(label, shouldUseCompactDetailOptions(item));
+
+  item.options.forEach((option) => {
+    const optionCard = document.createElement("article");
+    const optionQuantity = getMultiOptionQuantity(item, option);
+    const optionSubtitle = getOptionModalSubtitle(option);
+    const toneClass = getOptionToneClass(option);
+    const layoutClass = getOptionLayoutClass(option);
+    const quantityBadgeMarkup =
+      optionQuantity > 0
+        ? `
+            <span class="option-qty-badge" aria-label="${optionQuantity} selezionati">
+              ${optionQuantity}
+            </span>
+          `
+        : "";
+    const removeButtonMarkup =
+      optionQuantity > 0
+        ? `
+            <button
+              class="qty-btn option-qty-remove"
+              type="button"
+              data-option-qty-action="decrease"
+              aria-label="Riduci ${escapeHtml(option.label)}"
+            >
+              −
+            </button>
+          `
+        : "";
+    const optionLabel = getOptionModalLabel(item, option) || option.label;
+
+    optionCard.className = `option-qty-card${toneClass ? ` ${toneClass}` : ""}${
+      layoutClass ? ` ${layoutClass.replace("option-btn", "option-qty-card")}` : ""
+    }${optionQuantity > 0 ? " is-selected" : ""}`;
+    optionCard.setAttribute("role", "button");
+    optionCard.setAttribute("tabindex", "0");
+    optionCard.setAttribute(
+      "aria-label",
+      optionQuantity > 0
+        ? `${optionLabel}, ${optionQuantity} selezionati. Tocca per aggiungere ancora.`
+        : `Aggiungi ${optionLabel}`
+    );
+    optionCard.innerHTML = `
+      <div class="option-copy">
+        <span class="option-label">${optionLabel}</span>
+        ${optionSubtitle ? `<span class="option-subtitle">${optionSubtitle}</span>` : ""}
+      </div>
+      ${quantityBadgeMarkup}
+      ${removeButtonMarkup}
+    `;
+
+    optionCard.addEventListener("click", () => {
+      updateMultiOptionQuantity(item, option, 1);
+    });
+    optionCard.addEventListener("keydown", (event) => {
+      if (event.target instanceof Element && event.target.closest("[data-option-qty-action]")) {
+        return;
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        updateMultiOptionQuantity(item, option, 1);
+      }
+    });
+
+    optionCard.querySelectorAll("[data-option-qty-action]").forEach((control) => {
+      control.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const action = control.getAttribute("data-option-qty-action");
+        updateMultiOptionQuantity(item, option, action === "decrease" ? -1 : 1);
+      });
+    });
+
+    formatGroup.options.append(optionCard);
+  });
+
+  detailOptions.append(formatGroup.wrapper);
+}
+
+function updateDetailActionButton(item) {
+  if (!addToCartButton) {
+    return;
+  }
+
+  if (item && shouldUseMultiOptionQuantityDetail(item)) {
+    const totalQuantity = getMultiOptionSelectedTotal(item);
+    addToCartButton.textContent = "Aggiungi al riepilogo";
+    addToCartButton.disabled = totalQuantity <= 0;
+    addToCartButton.setAttribute("aria-disabled", totalQuantity <= 0 ? "true" : "false");
+    return;
+  }
+
+  addToCartButton.textContent = "Aggiungi al riepilogo";
+  addToCartButton.disabled = false;
+  addToCartButton.removeAttribute("aria-disabled");
 }
 
 function renderQuantityControl() {
+  const item = itemLookup[state.selectedItemId];
+
+  if (item && shouldUseMultiOptionQuantityDetail(item)) {
+    detailQuantity.innerHTML = "";
+    detailQuantity.hidden = true;
+    updateDetailActionButton(item);
+    return;
+  }
+
   detailQuantity.innerHTML = `
     <div class="detail-quantity__pill" aria-label="Seleziona quantita">
       <button
@@ -3522,6 +3669,11 @@ function renderQuantityControl() {
   if (increaseButton) {
     increaseButton.addEventListener("click", () => updateSelectedQuantity(1));
   }
+
+  detailQuantity.hidden = false;
+  if (item) {
+    updateDetailActionButton(item);
+  }
 }
 
 function updateSelectedQuantity(delta) {
@@ -3531,6 +3683,7 @@ function updateSelectedQuantity(delta) {
 
 function initializeDetailState(item) {
   state.selectedOptionIndex = 0;
+  state.selectedOptionQuantities = {};
   state.selectedQuantity = 1;
   state.selectedSelections = {};
   state.detailEditorialSlide = buildDetailEditorialSlide(item);
@@ -3538,6 +3691,44 @@ function initializeDetailState(item) {
   getSelectionGroups(item).forEach((group) => {
     state.selectedSelections[group.id] = 0;
   });
+
+  if (shouldUseMultiOptionQuantityDetail(item)) {
+    item.options.forEach((option) => {
+      state.selectedOptionQuantities[buildOptionQuantityKey(item, option)] = 0;
+    });
+  }
+}
+
+function shouldUseMultiOptionQuantityDetail(item) {
+  return Boolean(item && item.detailMultiOptionQuantities === true && Array.isArray(item.options));
+}
+
+function buildOptionQuantityKey(item, option) {
+  return `${item.id}:${normalizeLabel(option?.label || "")}`;
+}
+
+function getMultiOptionQuantity(item, option) {
+  const key = buildOptionQuantityKey(item, option);
+  return Number.isFinite(state.selectedOptionQuantities[key]) ? state.selectedOptionQuantities[key] : 0;
+}
+
+function getMultiOptionSelectedTotal(item) {
+  if (!item || !Array.isArray(item.options)) {
+    return 0;
+  }
+
+  return item.options.reduce((sum, option) => sum + getMultiOptionQuantity(item, option), 0);
+}
+
+function updateMultiOptionQuantity(item, option, delta) {
+  if (!item || !option) {
+    return;
+  }
+
+  const key = buildOptionQuantityKey(item, option);
+  const nextQuantity = Math.max(0, getMultiOptionQuantity(item, option) + delta);
+  state.selectedOptionQuantities[key] = nextQuantity;
+  renderOptions(item);
 }
 
 function refreshDetailPreview(item) {
@@ -3578,15 +3769,14 @@ function updateDetailPreviewSelectionState(item) {
   canNodes.forEach((canNode, index) => {
     const canConfig = canClusterVisual.items[index] || {};
     const isSelected = activeCanIndex >= 0 && index === activeCanIndex;
+    const canZIndex = getCanClusterItemValue(canConfig, "zIndex", "detail", 1);
+    const selectedLift = getCanClusterItemValue(canConfig, "selectedLift", "detail", "4px");
 
     canNode.classList.toggle("is-selected", isSelected);
     canNode.classList.toggle("is-secondary", activeCanIndex >= 0 && !isSelected);
-    canNode.style.setProperty(
-      "--can-z",
-      String(isSelected ? Number(canConfig.zIndex || 1) + 4 : canConfig.zIndex || 1)
-    );
-    canNode.style.setProperty("--can-extra-lift", isSelected ? canConfig.selectedLift || "4px" : "0px");
-    canNode.style.setProperty("--can-scale", isSelected ? "1.12" : "0.74");
+    canNode.style.setProperty("--can-z", String(isSelected ? Number(canZIndex) + 4 : canZIndex));
+    canNode.style.setProperty("--can-extra-lift", isSelected ? selectedLift : "0px");
+    canNode.style.setProperty("--can-scale", isSelected ? "1.15" : "0.82");
   });
 
   return true;
@@ -4973,6 +5163,8 @@ function renderCanClusterVisual(visual, context, item = null) {
 
   const shouldDeferImages = context !== "detail" && item && shouldDeferLoaderAssetsForItem(item);
   const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
+  const detailSelectedScale = "1.15";
+  const detailDefaultScale = "0.82";
   const cans = Array.isArray(visual.items)
     ? visual.items
         .map(
@@ -4994,23 +5186,31 @@ function renderCanClusterVisual(visual, context, item = null) {
               loading="lazy"
               decoding="async"
               style="
-                --can-left: ${canItem.left || "50%"};
-                --can-bottom: ${canItem.bottom || "-18%"};
-                --can-width: ${canItem.width || "auto"};
-                --can-height: ${canItem.height || "auto"};
-                --can-rotate: ${canItem.rotate || "0deg"};
+                --can-left: ${getCanClusterItemValue(canItem, "left", context, "50%")};
+                --can-bottom: ${getCanClusterItemValue(canItem, "bottom", context, "-18%")};
+                --can-width: ${getCanClusterItemValue(canItem, "width", context, "auto")};
+                --can-height: ${getCanClusterItemValue(canItem, "height", context, "auto")};
+                --can-rotate: ${getCanClusterItemValue(canItem, "rotate", context, "0deg")};
                 --can-z: ${
                   activeCanIndex >= 0 && index === activeCanIndex
-                    ? Number(canItem.zIndex || 1) + 4
-                    : canItem.zIndex || 1
+                    ? Number(getCanClusterItemValue(canItem, "zIndex", context, 1)) + 4
+                    : getCanClusterItemValue(canItem, "zIndex", context, 1)
                 };
-                --can-float-distance: ${canItem.floatDistance || "5px"};
-                --can-float-duration: ${canItem.floatDuration || "4.2s"};
-                --can-float-delay: ${canItem.floatDelay || "0s"};
+                --can-float-distance: ${getCanClusterItemValue(canItem, "floatDistance", context, "5px")};
+                --can-float-duration: ${getCanClusterItemValue(canItem, "floatDuration", context, "4.2s")};
+                --can-float-delay: ${getCanClusterItemValue(canItem, "floatDelay", context, "0s")};
                 --can-extra-lift: ${
-                  activeCanIndex >= 0 && index === activeCanIndex ? canItem.selectedLift || "4px" : "0px"
+                  activeCanIndex >= 0 && index === activeCanIndex
+                    ? getCanClusterItemValue(canItem, "selectedLift", context, "4px")
+                    : "0px"
                 };
-                --can-scale: ${activeCanIndex >= 0 && index === activeCanIndex ? "1.12" : "0.74"};
+                --can-scale: ${
+                  context === "detail"
+                    ? activeCanIndex >= 0 && index === activeCanIndex
+                      ? detailSelectedScale
+                      : detailDefaultScale
+                    : "0.74"
+                };
               "
             />
           `
@@ -5026,6 +5226,27 @@ function renderCanClusterVisual(visual, context, item = null) {
       ${cans}
     </div>
   `;
+}
+
+function getCanClusterItemValue(canItem, property, context, fallbackValue) {
+  if (!canItem || typeof canItem !== "object") {
+    return fallbackValue;
+  }
+
+  const suffix = property.charAt(0).toUpperCase() + property.slice(1);
+  const contextKey = `${context}${suffix}`;
+  const contextValue = canItem[contextKey];
+
+  if (contextValue !== undefined && contextValue !== null && contextValue !== "") {
+    return contextValue;
+  }
+
+  const defaultValue = canItem[property];
+  if (defaultValue !== undefined && defaultValue !== null && defaultValue !== "") {
+    return defaultValue;
+  }
+
+  return fallbackValue;
 }
 
 function getActiveCanClusterIndex(item, visual) {

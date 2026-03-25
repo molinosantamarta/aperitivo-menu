@@ -6,33 +6,42 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 
 ```text
 .
-├── data/
-│   ├── google-sheet-template.csv
-│   ├── menu-data.json
-│   └── sheet-config.json
-├── fonts/
-├── menu-assets/
-│   ├── footer.png
-│   ├── instagram-logo.webp
-│   ├── sgb-molino-black.png
-│   └── items/
+├── public/
+│   ├── data/
+│   │   ├── google-sheet-template-semplice.csv
+│   │   ├── google-sheet-template.csv
+│   │   ├── menu-data.json
+│   │   └── sheet-config.json
+│   ├── format-carousel/
+│   ├── generated/
+│   ├── menu-assets/
+│   │   ├── items/
+│   │   ├── footer.png
+│   │   ├── instagram-logo.webp
+│   │   └── sgb-molino-black.png
+│   └── farfalla-bianca.gif
 ├── scripts/
-│   ├── export_sheet_template.mjs
-│   ├── extract_ape_assets.py
-│   └── prepare_dist.mjs
-├── farfalla-bianca.gif
+│   ├── assets/
+│   │   └── extract_ape_assets.py
+│   └── sheets/
+│       ├── export_sheet_template.mjs
+│       └── export_sheet_template_simple.mjs
+├── src/
+│   ├── fonts/
+│   ├── main.js
+│   └── styles.css
 ├── index.html
-├── main.js
-├── main.runtime.js
 ├── package.json
-├── styles.css
 └── vite.config.js
 ```
 
-- `data/`: dati del menu usati dall'app.
-- `fonts/`: font effettivamente caricati dal sito.
-- `menu-assets/`: solo asset runtime realmente usati dall'interfaccia.
-- `scripts/`: utility di estrazione, generazione template e preparazione deploy.
+- `src/`: logica applicativa, stylesheet e font locali del progetto.
+- `public/data/`: dati del menu e file CSV collegati al flusso Google Sheet.
+- `public/menu-assets/`: asset runtime dell'interfaccia, separati dagli altri media.
+- `public/format-carousel/`: immagini dedicate al carosello dei format.
+- `public/generated/`: artefatti generati prima della build, non versionati.
+- `scripts/assets/`: utility che producono o aggiornano asset grafici.
+- `scripts/sheets/`: utility dedicate al flusso Google Sheet.
 
 ## Sviluppo locale
 
@@ -49,13 +58,11 @@ Preview locale: `http://localhost:4173/`
 npm run build
 ```
 
-La build ora prepara anche i file runtime necessari per GitHub Pages dentro `dist/`, inclusi:
+La build:
 
-- `main.js`
-- `main.runtime.js`
-- `data/`
-- `menu-assets/`
-- `farfalla-bianca.gif`
+1. genera `public/generated/main.runtime.js`
+2. esegue la build Vite
+3. copia automaticamente tutto il contenuto di `public/` dentro `dist/`
 
 ## Script utili
 
@@ -65,7 +72,7 @@ La build ora prepara anche i file runtime necessari per GitHub Pages dentro `dis
 npm run extract
 ```
 
-Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `menu-assets/`.
+Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `public/menu-assets/`.
 
 ### Generare il template Google Sheet
 
@@ -73,7 +80,7 @@ Lo script legge `APE26.pdf` dal Desktop e aggiorna gli asset ritagliati in `menu
 npm run sheet:template
 ```
 
-Questo aggiorna [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv) con tutti i prodotti attuali.
+Aggiorna [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/google-sheet-template.csv) con tutti i prodotti attuali.
 
 Per una versione piu semplice, pensata per l'uso quotidiano:
 
@@ -81,36 +88,32 @@ Per una versione piu semplice, pensata per l'uso quotidiano:
 npm run sheet:template:simple
 ```
 
-Questo aggiorna [google-sheet-template-semplice.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template-semplice.csv).
+Aggiorna [google-sheet-template-semplice.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/google-sheet-template-semplice.csv).
 
 ## Google Sheet opzionale
 
-Il progetto può leggere override dinamici da un Google Sheet pubblicato come CSV.
+Il progetto puo leggere override dinamici da un Google Sheet pubblicato come CSV.
 
 ### Flusso consigliato
 
-1. importa `data/google-sheet-template-semplice.csv` in Google Sheets
+1. importa `public/data/google-sheet-template-semplice.csv` in Google Sheets
 2. modifica dal foglio:
    - `visibilita (visibile/nascosto)`
    - `disponibilita (disponibile/non disponibile/in arrivo)`
-   - `varianti` + `prezzo_unico` se tutte le varianti hanno lo stesso prezzo
-   - `prezzo_1`, `prezzo_2`, `prezzo_3` se il prodotto ha piu varianti con prezzi diversi
+   - `prezzo`
 3. pubblica il foglio come CSV
-4. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/sheet-config.json)
+4. incolla l'URL pubblico in [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/sheet-config.json)
 
 ### Note
 
-- se il foglio non e configurato o non risponde, il sito usa automaticamente `data/menu-data.json`
-- il parser resta compatibile anche con il vecchio formato `si/no` durante la transizione
-- nomi, descrizioni, categorie e struttura del menu restano nel codice e non vengono piu letti dal foglio
-- per prodotti come `Grappe e amari`, puoi tenere tutte le varianti in `varianti` separate da `|`
-- il template semplice aggiorna i prezzi per indice e mantiene le varianti extra che non compaiono nel foglio
-- per visual personalizzati complessi (bottiglie, gradienti speciali, asset fotografici) conviene ancora intervenire nel repository
-- se vuoi modificare tutte le varianti in modo avanzato, resta disponibile anche [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/data/google-sheet-template.csv)
+- se il foglio non e configurato o non risponde, il sito usa automaticamente `public/data/menu-data.json`
+- nomi, descrizioni, categorie e struttura del menu restano nel repository
+- per asset o visual personalizzati conviene ancora intervenire nel codice/dati del progetto
+- per una gestione avanzata resta disponibile anche [google-sheet-template.csv](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/google-sheet-template.csv)
 
 ## Deploy
 
-Il repository è pubblicato su GitHub Pages tramite GitHub Actions:
+Il repository e pubblicato su GitHub Pages tramite GitHub Actions:
 
 - push su `main`
 - build Vite
