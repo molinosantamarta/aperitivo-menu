@@ -5,14 +5,15 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260324g";
-const APP_BUILD_LABEL = "V.1.664";
+const APP_VERSION = "20260325a";
+const APP_BUILD_LABEL = "V.1.665";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
+const DISPLAY_FONT_REVEAL_CONFIRMATIONS = 3;
 const CRITICAL_IMAGE_LOAD_TIMEOUT = 22000;
 const CRITICAL_IMAGE_RETRY_COUNT = 2;
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -241,6 +242,15 @@ const FONT_BOOTSTRAP_PLAN = {
     },
   ],
 };
+const DISPLAY_FONT_READY_VARS = {
+  "--font-display-letter-spacing": "-0.2em",
+  "--hero-logo-letter-spacing": "-0.15em",
+};
+const DISPLAY_FONT_FALLBACK_VARS = {
+  "--font-display-letter-spacing": "-0.08em",
+  "--hero-logo-letter-spacing": "-0.06em",
+};
+const DISPLAY_FONT_FAMILY = "Lulo Clean";
 const LOADER_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.loader);
 const REQUIRED_FONT_PLANS = dedupeFontPlans([
   ...FONT_BOOTSTRAP_PLAN.loader,
@@ -251,6 +261,10 @@ const NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(
   (plan) => !isCustomBlockingFontPlan(plan)
 );
 const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
+const displayFontPlan =
+  [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
+    (plan) => plan.family === DISPLAY_FONT_FAMILY
+  ) || null;
 
 let sections = [];
 let itemLookup = {};
@@ -461,6 +475,10 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+syncDisplayFontSpacingFromMetrics();
+if ("fonts" in document && typeof document.fonts?.addEventListener === "function") {
+  document.fonts.addEventListener("loadingdone", syncDisplayFontSpacingFromMetrics);
+}
 initLoaderProgress();
 initPromoAgriCarousel();
 initFormatCarousel();
@@ -478,14 +496,19 @@ async function init() {
       throw error;
     });
   const fontsReadyPromise = waitForRequiredFonts()
-    .then(() => {
+    .then(async () => {
+      await waitForDisplayFontRevealGate();
+      syncDisplayFontSpacingFromMetrics();
       pageBody.classList.remove("fonts-critical-loading");
       pageBody.classList.add("fonts-critical-ready");
       setLoaderTaskProgress("fonts", 1);
     })
     .catch((error) => {
-      error.bootPhase = "fonts";
-      throw error;
+      console.warn("Font critici non confermati entro il timeout, continuo in fallback.", error);
+      syncDisplayFontSpacing(false);
+      pageBody.classList.remove("fonts-critical-loading");
+      pageBody.classList.add("fonts-critical-fallback", "loader-fonts-fallback");
+      setLoaderTaskProgress("fonts", 1);
     });
   const deferredFontsReadyPromise = waitForDeferredFonts().then(() => {
     setLoaderTaskProgress("deferredFonts", 1);
@@ -661,6 +684,7 @@ function showBootstrapFailureState(error) {
     return;
   }
 
+  syncDisplayFontSpacing(false);
   hideLoaderIntro();
   clearInitialLoaderCardHide();
   appLoader.classList.remove("app-loader--card-hidden");
@@ -1508,6 +1532,66 @@ function parseSheetNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function applyDisplayFontSpacingVars(variableMap) {
+  if (!document?.documentElement || !variableMap) {
+    return;
+  }
+
+  Object.entries(variableMap).forEach(([name, value]) => {
+    document.documentElement.style.setProperty(name, value);
+  });
+}
+
+function syncDisplayFontSpacing(isReady) {
+  applyDisplayFontSpacingVars(isReady ? DISPLAY_FONT_READY_VARS : DISPLAY_FONT_FALLBACK_VARS);
+}
+
+function syncDisplayFontSpacingFromMetrics() {
+  syncDisplayFontSpacing(displayFontPlan ? isFontMetricReady(displayFontPlan) : false);
+}
+
+async function waitForDisplayFontRevealGate() {
+  if (!displayFontPlan) {
+    return;
+  }
+
+  await waitForFontMetrics(displayFontPlan, {
+    strict: true,
+    timeout: STRICT_FONT_LOAD_TIMEOUT,
+  });
+
+  let confirmations = 0;
+
+  while (confirmations < DISPLAY_FONT_REVEAL_CONFIRMATIONS) {
+    if (isFontMetricReady(displayFontPlan)) {
+      confirmations += 1;
+    } else {
+      confirmations = 0;
+    }
+
+    if (confirmations >= DISPLAY_FONT_REVEAL_CONFIRMATIONS) {
+      return;
+    }
+
+    if ("fonts" in document && document.fonts?.load) {
+      try {
+        await waitWithTimeout(
+          document.fonts.load(
+            displayFontPlan.metricDescriptor || displayFontPlan.descriptor,
+            displayFontPlan.metricSample || displayFontPlan.sample || "BESbswy 0123456789"
+          ),
+          1400
+        );
+      } catch (error) {
+        // Keep polling until the metric checks are stable.
+      }
+    }
+
+    await waitForNextPaint();
+    await wait(110);
+  }
+}
+
 async function waitForRequiredFonts() {
   const blockingMetricPlans = BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
   const nonBlockingMetricPlans = NON_BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
@@ -1517,7 +1601,6 @@ async function waitForRequiredFonts() {
       ...BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
         waitForFontLoad(plan, {
           strict: true,
-          persist: true,
           timeout: STRICT_FONT_LOAD_TIMEOUT,
         })
       ),
@@ -1542,7 +1625,6 @@ async function waitForRequiredFonts() {
     ...blockingMetricPlans.map((plan) =>
       waitForFontMetrics(plan, {
         strict: true,
-        persist: true,
         timeout: STRICT_FONT_LOAD_TIMEOUT,
       })
     ),

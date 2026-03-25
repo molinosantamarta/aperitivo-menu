@@ -24,14 +24,15 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260324g";
-  const APP_BUILD_LABEL = "V.1.664";
+  const APP_VERSION = "20260325a";
+  const APP_BUILD_LABEL = "V.1.665";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
   const LOADER_FONT_TIMEOUT = 12e3;
   const FONT_LOAD_TIMEOUT = 2e4;
   const STRICT_FONT_LOAD_TIMEOUT = 45e3;
+  const DISPLAY_FONT_REVEAL_CONFIRMATIONS = 3;
   const CRITICAL_IMAGE_LOAD_TIMEOUT = 22e3;
   const CRITICAL_IMAGE_RETRY_COUNT = 2;
   const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
@@ -255,6 +256,15 @@
       }
     ]
   };
+  const DISPLAY_FONT_READY_VARS = {
+    "--font-display-letter-spacing": "-0.2em",
+    "--hero-logo-letter-spacing": "-0.15em"
+  };
+  const DISPLAY_FONT_FALLBACK_VARS = {
+    "--font-display-letter-spacing": "-0.08em",
+    "--hero-logo-letter-spacing": "-0.06em"
+  };
+  const DISPLAY_FONT_FAMILY = "Lulo Clean";
   const LOADER_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.loader);
   const REQUIRED_FONT_PLANS = dedupeFontPlans([
     ...FONT_BOOTSTRAP_PLAN.loader,
@@ -265,6 +275,9 @@
     (plan) => !isCustomBlockingFontPlan(plan)
   );
   const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
+  const displayFontPlan = [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
+    (plan) => plan.family === DISPLAY_FONT_FAMILY
+  ) || null;
   let sections = [];
   let itemLookup = {};
   let itemSectionLookup = {};
@@ -455,6 +468,11 @@
       }
     }
   });
+  syncDisplayFontSpacingFromMetrics();
+  var _a;
+  if ("fonts" in document && typeof ((_a = document.fonts) == null ? void 0 : _a.addEventListener) === "function") {
+    document.fonts.addEventListener("loadingdone", syncDisplayFontSpacingFromMetrics);
+  }
   initLoaderProgress();
   initPromoAgriCarousel();
   initFormatCarousel();
@@ -468,13 +486,18 @@
       error.bootPhase = "menu-data";
       throw error;
     });
-    const fontsReadyPromise = waitForRequiredFonts().then(() => {
+    const fontsReadyPromise = waitForRequiredFonts().then(async () => {
+      await waitForDisplayFontRevealGate();
+      syncDisplayFontSpacingFromMetrics();
       pageBody.classList.remove("fonts-critical-loading");
       pageBody.classList.add("fonts-critical-ready");
       setLoaderTaskProgress("fonts", 1);
     }).catch((error) => {
-      error.bootPhase = "fonts";
-      throw error;
+      console.warn("Font critici non confermati entro il timeout, continuo in fallback.", error);
+      syncDisplayFontSpacing(false);
+      pageBody.classList.remove("fonts-critical-loading");
+      pageBody.classList.add("fonts-critical-fallback", "loader-fonts-fallback");
+      setLoaderTaskProgress("fonts", 1);
     });
     const deferredFontsReadyPromise = waitForDeferredFonts().then(() => {
       setLoaderTaskProgress("deferredFonts", 1);
@@ -606,10 +629,11 @@
     appLoaderCard.removeAttribute("data-loader-card-initial-hidden");
   }
   function showBootstrapFailureState(error) {
-    var _a;
+    var _a2;
     if (!appLoader) {
       return;
     }
+    syncDisplayFontSpacing(false);
     hideLoaderIntro();
     clearInitialLoaderCardHide();
     appLoader.classList.remove("app-loader--card-hidden");
@@ -644,7 +668,7 @@
       retryButton.className = "utility-btn utility-btn--accent app-loader__action";
       retryButton.textContent = "Ricarica la pagina";
       retryButton.addEventListener("click", () => window.location.reload());
-      (_a = appLoader.querySelector(".app-loader__card")) == null ? void 0 : _a.appendChild(retryButton);
+      (_a2 = appLoader.querySelector(".app-loader__card")) == null ? void 0 : _a2.appendChild(retryButton);
     }
   }
   function startLoaderTimeProgress() {
@@ -1251,6 +1275,55 @@
     const parsed = Number.parseFloat(normalized);
     return Number.isFinite(parsed) ? parsed : null;
   }
+  function applyDisplayFontSpacingVars(variableMap) {
+    if (!(document == null ? void 0 : document.documentElement) || !variableMap) {
+      return;
+    }
+    Object.entries(variableMap).forEach(([name, value]) => {
+      document.documentElement.style.setProperty(name, value);
+    });
+  }
+  function syncDisplayFontSpacing(isReady) {
+    applyDisplayFontSpacingVars(isReady ? DISPLAY_FONT_READY_VARS : DISPLAY_FONT_FALLBACK_VARS);
+  }
+  function syncDisplayFontSpacingFromMetrics() {
+    syncDisplayFontSpacing(displayFontPlan ? isFontMetricReady(displayFontPlan) : false);
+  }
+  async function waitForDisplayFontRevealGate() {
+    var _a2;
+    if (!displayFontPlan) {
+      return;
+    }
+    await waitForFontMetrics(displayFontPlan, {
+      strict: true,
+      timeout: STRICT_FONT_LOAD_TIMEOUT
+    });
+    let confirmations = 0;
+    while (confirmations < DISPLAY_FONT_REVEAL_CONFIRMATIONS) {
+      if (isFontMetricReady(displayFontPlan)) {
+        confirmations += 1;
+      } else {
+        confirmations = 0;
+      }
+      if (confirmations >= DISPLAY_FONT_REVEAL_CONFIRMATIONS) {
+        return;
+      }
+      if ("fonts" in document && ((_a2 = document.fonts) == null ? void 0 : _a2.load)) {
+        try {
+          await waitWithTimeout(
+            document.fonts.load(
+              displayFontPlan.metricDescriptor || displayFontPlan.descriptor,
+              displayFontPlan.metricSample || displayFontPlan.sample || "BESbswy 0123456789"
+            ),
+            1400
+          );
+        } catch (error) {
+        }
+      }
+      await waitForNextPaint();
+      await wait(110);
+    }
+  }
   async function waitForRequiredFonts() {
     const blockingMetricPlans = BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
     const nonBlockingMetricPlans = NON_BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
@@ -1259,7 +1332,6 @@
         ...BLOCKING_REQUIRED_FONT_PLANS.map(
           (plan) => waitForFontLoad(plan, {
             strict: true,
-            persist: true,
             timeout: STRICT_FONT_LOAD_TIMEOUT
           })
         ),
@@ -1280,7 +1352,6 @@
       ...blockingMetricPlans.map(
         (plan) => waitForFontMetrics(plan, {
           strict: true,
-          persist: true,
           timeout: STRICT_FONT_LOAD_TIMEOUT
         })
       ),
@@ -1346,7 +1417,7 @@
     }
   }
   async function waitForFontMetrics(fontPlan, options = {}) {
-    var _a;
+    var _a2;
     if (!(fontPlan == null ? void 0 : fontPlan.verifyMetrics)) {
       return;
     }
@@ -1356,7 +1427,7 @@
       if (isFontMetricReady(fontPlan)) {
         return;
       }
-      if ("fonts" in document && ((_a = document.fonts) == null ? void 0 : _a.load)) {
+      if ("fonts" in document && ((_a2 = document.fonts) == null ? void 0 : _a2.load)) {
         try {
           await waitWithTimeout(
             document.fonts.load(
@@ -2445,11 +2516,11 @@
     return findSectionTitleForItem(item.id).toLowerCase() === "drink";
   }
   function isSpritzItem(item) {
-    var _a;
+    var _a2;
     if (!item) {
       return false;
     }
-    const visualScript = String(((_a = item.visual) == null ? void 0 : _a.script) || "").trim().toLowerCase();
+    const visualScript = String(((_a2 = item.visual) == null ? void 0 : _a2.script) || "").trim().toLowerCase();
     return visualScript === "spritz" || /spritz/i.test(String(item.name || ""));
   }
   function isBottleSectionItem(item) {
@@ -2691,8 +2762,8 @@
     return { wrapper, options };
   }
   function getPrimaryCanClusterVisual(item) {
-    var _a;
-    if (((_a = item == null ? void 0 : item.visual) == null ? void 0 : _a.type) === "can-cluster" && Array.isArray(item.visual.items)) {
+    var _a2;
+    if (((_a2 = item == null ? void 0 : item.visual) == null ? void 0 : _a2.type) === "can-cluster" && Array.isArray(item.visual.items)) {
       return item.visual;
     }
     if (Array.isArray(item == null ? void 0 : item.detailGallery)) {
@@ -2779,7 +2850,7 @@
     renderCart();
   }
   function renderGeneratedCartSummary() {
-    var _a, _b;
+    var _a2, _b;
     const groupedEntries = groupGeneratedCartEntries(state.cart);
     groupedEntries.forEach((group) => {
       const groupSection = document.createElement("section");
@@ -2799,7 +2870,7 @@
     const actions = document.createElement("div");
     actions.className = "cart-generated-actions";
     actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--accent" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
-    (_a = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _a.addEventListener("click", () => {
+    (_a2 = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _a2.addEventListener("click", () => {
       setCartSummaryView(false);
     });
     (_b = actions.querySelector('[data-generated-action="close"]')) == null ? void 0 : _b.addEventListener("click", () => {
@@ -2810,14 +2881,14 @@
   function groupGeneratedCartEntries(entries) {
     const groups = /* @__PURE__ */ new Map();
     entries.forEach((entry) => {
-      var _a;
+      var _a2;
       const groupInfo = getGeneratedCartGroup(entry);
       if (!groups.has(groupInfo.key)) {
         groups.set(groupInfo.key, __spreadProps(__spreadValues({}, groupInfo), {
           entries: []
         }));
       }
-      (_a = groups.get(groupInfo.key)) == null ? void 0 : _a.entries.push(entry);
+      (_a2 = groups.get(groupInfo.key)) == null ? void 0 : _a2.entries.push(entry);
     });
     return Array.from(groups.values()).sort((left, right) => left.order - right.order).map((group) => __spreadProps(__spreadValues({}, group), {
       entries: [...group.entries].sort(compareGeneratedCartEntries)
@@ -3172,8 +3243,8 @@
   }
   function getSelectedSelectionLabels(item) {
     return getSelectionGroups(item).map((group) => {
-      var _a;
-      return ((_a = group.options[getSelectedSelectionIndex(group)]) == null ? void 0 : _a.label) || "";
+      var _a2;
+      return ((_a2 = group.options[getSelectedSelectionIndex(group)]) == null ? void 0 : _a2.label) || "";
     }).filter(Boolean);
   }
   function buildSelectionSummaryLabel(item, option) {
@@ -3263,9 +3334,9 @@
     return Boolean(item && item.hideOptionPricesInDetail === true);
   }
   function shouldUseCanSelectorLayout(item) {
-    var _a, _b;
+    var _a2, _b;
     return Boolean(
-      item && ((_a = item.visual) == null ? void 0 : _a.type) === "can-cluster" && getSelectionGroups(item).length === 1 && Array.isArray((_b = item.visual) == null ? void 0 : _b.items) && item.visual.items.length > 1
+      item && ((_a2 = item.visual) == null ? void 0 : _a2.type) === "can-cluster" && getSelectionGroups(item).length === 1 && Array.isArray((_b = item.visual) == null ? void 0 : _b.items) && item.visual.items.length > 1
     );
   }
   function pluralize(count, singular, plural) {
