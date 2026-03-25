@@ -20,9 +20,10 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.678";
+  var APP_BUILD_LABEL = "V.1.680";
 
   // src/main.js
+  window.__agriMenuRuntimeLoaded = true;
   var priceFormatter = new Intl.NumberFormat("it-IT", {
     style: "currency",
     currency: "EUR",
