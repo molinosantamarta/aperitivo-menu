@@ -5,8 +5,8 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325e";
-const APP_BUILD_LABEL = "V.1.669";
+const APP_VERSION = "20260325f";
+const APP_BUILD_LABEL = "V.1.670";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -289,6 +289,7 @@ let resolveLoaderClockStarted = () => {};
 let lastSpritzEditorialFactIndex = -1;
 let lastSpritzEditorialOrnamentKey = "";
 let fontMetricCanvas = null;
+let lastRenderedCartQuantity = null;
 const loaderClockStartedPromise = new Promise((resolve) => {
   resolveLoaderClockStarted = resolve;
 });
@@ -305,6 +306,8 @@ const state = {
 
 const generateSummaryLabel = "Genera riepilogo";
 const editSummaryLabel = "Modifica";
+const emptyCartKicker = "Riepilogo del tavolo";
+const emptyCartTitle = "Come funziona";
 const defaultCartTitle = "Modifica l'ordine";
 const generatedCartTitle = "Siamo pronti per ordinare...";
 let isCartSummaryView = false;
@@ -3825,7 +3828,7 @@ function renderCart() {
   cartGenerated.innerHTML = "";
   toggleSummaryViewButton.textContent = generateSummaryLabel;
   const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
-  cartCount.textContent = cartQuantity;
+  updateCartCountDisplay(cartQuantity);
   const hasItems = state.cart.length > 0;
   const showGeneratedSummary = isCartSummaryView && hasItems;
 
@@ -3866,8 +3869,14 @@ function renderCart() {
   }
 
   cartPanel.classList.toggle("is-generated", showGeneratedSummary);
+  cartPanel.classList.toggle("is-empty", !hasItems && !showGeneratedSummary);
   cartKicker.hidden = showGeneratedSummary;
-  cartTitle.textContent = showGeneratedSummary ? generatedCartTitle : defaultCartTitle;
+  cartKicker.textContent = emptyCartKicker;
+  cartTitle.textContent = showGeneratedSummary
+    ? generatedCartTitle
+    : hasItems
+      ? defaultCartTitle
+      : emptyCartTitle;
   cartEmpty.hidden = hasItems;
   cartItems.hidden = !hasItems || showGeneratedSummary;
   cartGenerated.hidden = !showGeneratedSummary;
@@ -3881,6 +3890,61 @@ function renderCart() {
   toggleSummaryViewButton.classList.toggle("utility-btn--secondary", showGeneratedSummary);
 
   cartTotal.textContent = formatCartBreakdown(state.cart);
+}
+
+function updateCartCountDisplay(cartQuantity) {
+  if (!cartCount) {
+    return;
+  }
+
+  const nextValue = String(cartQuantity);
+  const previousValue =
+    lastRenderedCartQuantity === null ? null : String(lastRenderedCartQuantity);
+  const shouldAnimate = previousValue !== null && cartQuantity > lastRenderedCartQuantity;
+
+  cartCount.setAttribute("aria-label", `${cartQuantity} prodotti nel riepilogo`);
+
+  if (!shouldAnimate || previousValue === nextValue) {
+    cartCount.innerHTML = `
+      <span class="cart-fab__count-static" aria-hidden="true">${nextValue}</span>
+    `;
+    lastRenderedCartQuantity = cartQuantity;
+    return;
+  }
+
+  cartCount.innerHTML = `
+    <span class="cart-fab__count-sizer" aria-hidden="true">${getCartCountSizingValue(
+      previousValue,
+      nextValue
+    )}</span>
+    <span class="cart-fab__count-roller" aria-hidden="true">
+      <span class="cart-fab__count-value cart-fab__count-value--current">${previousValue}</span>
+      <span class="cart-fab__count-value cart-fab__count-value--next">${nextValue}</span>
+    </span>
+  `;
+
+  const nextValueNode = cartCount.querySelector(".cart-fab__count-value--next");
+  if (nextValueNode) {
+    nextValueNode.addEventListener(
+      "animationend",
+      () => {
+        cartCount.innerHTML = `
+          <span class="cart-fab__count-static" aria-hidden="true">${nextValue}</span>
+        `;
+      },
+      { once: true }
+    );
+  }
+
+  lastRenderedCartQuantity = cartQuantity;
+}
+
+function getCartCountSizingValue(previousValue, nextValue) {
+  if (!previousValue) {
+    return nextValue;
+  }
+
+  return nextValue.length >= previousValue.length ? nextValue : previousValue;
 }
 
 function setCartSummaryView(nextValue) {
