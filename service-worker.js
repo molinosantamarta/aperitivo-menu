@@ -1,15 +1,15 @@
-const CACHE_VERSION = "20260325i";
+const CACHE_VERSION = "20260325j";
 const SHELL_CACHE = `agri-menu-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `agri-menu-runtime-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./src/styles.css?v=20260325i",
-  "./generated/main.runtime.20260325i.js",
-  "./menu-assets/sgb-molino-black.png?v=20260325i",
-  "./menu-assets/instagram-logo.webp?v=20260325i",
-  "./farfalla-bianca.gif?v=20260325i",
+  "./src/styles.css?v=20260325j",
+  "./generated/main.runtime.20260325j.js",
+  "./menu-assets/sgb-molino-black.png?v=20260325j",
+  "./menu-assets/instagram-logo.webp?v=20260325j",
+  "./farfalla-bianca.gif?v=20260325j",
   "./pwa/apple-touch-icon.png",
   "./pwa/favicon-32.png",
   "./pwa/icon-192.png",
