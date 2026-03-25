@@ -4,13 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "build:meta": "node scripts/assets/generate_build_meta.mjs",
     "extract": "python3 scripts/assets/extract_ape_assets.py",
     "sheet:template": "node scripts/sheets/export_sheet_template.mjs",
     "sheet:template:simple": "node scripts/sheets/export_sheet_template_simple.mjs",
-    "build:pages-runtime": "mkdir -p public/generated && esbuild src/main.js --platform=browser --format=iife --target=safari11 --outfile=public/generated/main.runtime.js",
-    "dev": "vite --host 0.0.0.0 --port 4173",
+    "build:pages-runtime": "npm run build:meta && mkdir -p public/generated && esbuild src/main.js --platform=browser --format=iife --target=safari11 --outfile=public/generated/main.runtime.js",
+    "dev": "npm run build:meta && vite --host 0.0.0.0 --port 4173",
     "build": "npm run build:pages-runtime && vite build",
-    "preview": "vite preview --host 0.0.0.0 --port 4174"
+    "preview": "npm run build:meta && vite preview --host 0.0.0.0 --port 4174"
   },
   "devDependencies": {
     "vite": "^7.1.0"
