@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,6 +34,26 @@ for (const [sourceRel, destinationRel] of copies) {
 const appVersion = getAppVersion();
 
 if (appVersion) {
+  const generatedDirs = [
+    resolve(projectRoot, "generated"),
+    resolve(projectRoot, "public/generated"),
+  ];
+
+  for (const directory of generatedDirs) {
+    if (!existsSync(directory)) {
+      continue;
+    }
+
+    for (const fileName of readdirSync(directory)) {
+      if (
+        /^main\.runtime\.[A-Za-z0-9_-]+\.js$/.test(fileName) &&
+        fileName !== `main.runtime.${appVersion}.js`
+      ) {
+        rmSync(resolve(directory, fileName), { force: true });
+      }
+    }
+  }
+
   const runtimeSource = resolve(projectRoot, "public/generated/main.runtime.js");
   const versionedPublicRuntime = resolve(
     projectRoot,
