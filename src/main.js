@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325m";
+const APP_VERSION = "20260325n";
 const LOADER_CARD_DELAY = 2800;
 const LOADER_INTRO_OUTRO_DURATION = 760;
 const LOADER_MIN_DURATION = 10000;
@@ -325,6 +325,7 @@ function trackDetailModalOpen(item) {
     product_id: item.id,
     product_name: item.name,
     product_category: item.category || item.sectionId || "menu",
+    product_detail_layout: getDetailLayout(item),
   });
 }
 
@@ -420,6 +421,31 @@ const emptyCartKicker = "Riepilogo del tavolo";
 const emptyCartTitle = "Come funziona?";
 const defaultCartTitle = "Modifica l'ordine";
 const generatedCartTitle = "Siamo pronti per ordinare...";
+const DETAIL_LAYOUT_EDITORIAL_IDS = new Set([
+  "aperol",
+  "campari",
+  "sarti",
+  "hugo",
+  "kombucha",
+  "quarantalune",
+  "rose-n5",
+]);
+const DETAIL_LAYOUT_SELECTOR_IDS = new Set([
+  "oltrepo",
+  "pinot-extra-dry",
+  "acqua",
+  "bibite",
+]);
+const DETAIL_LAYOUT_RAPID_IDS = new Set([
+  "caffe",
+  "grappe-amari",
+]);
+const DETAIL_LAYOUT_CLASS_NAMES = [
+  "sheet-panel--detail-editorial",
+  "sheet-panel--detail-selector",
+  "sheet-panel--detail-showcase",
+  "sheet-panel--detail-rapid",
+];
 let isCartSummaryView = false;
 
 const sectionNav = document.querySelector("#sectionNav");
@@ -3456,6 +3482,7 @@ function openDetail(itemId) {
   rememberLastFocusedElement();
   state.selectedItemId = itemId;
   initializeDetailState(item);
+  applyDetailPanelLayout(item);
   detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
   detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
   detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
@@ -3478,6 +3505,7 @@ function openDetail(itemId) {
 
 function closeDetail(options = {}) {
   const { restoreFocus = true } = options;
+  resetDetailPanelLayout();
   detailPanel.classList.remove("sheet-panel--selection-groups");
   detailPanel.classList.remove("sheet-panel--long-options");
   detailPanel.classList.remove("sheet-panel--compact-options");
@@ -3839,6 +3867,22 @@ function renderQuantityControl() {
   if (item) {
     updateDetailActionButton(item);
   }
+}
+
+function applyDetailPanelLayout(item) {
+  const detailLayout = getDetailLayout(item);
+
+  resetDetailPanelLayout();
+  detailPanel.classList.add(`sheet-panel--detail-${detailLayout}`);
+  detailPanel.dataset.detailLayout = detailLayout;
+}
+
+function resetDetailPanelLayout() {
+  DETAIL_LAYOUT_CLASS_NAMES.forEach((className) => {
+    detailPanel.classList.remove(className);
+  });
+
+  delete detailPanel.dataset.detailLayout;
 }
 
 function updateSelectedQuantity(delta) {
@@ -4823,6 +4867,36 @@ function shouldUseCanSelectorLayout(item) {
   );
 }
 
+function getDetailLayout(item) {
+  if (!item) {
+    return "showcase";
+  }
+
+  const explicitLayout = normalizeLabel(item.detailLayout || "");
+  if (
+    explicitLayout === "editorial" ||
+    explicitLayout === "selector" ||
+    explicitLayout === "showcase" ||
+    explicitLayout === "rapid"
+  ) {
+    return explicitLayout;
+  }
+
+  if (DETAIL_LAYOUT_EDITORIAL_IDS.has(item.id)) {
+    return "editorial";
+  }
+
+  if (DETAIL_LAYOUT_SELECTOR_IDS.has(item.id)) {
+    return "selector";
+  }
+
+  if (DETAIL_LAYOUT_RAPID_IDS.has(item.id)) {
+    return "rapid";
+  }
+
+  return "showcase";
+}
+
 function pluralize(count, singular, plural) {
   return count === 1 ? singular : plural;
 }
@@ -5223,6 +5297,10 @@ function renderVisualByType(visual, context, item = null) {
     return renderTextPanelVisual(visual, context);
   }
 
+  if (visual.type === "tasting-notes") {
+    return renderTastingNotesVisual(visual, context);
+  }
+
   if (visual.type === "editorial-quote") {
     return renderEditorialQuoteVisual(visual, context);
   }
@@ -5258,6 +5336,18 @@ function reorderDetailPreviewSlides(slides, startIndex) {
 function getDetailPreviewDotLabel(slide, index) {
   if (slide?.type === "editorial-quote") {
     return "Vai alla curiosità sullo Spritz";
+  }
+
+  if (slide?.type === "tasting-notes") {
+    const firstNoteTitle = Array.isArray(slide.notes)
+      ? String(slide.notes[0]?.title || "").trim()
+      : "";
+    const heading = String(slide.heading || "").trim();
+    const label = firstNoteTitle || heading;
+
+    if (label) {
+      return `Vai a ${label}`;
+    }
   }
 
   return `Vai all'immagine ${index + 1}`;
@@ -5539,6 +5629,216 @@ function renderTextPanelVisual(visual, context) {
       `
       }
     </div>
+  `;
+}
+
+function renderTastingNotesVisual(visual, context) {
+  const classes = ["tasting-notes-visual"];
+  if (context === "detail") {
+    classes.push("tasting-notes-visual--detail");
+  }
+
+  const stats = Array.isArray(visual.stats)
+    ? visual.stats.map((stat) => String(stat).trim()).filter(Boolean)
+    : [];
+  const notes = Array.isArray(visual.notes)
+    ? visual.notes
+        .map((note) => ({
+          icon: String(note?.icon || "").trim().toLowerCase(),
+          title: String(note?.title || "").trim(),
+          body: String(note?.body || "").trim(),
+        }))
+        .filter((note) => note.title && note.body)
+    : [];
+  const heading = String(visual.heading || "").trim();
+
+  if (notes.length === 1) {
+    classes.push("tasting-notes-visual--single");
+  }
+
+  const statsMarkup = stats.length
+    ? `
+        <div class="tasting-notes-visual__stats">
+          ${stats
+            .map((stat) => `<span class="tasting-notes-visual__stat">${escapeHtml(stat)}</span>`)
+            .join("")}
+        </div>
+      `
+    : "";
+
+  const notesMarkup = notes.length
+    ? `
+        <div class="tasting-notes-visual__list">
+          ${notes
+            .map(
+              (note) => `
+                <section class="tasting-notes-visual__item">
+                  <div class="tasting-notes-visual__copy">
+                    <div class="tasting-notes-visual__title-row">
+                      ${
+                        note.icon
+                          ? `
+                              <span class="tasting-notes-visual__title-icon" aria-hidden="true">
+                                ${renderTastingNotesIcon(note.icon)}
+                              </span>
+                            `
+                          : ""
+                      }
+                      <h3 class="tasting-notes-visual__item-title">${escapeHtml(note.title)}</h3>
+                    </div>
+                    <p class="tasting-notes-visual__item-body">${escapeHtml(note.body)}</p>
+                  </div>
+                </section>
+              `
+            )
+            .join("")}
+        </div>
+      `
+    : "";
+  const headerMarkup =
+    heading || statsMarkup
+      ? `
+          <div class="tasting-notes-visual__header">
+            ${heading ? `<h2 class="tasting-notes-visual__heading">${escapeHtml(heading)}</h2>` : ""}
+            ${statsMarkup}
+          </div>
+        `
+      : "";
+
+  return `
+    <section
+      class="${classes.join(" ")}"
+      style="
+        --tasting-notes-start: ${visual.gradientStart || "#f7fbfb"};
+        --tasting-notes-end: ${visual.gradientEnd || "#eef6f6"};
+        --tasting-notes-accent: ${visual.accentColor || "#6ecfc4"};
+        --tasting-notes-ink: ${visual.inkColor || "#1e1f22"};
+      "
+      aria-label="${escapeHtml(heading || notes[0]?.title || "Scheda degustazione")}"
+    >
+      ${headerMarkup}
+      ${notesMarkup}
+    </section>
+  `;
+}
+
+function renderTastingNotesIcon(icon) {
+  if (icon === "eye") {
+    return `
+      <svg viewBox="0 0 48 48" role="presentation" focusable="false">
+        <circle cx="24" cy="24" r="18" fill="#8fded2" />
+        <path
+          d="M10.5 24s4.7-7 13.5-7 13.5 7 13.5 7-4.7 7-13.5 7-13.5-7-13.5-7Z"
+          fill="#f8fbfb"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="24" cy="24" r="5.1" fill="currentColor" />
+        <circle cx="25.8" cy="22.1" r="1.35" fill="#ffffff" />
+      </svg>
+    `;
+  }
+
+  if (icon === "nose") {
+    return `
+      <svg viewBox="0 0 48 48" role="presentation" focusable="false">
+        <path
+          d="M28 7.5c4.7 2.1 8.3 6.2 10.7 11.2 2.5 5.4 4.2 10.9 4.2 15.4 0 5.1-2.2 8.8-6.3 10.8-2.2 1-4.7 1.5-7.5 1.5-4.3 0-8.5-.9-12.3-2.8-3.4-1.7-5.9-4.1-7.4-7.2-.8-1.6-.3-3.4 1.2-4.4 3.1-2.2 5.6-4.8 7.5-8 2.6-4.4 4.2-9.5 5.8-15.5.4-1.7 2.4-2.7 4.1-1Z"
+          fill="#e6c8cd"
+        />
+        <path
+          d="M24.3 5.8c-.8 5.4-2.3 10.3-4.8 14.7-2.6 4.7-6 8.7-10.3 12-.7.5-1 1.2-1 2 0 1.6 1.1 3.1 3.1 4.4 1.8 1.2 4.2 2 7.1 2.6 2.2.4 3.6 1.4 4.1 3.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M19.5 27.5c2.3-1.3 5-1.7 8-1.3 3.3.4 6 1.9 8.1 4.6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    `;
+  }
+
+  if (icon === "style") {
+    return `
+      <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+        <path
+          d="M5.8 4.8h12.4a1.7 1.7 0 0 1 1.7 1.7v11a1.7 1.7 0 0 1-1.7 1.7H5.8a1.7 1.7 0 0 1-1.7-1.7v-11a1.7 1.7 0 0 1 1.7-1.7Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M8.1 9.2h7.8"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+        />
+        <path
+          d="M8.1 12.4h7.8"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+        />
+        <path
+          d="M8.1 15.6h4.8"
+          stroke="currentColor"
+          stroke-width="1.9"
+          stroke-linecap="round"
+        />
+      </svg>
+    `;
+  }
+
+  return `
+    <svg viewBox="0 0 48 48" role="presentation" focusable="false">
+      <circle cx="24" cy="24" r="18" fill="#8fded2" />
+      <path
+        d="M10 23.2c2-.4 3.5-1.5 4.5-3.6-.2 2.7.3 5 1.8 6.8 2.3 3 5.8 4.7 10.6 5.3 4 .4 7.2.1 9.7-1 2.5-1 4-2.9 4.4-5.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M10.5 23.4c3.5 3.1 7.9 4.7 13.1 4.7 5.2 0 9.6-1.6 13.1-4.7"
+        fill="#df6f5f"
+      />
+      <path
+        d="M10.5 23.4c3.5 3.1 7.9 4.7 13.1 4.7 5.2 0 9.6-1.6 13.1-4.7"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M22.6 27.7c1.3-3.5 3.5-6.5 6.6-9 2.5-1.9 4.8-2.7 7-2.4 1.8.2 3.2 1 4.1 2.4.9 1.3 1.1 2.8.9 4.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M29.5 25.3c1.7-1.7 3.7-2.6 5.8-2.6"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="2.8"
+        stroke-linecap="round"
+      />
+    </svg>
   `;
 }
 

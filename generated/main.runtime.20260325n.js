@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.685";
+  var APP_BUILD_LABEL = "V.1.686";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -30,7 +30,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260325m";
+  var APP_VERSION = "20260325n";
   var LOADER_CARD_DELAY = 2800;
   var LOADER_INTRO_OUTRO_DURATION = 760;
   var LOADER_MIN_DURATION = 1e4;
@@ -324,7 +324,8 @@
       current_modal: "product_detail",
       product_id: item.id,
       product_name: item.name,
-      product_category: item.category || item.sectionId || "menu"
+      product_category: item.category || item.sectionId || "menu",
+      product_detail_layout: getDetailLayout(item)
     });
   }
   function trackDetailModalClose() {
@@ -411,6 +412,31 @@
   var emptyCartTitle = "Come funziona?";
   var defaultCartTitle = "Modifica l'ordine";
   var generatedCartTitle = "Siamo pronti per ordinare...";
+  var DETAIL_LAYOUT_EDITORIAL_IDS = /* @__PURE__ */ new Set([
+    "aperol",
+    "campari",
+    "sarti",
+    "hugo",
+    "kombucha",
+    "quarantalune",
+    "rose-n5"
+  ]);
+  var DETAIL_LAYOUT_SELECTOR_IDS = /* @__PURE__ */ new Set([
+    "oltrepo",
+    "pinot-extra-dry",
+    "acqua",
+    "bibite"
+  ]);
+  var DETAIL_LAYOUT_RAPID_IDS = /* @__PURE__ */ new Set([
+    "caffe",
+    "grappe-amari"
+  ]);
+  var DETAIL_LAYOUT_CLASS_NAMES = [
+    "sheet-panel--detail-editorial",
+    "sheet-panel--detail-selector",
+    "sheet-panel--detail-showcase",
+    "sheet-panel--detail-rapid"
+  ];
   var isCartSummaryView = false;
   var sectionNav = document.querySelector("#sectionNav");
   var menuSections = document.querySelector("#menuSections");
@@ -2682,6 +2708,7 @@
     rememberLastFocusedElement();
     state.selectedItemId = itemId;
     initializeDetailState(item);
+    applyDetailPanelLayout(item);
     detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
     detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
     detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
@@ -2703,6 +2730,7 @@
   }
   function closeDetail(options = {}) {
     const { restoreFocus = true } = options;
+    resetDetailPanelLayout();
     detailPanel.classList.remove("sheet-panel--selection-groups");
     detailPanel.classList.remove("sheet-panel--long-options");
     detailPanel.classList.remove("sheet-panel--compact-options");
@@ -2924,6 +2952,18 @@
     if (item) {
       updateDetailActionButton(item);
     }
+  }
+  function applyDetailPanelLayout(item) {
+    const detailLayout = getDetailLayout(item);
+    resetDetailPanelLayout();
+    detailPanel.classList.add("sheet-panel--detail-".concat(detailLayout));
+    detailPanel.dataset.detailLayout = detailLayout;
+  }
+  function resetDetailPanelLayout() {
+    DETAIL_LAYOUT_CLASS_NAMES.forEach((className) => {
+      detailPanel.classList.remove(className);
+    });
+    delete detailPanel.dataset.detailLayout;
   }
   function updateSelectedQuantity(delta) {
     state.selectedQuantity = Math.max(1, state.selectedQuantity + delta);
@@ -3635,6 +3675,25 @@
       item && ((_a2 = item.visual) == null ? void 0 : _a2.type) === "can-cluster" && getSelectionGroups(item).length === 1 && Array.isArray((_b = item.visual) == null ? void 0 : _b.items) && item.visual.items.length > 1
     );
   }
+  function getDetailLayout(item) {
+    if (!item) {
+      return "showcase";
+    }
+    const explicitLayout = normalizeLabel(item.detailLayout || "");
+    if (explicitLayout === "editorial" || explicitLayout === "selector" || explicitLayout === "showcase" || explicitLayout === "rapid") {
+      return explicitLayout;
+    }
+    if (DETAIL_LAYOUT_EDITORIAL_IDS.has(item.id)) {
+      return "editorial";
+    }
+    if (DETAIL_LAYOUT_SELECTOR_IDS.has(item.id)) {
+      return "selector";
+    }
+    if (DETAIL_LAYOUT_RAPID_IDS.has(item.id)) {
+      return "rapid";
+    }
+    return "showcase";
+  }
   function pluralize(count, singular, plural) {
     return count === 1 ? singular : plural;
   }
@@ -3908,6 +3967,9 @@
     if (visual.type === "text-panel") {
       return renderTextPanelVisual(visual, context);
     }
+    if (visual.type === "tasting-notes") {
+      return renderTastingNotesVisual(visual, context);
+    }
     if (visual.type === "editorial-quote") {
       return renderEditorialQuoteVisual(visual, context);
     }
@@ -3930,8 +3992,17 @@
     return [...slides.slice(normalizedIndex), ...slides.slice(0, normalizedIndex)];
   }
   function getDetailPreviewDotLabel(slide, index) {
+    var _a2;
     if ((slide == null ? void 0 : slide.type) === "editorial-quote") {
       return "Vai alla curiosit\xE0 sullo Spritz";
+    }
+    if ((slide == null ? void 0 : slide.type) === "tasting-notes") {
+      const firstNoteTitle = Array.isArray(slide.notes) ? String(((_a2 = slide.notes[0]) == null ? void 0 : _a2.title) || "").trim() : "";
+      const heading = String(slide.heading || "").trim();
+      const label = firstNoteTitle || heading;
+      if (label) {
+        return "Vai a ".concat(label);
+      }
     }
     return "Vai all'immagine ".concat(index + 1);
   }
@@ -4030,6 +4101,41 @@
       classes.push("text-panel-visual--copy");
     }
     return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --text-panel-start: ').concat(visual.gradientStart || "#38281b", ";\n        --text-panel-end: ").concat(visual.gradientEnd || "#a67343", ";\n        --text-panel-label: ").concat(visual.labelColor || "#fffdf8", ";\n        --text-panel-script: ").concat(visual.scriptColor || "rgba(17, 17, 17, 0.72)", ";\n        --text-panel-body: ").concat(visual.bodyColor || visual.labelColor || "#fffdf8", ';\n      "\n    >\n      ').concat(bodyLines.length ? '\n        <div class="text-panel-visual__copy">\n          '.concat(bodyLines.map((line) => '<span class="text-panel-visual__copy-line">'.concat(escapeHtml(line), "</span>")).join(""), "\n        </div>\n      ") : "\n        ".concat(visual.script ? '<span class="text-panel-visual__script">'.concat(visual.script, "</span>") : "", '\n        <span class="text-panel-visual__label">').concat(visual.label, "</span>\n      "), "\n    </div>\n  ");
+  }
+  function renderTastingNotesVisual(visual, context) {
+    var _a2;
+    const classes = ["tasting-notes-visual"];
+    if (context === "detail") {
+      classes.push("tasting-notes-visual--detail");
+    }
+    const stats = Array.isArray(visual.stats) ? visual.stats.map((stat) => String(stat).trim()).filter(Boolean) : [];
+    const notes = Array.isArray(visual.notes) ? visual.notes.map((note) => ({
+      icon: String((note == null ? void 0 : note.icon) || "").trim().toLowerCase(),
+      title: String((note == null ? void 0 : note.title) || "").trim(),
+      body: String((note == null ? void 0 : note.body) || "").trim()
+    })).filter((note) => note.title && note.body) : [];
+    const heading = String(visual.heading || "").trim();
+    if (notes.length === 1) {
+      classes.push("tasting-notes-visual--single");
+    }
+    const statsMarkup = stats.length ? '\n        <div class="tasting-notes-visual__stats">\n          '.concat(stats.map((stat) => '<span class="tasting-notes-visual__stat">'.concat(escapeHtml(stat), "</span>")).join(""), "\n        </div>\n      ") : "";
+    const notesMarkup = notes.length ? '\n        <div class="tasting-notes-visual__list">\n          '.concat(notes.map(
+      (note) => '\n                <section class="tasting-notes-visual__item">\n                  <div class="tasting-notes-visual__copy">\n                    <div class="tasting-notes-visual__title-row">\n                      '.concat(note.icon ? '\n                              <span class="tasting-notes-visual__title-icon" aria-hidden="true">\n                                '.concat(renderTastingNotesIcon(note.icon), "\n                              </span>\n                            ") : "", '\n                      <h3 class="tasting-notes-visual__item-title">').concat(escapeHtml(note.title), '</h3>\n                    </div>\n                    <p class="tasting-notes-visual__item-body">').concat(escapeHtml(note.body), "</p>\n                  </div>\n                </section>\n              ")
+    ).join(""), "\n        </div>\n      ") : "";
+    const headerMarkup = heading || statsMarkup ? '\n          <div class="tasting-notes-visual__header">\n            '.concat(heading ? '<h2 class="tasting-notes-visual__heading">'.concat(escapeHtml(heading), "</h2>") : "", "\n            ").concat(statsMarkup, "\n          </div>\n        ") : "";
+    return '\n    <section\n      class="'.concat(classes.join(" "), '"\n      style="\n        --tasting-notes-start: ').concat(visual.gradientStart || "#f7fbfb", ";\n        --tasting-notes-end: ").concat(visual.gradientEnd || "#eef6f6", ";\n        --tasting-notes-accent: ").concat(visual.accentColor || "#6ecfc4", ";\n        --tasting-notes-ink: ").concat(visual.inkColor || "#1e1f22", ';\n      "\n      aria-label="').concat(escapeHtml(heading || ((_a2 = notes[0]) == null ? void 0 : _a2.title) || "Scheda degustazione"), '"\n    >\n      ').concat(headerMarkup, "\n      ").concat(notesMarkup, "\n    </section>\n  ");
+  }
+  function renderTastingNotesIcon(icon) {
+    if (icon === "eye") {
+      return '\n      <svg viewBox="0 0 48 48" role="presentation" focusable="false">\n        <circle cx="24" cy="24" r="18" fill="#8fded2" />\n        <path\n          d="M10.5 24s4.7-7 13.5-7 13.5 7 13.5 7-4.7 7-13.5 7-13.5-7-13.5-7Z"\n          fill="#f8fbfb"\n          stroke="currentColor"\n          stroke-width="2.5"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n        <circle cx="24" cy="24" r="5.1" fill="currentColor" />\n        <circle cx="25.8" cy="22.1" r="1.35" fill="#ffffff" />\n      </svg>\n    ';
+    }
+    if (icon === "nose") {
+      return '\n      <svg viewBox="0 0 48 48" role="presentation" focusable="false">\n        <path\n          d="M28 7.5c4.7 2.1 8.3 6.2 10.7 11.2 2.5 5.4 4.2 10.9 4.2 15.4 0 5.1-2.2 8.8-6.3 10.8-2.2 1-4.7 1.5-7.5 1.5-4.3 0-8.5-.9-12.3-2.8-3.4-1.7-5.9-4.1-7.4-7.2-.8-1.6-.3-3.4 1.2-4.4 3.1-2.2 5.6-4.8 7.5-8 2.6-4.4 4.2-9.5 5.8-15.5.4-1.7 2.4-2.7 4.1-1Z"\n          fill="#e6c8cd"\n        />\n        <path\n          d="M24.3 5.8c-.8 5.4-2.3 10.3-4.8 14.7-2.6 4.7-6 8.7-10.3 12-.7.5-1 1.2-1 2 0 1.6 1.1 3.1 3.1 4.4 1.8 1.2 4.2 2 7.1 2.6 2.2.4 3.6 1.4 4.1 3.5"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="2.6"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n        <path\n          d="M19.5 27.5c2.3-1.3 5-1.7 8-1.3 3.3.4 6 1.9 8.1 4.6"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="2.6"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n      </svg>\n    ';
+    }
+    if (icon === "style") {
+      return '\n      <svg viewBox="0 0 24 24" role="presentation" focusable="false">\n        <path\n          d="M5.8 4.8h12.4a1.7 1.7 0 0 1 1.7 1.7v11a1.7 1.7 0 0 1-1.7 1.7H5.8a1.7 1.7 0 0 1-1.7-1.7v-11a1.7 1.7 0 0 1 1.7-1.7Z"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linejoin="round"\n        />\n        <path\n          d="M8.1 9.2h7.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n        <path\n          d="M8.1 12.4h7.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n        <path\n          d="M8.1 15.6h4.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n      </svg>\n    ';
+    }
+    return '\n    <svg viewBox="0 0 48 48" role="presentation" focusable="false">\n      <circle cx="24" cy="24" r="18" fill="#8fded2" />\n      <path\n        d="M10 23.2c2-.4 3.5-1.5 4.5-3.6-.2 2.7.3 5 1.8 6.8 2.3 3 5.8 4.7 10.6 5.3 4 .4 7.2.1 9.7-1 2.5-1 4-2.9 4.4-5.5"\n        fill="none"\n        stroke="currentColor"\n        stroke-width="2.8"\n        stroke-linecap="round"\n        stroke-linejoin="round"\n      />\n      <path\n        d="M10.5 23.4c3.5 3.1 7.9 4.7 13.1 4.7 5.2 0 9.6-1.6 13.1-4.7"\n        fill="#df6f5f"\n      />\n      <path\n        d="M10.5 23.4c3.5 3.1 7.9 4.7 13.1 4.7 5.2 0 9.6-1.6 13.1-4.7"\n        fill="none"\n        stroke="currentColor"\n        stroke-width="2.8"\n        stroke-linecap="round"\n        stroke-linejoin="round"\n      />\n      <path\n        d="M22.6 27.7c1.3-3.5 3.5-6.5 6.6-9 2.5-1.9 4.8-2.7 7-2.4 1.8.2 3.2 1 4.1 2.4.9 1.3 1.1 2.8.9 4.5"\n        fill="none"\n        stroke="currentColor"\n        stroke-width="2.8"\n        stroke-linecap="round"\n        stroke-linejoin="round"\n      />\n      <path\n        d="M29.5 25.3c1.7-1.7 3.7-2.6 5.8-2.6"\n        fill="none"\n        stroke="#ffffff"\n        stroke-width="2.8"\n        stroke-linecap="round"\n      />\n    </svg>\n  ';
   }
   function renderItemSideVisual(item) {
     const sideVisuals = getAllSideVisuals(item);

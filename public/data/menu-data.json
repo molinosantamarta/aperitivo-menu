@@ -21,6 +21,62 @@
             "gradientEnd": "#f4e5cf",
             "labelColor": "#6f5036"
           },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Una birra in stile belga,",
+                "delicata e speziata:",
+                "fresca, elegante",
+                "e molto dissetante."
+              ],
+              "gradientStart": "#d8bf95",
+              "gradientEnd": "#f3e2c7",
+              "bodyColor": "#6a4b2b"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Birra velata color giallo paglierino. Schiuma notevole, granulosa e persistente, con elevata carbonazione."
+                }
+              ],
+              "gradientStart": "#fcfaf6",
+              "gradientEnd": "#f7f0e5",
+              "accentColor": "#e7cf9b",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Spezie intense, con profumi che ricordano limone appena tagliato e scorza di agrumi."
+                }
+              ],
+              "gradientStart": "#fcfaf6",
+              "gradientEnd": "#f7f0e5",
+              "accentColor": "#e7cf9b",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Agrumata e fresca, con coriandolo, arancia amara e una lieve nota pepata. Chiude morbida e molto dissetante."
+                }
+              ],
+              "gradientStart": "#fcfaf6",
+              "gradientEnd": "#f7f0e5",
+              "accentColor": "#e7cf9b",
+              "inkColor": "#1e1f22"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "bianchina-floating.png",
@@ -70,6 +126,62 @@
             "gradientEnd": "#ff7b52",
             "labelColor": "#fff5ef"
           },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "La birra ambrata rossa,",
+                "in stile Märzen:",
+                "prodotta in decozione,",
+                "maltata e armoniosa."
+              ],
+              "gradientStart": "#7a130f",
+              "gradientEnd": "#f06f49",
+              "bodyColor": "#fff7f2"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Ambrata intensa, con riflessi ramati. Schiuma cremosa e persistente, limpida e brillante come una classica bassa fermentazione."
+                }
+              ],
+              "gradientStart": "#fcf6f2",
+              "gradientEnd": "#f8ece6",
+              "accentColor": "#ee8d69",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Prevalgono pane tostato, frutta secca e una lieve nota di toffee, con richiami floreali ed erbacei."
+                }
+              ],
+              "gradientStart": "#fcf6f2",
+              "gradientEnd": "#f8ece6",
+              "accentColor": "#ee8d69",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso morbido, con cereale, crosta di pane, mou e miele. Dolce e amaro si bilanciano bene; corpo medio, finale secco, armonioso e pulito."
+                }
+              ],
+              "gradientStart": "#fcf6f2",
+              "gradientEnd": "#f8ece6",
+              "accentColor": "#ee8d69",
+              "inkColor": "#1e1f22"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "ghe-sem-floating.png",
@@ -118,6 +230,62 @@
             "gradientEnd": "#7ec8c3",
             "labelColor": "#f7fffd"
           },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Una Session IPA moderna,",
+                "dal grado alcolico moderato:",
+                "fresca, luppolata",
+                "e facile da bere."
+              ],
+              "gradientStart": "#3b7f7b",
+              "gradientEnd": "#84c7bf",
+              "bodyColor": "#fffdfb"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Birra di colore giallo paglierino. Schiuma bianca a bolla fine e persistente. Buona carbonazione."
+                }
+              ],
+              "gradientStart": "#f7fbfb",
+              "gradientEnd": "#eef6f6",
+              "accentColor": "#6ecfc4",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Note fruttate e floreali, con pesca, prugna matura, piccoli frutti e sambuco."
+                }
+              ],
+              "gradientStart": "#f7fbfb",
+              "gradientEnd": "#eef6f6",
+              "accentColor": "#6ecfc4",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso succoso e lucente, con richiami tropicali e finale amaro, secco e pulito."
+                }
+              ],
+              "gradientStart": "#f7fbfb",
+              "gradientEnd": "#eef6f6",
+              "accentColor": "#6ecfc4",
+              "inkColor": "#1e1f22"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "tel-chi-floating.png",
@@ -166,6 +334,62 @@
             "gradientEnd": "#e19742",
             "labelColor": "#fff6eb"
           },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Una German Ale chiara,",
+                "fruttata e conviviale:",
+                "equilibrata, fresca",
+                "e facile da bere."
+              ],
+              "gradientStart": "#a84f21",
+              "gradientEnd": "#e6a45a",
+              "bodyColor": "#fff8f1"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Birra di color giallo paglierino. Schiuma a grana fine, persistente, con adeguata carbonazione."
+                }
+              ],
+              "gradientStart": "#fbf8f3",
+              "gradientEnd": "#f5efe5",
+              "accentColor": "#e8b277",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Note fruttate rilasciate dal particolare ceppo di lievito utilizzato in fase di fermentazione."
+                }
+              ],
+              "gradientStart": "#fbf8f3",
+              "gradientEnd": "#f5efe5",
+              "accentColor": "#e8b277",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso fresco e dissetante, con cracker, pane e frutta fresca. Finale secco, bilanciato e pulito."
+                }
+              ],
+              "gradientStart": "#fbf8f3",
+              "gradientEnd": "#f5efe5",
+              "accentColor": "#e8b277",
+              "inkColor": "#1e1f22"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "casciaball-floating.png",
@@ -216,6 +440,62 @@
             "gradientEnd": "#ffaf72",
             "labelColor": "#fff7ef"
           },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Una Bitter inglese",
+                "tradizionale e ambrata:",
+                "snella, equilibrata",
+                "e di facile bevuta."
+              ],
+              "gradientStart": "#b34d29",
+              "gradientEnd": "#f29a5b",
+              "bodyColor": "#fff9f3"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Birra di colore ambrato. Schiuma sottile, poco persistente, con carbonazione consona allo stile."
+                }
+              ],
+              "gradientStart": "#fbf7f1",
+              "gradientEnd": "#f6efe6",
+              "accentColor": "#f0a164",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Note di caramello e frutta secca tostata, accompagnate da accenni floreali di ciclamino."
+                }
+              ],
+              "gradientStart": "#fbf7f1",
+              "gradientEnd": "#f6efe6",
+              "accentColor": "#f0a164",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso delicato, con malto, frutta secca e pane tostato. Note floreali e accenni d'arancia; finale mediamente amaro, secco, pulito e scorrevole."
+                }
+              ],
+              "gradientStart": "#fbf7f1",
+              "gradientEnd": "#f6efe6",
+              "accentColor": "#f0a164",
+              "inkColor": "#1e1f22"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "ciapafia-floating.png",
