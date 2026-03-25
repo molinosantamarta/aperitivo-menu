@@ -18,14 +18,14 @@
     return a;
   };
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+  var import_build_meta = require("./generated/build-meta.js");
   const priceFormatter = new Intl.NumberFormat("it-IT", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  const APP_VERSION = "20260325e";
-  const APP_BUILD_LABEL = "V.1.669";
+  const APP_VERSION = "20260325h";
   const LOADER_CARD_DELAY = 2800;
   const LOADER_INTRO_OUTRO_DURATION = 760;
   const LOADER_MIN_DURATION = 1e4;
@@ -302,6 +302,7 @@
   let lastSpritzEditorialFactIndex = -1;
   let lastSpritzEditorialOrnamentKey = "";
   let fontMetricCanvas = null;
+  let lastRenderedCartQuantity = null;
   const loaderClockStartedPromise = new Promise((resolve) => {
     resolveLoaderClockStarted = resolve;
   });
@@ -316,6 +317,8 @@
   };
   const generateSummaryLabel = "Genera riepilogo";
   const editSummaryLabel = "Modifica";
+  const emptyCartKicker = "Riepilogo del tavolo";
+  const emptyCartTitle = "Come funziona";
   const defaultCartTitle = "Modifica l'ordine";
   const generatedCartTitle = "Siamo pronti per ordinare...";
   let isCartSummaryView = false;
@@ -373,7 +376,7 @@
   const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
   const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
   if (appLoaderBuild) {
-    appLoaderBuild.textContent = APP_BUILD_LABEL;
+    appLoaderBuild.textContent = import_build_meta.APP_BUILD_LABEL;
   }
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();
@@ -477,6 +480,7 @@
   initLoaderProgress();
   initPromoAgriCarousel();
   initFormatCarousel();
+  registerServiceWorker();
   init();
   async function init() {
     let menuAssetsReadyPromise = Promise.resolve();
@@ -547,6 +551,18 @@
       }
       showBootstrapFailureState(error);
     }
+  }
+  function registerServiceWorker() {
+    const host = window.location.hostname;
+    const isLocalHost = host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host.indexOf("192.168.") === 0 || host.indexOf("10.") === 0 || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+    if (!("serviceWorker" in navigator) || !window.isSecureContext || isLocalHost) {
+      return;
+    }
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js?v=".concat(APP_VERSION)).catch((error) => {
+        console.warn("Service worker non registrato.", error);
+      });
+    });
   }
   function initLoaderProgress() {
     setLoaderTaskProgress("boot", 1);
@@ -2914,7 +2930,7 @@
     cartGenerated.innerHTML = "";
     toggleSummaryViewButton.textContent = generateSummaryLabel;
     const cartQuantity = state.cart.reduce((sum, entry) => sum + entry.quantity, 0);
-    cartCount.textContent = cartQuantity;
+    updateCartCountDisplay(cartQuantity);
     const hasItems = state.cart.length > 0;
     const showGeneratedSummary = isCartSummaryView && hasItems;
     if (hasItems) {
@@ -2935,8 +2951,10 @@
       renderGeneratedCartSummary();
     }
     cartPanel.classList.toggle("is-generated", showGeneratedSummary);
+    cartPanel.classList.toggle("is-empty", !hasItems && !showGeneratedSummary);
     cartKicker.hidden = showGeneratedSummary;
-    cartTitle.textContent = showGeneratedSummary ? generatedCartTitle : defaultCartTitle;
+    cartKicker.textContent = emptyCartKicker;
+    cartTitle.textContent = showGeneratedSummary ? generatedCartTitle : hasItems ? defaultCartTitle : emptyCartTitle;
     cartEmpty.hidden = hasItems;
     cartItems.hidden = !hasItems || showGeneratedSummary;
     cartGenerated.hidden = !showGeneratedSummary;
@@ -2949,6 +2967,41 @@
     toggleSummaryViewButton.classList.toggle("utility-btn--accent", !showGeneratedSummary);
     toggleSummaryViewButton.classList.toggle("utility-btn--secondary", showGeneratedSummary);
     cartTotal.textContent = formatCartBreakdown(state.cart);
+  }
+  function updateCartCountDisplay(cartQuantity) {
+    if (!cartCount) {
+      return;
+    }
+    const nextValue = String(cartQuantity);
+    const previousValue = lastRenderedCartQuantity === null ? null : String(lastRenderedCartQuantity);
+    const shouldAnimate = previousValue !== null && cartQuantity > lastRenderedCartQuantity;
+    cartCount.setAttribute("aria-label", "".concat(cartQuantity, " prodotti nel riepilogo"));
+    if (!shouldAnimate || previousValue === nextValue) {
+      cartCount.innerHTML = '\n      <span class="cart-fab__count-static" aria-hidden="true">'.concat(nextValue, "</span>\n    ");
+      lastRenderedCartQuantity = cartQuantity;
+      return;
+    }
+    cartCount.innerHTML = '\n    <span class="cart-fab__count-sizer" aria-hidden="true">'.concat(getCartCountSizingValue(
+      previousValue,
+      nextValue
+    ), '</span>\n    <span class="cart-fab__count-roller" aria-hidden="true">\n      <span class="cart-fab__count-value cart-fab__count-value--current">').concat(previousValue, '</span>\n      <span class="cart-fab__count-value cart-fab__count-value--next">').concat(nextValue, "</span>\n    </span>\n  ");
+    const nextValueNode = cartCount.querySelector(".cart-fab__count-value--next");
+    if (nextValueNode) {
+      nextValueNode.addEventListener(
+        "animationend",
+        () => {
+          cartCount.innerHTML = '\n          <span class="cart-fab__count-static" aria-hidden="true">'.concat(nextValue, "</span>\n        ");
+        },
+        { once: true }
+      );
+    }
+    lastRenderedCartQuantity = cartQuantity;
+  }
+  function getCartCountSizingValue(previousValue, nextValue) {
+    if (!previousValue) {
+      return nextValue;
+    }
+    return nextValue.length >= previousValue.length ? nextValue : previousValue;
   }
   function setCartSummaryView(nextValue) {
     if (!state.cart.length) {

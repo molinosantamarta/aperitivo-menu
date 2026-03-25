@@ -1,0 +1,32 @@
+{
+  "name": "Agri-Menu",
+  "short_name": "Agri-Menu",
+  "description": "Menu digitale del Molino Santa Marta da aprire, consultare e aggiungere alla home screen.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f1ea",
+  "theme_color": "#f7f1ea",
+  "icons": [
+    {
+      "src": "./pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./pwa/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
