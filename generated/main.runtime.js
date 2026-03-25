@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.683";
+  var APP_BUILD_LABEL = "V.1.684";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -30,7 +30,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260325k";
+  var APP_VERSION = "20260325l";
   var LOADER_CARD_DELAY = 2800;
   var LOADER_INTRO_OUTRO_DURATION = 760;
   var LOADER_MIN_DURATION = 1e4;
