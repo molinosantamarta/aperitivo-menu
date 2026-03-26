@@ -10,9 +10,9 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 });
 
 const APP_VERSION = "20260325n";
-const LOADER_CARD_DELAY = 2800;
-const LOADER_INTRO_OUTRO_DURATION = 760;
-const LOADER_MIN_DURATION = 10000;
+const LOADER_CARD_DELAY = 1500;
+const LOADER_INTRO_OUTRO_DURATION = 520;
+const LOADER_MIN_DURATION = 6000;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 20000;
 const STRICT_FONT_LOAD_TIMEOUT = 45000;
@@ -738,6 +738,8 @@ function registerServiceWorker() {
 
 function initLoaderProgress() {
   setLoaderTaskProgress("boot", 1);
+  markLoaderClockStarted();
+  startLoaderTimeProgress();
   revealLoaderCardAfterDelay();
 }
 
@@ -748,9 +750,6 @@ function revealLoaderCardAfterDelay() {
 
   loaderCardRevealPromise = (async () => {
     if (!appLoader) {
-      markLoaderClockStarted();
-      startLoaderMessageRotation();
-      startLoaderTimeProgress();
       return;
     }
 
@@ -794,9 +793,7 @@ function revealLoaderCardAfterDelay() {
 
     clearInitialLoaderCardHide();
     appLoader.classList.remove("app-loader--card-hidden");
-    markLoaderClockStarted();
     startLoaderMessageRotation();
-    startLoaderTimeProgress();
   })();
 
   return loaderCardRevealPromise;
@@ -2006,20 +2003,33 @@ function waitForDeferredFonts() {
 }
 
 function waitForShellAssets() {
-  const assetUrls = collectShellAssetUrls();
-  if (!assetUrls.length) {
+  const criticalAssetUrls = collectShellAssetUrls();
+  const supportingAssetUrls = collectSupportingAssetUrls();
+  const preloadTasks = [];
+
+  if (criticalAssetUrls.length) {
+    preloadTasks.push(promiseAllSettledCompat(criticalAssetUrls.map((url) => preloadImage(url, "high", 12000))));
+  }
+
+  if (supportingAssetUrls.length) {
+    preloadTasks.push(promiseAllSettledCompat(supportingAssetUrls.map((url) => preloadImage(url, "auto", 14000))));
+  }
+
+  if (!preloadTasks.length) {
     return Promise.resolve();
   }
 
-  return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 12000)));
+  return Promise.all(preloadTasks);
 }
 
 function waitForMenuAssets(menuData) {
   const criticalAssetUrls = collectMenuVisualAssetUrls(menuData, {
     includeSectionIds: CRITICAL_MENU_SECTION_IDS,
+    includeDeferredItems: true,
   });
   const secondaryAssetUrls = collectMenuVisualAssetUrls(menuData, {
     excludeSectionIds: CRITICAL_MENU_SECTION_IDS,
+    includeDeferredItems: true,
   });
   const preloadTasks = [];
 
@@ -2052,7 +2062,7 @@ function waitForCriticalImages(urls) {
 }
 
 function collectMenuVisualAssetUrls(menuData, options = {}) {
-  const { includeSectionIds = null, excludeSectionIds = null } = options;
+  const { includeSectionIds = null, excludeSectionIds = null, includeDeferredItems = false } = options;
   const urls = new Set();
 
   menuData.sections.forEach((section) => {
@@ -2065,7 +2075,7 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
     }
 
     section.items.forEach((item) => {
-      if (shouldDeferLoaderAssetsForItem(item)) {
+      if (!includeDeferredItems && shouldDeferLoaderAssetsForItem(item)) {
         return;
       }
 
@@ -2093,6 +2103,19 @@ function collectShellAssetUrls() {
 
   document.querySelectorAll("[data-shell-asset]").forEach((asset) => {
     const src = asset.currentSrc || asset.getAttribute("src");
+    if (src) {
+      urls.add(src);
+    }
+  });
+
+  return Array.from(urls);
+}
+
+function collectSupportingAssetUrls() {
+  const urls = new Set();
+
+  document.querySelectorAll("[data-deferred-src]").forEach((asset) => {
+    const src = asset.getAttribute("data-deferred-src");
     if (src) {
       urls.add(src);
     }

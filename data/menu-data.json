@@ -1231,46 +1231,37 @@
           "detailDescription": "Valcalepio Rosso fermo DOC Bio.\nAz. Agricola Tosca.",
           "detailGallery": [
             {
-              "type": "text-panel",
-              "bodyLines": [
-                "Nella vecchia casa",
-                "di Via Ca' Lupo",
-                "nasce nel 2000",
-                "l'avventura Tosca."
-              ],
-              "detailBodyFontFamily": "Montserrat, sans-serif",
-              "detailBodyFontWeight": "800",
-              "detailBodyLineHeight": "1.04",
-              "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
-              "gradientStart": "#6b2030",
-              "gradientEnd": "#8a3144",
-              "bodyColor": "#fff6f3"
-            },
-            {
-              "type": "text-panel",
-              "bodyLines": [
-                "Nei vigneti",
-                "terrazzati crescono",
-                "uve Merlot e",
-                "Cabernet Sauvignon."
-              ],
-              "detailBodyFontFamily": "Montserrat, sans-serif",
-              "detailBodyFontWeight": "800",
-              "detailBodyLineHeight": "1.04",
-              "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
-              "gradientStart": "#6b2030",
-              "gradientEnd": "#8a3144",
-              "bodyColor": "#fff6f3"
+              "type": "photo-panel",
+              "asset": "rossodelupo-back.webp",
+              "position": "39% center",
+              "size": "82% auto",
+              "backgroundColor": "#6b2030",
+              "blendMode": "screen"
             },
             {
               "type": "text-panel",
               "bodyLines": [
                 "Un rosso elegante,",
-                "piace per beva",
-                "e freschezza, con",
+                "piace per beva,",
+                "freschezza e",
                 "dolci note speziate."
+              ],
+              "detailBodyFontFamily": "Montserrat, sans-serif",
+              "detailBodyFontWeight": "800",
+              "detailBodyLineHeight": "1.04",
+              "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
+              "gradientStart": "#6b2030",
+              "gradientEnd": "#8a3144",
+              "bodyColor": "#fff6f3"
+            },
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Da uve Merlot,",
+                "con una parte di",
+                "Cabernet",
+                "Sauvignon."
               ],
               "detailBodyFontFamily": "Montserrat, sans-serif",
               "detailBodyFontWeight": "800",
@@ -1286,8 +1277,25 @@
               "bodyLines": [
                 "Struttura e",
                 "morbidezza nascono",
-                "dal passaggio in",
+                "da un anno in",
                 "botte grande di rovere."
+              ],
+              "detailBodyFontFamily": "Montserrat, sans-serif",
+              "detailBodyFontWeight": "800",
+              "detailBodyLineHeight": "1.04",
+              "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
+              "gradientStart": "#6b2030",
+              "gradientEnd": "#8a3144",
+              "bodyColor": "#fff6f3"
+            },
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Poi riposa almeno",
+                "altri 6 mesi",
+                "in bottiglia,",
+                "prima di uscire."
               ],
               "detailBodyFontFamily": "Montserrat, sans-serif",
               "detailBodyFontWeight": "800",
@@ -1443,7 +1451,7 @@
           "page": 1,
           "name": "Spumante dealcolato",
           "category": "Selezione Zero",
-          "description": "Uve Glera, spumante dry, Borgo Molino, Veneto/Friuli.",
+          "description": "Uve Glera, spumante dry, Borgo Molino, 0,75 litri.",
           "hideCardVisual": true,
           "visual": {
             "type": "photo-panel",

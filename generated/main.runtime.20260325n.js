@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.696";
+  var APP_BUILD_LABEL = "V.1.697";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,9 +31,9 @@
     maximumFractionDigits: 2
   });
   var APP_VERSION = "20260325n";
-  var LOADER_CARD_DELAY = 2800;
-  var LOADER_INTRO_OUTRO_DURATION = 760;
-  var LOADER_MIN_DURATION = 1e4;
+  var LOADER_CARD_DELAY = 1500;
+  var LOADER_INTRO_OUTRO_DURATION = 520;
+  var LOADER_MIN_DURATION = 6e3;
   var LOADER_FONT_TIMEOUT = 12e3;
   var FONT_LOAD_TIMEOUT = 2e4;
   var STRICT_FONT_LOAD_TIMEOUT = 45e3;
@@ -685,6 +685,8 @@
   }
   function initLoaderProgress() {
     setLoaderTaskProgress("boot", 1);
+    markLoaderClockStarted();
+    startLoaderTimeProgress();
     revealLoaderCardAfterDelay();
   }
   function revealLoaderCardAfterDelay() {
@@ -693,9 +695,6 @@
     }
     loaderCardRevealPromise = (async () => {
       if (!appLoader) {
-        markLoaderClockStarted();
-        startLoaderMessageRotation();
-        startLoaderTimeProgress();
         return;
       }
       appLoader.classList.add("app-loader--card-hidden");
@@ -728,9 +727,7 @@
       }
       clearInitialLoaderCardHide();
       appLoader.classList.remove("app-loader--card-hidden");
-      markLoaderClockStarted();
       startLoaderMessageRotation();
-      startLoaderTimeProgress();
     })();
     return loaderCardRevealPromise;
   }
@@ -1656,18 +1653,28 @@
     return promiseAllSettledCompat(DEFERRED_FONT_PLANS.map((plan) => waitForFontLoad(plan)));
   }
   function waitForShellAssets() {
-    const assetUrls = collectShellAssetUrls();
-    if (!assetUrls.length) {
+    const criticalAssetUrls = collectShellAssetUrls();
+    const supportingAssetUrls = collectSupportingAssetUrls();
+    const preloadTasks = [];
+    if (criticalAssetUrls.length) {
+      preloadTasks.push(promiseAllSettledCompat(criticalAssetUrls.map((url) => preloadImage(url, "high", 12e3))));
+    }
+    if (supportingAssetUrls.length) {
+      preloadTasks.push(promiseAllSettledCompat(supportingAssetUrls.map((url) => preloadImage(url, "auto", 14e3))));
+    }
+    if (!preloadTasks.length) {
       return Promise.resolve();
     }
-    return promiseAllSettledCompat(assetUrls.map((url) => preloadImage(url, "high", 12e3)));
+    return Promise.all(preloadTasks);
   }
   function waitForMenuAssets(menuData) {
     const criticalAssetUrls = collectMenuVisualAssetUrls(menuData, {
-      includeSectionIds: CRITICAL_MENU_SECTION_IDS
+      includeSectionIds: CRITICAL_MENU_SECTION_IDS,
+      includeDeferredItems: true
     });
     const secondaryAssetUrls = collectMenuVisualAssetUrls(menuData, {
-      excludeSectionIds: CRITICAL_MENU_SECTION_IDS
+      excludeSectionIds: CRITICAL_MENU_SECTION_IDS,
+      includeDeferredItems: true
     });
     const preloadTasks = [];
     if (criticalAssetUrls.length) {
@@ -1694,7 +1701,7 @@
     );
   }
   function collectMenuVisualAssetUrls(menuData, options = {}) {
-    const { includeSectionIds = null, excludeSectionIds = null } = options;
+    const { includeSectionIds = null, excludeSectionIds = null, includeDeferredItems = false } = options;
     const urls = /* @__PURE__ */ new Set();
     menuData.sections.forEach((section) => {
       if (includeSectionIds && !includeSectionIds.has(section.id)) {
@@ -1704,7 +1711,7 @@
         return;
       }
       section.items.forEach((item) => {
-        if (shouldDeferLoaderAssetsForItem(item)) {
+        if (!includeDeferredItems && shouldDeferLoaderAssetsForItem(item)) {
           return;
         }
         collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
@@ -1727,6 +1734,16 @@
     const urls = /* @__PURE__ */ new Set();
     document.querySelectorAll("[data-shell-asset]").forEach((asset) => {
       const src = asset.currentSrc || asset.getAttribute("src");
+      if (src) {
+        urls.add(src);
+      }
+    });
+    return Array.from(urls);
+  }
+  function collectSupportingAssetUrls() {
+    const urls = /* @__PURE__ */ new Set();
+    document.querySelectorAll("[data-deferred-src]").forEach((asset) => {
+      const src = asset.getAttribute("data-deferred-src");
       if (src) {
         urls.add(src);
       }
