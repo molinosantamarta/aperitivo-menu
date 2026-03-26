@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.700";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.700";
+  var APP_BUILD_LABEL = "V.1.0.701";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.701";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -32,6 +32,7 @@
     maximumFractionDigits: 2
   });
   var APP_VERSION = "20260325n";
+  var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
   var LOADER_MIN_DURATION = 6e3;
@@ -287,6 +288,21 @@
   function getClarityApi() {
     return typeof window !== "undefined" && typeof window.clarity === "function" ? window.clarity : null;
   }
+  function loadClarityScript() {
+    if (clarityScriptRequested || !CLARITY_PROJECT_ID) {
+      return;
+    }
+    clarityScriptRequested = true;
+    window.clarity = window.clarity || function() {
+      (window.clarity.q = window.clarity.q || []).push(arguments);
+    };
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.clarity.ms/tag/".concat(CLARITY_PROJECT_ID);
+    script.onerror = () => {
+    };
+    document.head.appendChild(script);
+  }
   function normalizeClarityValue(value) {
     if (value == null) {
       return "";
@@ -395,6 +411,7 @@
   var lastSpritzEditorialOrnamentKey = "";
   var fontMetricCanvas = null;
   var lastRenderedCartQuantity = null;
+  var clarityScriptRequested = false;
   var loaderClockStartedPromise = new Promise((resolve) => {
     resolveLoaderClockStarted = resolve;
   });
@@ -549,6 +566,9 @@
       return;
     }
     const option = getSelectedOption(item);
+    if (!option) {
+      return;
+    }
     addItemToCart(item, option, state.selectedQuantity);
     persistCart();
     renderCart();
@@ -641,8 +661,8 @@
       menuAssetsReadyPromise = waitForMenuAssets(menuData).then(() => {
         setLoaderTaskProgress("menuAssets", 1);
       }).catch((error) => {
-        error.bootPhase = "menu-assets";
-        throw error;
+        console.warn("Alcune immagini del menu non sono pronte nel bootstrap iniziale, continuo comunque.", error);
+        setLoaderTaskProgress("menuAssets", 1);
       });
       applyMenuData(menuData);
       try {
@@ -776,6 +796,14 @@
     var _a2;
     if (!appLoader) {
       return;
+    }
+    if (loaderMessageIntervalId != null) {
+      window.clearInterval(loaderMessageIntervalId);
+      loaderMessageIntervalId = null;
+    }
+    if (loaderProgressFrame != null && "cancelAnimationFrame" in window) {
+      window.cancelAnimationFrame(loaderProgressFrame);
+      loaderProgressFrame = null;
     }
     syncDisplayFontSpacing(false);
     hideLoaderIntro();
@@ -1948,6 +1976,9 @@
         appLoader.remove();
       }
     }, 320);
+    scheduleNonCriticalWork(() => {
+      loadClarityScript();
+    });
   }
   function initPromoAgriCarousel() {
     if (!promoAgriCarousel || !promoAgriViewport || !promoAgriVideoTrack || !promoAgriCarouselDots || !PROMO_AGRI_VIDEOS.length) {
@@ -2869,21 +2900,30 @@
     detailOptions.innerHTML = "";
     const selectionGroups = getSelectionGroups(item);
     const shouldShowFormat = item.options.length > 1;
+    const usesStepFlow = usesSequentialWineDetailFlow(item);
+    const selectionGroupsComplete = hasCompletedSelectionGroups(item);
     if (!selectionGroups.length && !shouldShowFormat) {
       detailOptions.hidden = true;
       return;
     }
     detailOptions.hidden = false;
-    selectionGroups.forEach((group) => {
-      const groupNode = createOptionGroup(group.label, true);
+    selectionGroups.forEach((group, groupIndex) => {
+      const selectedIndex = getSelectedSelectionIndex(group);
+      const groupLabel = usesStepFlow ? "".concat(groupIndex + 1, ". ").concat(group.label) : group.label;
+      const groupNode = createOptionGroup(groupLabel, true);
+      if (usesStepFlow) {
+        groupNode.wrapper.classList.add("option-group--step");
+        groupNode.wrapper.dataset.stepState = hasSelectedSelectionOption(group) ? "complete" : "current";
+      }
       group.options.forEach((selectionOption, index) => {
         const optionButton = document.createElement("button");
-        const selectedIndex = getSelectedSelectionIndex(group);
         const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
         const isSparklingOption = isSparklingWineSelectionOption(item, group, selectionOption);
+        const isSelected = selectedIndex >= 0 && index === selectedIndex;
+        const isMuted = usesStepFlow && selectedIndex >= 0 && index !== selectedIndex;
         const sparklingMarkup = isSparklingOption ? '\n            <span class="option-btn__sparkling-bubbles" aria-hidden="true">\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--one"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--two"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--three"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--four"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--five"></span>\n            </span>\n          ' : "";
         optionButton.type = "button";
-        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(isSparklingOption ? " option-btn--sparkling" : "").concat(index === selectedIndex ? " is-selected" : "");
+        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(isSparklingOption ? " option-btn--sparkling" : "").concat(isSelected ? " is-selected" : "").concat(isMuted ? " is-muted" : "");
         optionButton.innerHTML = "".concat(sparklingMarkup, '<span class="option-label option-label--solo">').concat(selectionOption.label, "</span>");
         optionButton.addEventListener("click", () => {
           state.selectedSelections[group.id] = index;
@@ -2891,6 +2931,7 @@
             refreshDetailPreview(item);
           }
           renderOptions(item);
+          renderQuantityControl();
         });
         groupNode.options.append(optionButton);
       });
@@ -2908,12 +2949,15 @@
       return;
     }
     const formatGroup = createOptionGroup(
-      selectionGroups.length ? "Formato" : "",
+      usesStepFlow ? "".concat(selectionGroups.length + 1, ". Formato") : selectionGroups.length ? "Formato" : "",
       shouldUseCompactDetailOptions(item)
     );
+    const formatEnabled = !usesStepFlow || selectionGroupsComplete;
+    const hasSelectedFormat = hasSelectedDetailOption(item);
     if ((item == null ? void 0 : item.id) === "oltrepo") {
-      formatGroup.wrapper.classList.add("option-group--wine-format");
+      formatGroup.wrapper.classList.add("option-group--wine-format", "option-group--step");
       formatGroup.options.classList.add("option-group__options--inline-pair");
+      formatGroup.wrapper.dataset.stepState = !formatEnabled ? "pending" : hasSelectedFormat ? "complete" : "current";
     }
     item.options.forEach((option, index) => {
       const optionButton = document.createElement("button");
@@ -2922,12 +2966,22 @@
       const toneClass = getOptionToneClass(option);
       const layoutClass = getOptionLayoutClass(option);
       const hidePrice = shouldHideDetailOptionPrices(item);
+      const isSelected = hasSelectedFormat && index === state.selectedOptionIndex;
+      const isMuted = usesStepFlow && hasSelectedFormat && index !== state.selectedOptionIndex;
       optionButton.type = "button";
-      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(hidePrice && displayLabel ? " option-btn--label-only" : "").concat(index === state.selectedOptionIndex ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
+      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(hidePrice && displayLabel ? " option-btn--label-only" : "").concat(isSelected ? " is-selected" : "").concat(isMuted ? " is-muted" : "").concat(displayLabel ? "" : " option-btn--price-only");
+      if (!formatEnabled) {
+        optionButton.disabled = true;
+        optionButton.setAttribute("aria-disabled", "true");
+      }
       optionButton.innerHTML = displayLabel ? '\n          <span class="option-copy">\n            <span class="option-label">'.concat(displayLabel, "</span>\n            ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(optionSubtitle, "</span>") : "", "\n          </span>\n          ").concat(hidePrice ? "" : '<span class="option-price">'.concat(formatPrice(option.price), "</span>"), "\n        ") : '\n          <span class="option-price option-price--solo">'.concat(formatPrice(option.price), "</span>\n        ");
       optionButton.addEventListener("click", () => {
+        if (!formatEnabled) {
+          return;
+        }
         state.selectedOptionIndex = index;
         renderOptions(item);
+        renderQuantityControl();
       });
       formatGroup.options.append(optionButton);
     });
@@ -3021,21 +3075,35 @@
     if (!addToCartButton) {
       return;
     }
+    const actionLabel = (item == null ? void 0 : item.id) === "oltrepo" ? "Aggiungi" : "Aggiungi al riepilogo";
+    const stepFlowReady = !usesSequentialWineDetailFlow(item) || isSequentialWineDetailReady(item);
     renderDetailSelectionStrip(item);
     if (item && shouldUseMultiOptionQuantityDetail(item)) {
       const totalQuantity = getMultiOptionSelectedTotal(item);
-      addToCartButton.textContent = "Aggiungi al riepilogo";
+      addToCartButton.textContent = actionLabel;
       addToCartButton.disabled = totalQuantity <= 0;
       addToCartButton.setAttribute("aria-disabled", totalQuantity <= 0 ? "true" : "false");
       return;
     }
-    addToCartButton.textContent = "Aggiungi al riepilogo";
-    addToCartButton.disabled = false;
-    addToCartButton.removeAttribute("aria-disabled");
+    addToCartButton.textContent = actionLabel;
+    addToCartButton.hidden = !stepFlowReady;
+    addToCartButton.disabled = !stepFlowReady;
+    if (stepFlowReady) {
+      addToCartButton.removeAttribute("aria-disabled");
+    } else {
+      addToCartButton.setAttribute("aria-disabled", "true");
+    }
   }
   function renderQuantityControl() {
     const item = itemLookup[state.selectedItemId];
     if (item && shouldUseMultiOptionQuantityDetail(item)) {
+      detailQuantity.innerHTML = "";
+      detailQuantity.hidden = true;
+      detailFooter == null ? void 0 : detailFooter.classList.remove("detail-footer--with-quantity");
+      updateDetailActionButton(item);
+      return;
+    }
+    if (item && usesSequentialWineDetailFlow(item) && !isSequentialWineDetailReady(item)) {
       detailQuantity.innerHTML = "";
       detailQuantity.hidden = true;
       detailFooter == null ? void 0 : detailFooter.classList.remove("detail-footer--with-quantity");
@@ -3075,13 +3143,14 @@
     renderQuantityControl();
   }
   function initializeDetailState(item) {
-    state.selectedOptionIndex = 0;
+    const usesStepFlow = usesSequentialWineDetailFlow(item);
+    state.selectedOptionIndex = usesStepFlow ? -1 : 0;
     state.selectedOptionQuantities = {};
     state.selectedQuantity = 1;
     state.selectedSelections = {};
     state.detailEditorialSlide = buildDetailEditorialSlide(item);
     getSelectionGroups(item).forEach((group) => {
-      state.selectedSelections[group.id] = 0;
+      state.selectedSelections[group.id] = usesStepFlow ? -1 : 0;
     });
     if (shouldUseMultiOptionQuantityDetail(item)) {
       item.options.forEach((option) => {
@@ -3186,6 +3255,7 @@
     const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
     const nextSelectionIndex = getPrimaryPhotoPanelSelectionIndex(item);
     const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
+    const swapDuration = 640;
     photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
     const activeImage = photoPanelNode.querySelector(".photo-panel-visual__selection-image.is-current") || photoPanelNode.querySelector(".photo-panel-visual__selection-image");
     if (!normalizedNextUrl) {
@@ -3202,7 +3272,8 @@
       }
       const previousSelectionIndex = Number.parseInt(activeImage.dataset.selectionIndex || "", 10);
       const direction2 = Number.isInteger(previousSelectionIndex) && previousSelectionIndex !== nextSelectionIndex ? nextSelectionIndex > previousSelectionIndex ? 1 : -1 : 1;
-      activeImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction2));
+      const swapDistance2 = Math.max(180, Math.min(window.innerWidth * 0.52, 260));
+      activeImage.style.setProperty("--photo-panel-selection-swap-offset", "".concat(direction2 * -swapDistance2, "px"));
       activeImage.classList.remove("is-current", "is-incoming");
       activeImage.classList.add("is-outgoing");
     }
@@ -3216,7 +3287,8 @@
     incomingImage.dataset.selectionIndex = String(nextSelectionIndex);
     const activeSelectionIndex = Number.parseInt((activeImage == null ? void 0 : activeImage.dataset.selectionIndex) || "", 10);
     const direction = Number.isInteger(activeSelectionIndex) && activeSelectionIndex !== nextSelectionIndex ? nextSelectionIndex > activeSelectionIndex ? 1 : -1 : 1;
-    incomingImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
+    const swapDistance = Math.max(180, Math.min(window.innerWidth * 0.52, 260));
+    incomingImage.style.setProperty("--photo-panel-selection-swap-offset", "".concat(direction * swapDistance, "px"));
     if (captionNode) {
       photoPanelNode.insertBefore(incomingImage, captionNode);
     } else {
@@ -3228,7 +3300,7 @@
     });
     window.setTimeout(() => {
       activeImage == null ? void 0 : activeImage.remove();
-    }, 420);
+    }, swapDuration);
     return true;
   }
   function createOptionGroup(label, compact = false) {
@@ -3781,11 +3853,38 @@
     return Array.isArray(item.selectionGroups) ? item.selectionGroups : [];
   }
   function getSelectedOption(item) {
-    return item.options[state.selectedOptionIndex] || item.options[0];
+    if (!item || !Array.isArray(item.options)) {
+      return null;
+    }
+    const selectedOption = item.options[state.selectedOptionIndex];
+    return selectedOption || null;
   }
   function getSelectedSelectionIndex(group) {
     const selectedIndex = state.selectedSelections[group.id];
-    return Number.isInteger(selectedIndex) ? selectedIndex : 0;
+    return Number.isInteger(selectedIndex) ? selectedIndex : -1;
+  }
+  function usesSequentialWineDetailFlow(item) {
+    return Boolean(item && item.id === "oltrepo");
+  }
+  function hasSelectedSelectionOption(group) {
+    if (!group || !Array.isArray(group.options) || !group.options.length) {
+      return false;
+    }
+    const selectedIndex = getSelectedSelectionIndex(group);
+    return selectedIndex >= 0 && selectedIndex < group.options.length;
+  }
+  function hasCompletedSelectionGroups(item) {
+    const selectionGroups = getSelectionGroups(item);
+    if (!selectionGroups.length) {
+      return true;
+    }
+    return selectionGroups.every((group) => hasSelectedSelectionOption(group));
+  }
+  function hasSelectedDetailOption(item) {
+    return Boolean(item && Array.isArray(item.options) && item.options[state.selectedOptionIndex]);
+  }
+  function isSequentialWineDetailReady(item) {
+    return hasCompletedSelectionGroups(item) && hasSelectedDetailOption(item);
   }
   function getSelectionOptionToneClass(item, group, selectionOption) {
     if (!item || item.id !== "oltrepo" || !group || group.id !== "wine-style" || !selectionOption) {
@@ -3810,7 +3909,8 @@
   function getSelectedSelectionLabels(item) {
     return getSelectionGroups(item).map((group) => {
       var _a2;
-      return ((_a2 = group.options[getSelectedSelectionIndex(group)]) == null ? void 0 : _a2.label) || "";
+      const selectedIndex = getSelectedSelectionIndex(group);
+      return selectedIndex >= 0 ? ((_a2 = group.options[selectedIndex]) == null ? void 0 : _a2.label) || "" : "";
     }).filter(Boolean);
   }
   function getItemDetailDescription(item) {

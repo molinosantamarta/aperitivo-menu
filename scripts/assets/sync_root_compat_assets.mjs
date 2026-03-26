@@ -10,6 +10,7 @@ const copies = [
   ["public/manifest.webmanifest", "manifest.webmanifest"],
   ["public/service-worker.js", "service-worker.js"],
   ["public/pwa", "pwa"],
+  ["public/menu-assets", "menu-assets"],
 ];
 
 function getAppVersion() {

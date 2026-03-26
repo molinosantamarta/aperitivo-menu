@@ -10,6 +10,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
 });
 
 const APP_VERSION = "20260325n";
+const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
 const LOADER_MIN_DURATION = 6000;
@@ -275,6 +276,27 @@ function getClarityApi() {
     : null;
 }
 
+function loadClarityScript() {
+  if (clarityScriptRequested || !CLARITY_PROJECT_ID) {
+    return;
+  }
+
+  clarityScriptRequested = true;
+  window.clarity =
+    window.clarity ||
+    function () {
+      (window.clarity.q = window.clarity.q || []).push(arguments);
+    };
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`;
+  script.onerror = () => {
+    // Ignore analytics failures to keep Safari and the app shell responsive.
+  };
+  document.head.appendChild(script);
+}
+
 function normalizeClarityValue(value) {
   if (value == null) {
     return "";
@@ -401,6 +423,7 @@ let lastSpritzEditorialFactIndex = -1;
 let lastSpritzEditorialOrnamentKey = "";
 let fontMetricCanvas = null;
 let lastRenderedCartQuantity = null;
+let clarityScriptRequested = false;
 const loaderClockStartedPromise = new Promise((resolve) => {
   resolveLoaderClockStarted = resolve;
 });
@@ -569,6 +592,9 @@ addToCartButton.addEventListener("click", () => {
   }
 
   const option = getSelectedOption(item);
+  if (!option) {
+    return;
+  }
   addItemToCart(item, option, state.selectedQuantity);
   persistCart();
   renderCart();
@@ -679,8 +705,8 @@ async function init() {
         setLoaderTaskProgress("menuAssets", 1);
       })
       .catch((error) => {
-        error.bootPhase = "menu-assets";
-        throw error;
+        console.warn("Alcune immagini del menu non sono pronte nel bootstrap iniziale, continuo comunque.", error);
+        setLoaderTaskProgress("menuAssets", 1);
       });
     applyMenuData(menuData);
     try {
@@ -864,6 +890,16 @@ function clearInitialLoaderCardHide() {
 function showBootstrapFailureState(error) {
   if (!appLoader) {
     return;
+  }
+
+  if (loaderMessageIntervalId != null) {
+    window.clearInterval(loaderMessageIntervalId);
+    loaderMessageIntervalId = null;
+  }
+
+  if (loaderProgressFrame != null && "cancelAnimationFrame" in window) {
+    window.cancelAnimationFrame(loaderProgressFrame);
+    loaderProgressFrame = null;
   }
 
   syncDisplayFontSpacing(false);
@@ -2359,6 +2395,10 @@ function revealApp() {
       appLoader.remove();
     }
   }, 320);
+
+  scheduleNonCriticalWork(() => {
+    loadClarityScript();
+  });
 }
 
 function initPromoAgriCarousel() {
@@ -3705,6 +3745,8 @@ function renderOptions(item) {
   detailOptions.innerHTML = "";
   const selectionGroups = getSelectionGroups(item);
   const shouldShowFormat = item.options.length > 1;
+  const usesStepFlow = usesSequentialWineDetailFlow(item);
+  const selectionGroupsComplete = hasCompletedSelectionGroups(item);
 
   if (!selectionGroups.length && !shouldShowFormat) {
     detailOptions.hidden = true;
@@ -3713,14 +3755,22 @@ function renderOptions(item) {
 
   detailOptions.hidden = false;
 
-  selectionGroups.forEach((group) => {
-    const groupNode = createOptionGroup(group.label, true);
+  selectionGroups.forEach((group, groupIndex) => {
+    const selectedIndex = getSelectedSelectionIndex(group);
+    const groupLabel = usesStepFlow ? `${groupIndex + 1}. ${group.label}` : group.label;
+    const groupNode = createOptionGroup(groupLabel, true);
+
+    if (usesStepFlow) {
+      groupNode.wrapper.classList.add("option-group--step");
+      groupNode.wrapper.dataset.stepState = hasSelectedSelectionOption(group) ? "complete" : "current";
+    }
 
     group.options.forEach((selectionOption, index) => {
       const optionButton = document.createElement("button");
-      const selectedIndex = getSelectedSelectionIndex(group);
       const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
       const isSparklingOption = isSparklingWineSelectionOption(item, group, selectionOption);
+      const isSelected = selectedIndex >= 0 && index === selectedIndex;
+      const isMuted = usesStepFlow && selectedIndex >= 0 && index !== selectedIndex;
       const sparklingMarkup = isSparklingOption
         ? `
             <span class="option-btn__sparkling-bubbles" aria-hidden="true">
@@ -3736,7 +3786,7 @@ function renderOptions(item) {
       optionButton.type = "button";
       optionButton.className = `option-btn option-btn--label-only${toneClass ? ` ${toneClass}` : ""}${
         isSparklingOption ? " option-btn--sparkling" : ""
-      }${index === selectedIndex ? " is-selected" : ""}`;
+      }${isSelected ? " is-selected" : ""}${isMuted ? " is-muted" : ""}`;
       optionButton.innerHTML = `${sparklingMarkup}<span class="option-label option-label--solo">${selectionOption.label}</span>`;
       optionButton.addEventListener("click", () => {
         state.selectedSelections[group.id] = index;
@@ -3744,6 +3794,7 @@ function renderOptions(item) {
           refreshDetailPreview(item);
         }
         renderOptions(item);
+        renderQuantityControl();
       });
       groupNode.options.append(optionButton);
     });
@@ -3765,13 +3816,16 @@ function renderOptions(item) {
   }
 
   const formatGroup = createOptionGroup(
-    selectionGroups.length ? "Formato" : "",
+    usesStepFlow ? `${selectionGroups.length + 1}. Formato` : selectionGroups.length ? "Formato" : "",
     shouldUseCompactDetailOptions(item)
   );
+  const formatEnabled = !usesStepFlow || selectionGroupsComplete;
+  const hasSelectedFormat = hasSelectedDetailOption(item);
 
   if (item?.id === "oltrepo") {
-    formatGroup.wrapper.classList.add("option-group--wine-format");
+    formatGroup.wrapper.classList.add("option-group--wine-format", "option-group--step");
     formatGroup.options.classList.add("option-group__options--inline-pair");
+    formatGroup.wrapper.dataset.stepState = !formatEnabled ? "pending" : hasSelectedFormat ? "complete" : "current";
   }
 
   item.options.forEach((option, index) => {
@@ -3781,6 +3835,8 @@ function renderOptions(item) {
     const toneClass = getOptionToneClass(option);
     const layoutClass = getOptionLayoutClass(option);
     const hidePrice = shouldHideDetailOptionPrices(item);
+    const isSelected = hasSelectedFormat && index === state.selectedOptionIndex;
+    const isMuted = usesStepFlow && hasSelectedFormat && index !== state.selectedOptionIndex;
 
     optionButton.type = "button";
     optionButton.className = `option-btn${toneClass ? ` ${toneClass}` : ""}${
@@ -3789,9 +3845,13 @@ function renderOptions(item) {
       optionSubtitle ? " option-btn--with-subtitle" : ""
     }${
       hidePrice && displayLabel ? " option-btn--label-only" : ""
-    }${index === state.selectedOptionIndex ? " is-selected" : ""}${
+    }${isSelected ? " is-selected" : ""}${isMuted ? " is-muted" : ""}${
       displayLabel ? "" : " option-btn--price-only"
     }`;
+    if (!formatEnabled) {
+      optionButton.disabled = true;
+      optionButton.setAttribute("aria-disabled", "true");
+    }
     optionButton.innerHTML = displayLabel
       ? `
           <span class="option-copy">
@@ -3804,8 +3864,12 @@ function renderOptions(item) {
           <span class="option-price option-price--solo">${formatPrice(option.price)}</span>
         `;
     optionButton.addEventListener("click", () => {
+      if (!formatEnabled) {
+        return;
+      }
       state.selectedOptionIndex = index;
       renderOptions(item);
+      renderQuantityControl();
     });
     formatGroup.options.append(optionButton);
   });
@@ -3965,25 +4029,41 @@ function updateDetailActionButton(item) {
     return;
   }
 
+  const actionLabel = item?.id === "oltrepo" ? "Aggiungi" : "Aggiungi al riepilogo";
+  const stepFlowReady = !usesSequentialWineDetailFlow(item) || isSequentialWineDetailReady(item);
+
   renderDetailSelectionStrip(item);
 
   if (item && shouldUseMultiOptionQuantityDetail(item)) {
     const totalQuantity = getMultiOptionSelectedTotal(item);
-    addToCartButton.textContent = "Aggiungi al riepilogo";
+    addToCartButton.textContent = actionLabel;
     addToCartButton.disabled = totalQuantity <= 0;
     addToCartButton.setAttribute("aria-disabled", totalQuantity <= 0 ? "true" : "false");
     return;
   }
 
-  addToCartButton.textContent = "Aggiungi al riepilogo";
-  addToCartButton.disabled = false;
-  addToCartButton.removeAttribute("aria-disabled");
+  addToCartButton.textContent = actionLabel;
+  addToCartButton.hidden = !stepFlowReady;
+  addToCartButton.disabled = !stepFlowReady;
+  if (stepFlowReady) {
+    addToCartButton.removeAttribute("aria-disabled");
+  } else {
+    addToCartButton.setAttribute("aria-disabled", "true");
+  }
 }
 
 function renderQuantityControl() {
   const item = itemLookup[state.selectedItemId];
 
   if (item && shouldUseMultiOptionQuantityDetail(item)) {
+    detailQuantity.innerHTML = "";
+    detailQuantity.hidden = true;
+    detailFooter?.classList.remove("detail-footer--with-quantity");
+    updateDetailActionButton(item);
+    return;
+  }
+
+  if (item && usesSequentialWineDetailFlow(item) && !isSequentialWineDetailReady(item)) {
     detailQuantity.innerHTML = "";
     detailQuantity.hidden = true;
     detailFooter?.classList.remove("detail-footer--with-quantity");
@@ -4051,14 +4131,15 @@ function updateSelectedQuantity(delta) {
 }
 
 function initializeDetailState(item) {
-  state.selectedOptionIndex = 0;
+  const usesStepFlow = usesSequentialWineDetailFlow(item);
+  state.selectedOptionIndex = usesStepFlow ? -1 : 0;
   state.selectedOptionQuantities = {};
   state.selectedQuantity = 1;
   state.selectedSelections = {};
   state.detailEditorialSlide = buildDetailEditorialSlide(item);
 
   getSelectionGroups(item).forEach((group) => {
-    state.selectedSelections[group.id] = 0;
+    state.selectedSelections[group.id] = usesStepFlow ? -1 : 0;
   });
 
   if (shouldUseMultiOptionQuantityDetail(item)) {
@@ -4198,6 +4279,7 @@ function updatePhotoPanelSelectionState(item) {
   const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
   const nextSelectionIndex = getPrimaryPhotoPanelSelectionIndex(item);
   const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
+  const swapDuration = 640;
 
   photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
 
@@ -4231,7 +4313,8 @@ function updatePhotoPanelSelectionState(item) {
           : -1
         : 1;
 
-    activeImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
+    const swapDistance = Math.max(180, Math.min(window.innerWidth * 0.52, 260));
+    activeImage.style.setProperty("--photo-panel-selection-swap-offset", `${direction * -swapDistance}px`);
     activeImage.classList.remove("is-current", "is-incoming");
     activeImage.classList.add("is-outgoing");
   }
@@ -4252,7 +4335,8 @@ function updatePhotoPanelSelectionState(item) {
         ? 1
         : -1
       : 1;
-  incomingImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
+  const swapDistance = Math.max(180, Math.min(window.innerWidth * 0.52, 260));
+  incomingImage.style.setProperty("--photo-panel-selection-swap-offset", `${direction * swapDistance}px`);
 
   if (captionNode) {
     photoPanelNode.insertBefore(incomingImage, captionNode);
@@ -4267,7 +4351,7 @@ function updatePhotoPanelSelectionState(item) {
 
   window.setTimeout(() => {
     activeImage?.remove();
-  }, 420);
+  }, swapDuration);
 
   return true;
 }
@@ -5089,12 +5173,47 @@ function getSelectionGroups(item) {
 }
 
 function getSelectedOption(item) {
-  return item.options[state.selectedOptionIndex] || item.options[0];
+  if (!item || !Array.isArray(item.options)) {
+    return null;
+  }
+
+  const selectedOption = item.options[state.selectedOptionIndex];
+  return selectedOption || null;
 }
 
 function getSelectedSelectionIndex(group) {
   const selectedIndex = state.selectedSelections[group.id];
-  return Number.isInteger(selectedIndex) ? selectedIndex : 0;
+  return Number.isInteger(selectedIndex) ? selectedIndex : -1;
+}
+
+function usesSequentialWineDetailFlow(item) {
+  return Boolean(item && item.id === "oltrepo");
+}
+
+function hasSelectedSelectionOption(group) {
+  if (!group || !Array.isArray(group.options) || !group.options.length) {
+    return false;
+  }
+
+  const selectedIndex = getSelectedSelectionIndex(group);
+  return selectedIndex >= 0 && selectedIndex < group.options.length;
+}
+
+function hasCompletedSelectionGroups(item) {
+  const selectionGroups = getSelectionGroups(item);
+  if (!selectionGroups.length) {
+    return true;
+  }
+
+  return selectionGroups.every((group) => hasSelectedSelectionOption(group));
+}
+
+function hasSelectedDetailOption(item) {
+  return Boolean(item && Array.isArray(item.options) && item.options[state.selectedOptionIndex]);
+}
+
+function isSequentialWineDetailReady(item) {
+  return hasCompletedSelectionGroups(item) && hasSelectedDetailOption(item);
 }
 
 function getSelectionOptionToneClass(item, group, selectionOption) {
@@ -5130,7 +5249,10 @@ function isSparklingWineSelectionOption(item, group, selectionOption) {
 
 function getSelectedSelectionLabels(item) {
   return getSelectionGroups(item)
-    .map((group) => group.options[getSelectedSelectionIndex(group)]?.label || "")
+    .map((group) => {
+      const selectedIndex = getSelectedSelectionIndex(group);
+      return selectedIndex >= 0 ? group.options[selectedIndex]?.label || "" : "";
+    })
     .filter(Boolean);
 }
 
