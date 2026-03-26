@@ -3192,7 +3192,11 @@ a {
 
 @media (max-width: 420px) {
   .item-card[data-item-id="bibite"] .can-cluster-visual__can {
-    --can-shift-x: -6px;
+    --can-shift-x: -10px;
+  }
+
+  .can-cluster-visual--detail .can-cluster-visual__can {
+    --can-shift-x: -8px;
   }
 
   .format-showcase-block {
@@ -3535,26 +3539,7 @@ a {
 }
 
 .limited-glint::before {
-  content: "";
-  position: absolute;
-  top: 1px;
-  left: -1px;
-  width: 14px;
-  height: 11px;
-  border-radius: 999px;
-  background:
-    radial-gradient(
-      circle at 52% 48%,
-      rgba(124, 45, 69, 0.34) 0%,
-      rgba(124, 45, 69, 0.28) 52%,
-      rgba(124, 45, 69, 0.08) 78%,
-      rgba(124, 45, 69, 0) 100%
-    );
-  opacity: 0.92;
-  filter: blur(1.15px);
-  transform: translate(-0.35px, 0.45px);
-  pointer-events: none;
-  z-index: 0;
+  content: none;
 }
 
 .limited-glint__spark {

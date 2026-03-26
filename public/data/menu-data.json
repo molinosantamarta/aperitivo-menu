@@ -563,7 +563,6 @@
           "visual": {
             "type": "photo-panel",
             "asset": "moretti-back.webp",
-            "deferAsset": true,
             "position": "center 36%",
             "size": "28% auto",
             "backgroundColor": "#ddc98b",
@@ -1640,8 +1639,8 @@
             "items": [
               {
                 "asset": "bibite-coca.webp",
-                "left": "27%",
-                "detailLeft": "24%",
+                "left": "25%",
+                "detailLeft": "22%",
                 "bottom": "-31%",
                 "height": "132px",
                 "rotate": "-8deg",
@@ -1653,8 +1652,8 @@
               },
               {
                 "asset": "bibite-coca-zero.webp",
-                "left": "42%",
-                "detailLeft": "42%",
+                "left": "40%",
+                "detailLeft": "40%",
                 "bottom": "-29%",
                 "height": "132px",
                 "rotate": "-2deg",
@@ -1666,8 +1665,8 @@
               },
               {
                 "asset": "bibite-te-limone.webp",
-                "left": "60%",
-                "detailLeft": "60%",
+                "left": "57%",
+                "detailLeft": "57%",
                 "bottom": "-34%",
                 "height": "138px",
                 "rotate": "4deg",
@@ -1679,8 +1678,8 @@
               },
               {
                 "asset": "bibite-te-pesca.webp",
-                "left": "75%",
-                "detailLeft": "78%",
+                "left": "72%",
+                "detailLeft": "74%",
                 "bottom": "-32%",
                 "height": "138px",
                 "rotate": "9deg",
@@ -1757,8 +1756,8 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "aranciata-rossa-lurisia-floating.webp",
-            "width": "168px",
-            "height": "405px",
+            "width": "177px",
+            "height": "426px",
             "right": "-18px",
             "bottom": "18px",
             "tilt": "0deg",
