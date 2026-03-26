@@ -136,14 +136,13 @@
               "bodyLines": [
                 "La birra ambrata rossa,",
                 "in stile Märzen:",
-                "prodotta in decozione,",
-                "maltata e armoniosa."
+                "prodotta in decozione."
               ],
               "detailBodyFontFamily": "var(--font-beer-script)",
               "detailBodyFontWeight": "400",
               "detailBodyLineHeight": "0.88",
               "detailBodyFontSize": "clamp(1.04rem, 3.15vw, 1.18rem)",
-              "detailBodyMobileFontSize": "clamp(1.5rem, 5.8vw, 1.86rem)",
+              "detailBodyMobileFontSize": "clamp(1.88rem, 7.25vw, 2.28rem)",
               "gradientStart": "#7a130f",
               "gradientEnd": "#f06f49",
               "bodyColor": "#fff7f2"
@@ -251,7 +250,7 @@
               "detailBodyFontWeight": "400",
               "detailBodyLineHeight": "0.9",
               "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
-              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
+              "detailBodyMobileFontSize": "clamp(1.9rem, 7.3vw, 2.3rem)",
               "gradientStart": "#3b7f7b",
               "gradientEnd": "#84c7bf",
               "bodyColor": "#fffdfb"
@@ -352,14 +351,14 @@
               "type": "text-panel",
               "bodyLines": [
                 "German Ale chiara,",
-                "fruttata, conviviale,",
+                "fruttata, conviviale e",
                 "molto beverina."
               ],
               "detailBodyFontFamily": "var(--font-beer-script)",
               "detailBodyFontWeight": "400",
               "detailBodyLineHeight": "0.9",
               "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
-              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
+              "detailBodyMobileFontSize": "clamp(1.9rem, 7.3vw, 2.3rem)",
               "gradientStart": "#a84f21",
               "gradientEnd": "#e6a45a",
               "bodyColor": "#fff8f1"
@@ -469,7 +468,7 @@
               "detailBodyFontWeight": "400",
               "detailBodyLineHeight": "0.9",
               "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
-              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
+              "detailBodyMobileFontSize": "clamp(1.9rem, 7.3vw, 2.3rem)",
               "gradientStart": "#b34d29",
               "gradientEnd": "#f29a5b",
               "bodyColor": "#fff9f3"
