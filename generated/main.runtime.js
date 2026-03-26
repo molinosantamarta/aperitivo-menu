@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.691";
+  var APP_BUILD_LABEL = "V.1.692";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -4182,7 +4182,7 @@
     if (detailCaption) {
       classes.push("photo-panel-visual--with-caption");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", '\n      "\n    >\n      ').concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", "\n        ").concat(visual.detailCaptionBottom ? "--photo-panel-caption-bottom: ".concat(visual.detailCaptionBottom, ";") : "", '\n      "\n    >\n      ').concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
   }
   function renderCanClusterVisual(visual, context, item = null) {
     const classes = ["can-cluster-visual"];

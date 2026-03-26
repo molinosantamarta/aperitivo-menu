@@ -5729,6 +5729,7 @@ function renderPhotoPanelVisual(visual, context, item) {
         ${visual.detailCaptionLineHeight ? `--photo-panel-caption-line-height: ${visual.detailCaptionLineHeight};` : ""}
         ${visual.detailCaptionLetterSpacing ? `--photo-panel-caption-letter-spacing: ${visual.detailCaptionLetterSpacing};` : ""}
         ${visual.detailCaptionColor ? `--photo-panel-caption-color: ${visual.detailCaptionColor};` : ""}
+        ${visual.detailCaptionBottom ? `--photo-panel-caption-bottom: ${visual.detailCaptionBottom};` : ""}
       "
     >
       ${

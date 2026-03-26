@@ -1734,7 +1734,7 @@ a {
 .photo-panel-visual__caption {
   position: absolute;
   left: 50%;
-  bottom: 18px;
+  bottom: var(--photo-panel-caption-bottom, 18px);
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;

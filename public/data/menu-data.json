@@ -564,15 +564,16 @@
             "type": "photo-panel",
             "asset": "moretti-back.png",
             "deferAsset": true,
-            "position": "center 44%",
+            "position": "center 36%",
             "size": "28% auto",
             "backgroundColor": "#ddc98b",
-            "detailCaption": "\"come piace a noi\"",
+            "detailCaption": "come piace a noi",
             "detailCaptionFontFamily": "var(--font-subtitle)",
             "detailCaptionFontSize": "clamp(2.04rem, 8.6vw, 2.32rem)",
             "detailCaptionLineHeight": "1",
             "detailCaptionLetterSpacing": "0",
-            "detailCaptionColor": "rgba(129, 87, 36, 0.96)"
+            "detailCaptionColor": "rgba(129, 87, 36, 0.96)",
+            "detailCaptionBottom": "24px"
           },
           "sideVisual": {
             "type": "floating-bottle",
@@ -617,7 +618,7 @@
           "name": "Birra alla spina",
           "category": "Alla spina",
           "available": false,
-          "description": "Sonnenberg 4,8% vol. 0,4.",
+          "description": "Sonnenberg 4,8% vol. 0,4. Lager bionda nata da acque sorgive, leggera e rinfrescante.",
           "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
