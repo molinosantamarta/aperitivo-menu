@@ -4532,6 +4532,13 @@ a {
   min-height: 44px;
 }
 
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-actions .utility-btn--accent[disabled] {
+  opacity: 1;
+  color: rgba(255, 250, 245, 0.76);
+  background: linear-gradient(135deg, rgba(123, 107, 94, 0.94), rgba(91, 77, 67, 0.96));
+  box-shadow: none;
+}
+
 @media (max-width: 359px) {
   .sheet-panel--detail.sheet-panel--detail-selector .detail-footer--with-quantity,
   .sheet-panel--detail.sheet-panel--selection-groups .detail-footer--with-quantity,

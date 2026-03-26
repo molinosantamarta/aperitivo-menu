@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.701";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.701";
+  var APP_BUILD_LABEL = "V.1.0.702";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.702";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -2909,7 +2909,7 @@
     detailOptions.hidden = false;
     selectionGroups.forEach((group, groupIndex) => {
       const selectedIndex = getSelectedSelectionIndex(group);
-      const groupLabel = usesStepFlow ? "".concat(groupIndex + 1, ". ").concat(group.label) : group.label;
+      const groupLabel = group.label;
       const groupNode = createOptionGroup(groupLabel, true);
       if (usesStepFlow) {
         groupNode.wrapper.classList.add("option-group--step");
@@ -2920,13 +2920,16 @@
         const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
         const isSparklingOption = isSparklingWineSelectionOption(item, group, selectionOption);
         const isSelected = selectedIndex >= 0 && index === selectedIndex;
-        const isMuted = usesStepFlow && selectedIndex >= 0 && index !== selectedIndex;
         const sparklingMarkup = isSparklingOption ? '\n            <span class="option-btn__sparkling-bubbles" aria-hidden="true">\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--one"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--two"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--three"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--four"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--five"></span>\n            </span>\n          ' : "";
         optionButton.type = "button";
-        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(isSparklingOption ? " option-btn--sparkling" : "").concat(isSelected ? " is-selected" : "").concat(isMuted ? " is-muted" : "");
+        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(isSparklingOption ? " option-btn--sparkling" : "").concat(isSelected ? " is-selected" : "");
         optionButton.innerHTML = "".concat(sparklingMarkup, '<span class="option-label option-label--solo">').concat(selectionOption.label, "</span>");
         optionButton.addEventListener("click", () => {
+          const previousIndex = state.selectedSelections[group.id];
           state.selectedSelections[group.id] = index;
+          if (usesStepFlow && previousIndex !== index) {
+            state.selectedQuantity = 0;
+          }
           if (!updateDetailPreviewSelectionState(item)) {
             refreshDetailPreview(item);
           }
@@ -2949,7 +2952,7 @@
       return;
     }
     const formatGroup = createOptionGroup(
-      usesStepFlow ? "".concat(selectionGroups.length + 1, ". Formato") : selectionGroups.length ? "Formato" : "",
+      shouldShowFormat && (selectionGroups.length || usesStepFlow) ? "Formato" : "",
       shouldUseCompactDetailOptions(item)
     );
     const formatEnabled = !usesStepFlow || selectionGroupsComplete;
@@ -2967,9 +2970,8 @@
       const layoutClass = getOptionLayoutClass(option);
       const hidePrice = shouldHideDetailOptionPrices(item);
       const isSelected = hasSelectedFormat && index === state.selectedOptionIndex;
-      const isMuted = usesStepFlow && hasSelectedFormat && index !== state.selectedOptionIndex;
       optionButton.type = "button";
-      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(hidePrice && displayLabel ? " option-btn--label-only" : "").concat(isSelected ? " is-selected" : "").concat(isMuted ? " is-muted" : "").concat(displayLabel ? "" : " option-btn--price-only");
+      optionButton.className = "option-btn".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass) : "").concat(optionSubtitle ? " option-btn--with-subtitle" : "").concat(hidePrice && displayLabel ? " option-btn--label-only" : "").concat(isSelected ? " is-selected" : "").concat(displayLabel ? "" : " option-btn--price-only");
       if (!formatEnabled) {
         optionButton.disabled = true;
         optionButton.setAttribute("aria-disabled", "true");
@@ -2979,7 +2981,11 @@
         if (!formatEnabled) {
           return;
         }
+        const previousIndex = state.selectedOptionIndex;
         state.selectedOptionIndex = index;
+        if (usesStepFlow && previousIndex !== index) {
+          state.selectedQuantity = 0;
+        }
         renderOptions(item);
         renderQuantityControl();
       });
@@ -3076,7 +3082,9 @@
       return;
     }
     const actionLabel = (item == null ? void 0 : item.id) === "oltrepo" ? "Aggiungi" : "Aggiungi al riepilogo";
-    const stepFlowReady = !usesSequentialWineDetailFlow(item) || isSequentialWineDetailReady(item);
+    const usesStepFlow = usesSequentialWineDetailFlow(item);
+    const stepFlowSelectionsReady = !usesStepFlow || isSequentialWineSelectionReady(item);
+    const stepFlowReadyToAdd = !usesStepFlow || isSequentialWineDetailReady(item);
     renderDetailSelectionStrip(item);
     if (item && shouldUseMultiOptionQuantityDetail(item)) {
       const totalQuantity = getMultiOptionSelectedTotal(item);
@@ -3086,9 +3094,10 @@
       return;
     }
     addToCartButton.textContent = actionLabel;
-    addToCartButton.hidden = !stepFlowReady;
-    addToCartButton.disabled = !stepFlowReady;
-    if (stepFlowReady) {
+    addToCartButton.hidden = false;
+    addToCartButton.disabled = !stepFlowReadyToAdd;
+    addToCartButton.dataset.stepReady = stepFlowSelectionsReady ? "true" : "false";
+    if (stepFlowReadyToAdd) {
       addToCartButton.removeAttribute("aria-disabled");
     } else {
       addToCartButton.setAttribute("aria-disabled", "true");
@@ -3103,14 +3112,15 @@
       updateDetailActionButton(item);
       return;
     }
-    if (item && usesSequentialWineDetailFlow(item) && !isSequentialWineDetailReady(item)) {
+    if (item && usesSequentialWineDetailFlow(item) && !isSequentialWineSelectionReady(item)) {
       detailQuantity.innerHTML = "";
       detailQuantity.hidden = true;
       detailFooter == null ? void 0 : detailFooter.classList.remove("detail-footer--with-quantity");
       updateDetailActionButton(item);
       return;
     }
-    detailQuantity.innerHTML = '\n    <div class="detail-quantity__pill" aria-label="Seleziona quantita">\n      <button\n        class="qty-btn detail-quantity__btn"\n        type="button"\n        aria-label="Riduci quantita"\n        '.concat(state.selectedQuantity <= 1 ? "disabled" : "", '\n      >\n        \u2212\n      </button>\n      <span class="detail-quantity__value">').concat(state.selectedQuantity, '</span>\n      <button\n        class="qty-btn detail-quantity__btn"\n        type="button"\n        aria-label="Aumenta quantita"\n      >\n        +\n      </button>\n    </div>\n  ');
+    const quantityFloor = item && usesSequentialWineDetailFlow(item) ? 0 : 1;
+    detailQuantity.innerHTML = '\n    <div class="detail-quantity__pill" aria-label="Seleziona quantita">\n      <button\n        class="qty-btn detail-quantity__btn"\n        type="button"\n        aria-label="Riduci quantita"\n        '.concat(state.selectedQuantity <= quantityFloor ? "disabled" : "", '\n      >\n        \u2212\n      </button>\n      <span class="detail-quantity__value">').concat(state.selectedQuantity, '</span>\n      <button\n        class="qty-btn detail-quantity__btn"\n        type="button"\n        aria-label="Aumenta quantita"\n      >\n        +\n      </button>\n    </div>\n  ');
     const [decreaseButton, increaseButton] = detailQuantity.querySelectorAll(".detail-quantity__btn");
     if (decreaseButton) {
       decreaseButton.addEventListener("click", () => updateSelectedQuantity(-1));
@@ -3139,14 +3149,16 @@
     delete detailPanel.dataset.detailLayout;
   }
   function updateSelectedQuantity(delta) {
-    state.selectedQuantity = Math.max(1, state.selectedQuantity + delta);
+    const item = itemLookup[state.selectedItemId];
+    const minimumQuantity = item && usesSequentialWineDetailFlow(item) ? 0 : 1;
+    state.selectedQuantity = Math.max(minimumQuantity, state.selectedQuantity + delta);
     renderQuantityControl();
   }
   function initializeDetailState(item) {
     const usesStepFlow = usesSequentialWineDetailFlow(item);
     state.selectedOptionIndex = usesStepFlow ? -1 : 0;
     state.selectedOptionQuantities = {};
-    state.selectedQuantity = 1;
+    state.selectedQuantity = usesStepFlow ? 0 : 1;
     state.selectedSelections = {};
     state.detailEditorialSlide = buildDetailEditorialSlide(item);
     getSelectionGroups(item).forEach((group) => {
@@ -3883,8 +3895,11 @@
   function hasSelectedDetailOption(item) {
     return Boolean(item && Array.isArray(item.options) && item.options[state.selectedOptionIndex]);
   }
-  function isSequentialWineDetailReady(item) {
+  function isSequentialWineSelectionReady(item) {
     return hasCompletedSelectionGroups(item) && hasSelectedDetailOption(item);
+  }
+  function isSequentialWineDetailReady(item) {
+    return isSequentialWineSelectionReady(item) && state.selectedQuantity > 0;
   }
   function getSelectionOptionToneClass(item, group, selectionOption) {
     if (!item || item.id !== "oltrepo" || !group || group.id !== "wine-style" || !selectionOption) {
