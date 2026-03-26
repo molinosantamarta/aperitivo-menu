@@ -562,7 +562,7 @@
           "showDetailHint": false,
           "visual": {
             "type": "photo-panel",
-            "asset": "moretti-back.png",
+            "asset": "moretti-back.webp",
             "deferAsset": true,
             "position": "center 36%",
             "size": "28% auto",
@@ -1107,12 +1107,77 @@
           "page": 1,
           "name": "Oltrepò Pavese",
           "category": "Vino",
-          "description": "Bonarda, Barbera, Chardonnay, Pinot Grigio.",
+          "description": "Bonarda, Segrete, Chardonnay, Pinot Grigio.",
+          "detailDescription": "Vini bianchi e rossi, fermi e vivaci. Az. Agricola Luciano Brega.",
+          "cardVisual": {
+            "type": "can-cluster",
+            "asset": "oltrepo-back.png",
+            "backgroundColor": "#eadcdf",
+            "position": "center center",
+            "size": "cover",
+            "items": [
+              {
+                "asset": "oltrepo-bonarda.webp",
+                "left": "24%",
+                "bottom": "-26%",
+                "height": "246px",
+                "rotate": "-5deg",
+                "zIndex": 2,
+                "floatDistance": "4px",
+                "floatDuration": "4s",
+                "floatDelay": "-0.8s"
+              },
+              {
+                "asset": "oltrepo-segrete.webp",
+                "left": "41%",
+                "bottom": "-24%",
+                "height": "250px",
+                "rotate": "-1deg",
+                "zIndex": 4,
+                "floatDistance": "6px",
+                "floatDuration": "4.5s",
+                "floatDelay": "-1.3s"
+              },
+              {
+                "asset": "oltrepo-chardonnay.webp",
+                "left": "58%",
+                "bottom": "-24%",
+                "height": "248px",
+                "rotate": "1deg",
+                "zIndex": 3,
+                "floatDistance": "5px",
+                "floatDuration": "4.2s",
+                "floatDelay": "-0.5s"
+              },
+              {
+                "asset": "oltrepo-pinot-grigio.webp",
+                "left": "75%",
+                "bottom": "-26%",
+                "height": "244px",
+                "rotate": "5deg",
+                "zIndex": 1,
+                "floatDistance": "4px",
+                "floatDuration": "4.8s",
+                "floatDelay": "-1.7s"
+              }
+            ]
+          },
           "visual": {
             "type": "photo-panel",
             "asset": "oltrepo-back.png",
             "position": "center center",
-            "size": "cover"
+            "size": "cover",
+            "selectionAssets": {
+              "Bonarda": "oltrepo-bonarda.webp",
+              "Segrete": "oltrepo-segrete.webp",
+              "Chardonnay": "oltrepo-chardonnay.webp",
+              "Pinot Grigio": "oltrepo-pinot-grigio.webp"
+            },
+            "selectionImageWidth": "clamp(108px, 32.1vw, 142px)",
+            "selectionImageBottom": "calc(var(--photo-panel-selection-image-width) * -1.08)",
+            "selectionImageLeft": "50%",
+            "selectionImageTranslateX": "-50%",
+            "selectionImageShadow": "drop-shadow(0 20px 26px rgba(0, 0, 0, 0.64)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.1))"
           },
           "selectionGroups": [
             {
@@ -1123,7 +1188,7 @@
                   "label": "Bonarda"
                 },
                 {
-                  "label": "Barbera"
+                  "label": "Segrete"
                 },
                 {
                   "label": "Chardonnay"
@@ -1176,7 +1241,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.42rem, 5.5vw, 1.72rem)",
+              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1193,7 +1258,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.42rem, 5.5vw, 1.72rem)",
+              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1210,7 +1275,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.42rem, 5.5vw, 1.72rem)",
+              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1227,7 +1292,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.42rem, 5.5vw, 1.72rem)",
+              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"

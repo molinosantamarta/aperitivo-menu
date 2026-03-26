@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.693";
+  var APP_BUILD_LABEL = "V.1.694";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -1704,6 +1704,9 @@
           return;
         }
         collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
+        if (item.cardVisual) {
+          collectVisualAssetUrls(item.cardVisual, urls, { skipDeferredPhotoPanels: true });
+        }
         getAllSideVisuals(item).forEach(
           (visual) => collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
         );
@@ -1733,6 +1736,21 @@
     }
     if (visual.asset && !(skipDeferredPhotoPanels && visual.type === "photo-panel" && visual.deferAsset === true)) {
       urls.add(getVisualAsset(visual.asset));
+    }
+    if (visual.type === "photo-panel" && visual.selectionAssets) {
+      if (Array.isArray(visual.selectionAssets)) {
+        visual.selectionAssets.forEach((entry) => {
+          if (entry && typeof entry.asset === "string") {
+            urls.add(getVisualAsset(entry.asset));
+          }
+        });
+      } else if (typeof visual.selectionAssets === "object") {
+        Object.values(visual.selectionAssets).forEach((asset) => {
+          if (typeof asset === "string") {
+            urls.add(getVisualAsset(asset));
+          }
+        });
+      }
     }
     if (visual.type === "can-cluster" && Array.isArray(visual.items)) {
       visual.items.forEach((item) => {
@@ -2716,7 +2734,7 @@
     detailPanel.scrollTop = 0;
     detailCategory.innerHTML = renderDetailCategoryMarkup(item);
     detailTitle.textContent = item.name;
-    detailDescription.textContent = item.description;
+    detailDescription.textContent = getItemDetailDescription(item);
     renderDetailMeta(item);
     refreshDetailPreview(item);
     renderOptions(item);
@@ -2837,9 +2855,11 @@
         const optionButton = document.createElement("button");
         const selectedIndex = getSelectedSelectionIndex(group);
         const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
+        const isSparklingOption = isSparklingWineSelectionOption(item, group, selectionOption);
+        const sparklingMarkup = isSparklingOption ? '\n            <span class="option-btn__sparkling-bubbles" aria-hidden="true">\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--one"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--two"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--three"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--four"></span>\n              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--five"></span>\n            </span>\n          ' : "";
         optionButton.type = "button";
-        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(index === selectedIndex ? " is-selected" : "");
-        optionButton.innerHTML = '<span class="option-label option-label--solo">'.concat(selectionOption.label, "</span>");
+        optionButton.className = "option-btn option-btn--label-only".concat(toneClass ? " ".concat(toneClass) : "").concat(isSparklingOption ? " option-btn--sparkling" : "").concat(index === selectedIndex ? " is-selected" : "");
+        optionButton.innerHTML = "".concat(sparklingMarkup, '<span class="option-label option-label--solo">').concat(selectionOption.label, "</span>");
         optionButton.addEventListener("click", () => {
           state.selectedSelections[group.id] = index;
           if (!updateDetailPreviewSelectionState(item)) {
@@ -3093,6 +3113,9 @@
     if (!detailPreview || !item) {
       return false;
     }
+    if (updatePhotoPanelSelectionState(item)) {
+      return true;
+    }
     const canClusterVisual = getPrimaryCanClusterVisual(item);
     if (!canClusterVisual) {
       return false;
@@ -3115,6 +3138,59 @@
       canNode.style.setProperty("--can-extra-lift", isSelected ? selectedLift : "0px");
       canNode.style.setProperty("--can-scale", isSelected ? "1.15" : "0.82");
     });
+    return true;
+  }
+  function updatePhotoPanelSelectionState(item) {
+    if (!detailPreview || !item) {
+      return false;
+    }
+    const photoPanelVisual = getPrimaryPhotoPanelSelectionVisual(item);
+    if (!photoPanelVisual) {
+      return false;
+    }
+    const photoPanelNode = detailPreview.querySelector(".photo-panel-visual--detail");
+    if (!photoPanelNode) {
+      return false;
+    }
+    const selectionImageAsset = getPhotoPanelSelectionAsset(photoPanelVisual, "detail", item);
+    const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
+    const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
+    const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
+    photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
+    const activeImage = photoPanelNode.querySelector(".photo-panel-visual__selection-image.is-current") || photoPanelNode.querySelector(".photo-panel-visual__selection-image");
+    if (!normalizedNextUrl) {
+      activeImage == null ? void 0 : activeImage.remove();
+      photoPanelNode.classList.remove("photo-panel-visual--with-selection-image");
+      return true;
+    }
+    photoPanelNode.classList.add("photo-panel-visual--with-selection-image");
+    if (activeImage) {
+      const normalizedCurrentUrl = activeImage.currentSrc ? activeImage.currentSrc : new URL(activeImage.getAttribute("src") || "", window.location.href).href;
+      if (normalizedCurrentUrl === normalizedNextUrl) {
+        return true;
+      }
+      activeImage.classList.remove("is-current", "is-incoming");
+      activeImage.classList.add("is-outgoing");
+    }
+    const incomingImage = document.createElement("img");
+    incomingImage.className = "photo-panel-visual__selection-image is-incoming";
+    incomingImage.src = selectionImageUrl;
+    incomingImage.alt = "";
+    incomingImage.loading = "eager";
+    incomingImage.decoding = "async";
+    incomingImage.setAttribute("aria-hidden", "true");
+    if (captionNode) {
+      photoPanelNode.insertBefore(incomingImage, captionNode);
+    } else {
+      photoPanelNode.append(incomingImage);
+    }
+    window.requestAnimationFrame(() => {
+      incomingImage.classList.add("is-current");
+    });
+    window.setTimeout(() => {
+      activeImage == null ? void 0 : activeImage.remove();
+      incomingImage.classList.remove("is-incoming");
+    }, 260);
     return true;
   }
   function createOptionGroup(label, compact = false) {
@@ -3140,6 +3216,16 @@
       return item.detailGallery.find(
         (visual) => (visual == null ? void 0 : visual.type) === "can-cluster" && Array.isArray(visual.items)
       ) || null;
+    }
+    return null;
+  }
+  function getPrimaryPhotoPanelSelectionVisual(item) {
+    var _a2;
+    if (((_a2 = item == null ? void 0 : item.visual) == null ? void 0 : _a2.type) === "photo-panel" && item.visual.selectionAssets) {
+      return item.visual;
+    }
+    if (Array.isArray(item == null ? void 0 : item.detailGallery)) {
+      return item.detailGallery.find((visual) => (visual == null ? void 0 : visual.type) === "photo-panel" && (visual == null ? void 0 : visual.selectionAssets)) || null;
     }
     return null;
   }
@@ -3661,7 +3747,7 @@
       return "";
     }
     const normalizedLabel = normalizeLabel(selectionOption.label || "");
-    if (normalizedLabel === "bonarda" || normalizedLabel === "barbera") {
+    if (normalizedLabel === "bonarda" || normalizedLabel === "barbera" || normalizedLabel === "segrete") {
       return "option-btn--wine-red";
     }
     if (normalizedLabel === "chardonnay" || normalizedLabel === "pinot grigio" || normalizedLabel === "pinot-grigio") {
@@ -3669,11 +3755,27 @@
     }
     return "";
   }
+  function isSparklingWineSelectionOption(item, group, selectionOption) {
+    if (!item || item.id !== "oltrepo" || !group || group.id !== "wine-style" || !selectionOption) {
+      return false;
+    }
+    const normalizedLabel = normalizeLabel(selectionOption.label || "");
+    return normalizedLabel === "bonarda" || normalizedLabel === "chardonnay";
+  }
   function getSelectedSelectionLabels(item) {
     return getSelectionGroups(item).map((group) => {
       var _a2;
       return ((_a2 = group.options[getSelectedSelectionIndex(group)]) == null ? void 0 : _a2.label) || "";
     }).filter(Boolean);
+  }
+  function getItemDetailDescription(item) {
+    if (!item) {
+      return "";
+    }
+    if (typeof item.detailDescription === "string" && item.detailDescription.trim()) {
+      return item.detailDescription.trim();
+    }
+    return item.description || "";
   }
   function buildSelectionSummaryLabel(item, option) {
     const parts = [...getSelectedSelectionLabels(item)];
@@ -3880,7 +3982,7 @@
     updateActiveDot();
   }
   function getCardVisualClass(item) {
-    const visualType = getVisualType(item);
+    const visualType = getVisualType(item, "card");
     if (visualType === "none") {
       return " item-card__visual--hidden";
     }
@@ -3902,7 +4004,7 @@
     return "";
   }
   function getDetailPreviewClass(item) {
-    const visualType = getVisualType(item);
+    const visualType = getVisualType(item, "detail");
     if (visualType === "none") {
       return " sheet-preview--hidden";
     }
@@ -3930,7 +4032,8 @@
     return getAllSideVisuals(item).some((visual) => visual.type === "floating-bottle");
   }
   function renderItemVisual(item, context) {
-    const visualType = getVisualType(item);
+    const visual = getContextualVisual(item, context);
+    const visualType = getVisualType(item, context);
     if (visualType === "none") {
       return "";
     }
@@ -3938,16 +4041,16 @@
       return renderPlaceholderPanelVisual(context);
     }
     if (visualType === "beer-script") {
-      return renderBeerScriptVisual(item.visual, context);
+      return renderBeerScriptVisual(visual, context);
     }
     if (visualType === "photo-panel") {
-      return renderPhotoPanelVisual(item.visual, context, item);
+      return renderPhotoPanelVisual(visual, context, item);
     }
     if (visualType === "can-cluster") {
-      return renderCanClusterVisual(item.visual, context, item);
+      return renderCanClusterVisual(visual, context, item);
     }
     if (visualType === "text-panel") {
-      return renderTextPanelVisual(item.visual, context);
+      return renderTextPanelVisual(visual, context);
     }
     return renderPlaceholderPanelVisual(context);
   }
@@ -4179,10 +4282,49 @@
       classes.push("photo-panel-visual--deferred");
     }
     const detailCaption = context === "detail" && typeof (visual == null ? void 0 : visual.detailCaption) === "string" ? visual.detailCaption.trim() : "";
+    const selectionImageAsset = getPhotoPanelSelectionAsset(visual, context, item);
+    const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
     if (detailCaption) {
       classes.push("photo-panel-visual--with-caption");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", "\n        ").concat(visual.detailCaptionBottom ? "--photo-panel-caption-bottom: ".concat(visual.detailCaptionBottom, ";") : "", '\n      "\n    >\n      ').concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
+    if (selectionImageUrl) {
+      classes.push("photo-panel-visual--with-selection-image");
+    }
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", "\n        ").concat(visual.detailCaptionBottom ? "--photo-panel-caption-bottom: ".concat(visual.detailCaptionBottom, ";") : "", "\n        ").concat(visual.selectionImageWidth ? "--photo-panel-selection-image-width: ".concat(visual.selectionImageWidth, ";") : "", "\n        ").concat(visual.selectionImageBottom ? "--photo-panel-selection-image-bottom: ".concat(visual.selectionImageBottom, ";") : "", "\n        ").concat(visual.selectionImageLeft ? "--photo-panel-selection-image-left: ".concat(visual.selectionImageLeft, ";") : "", "\n        ").concat(visual.selectionImageTranslateX ? "--photo-panel-selection-image-translate-x: ".concat(visual.selectionImageTranslateX, ";") : "", "\n        ").concat(visual.selectionImageShadow ? "--photo-panel-selection-image-shadow: ".concat(visual.selectionImageShadow, ";") : "", "\n        ").concat(visual.selectionImageBackdropWidth ? "--photo-panel-selection-backdrop-width: ".concat(visual.selectionImageBackdropWidth, ";") : "", "\n        ").concat(visual.selectionImageBackdropHeight ? "--photo-panel-selection-backdrop-height: ".concat(visual.selectionImageBackdropHeight, ";") : "", "\n        ").concat(visual.selectionImageBackdropBottom ? "--photo-panel-selection-backdrop-bottom: ".concat(visual.selectionImageBackdropBottom, ";") : "", '\n      "\n    >\n      ').concat(selectionImageUrl ? '<img class="photo-panel-visual__selection-image is-current" src="'.concat(selectionImageUrl, '" alt="" loading="eager" decoding="async" aria-hidden="true" />') : "", "\n      ").concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
+  }
+  function getPhotoPanelSelectionAsset(visual, context, item) {
+    if (context !== "detail" || !visual || !item || !visual.selectionAssets) {
+      return "";
+    }
+    const selectionGroups = getSelectionGroups(item);
+    if (!selectionGroups.length) {
+      return "";
+    }
+    const selectedLabels = getSelectedSelectionLabels(item).map((label) => normalizeLabel(label)).filter(Boolean);
+    if (!selectedLabels.length) {
+      return "";
+    }
+    if (Array.isArray(visual.selectionAssets)) {
+      const matchingAsset = visual.selectionAssets.find((entry) => {
+        if (!entry || typeof entry !== "object") {
+          return false;
+        }
+        const key = normalizeLabel(entry.key || entry.label || "");
+        return key && selectedLabels.includes(key) && typeof entry.asset === "string";
+      });
+      return (matchingAsset == null ? void 0 : matchingAsset.asset) || "";
+    }
+    if (typeof visual.selectionAssets === "object") {
+      for (const selectedLabel of selectedLabels) {
+        const matchingEntry = Object.entries(visual.selectionAssets).find(
+          ([key, asset]) => normalizeLabel(key) === selectedLabel && typeof asset === "string"
+        );
+        if (matchingEntry) {
+          return matchingEntry[1];
+        }
+      }
+    }
+    return "";
   }
   function renderCanClusterVisual(visual, context, item = null) {
     const classes = ["can-cluster-visual"];
@@ -4193,10 +4335,11 @@
     const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
     const detailSelectedScale = "1.15";
     const detailDefaultScale = "0.82";
+    const backgroundImage = (visual == null ? void 0 : visual.asset) ? getVisualAsset(visual.asset) : "";
     const cans = Array.isArray(visual.items) ? visual.items.map(
       (canItem, index) => '\n            <img\n              class="can-cluster-visual__can'.concat(shouldDeferImages ? " can-cluster-visual__can--deferred" : "").concat(activeCanIndex >= 0 ? index === activeCanIndex ? " is-selected" : " is-secondary" : "", '"\n              ').concat(shouldDeferImages ? 'data-can-image="'.concat(getVisualAsset(canItem.asset), '" data-can-loaded="false"') : "", "\n              ").concat(shouldDeferImages ? "" : 'src="'.concat(getVisualAsset(canItem.asset), '"'), '\n              alt=""\n              aria-hidden="true"\n              loading="lazy"\n              decoding="async"\n              style="\n                --can-left: ').concat(getCanClusterItemValue(canItem, "left", context, "50%"), ";\n                --can-bottom: ").concat(getCanClusterItemValue(canItem, "bottom", context, "-18%"), ";\n                --can-width: ").concat(getCanClusterItemValue(canItem, "width", context, "auto"), ";\n                --can-height: ").concat(getCanClusterItemValue(canItem, "height", context, "auto"), ";\n                --can-rotate: ").concat(getCanClusterItemValue(canItem, "rotate", context, "0deg"), ";\n                --can-z: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? Number(getCanClusterItemValue(canItem, "zIndex", context, 1)) + 4 : getCanClusterItemValue(canItem, "zIndex", context, 1), ";\n                --can-float-distance: ").concat(getCanClusterItemValue(canItem, "floatDistance", context, "5px"), ";\n                --can-float-duration: ").concat(getCanClusterItemValue(canItem, "floatDuration", context, "4.2s"), ";\n                --can-float-delay: ").concat(getCanClusterItemValue(canItem, "floatDelay", context, "0s"), ";\n                --can-extra-lift: ").concat(activeCanIndex >= 0 && index === activeCanIndex ? getCanClusterItemValue(canItem, "selectedLift", context, "4px") : "0px", ";\n                --can-scale: ").concat(context === "detail" ? activeCanIndex >= 0 && index === activeCanIndex ? detailSelectedScale : detailDefaultScale : "0.74", ';\n              "\n            />\n          ')
     ).join("") : "";
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="--can-cluster-bg: ').concat(visual.backgroundColor || "#d8dee8", ';"\n    >\n      ').concat(cans, "\n    </div>\n  ");
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --can-cluster-bg: ').concat(visual.backgroundColor || "#d8dee8", ";\n        --can-cluster-image: ").concat(backgroundImage ? "url('".concat(backgroundImage, "')") : "none", ";\n        --can-cluster-position: ").concat(visual.position || "center center", ";\n        --can-cluster-size: ").concat(visual.size || "cover", ";\n        --can-cluster-blend: ").concat(visual.blendMode || "normal", ';\n      "\n    >\n      ').concat(cans, "\n    </div>\n  ");
   }
   function getCanClusterItemValue(canItem, property, context, fallbackValue) {
     if (!canItem || typeof canItem !== "object") {
@@ -4308,8 +4451,18 @@
     }
     return styles.join("; ");
   }
-  function getVisualType(item) {
-    return item && item.visual ? item.visual.type : "placeholder-panel";
+  function getContextualVisual(item, context = "detail") {
+    if (!item) {
+      return null;
+    }
+    if (context === "card" && item.cardVisual) {
+      return item.cardVisual;
+    }
+    return item.visual || null;
+  }
+  function getVisualType(item, context = "detail") {
+    const visual = getContextualVisual(item, context);
+    return visual ? visual.type : "placeholder-panel";
   }
   function getItemCategoryLabel(item, entry) {
     if (item && item.category) {

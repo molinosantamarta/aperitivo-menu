@@ -2065,6 +2065,9 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
       }
 
       collectVisualAssetUrls(item.visual, urls, { skipDeferredPhotoPanels: true });
+      if (item.cardVisual) {
+        collectVisualAssetUrls(item.cardVisual, urls, { skipDeferredPhotoPanels: true });
+      }
       getAllSideVisuals(item).forEach((visual) =>
         collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
       );
@@ -2101,6 +2104,22 @@ function collectVisualAssetUrls(visual, urls, options = {}) {
 
   if (visual.asset && !(skipDeferredPhotoPanels && visual.type === "photo-panel" && visual.deferAsset === true)) {
     urls.add(getVisualAsset(visual.asset));
+  }
+
+  if (visual.type === "photo-panel" && visual.selectionAssets) {
+    if (Array.isArray(visual.selectionAssets)) {
+      visual.selectionAssets.forEach((entry) => {
+        if (entry && typeof entry.asset === "string") {
+          urls.add(getVisualAsset(entry.asset));
+        }
+      });
+    } else if (typeof visual.selectionAssets === "object") {
+      Object.values(visual.selectionAssets).forEach((asset) => {
+        if (typeof asset === "string") {
+          urls.add(getVisualAsset(asset));
+        }
+      });
+    }
   }
 
   if (visual.type === "can-cluster" && Array.isArray(visual.items)) {
@@ -3488,7 +3507,7 @@ function openDetail(itemId) {
   detailPanel.scrollTop = 0;
   detailCategory.innerHTML = renderDetailCategoryMarkup(item);
   detailTitle.textContent = item.name;
-  detailDescription.textContent = item.description;
+  detailDescription.textContent = getItemDetailDescription(item);
   renderDetailMeta(item);
   refreshDetailPreview(item);
   renderOptions(item);
@@ -3660,12 +3679,24 @@ function renderOptions(item) {
       const optionButton = document.createElement("button");
       const selectedIndex = getSelectedSelectionIndex(group);
       const toneClass = getSelectionOptionToneClass(item, group, selectionOption);
+      const isSparklingOption = isSparklingWineSelectionOption(item, group, selectionOption);
+      const sparklingMarkup = isSparklingOption
+        ? `
+            <span class="option-btn__sparkling-bubbles" aria-hidden="true">
+              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--one"></span>
+              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--two"></span>
+              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--three"></span>
+              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--four"></span>
+              <span class="option-btn__sparkling-bubble option-btn__sparkling-bubble--five"></span>
+            </span>
+          `
+        : "";
 
       optionButton.type = "button";
       optionButton.className = `option-btn option-btn--label-only${toneClass ? ` ${toneClass}` : ""}${
-        index === selectedIndex ? " is-selected" : ""
-      }`;
-      optionButton.innerHTML = `<span class="option-label option-label--solo">${selectionOption.label}</span>`;
+        isSparklingOption ? " option-btn--sparkling" : ""
+      }${index === selectedIndex ? " is-selected" : ""}`;
+      optionButton.innerHTML = `${sparklingMarkup}<span class="option-label option-label--solo">${selectionOption.label}</span>`;
       optionButton.addEventListener("click", () => {
         state.selectedSelections[group.id] = index;
         if (!updateDetailPreviewSelectionState(item)) {
@@ -4067,6 +4098,10 @@ function updateDetailPreviewSelectionState(item) {
     return false;
   }
 
+  if (updatePhotoPanelSelectionState(item)) {
+    return true;
+  }
+
   const canClusterVisual = getPrimaryCanClusterVisual(item);
   if (!canClusterVisual) {
     return false;
@@ -4093,6 +4128,79 @@ function updateDetailPreviewSelectionState(item) {
     canNode.style.setProperty("--can-extra-lift", isSelected ? selectedLift : "0px");
     canNode.style.setProperty("--can-scale", isSelected ? "1.15" : "0.82");
   });
+
+  return true;
+}
+
+function updatePhotoPanelSelectionState(item) {
+  if (!detailPreview || !item) {
+    return false;
+  }
+
+  const photoPanelVisual = getPrimaryPhotoPanelSelectionVisual(item);
+  if (!photoPanelVisual) {
+    return false;
+  }
+
+  const photoPanelNode = detailPreview.querySelector(".photo-panel-visual--detail");
+  if (!photoPanelNode) {
+    return false;
+  }
+
+  const selectionImageAsset = getPhotoPanelSelectionAsset(photoPanelVisual, "detail", item);
+  const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
+  const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
+  const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
+
+  photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
+
+  const activeImage =
+    photoPanelNode.querySelector(".photo-panel-visual__selection-image.is-current") ||
+    photoPanelNode.querySelector(".photo-panel-visual__selection-image");
+
+  if (!normalizedNextUrl) {
+    activeImage?.remove();
+    photoPanelNode.classList.remove("photo-panel-visual--with-selection-image");
+    return true;
+  }
+
+  photoPanelNode.classList.add("photo-panel-visual--with-selection-image");
+
+  if (activeImage) {
+    const normalizedCurrentUrl = activeImage.currentSrc
+      ? activeImage.currentSrc
+      : new URL(activeImage.getAttribute("src") || "", window.location.href).href;
+
+    if (normalizedCurrentUrl === normalizedNextUrl) {
+      return true;
+    }
+
+    activeImage.classList.remove("is-current", "is-incoming");
+    activeImage.classList.add("is-outgoing");
+  }
+
+  const incomingImage = document.createElement("img");
+  incomingImage.className = "photo-panel-visual__selection-image is-incoming";
+  incomingImage.src = selectionImageUrl;
+  incomingImage.alt = "";
+  incomingImage.loading = "eager";
+  incomingImage.decoding = "async";
+  incomingImage.setAttribute("aria-hidden", "true");
+
+  if (captionNode) {
+    photoPanelNode.insertBefore(incomingImage, captionNode);
+  } else {
+    photoPanelNode.append(incomingImage);
+  }
+
+  window.requestAnimationFrame(() => {
+    incomingImage.classList.add("is-current");
+  });
+
+  window.setTimeout(() => {
+    activeImage?.remove();
+    incomingImage.classList.remove("is-incoming");
+  }, 260);
 
   return true;
 }
@@ -4124,6 +4232,20 @@ function getPrimaryCanClusterVisual(item) {
     return item.detailGallery.find(
       (visual) => visual?.type === "can-cluster" && Array.isArray(visual.items)
     ) || null;
+  }
+
+  return null;
+}
+
+function getPrimaryPhotoPanelSelectionVisual(item) {
+  if (item?.visual?.type === "photo-panel" && item.visual.selectionAssets) {
+    return item.visual;
+  }
+
+  if (Array.isArray(item?.detailGallery)) {
+    return (
+      item.detailGallery.find((visual) => visual?.type === "photo-panel" && visual?.selectionAssets) || null
+    );
   }
 
   return null;
@@ -4906,7 +5028,7 @@ function getSelectionOptionToneClass(item, group, selectionOption) {
 
   const normalizedLabel = normalizeLabel(selectionOption.label || "");
 
-  if (normalizedLabel === "bonarda" || normalizedLabel === "barbera") {
+  if (normalizedLabel === "bonarda" || normalizedLabel === "barbera" || normalizedLabel === "segrete") {
     return "option-btn--wine-red";
   }
 
@@ -4921,10 +5043,31 @@ function getSelectionOptionToneClass(item, group, selectionOption) {
   return "";
 }
 
+function isSparklingWineSelectionOption(item, group, selectionOption) {
+  if (!item || item.id !== "oltrepo" || !group || group.id !== "wine-style" || !selectionOption) {
+    return false;
+  }
+
+  const normalizedLabel = normalizeLabel(selectionOption.label || "");
+  return normalizedLabel === "bonarda" || normalizedLabel === "chardonnay";
+}
+
 function getSelectedSelectionLabels(item) {
   return getSelectionGroups(item)
     .map((group) => group.options[getSelectedSelectionIndex(group)]?.label || "")
     .filter(Boolean);
+}
+
+function getItemDetailDescription(item) {
+  if (!item) {
+    return "";
+  }
+
+  if (typeof item.detailDescription === "string" && item.detailDescription.trim()) {
+    return item.detailDescription.trim();
+  }
+
+  return item.description || "";
 }
 
 function buildSelectionSummaryLabel(item, option) {
@@ -5213,7 +5356,7 @@ function setupDetailGallery() {
 }
 
 function getCardVisualClass(item) {
-  const visualType = getVisualType(item);
+  const visualType = getVisualType(item, "card");
 
   if (visualType === "none") {
     return " item-card__visual--hidden";
@@ -5243,7 +5386,7 @@ function getCardVisualClass(item) {
 }
 
 function getDetailPreviewClass(item) {
-  const visualType = getVisualType(item);
+  const visualType = getVisualType(item, "detail");
 
   if (visualType === "none") {
     return " sheet-preview--hidden";
@@ -5281,7 +5424,8 @@ function hasFloatingBottle(item) {
 }
 
 function renderItemVisual(item, context) {
-  const visualType = getVisualType(item);
+  const visual = getContextualVisual(item, context);
+  const visualType = getVisualType(item, context);
 
   if (visualType === "none") {
     return "";
@@ -5292,19 +5436,19 @@ function renderItemVisual(item, context) {
   }
 
   if (visualType === "beer-script") {
-    return renderBeerScriptVisual(item.visual, context);
+    return renderBeerScriptVisual(visual, context);
   }
 
   if (visualType === "photo-panel") {
-    return renderPhotoPanelVisual(item.visual, context, item);
+    return renderPhotoPanelVisual(visual, context, item);
   }
 
   if (visualType === "can-cluster") {
-    return renderCanClusterVisual(item.visual, context, item);
+    return renderCanClusterVisual(visual, context, item);
   }
 
   if (visualType === "text-panel") {
-    return renderTextPanelVisual(item.visual, context);
+    return renderTextPanelVisual(visual, context);
   }
 
   return renderPlaceholderPanelVisual(context);
@@ -5709,9 +5853,15 @@ function renderPhotoPanelVisual(visual, context, item) {
 
   const detailCaption =
     context === "detail" && typeof visual?.detailCaption === "string" ? visual.detailCaption.trim() : "";
+  const selectionImageAsset = getPhotoPanelSelectionAsset(visual, context, item);
+  const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
 
   if (detailCaption) {
     classes.push("photo-panel-visual--with-caption");
+  }
+
+  if (selectionImageUrl) {
+    classes.push("photo-panel-visual--with-selection-image");
   }
 
   return `
@@ -5730,8 +5880,21 @@ function renderPhotoPanelVisual(visual, context, item) {
         ${visual.detailCaptionLetterSpacing ? `--photo-panel-caption-letter-spacing: ${visual.detailCaptionLetterSpacing};` : ""}
         ${visual.detailCaptionColor ? `--photo-panel-caption-color: ${visual.detailCaptionColor};` : ""}
         ${visual.detailCaptionBottom ? `--photo-panel-caption-bottom: ${visual.detailCaptionBottom};` : ""}
+        ${visual.selectionImageWidth ? `--photo-panel-selection-image-width: ${visual.selectionImageWidth};` : ""}
+        ${visual.selectionImageBottom ? `--photo-panel-selection-image-bottom: ${visual.selectionImageBottom};` : ""}
+        ${visual.selectionImageLeft ? `--photo-panel-selection-image-left: ${visual.selectionImageLeft};` : ""}
+        ${visual.selectionImageTranslateX ? `--photo-panel-selection-image-translate-x: ${visual.selectionImageTranslateX};` : ""}
+        ${visual.selectionImageShadow ? `--photo-panel-selection-image-shadow: ${visual.selectionImageShadow};` : ""}
+        ${visual.selectionImageBackdropWidth ? `--photo-panel-selection-backdrop-width: ${visual.selectionImageBackdropWidth};` : ""}
+        ${visual.selectionImageBackdropHeight ? `--photo-panel-selection-backdrop-height: ${visual.selectionImageBackdropHeight};` : ""}
+        ${visual.selectionImageBackdropBottom ? `--photo-panel-selection-backdrop-bottom: ${visual.selectionImageBackdropBottom};` : ""}
       "
     >
+      ${
+        selectionImageUrl
+          ? `<img class="photo-panel-visual__selection-image is-current" src="${selectionImageUrl}" alt="" loading="eager" decoding="async" aria-hidden="true" />`
+          : ""
+      }
       ${
         detailCaption
           ? `<span class="photo-panel-visual__caption">${escapeHtml(detailCaption)}</span>`
@@ -5739,6 +5902,52 @@ function renderPhotoPanelVisual(visual, context, item) {
       }
     </div>
   `;
+}
+
+function getPhotoPanelSelectionAsset(visual, context, item) {
+  if (context !== "detail" || !visual || !item || !visual.selectionAssets) {
+    return "";
+  }
+
+  const selectionGroups = getSelectionGroups(item);
+  if (!selectionGroups.length) {
+    return "";
+  }
+
+  const selectedLabels = getSelectedSelectionLabels(item)
+    .map((label) => normalizeLabel(label))
+    .filter(Boolean);
+
+  if (!selectedLabels.length) {
+    return "";
+  }
+
+  if (Array.isArray(visual.selectionAssets)) {
+    const matchingAsset = visual.selectionAssets.find((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return false;
+      }
+
+      const key = normalizeLabel(entry.key || entry.label || "");
+      return key && selectedLabels.includes(key) && typeof entry.asset === "string";
+    });
+
+    return matchingAsset?.asset || "";
+  }
+
+  if (typeof visual.selectionAssets === "object") {
+    for (const selectedLabel of selectedLabels) {
+      const matchingEntry = Object.entries(visual.selectionAssets).find(
+        ([key, asset]) => normalizeLabel(key) === selectedLabel && typeof asset === "string"
+      );
+
+      if (matchingEntry) {
+        return matchingEntry[1];
+      }
+    }
+  }
+
+  return "";
 }
 
 function renderCanClusterVisual(visual, context, item = null) {
@@ -5751,6 +5960,7 @@ function renderCanClusterVisual(visual, context, item = null) {
   const activeCanIndex = context === "detail" ? getActiveCanClusterIndex(item, visual) : -1;
   const detailSelectedScale = "1.15";
   const detailDefaultScale = "0.82";
+  const backgroundImage = visual?.asset ? getVisualAsset(visual.asset) : "";
   const cans = Array.isArray(visual.items)
     ? visual.items
         .map(
@@ -5807,7 +6017,13 @@ function renderCanClusterVisual(visual, context, item = null) {
   return `
     <div
       class="${classes.join(" ")}"
-      style="--can-cluster-bg: ${visual.backgroundColor || "#d8dee8"};"
+      style="
+        --can-cluster-bg: ${visual.backgroundColor || "#d8dee8"};
+        --can-cluster-image: ${backgroundImage ? `url('${backgroundImage}')` : "none"};
+        --can-cluster-position: ${visual.position || "center center"};
+        --can-cluster-size: ${visual.size || "cover"};
+        --can-cluster-blend: ${visual.blendMode || "normal"};
+      "
     >
       ${cans}
     </div>
@@ -6163,8 +6379,21 @@ function buildTitleLogoStyle(visual) {
   return styles.join("; ");
 }
 
-function getVisualType(item) {
-  return item && item.visual ? item.visual.type : "placeholder-panel";
+function getContextualVisual(item, context = "detail") {
+  if (!item) {
+    return null;
+  }
+
+  if (context === "card" && item.cardVisual) {
+    return item.cardVisual;
+  }
+
+  return item.visual || null;
+}
+
+function getVisualType(item, context = "detail") {
+  const visual = getContextualVisual(item, context);
+  return visual ? visual.type : "placeholder-panel";
 }
 
 function getItemCategoryLabel(item, entry) {
