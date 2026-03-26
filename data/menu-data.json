@@ -1129,7 +1129,7 @@
               {
                 "asset": "oltrepo-segrete.webp",
                 "left": "41%",
-                "bottom": "-22%",
+                "bottom": "-24%",
                 "height": "250px",
                 "rotate": "0deg",
                 "zIndex": 4,
@@ -1140,7 +1140,7 @@
               {
                 "asset": "oltrepo-chardonnay.webp",
                 "left": "58%",
-                "bottom": "-22%",
+                "bottom": "-24%",
                 "height": "248px",
                 "rotate": "0deg",
                 "zIndex": 3,
@@ -1172,11 +1172,11 @@
               "Chardonnay": "oltrepo-chardonnay.webp",
               "Pinot Grigio": "oltrepo-pinot-grigio.webp"
             },
-            "selectionImageWidth": "clamp(108px, 32.1vw, 142px)",
+            "selectionImageWidth": "clamp(96px, 28.5vw, 126px)",
             "selectionImageBottom": "calc(var(--photo-panel-selection-image-width) * -1.08)",
             "selectionImageLeft": "50%",
             "selectionImageTranslateX": "-50%",
-            "selectionImageShadow": "drop-shadow(0 20px 26px rgba(0, 0, 0, 0.64)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.1))"
+            "selectionImageShadow": "drop-shadow(0 20px 28px rgba(0, 0, 0, 0.54)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22))"
           },
           "selectionGroups": [
             {

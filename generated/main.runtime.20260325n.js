@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.699";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.699";
+  var APP_BUILD_LABEL = "V.1.0.700";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.700";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -2749,6 +2749,7 @@
     state.selectedItemId = itemId;
     initializeDetailState(item);
     applyDetailPanelLayout(item);
+    detailPanel.dataset.detailItemId = item.id;
     detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
     detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
     detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
@@ -2771,6 +2772,7 @@
   function closeDetail(options = {}) {
     const { restoreFocus = true } = options;
     resetDetailPanelLayout();
+    delete detailPanel.dataset.detailItemId;
     detailPanel.classList.remove("sheet-panel--selection-groups");
     detailPanel.classList.remove("sheet-panel--long-options");
     detailPanel.classList.remove("sheet-panel--compact-options");
@@ -2909,6 +2911,10 @@
       selectionGroups.length ? "Formato" : "",
       shouldUseCompactDetailOptions(item)
     );
+    if ((item == null ? void 0 : item.id) === "oltrepo") {
+      formatGroup.wrapper.classList.add("option-group--wine-format");
+      formatGroup.options.classList.add("option-group__options--inline-pair");
+    }
     item.options.forEach((option, index) => {
       const optionButton = document.createElement("button");
       const displayLabel = getOptionModalLabel(item, option);
@@ -3178,6 +3184,7 @@
     const selectionImageAsset = getPhotoPanelSelectionAsset(photoPanelVisual, "detail", item);
     const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
     const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
+    const nextSelectionIndex = getPrimaryPhotoPanelSelectionIndex(item);
     const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
     photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
     const activeImage = photoPanelNode.querySelector(".photo-panel-visual__selection-image.is-current") || photoPanelNode.querySelector(".photo-panel-visual__selection-image");
@@ -3190,8 +3197,12 @@
     if (activeImage) {
       const normalizedCurrentUrl = activeImage.currentSrc ? activeImage.currentSrc : new URL(activeImage.getAttribute("src") || "", window.location.href).href;
       if (normalizedCurrentUrl === normalizedNextUrl) {
+        activeImage.dataset.selectionIndex = String(nextSelectionIndex);
         return true;
       }
+      const previousSelectionIndex = Number.parseInt(activeImage.dataset.selectionIndex || "", 10);
+      const direction2 = Number.isInteger(previousSelectionIndex) && previousSelectionIndex !== nextSelectionIndex ? nextSelectionIndex > previousSelectionIndex ? 1 : -1 : 1;
+      activeImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction2));
       activeImage.classList.remove("is-current", "is-incoming");
       activeImage.classList.add("is-outgoing");
     }
@@ -3202,6 +3213,10 @@
     incomingImage.loading = "eager";
     incomingImage.decoding = "async";
     incomingImage.setAttribute("aria-hidden", "true");
+    incomingImage.dataset.selectionIndex = String(nextSelectionIndex);
+    const activeSelectionIndex = Number.parseInt((activeImage == null ? void 0 : activeImage.dataset.selectionIndex) || "", 10);
+    const direction = Number.isInteger(activeSelectionIndex) && activeSelectionIndex !== nextSelectionIndex ? nextSelectionIndex > activeSelectionIndex ? 1 : -1 : 1;
+    incomingImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
     if (captionNode) {
       photoPanelNode.insertBefore(incomingImage, captionNode);
     } else {
@@ -3209,11 +3224,11 @@
     }
     window.requestAnimationFrame(() => {
       incomingImage.classList.add("is-current");
+      incomingImage.classList.remove("is-incoming");
     });
     window.setTimeout(() => {
       activeImage == null ? void 0 : activeImage.remove();
-      incomingImage.classList.remove("is-incoming");
-    }, 260);
+    }, 420);
     return true;
   }
   function createOptionGroup(label, compact = false) {
@@ -3251,6 +3266,13 @@
       return item.detailGallery.find((visual) => (visual == null ? void 0 : visual.type) === "photo-panel" && (visual == null ? void 0 : visual.selectionAssets)) || null;
     }
     return null;
+  }
+  function getPrimaryPhotoPanelSelectionIndex(item) {
+    const selectionGroups = getSelectionGroups(item);
+    if (!selectionGroups.length) {
+      return 0;
+    }
+    return getSelectedSelectionIndex(selectionGroups[0]);
   }
   function renderCart() {
     cartItems.innerHTML = "";
@@ -4307,13 +4329,14 @@
     const detailCaption = context === "detail" && typeof (visual == null ? void 0 : visual.detailCaption) === "string" ? visual.detailCaption.trim() : "";
     const selectionImageAsset = getPhotoPanelSelectionAsset(visual, context, item);
     const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
+    const selectionImageIndex = context === "detail" ? getPrimaryPhotoPanelSelectionIndex(item) : 0;
     if (detailCaption) {
       classes.push("photo-panel-visual--with-caption");
     }
     if (selectionImageUrl) {
       classes.push("photo-panel-visual--with-selection-image");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", "\n        ").concat(visual.detailCaptionBottom ? "--photo-panel-caption-bottom: ".concat(visual.detailCaptionBottom, ";") : "", "\n        ").concat(visual.selectionImageWidth ? "--photo-panel-selection-image-width: ".concat(visual.selectionImageWidth, ";") : "", "\n        ").concat(visual.selectionImageBottom ? "--photo-panel-selection-image-bottom: ".concat(visual.selectionImageBottom, ";") : "", "\n        ").concat(visual.selectionImageLeft ? "--photo-panel-selection-image-left: ".concat(visual.selectionImageLeft, ";") : "", "\n        ").concat(visual.selectionImageTranslateX ? "--photo-panel-selection-image-translate-x: ".concat(visual.selectionImageTranslateX, ";") : "", "\n        ").concat(visual.selectionImageShadow ? "--photo-panel-selection-image-shadow: ".concat(visual.selectionImageShadow, ";") : "", "\n        ").concat(visual.selectionImageBackdropWidth ? "--photo-panel-selection-backdrop-width: ".concat(visual.selectionImageBackdropWidth, ";") : "", "\n        ").concat(visual.selectionImageBackdropHeight ? "--photo-panel-selection-backdrop-height: ".concat(visual.selectionImageBackdropHeight, ";") : "", "\n        ").concat(visual.selectionImageBackdropBottom ? "--photo-panel-selection-backdrop-bottom: ".concat(visual.selectionImageBackdropBottom, ";") : "", '\n      "\n    >\n      ').concat(selectionImageUrl ? '<img class="photo-panel-visual__selection-image is-current" src="'.concat(selectionImageUrl, '" alt="" loading="eager" decoding="async" aria-hidden="true" />') : "", "\n      ").concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", "\n        ").concat(visual.detailCaptionBottom ? "--photo-panel-caption-bottom: ".concat(visual.detailCaptionBottom, ";") : "", "\n        ").concat(visual.selectionImageWidth ? "--photo-panel-selection-image-width: ".concat(visual.selectionImageWidth, ";") : "", "\n        ").concat(visual.selectionImageBottom ? "--photo-panel-selection-image-bottom: ".concat(visual.selectionImageBottom, ";") : "", "\n        ").concat(visual.selectionImageLeft ? "--photo-panel-selection-image-left: ".concat(visual.selectionImageLeft, ";") : "", "\n        ").concat(visual.selectionImageTranslateX ? "--photo-panel-selection-image-translate-x: ".concat(visual.selectionImageTranslateX, ";") : "", "\n        ").concat(visual.selectionImageShadow ? "--photo-panel-selection-image-shadow: ".concat(visual.selectionImageShadow, ";") : "", "\n        ").concat(visual.selectionImageBackdropWidth ? "--photo-panel-selection-backdrop-width: ".concat(visual.selectionImageBackdropWidth, ";") : "", "\n        ").concat(visual.selectionImageBackdropHeight ? "--photo-panel-selection-backdrop-height: ".concat(visual.selectionImageBackdropHeight, ";") : "", "\n        ").concat(visual.selectionImageBackdropBottom ? "--photo-panel-selection-backdrop-bottom: ".concat(visual.selectionImageBackdropBottom, ";") : "", '\n      "\n    >\n      ').concat(selectionImageUrl ? '<img class="photo-panel-visual__selection-image is-current" src="'.concat(selectionImageUrl, '" alt="" loading="eager" decoding="async" aria-hidden="true" data-selection-index="').concat(selectionImageIndex, '" />') : "", "\n      ").concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
   }
   function getPhotoPanelSelectionAsset(visual, context, item) {
     if (context !== "detail" || !visual || !item || !visual.selectionAssets) {

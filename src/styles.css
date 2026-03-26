@@ -1774,25 +1774,55 @@ a {
   pointer-events: none;
   filter: var(--photo-panel-selection-image-shadow, drop-shadow(0 14px 18px rgba(0, 0, 0, 0.42)));
   opacity: 1;
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
+  backface-visibility: hidden;
   transition:
-    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .photo-panel-visual__selection-image.is-current {
+  z-index: 2;
   opacity: 1;
   transform: translateX(var(--photo-panel-selection-image-translate-x, -50%)) translateY(0) scale(1);
+  filter: var(--photo-panel-selection-image-shadow, drop-shadow(0 14px 18px rgba(0, 0, 0, 0.42)));
 }
 
 .photo-panel-visual__selection-image.is-incoming {
   opacity: 0;
-  transform: translateX(var(--photo-panel-selection-image-translate-x, -50%)) translateY(3px) scale(0.996);
+  z-index: 2;
+  transform:
+    translateX(
+      calc(
+        var(--photo-panel-selection-image-translate-x, -50%) +
+          (12px * var(--photo-panel-selection-swap-direction, 1))
+      )
+    )
+    translateY(2px)
+    scale(0.986);
+  filter:
+    var(--photo-panel-selection-image-shadow, drop-shadow(0 14px 18px rgba(0, 0, 0, 0.42)))
+    saturate(1.02)
+    blur(1.2px);
 }
 
 .photo-panel-visual__selection-image.is-outgoing {
   opacity: 0;
-  transform: translateX(var(--photo-panel-selection-image-translate-x, -50%)) translateY(-2px) scale(1.003);
+  z-index: 1;
+  transform:
+    translateX(
+      calc(
+        var(--photo-panel-selection-image-translate-x, -50%) +
+          (-8px * var(--photo-panel-selection-swap-direction, 1))
+      )
+    )
+    translateY(-1px)
+    scale(1.012);
+  filter:
+    var(--photo-panel-selection-image-shadow, drop-shadow(0 14px 18px rgba(0, 0, 0, 0.42)))
+    saturate(0.96)
+    blur(1.5px);
 }
 
 .photo-panel-visual__caption {
@@ -1822,6 +1852,10 @@ a {
 .sheet-panel--detail.sheet-panel--detail-selector .photo-panel-visual--detail {
   min-height: 154px;
   border-radius: 18px;
+}
+
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .photo-panel-visual--detail {
+  min-height: 136px;
 }
 
 .sheet-panel--detail.sheet-panel--detail-rapid .photo-panel-visual--detail {
@@ -2198,29 +2232,35 @@ a {
 }
 
 .item-card[data-item-id="oltrepo"] .can-cluster-visual::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 30px;
-  border-radius: 0 0 22px 22px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(234, 220, 223, 0) 0%,
-      rgba(255, 255, 255, 0.14) 38%,
-      rgba(244, 236, 239, 0.42) 70%,
-      rgba(234, 220, 223, 0.84) 100%
-    );
-  pointer-events: none;
-  z-index: 5;
+  content: none;
 }
 
 .item-card[data-item-id="oltrepo"] .can-cluster-visual__can {
   bottom: calc(var(--can-bottom, -26%) + 18px);
   filter: none;
   animation: none;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 88%,
+    rgba(0, 0, 0, 0.96) 92%,
+    rgba(0, 0, 0, 0.72) 96%,
+    rgba(0, 0, 0, 0.18) 99%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 88%,
+    rgba(0, 0, 0, 0.96) 92%,
+    rgba(0, 0, 0, 0.72) 96%,
+    rgba(0, 0, 0, 0.18) 99%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 @keyframes can-cluster-float {
@@ -3979,12 +4019,39 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.option-group__options--inline-pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .sheet-panel--detail.sheet-panel--compact-options .option-group {
   gap: 8px;
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options {
   gap: 6px;
+}
+
+.sheet-panel--detail.sheet-panel--selection-groups .option-group--wine-format .option-group__options--inline-pair {
+  gap: 8px;
+}
+
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-btn {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  gap: 3px;
+  min-height: 58px;
+  padding: 10px 10px;
+}
+
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-copy {
+  justify-items: center;
+  gap: 1px;
+}
+
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-price {
+  white-space: nowrap;
 }
 
 .sheet-panel--detail.sheet-panel--compact-options .option-group__options--compact .option-btn {

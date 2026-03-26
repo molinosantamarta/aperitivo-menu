@@ -3538,6 +3538,7 @@ function openDetail(itemId) {
   state.selectedItemId = itemId;
   initializeDetailState(item);
   applyDetailPanelLayout(item);
+  detailPanel.dataset.detailItemId = item.id;
   detailPanel.classList.toggle("sheet-panel--selection-groups", getSelectionGroups(item).length > 0);
   detailPanel.classList.toggle("sheet-panel--long-options", hasLongOptionList(item));
   detailPanel.classList.toggle("sheet-panel--compact-options", shouldUseCompactDetailOptions(item));
@@ -3561,6 +3562,7 @@ function openDetail(itemId) {
 function closeDetail(options = {}) {
   const { restoreFocus = true } = options;
   resetDetailPanelLayout();
+  delete detailPanel.dataset.detailItemId;
   detailPanel.classList.remove("sheet-panel--selection-groups");
   detailPanel.classList.remove("sheet-panel--long-options");
   detailPanel.classList.remove("sheet-panel--compact-options");
@@ -3766,6 +3768,11 @@ function renderOptions(item) {
     selectionGroups.length ? "Formato" : "",
     shouldUseCompactDetailOptions(item)
   );
+
+  if (item?.id === "oltrepo") {
+    formatGroup.wrapper.classList.add("option-group--wine-format");
+    formatGroup.options.classList.add("option-group__options--inline-pair");
+  }
 
   item.options.forEach((option, index) => {
     const optionButton = document.createElement("button");
@@ -4189,6 +4196,7 @@ function updatePhotoPanelSelectionState(item) {
   const selectionImageAsset = getPhotoPanelSelectionAsset(photoPanelVisual, "detail", item);
   const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
   const normalizedNextUrl = selectionImageUrl ? new URL(selectionImageUrl, window.location.href).href : "";
+  const nextSelectionIndex = getPrimaryPhotoPanelSelectionIndex(item);
   const captionNode = photoPanelNode.querySelector(".photo-panel-visual__caption");
 
   photoPanelNode.querySelectorAll(".photo-panel-visual__selection-image.is-outgoing").forEach((node) => node.remove());
@@ -4211,9 +4219,19 @@ function updatePhotoPanelSelectionState(item) {
       : new URL(activeImage.getAttribute("src") || "", window.location.href).href;
 
     if (normalizedCurrentUrl === normalizedNextUrl) {
+      activeImage.dataset.selectionIndex = String(nextSelectionIndex);
       return true;
     }
 
+    const previousSelectionIndex = Number.parseInt(activeImage.dataset.selectionIndex || "", 10);
+    const direction =
+      Number.isInteger(previousSelectionIndex) && previousSelectionIndex !== nextSelectionIndex
+        ? nextSelectionIndex > previousSelectionIndex
+          ? 1
+          : -1
+        : 1;
+
+    activeImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
     activeImage.classList.remove("is-current", "is-incoming");
     activeImage.classList.add("is-outgoing");
   }
@@ -4225,6 +4243,16 @@ function updatePhotoPanelSelectionState(item) {
   incomingImage.loading = "eager";
   incomingImage.decoding = "async";
   incomingImage.setAttribute("aria-hidden", "true");
+  incomingImage.dataset.selectionIndex = String(nextSelectionIndex);
+
+  const activeSelectionIndex = Number.parseInt(activeImage?.dataset.selectionIndex || "", 10);
+  const direction =
+    Number.isInteger(activeSelectionIndex) && activeSelectionIndex !== nextSelectionIndex
+      ? nextSelectionIndex > activeSelectionIndex
+        ? 1
+        : -1
+      : 1;
+  incomingImage.style.setProperty("--photo-panel-selection-swap-direction", String(direction));
 
   if (captionNode) {
     photoPanelNode.insertBefore(incomingImage, captionNode);
@@ -4234,12 +4262,12 @@ function updatePhotoPanelSelectionState(item) {
 
   window.requestAnimationFrame(() => {
     incomingImage.classList.add("is-current");
+    incomingImage.classList.remove("is-incoming");
   });
 
   window.setTimeout(() => {
     activeImage?.remove();
-    incomingImage.classList.remove("is-incoming");
-  }, 260);
+  }, 420);
 
   return true;
 }
@@ -4288,6 +4316,15 @@ function getPrimaryPhotoPanelSelectionVisual(item) {
   }
 
   return null;
+}
+
+function getPrimaryPhotoPanelSelectionIndex(item) {
+  const selectionGroups = getSelectionGroups(item);
+  if (!selectionGroups.length) {
+    return 0;
+  }
+
+  return getSelectedSelectionIndex(selectionGroups[0]);
 }
 
 function renderCart() {
@@ -5894,6 +5931,7 @@ function renderPhotoPanelVisual(visual, context, item) {
     context === "detail" && typeof visual?.detailCaption === "string" ? visual.detailCaption.trim() : "";
   const selectionImageAsset = getPhotoPanelSelectionAsset(visual, context, item);
   const selectionImageUrl = selectionImageAsset ? getVisualAsset(selectionImageAsset) : "";
+  const selectionImageIndex = context === "detail" ? getPrimaryPhotoPanelSelectionIndex(item) : 0;
 
   if (detailCaption) {
     classes.push("photo-panel-visual--with-caption");
@@ -5931,7 +5969,7 @@ function renderPhotoPanelVisual(visual, context, item) {
     >
       ${
         selectionImageUrl
-          ? `<img class="photo-panel-visual__selection-image is-current" src="${selectionImageUrl}" alt="" loading="eager" decoding="async" aria-hidden="true" />`
+          ? `<img class="photo-panel-visual__selection-image is-current" src="${selectionImageUrl}" alt="" loading="eager" decoding="async" aria-hidden="true" data-selection-index="${selectionImageIndex}" />`
           : ""
       }
       ${
