@@ -235,7 +235,6 @@
               "type": "text-panel",
               "bodyLines": [
                 "Una Session IPA moderna,",
-                "dal grado alcolico moderato:",
                 "fresca, luppolata",
                 "e facile da bere."
               ],
@@ -339,9 +338,8 @@
               "type": "text-panel",
               "bodyLines": [
                 "Una German Ale chiara,",
-                "fruttata e conviviale:",
-                "equilibrata, fresca",
-                "e facile da bere."
+                "fruttata, conviviale,",
+                "molto beverina."
               ],
               "gradientStart": "#a84f21",
               "gradientEnd": "#e6a45a",
@@ -381,7 +379,7 @@
                 {
                   "icon": "mouth",
                   "title": "In bocca",
-                  "body": "Ingresso fresco e dissetante, con cracker, pane e frutta fresca. Finale secco, bilanciato e pulito."
+                  "body": "Ingresso fresco e dissetante, con sentori di pane, cracker e frutta fresca. Finale secco, bilanciato e pulito."
                 }
               ],
               "gradientStart": "#fbf8f3",

@@ -463,6 +463,8 @@ const detailTitle = document.querySelector("#detailTitle");
 const detailDescription = document.querySelector("#detailDescription");
 const detailMeta = document.querySelector("#detailMeta");
 const detailOptions = document.querySelector("#detailOptions");
+const detailFooter = document.querySelector("#detailFooter");
+const detailSelectionStrip = document.querySelector("#detailSelectionStrip");
 const detailQuantity = document.querySelector("#detailQuantity");
 const addToCartButton = document.querySelector("#addToCart");
 const closeDetailButton = document.querySelector("#closeDetail");
@@ -545,12 +547,7 @@ addToCartButton.addEventListener("click", () => {
   }
 
   if (shouldUseMultiOptionQuantityDetail(item)) {
-    const selectedEntries = item.options
-      .map((option) => ({
-        option,
-        quantity: getMultiOptionQuantity(item, option),
-      }))
-      .filter((entry) => entry.quantity > 0);
+    const selectedEntries = getMultiOptionSelectedEntries(item);
 
     if (!selectedEntries.length) {
       return;
@@ -3310,7 +3307,7 @@ function renderItemCard(item) {
         hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : ""
       }">
         <div class="item-card__topline">
-          <span class="item-card__label">${item.category}</span>
+          ${renderItemCategoryMarkup(item)}
         </div>
         ${renderItemTitle(item)}
         <p>${item.description}</p>
@@ -3489,7 +3486,7 @@ function openDetail(itemId) {
   detailPanel.classList.toggle("sheet-panel--can-selector", shouldUseCanSelectorLayout(item));
   detailPanel.classList.toggle("sheet-panel--multi-quantities", shouldUseMultiOptionQuantityDetail(item));
   detailPanel.scrollTop = 0;
-  detailCategory.textContent = formatDetailCategoryLabel(item);
+  detailCategory.innerHTML = renderDetailCategoryMarkup(item);
   detailTitle.textContent = item.name;
   detailDescription.textContent = item.description;
   renderDetailMeta(item);
@@ -3677,7 +3674,10 @@ function renderOptions(item) {
   }
 
   if (shouldUseMultiOptionQuantityDetail(item)) {
-    renderMultiOptionQuantityGroup(item, selectionGroups.length ? "Formato" : "");
+    renderMultiOptionQuantityGroup(
+      item,
+      getMultiOptionQuantityGroupLabel(item, selectionGroups.length > 0)
+    );
     updateDetailActionButton(item);
     return;
   }
@@ -3736,6 +3736,8 @@ function renderMultiOptionQuantityGroup(item, label = "") {
     const optionSubtitle = getOptionModalSubtitle(option);
     const toneClass = getOptionToneClass(option);
     const layoutClass = getOptionLayoutClass(option);
+    const optionLabel = getOptionModalLabel(item, option) || option.label;
+    const safeOptionLabel = escapeHtml(optionLabel);
     const quantityBadgeMarkup =
       optionQuantity > 0
         ? `
@@ -3751,13 +3753,12 @@ function renderMultiOptionQuantityGroup(item, label = "") {
               class="qty-btn option-qty-remove"
               type="button"
               data-option-qty-action="decrease"
-              aria-label="Riduci ${escapeHtml(option.label)}"
+              aria-label="Riduci ${safeOptionLabel}"
             >
-              −
+              <span class="option-qty-remove__icon" aria-hidden="true">−</span>
             </button>
           `
         : "";
-    const optionLabel = getOptionModalLabel(item, option) || option.label;
 
     optionCard.className = `option-qty-card${toneClass ? ` ${toneClass}` : ""}${
       layoutClass ? ` ${layoutClass.replace("option-btn", "option-qty-card")}` : ""
@@ -3767,13 +3768,13 @@ function renderMultiOptionQuantityGroup(item, label = "") {
     optionCard.setAttribute(
       "aria-label",
       optionQuantity > 0
-        ? `${optionLabel}, ${optionQuantity} selezionati. Tocca per aggiungere ancora.`
+        ? `${optionLabel}, ${optionQuantity} selezionati. Tocca per aggiungere ancora o usa il meno per ridurre.`
         : `Aggiungi ${optionLabel}`
     );
     optionCard.innerHTML = `
       <div class="option-copy">
-        <span class="option-label">${optionLabel}</span>
-        ${optionSubtitle ? `<span class="option-subtitle">${optionSubtitle}</span>` : ""}
+        <span class="option-label">${safeOptionLabel}</span>
+        ${optionSubtitle ? `<span class="option-subtitle">${escapeHtml(optionSubtitle)}</span>` : ""}
       </div>
       ${quantityBadgeMarkup}
       ${removeButtonMarkup}
@@ -3783,9 +3784,6 @@ function renderMultiOptionQuantityGroup(item, label = "") {
       updateMultiOptionQuantity(item, option, 1);
     });
     optionCard.addEventListener("keydown", (event) => {
-      if (event.target instanceof Element && event.target.closest("[data-option-qty-action]")) {
-        return;
-      }
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         updateMultiOptionQuantity(item, option, 1);
@@ -3795,8 +3793,7 @@ function renderMultiOptionQuantityGroup(item, label = "") {
     optionCard.querySelectorAll("[data-option-qty-action]").forEach((control) => {
       control.addEventListener("click", (event) => {
         event.stopPropagation();
-        const action = control.getAttribute("data-option-qty-action");
-        updateMultiOptionQuantity(item, option, action === "decrease" ? -1 : 1);
+        updateMultiOptionQuantity(item, option, -1);
       });
     });
 
@@ -3806,10 +3803,82 @@ function renderMultiOptionQuantityGroup(item, label = "") {
   detailOptions.append(formatGroup.wrapper);
 }
 
+function getMultiOptionQuantityGroupLabel(item, hasSelectionGroups = false) {
+  if (hasSelectionGroups) {
+    return "Formato";
+  }
+
+  if (item?.id === "grappe-amari") {
+    return "Scegli tipologia e quantità";
+  }
+
+  return "Scegli opzione e quantità";
+}
+
+function renderDetailSelectionStrip(item) {
+  if (!detailSelectionStrip) {
+    return;
+  }
+
+  detailSelectionStrip.innerHTML = "";
+  detailSelectionStrip.hidden = true;
+  detailFooter?.classList.remove("detail-footer--with-selection-strip");
+
+  if (!item || !shouldUseMultiOptionQuantityDetail(item)) {
+    return;
+  }
+
+  const selectedEntries = getMultiOptionSelectedEntries(item);
+  if (!selectedEntries.length) {
+    return;
+  }
+
+  const totalQuantity = selectedEntries.reduce((sum, entry) => sum + entry.quantity, 0);
+  const summaryLabel = getMultiOptionSelectionSummaryLabel(item, totalQuantity);
+  const chipsMarkup = selectedEntries
+    .map(({ option, quantity }) => {
+      const optionLabel = escapeHtml(getOptionModalLabel(item, option) || option.label || "");
+
+      return `
+        <span class="detail-selection-chip">
+          <span class="detail-selection-chip__label">${optionLabel}</span>
+          <span class="detail-selection-chip__qty">${quantity}×</span>
+        </span>
+      `;
+    })
+    .join("");
+
+  detailSelectionStrip.innerHTML = `
+    <div class="detail-selection-strip__header">
+      <span class="detail-selection-strip__label">Riepilogo selezione</span>
+      <span class="detail-selection-strip__count" aria-label="${escapeHtml(summaryLabel)}">${totalQuantity}</span>
+    </div>
+    <p class="detail-selection-strip__summary">Hai selezionato ${escapeHtml(summaryLabel)}</p>
+    <div class="detail-selection-strip__chips">${chipsMarkup}</div>
+  `;
+  detailSelectionStrip.hidden = false;
+  detailSelectionStrip.setAttribute("aria-live", "polite");
+  detailFooter?.classList.add("detail-footer--with-selection-strip");
+}
+
+function getMultiOptionSelectionSummaryLabel(item, totalQuantity) {
+  if (!item || totalQuantity <= 0) {
+    return "";
+  }
+
+  if (item.id === "grappe-amari") {
+    return `${totalQuantity} ${pluralize(totalQuantity, "digestivo", "digestivi")}`;
+  }
+
+  return `${totalQuantity} ${pluralize(totalQuantity, "selezione", "selezioni")}`;
+}
+
 function updateDetailActionButton(item) {
   if (!addToCartButton) {
     return;
   }
+
+  renderDetailSelectionStrip(item);
 
   if (item && shouldUseMultiOptionQuantityDetail(item)) {
     const totalQuantity = getMultiOptionSelectedTotal(item);
@@ -3830,6 +3899,7 @@ function renderQuantityControl() {
   if (item && shouldUseMultiOptionQuantityDetail(item)) {
     detailQuantity.innerHTML = "";
     detailQuantity.hidden = true;
+    detailFooter?.classList.remove("detail-footer--with-quantity");
     updateDetailActionButton(item);
     return;
   }
@@ -3864,6 +3934,7 @@ function renderQuantityControl() {
   }
 
   detailQuantity.hidden = false;
+  detailFooter?.classList.add("detail-footer--with-quantity");
   if (item) {
     updateDetailActionButton(item);
   }
@@ -3929,13 +4000,34 @@ function getMultiOptionSelectedTotal(item) {
   return item.options.reduce((sum, option) => sum + getMultiOptionQuantity(item, option), 0);
 }
 
+function getMultiOptionSelectedEntries(item) {
+  if (!item || !Array.isArray(item.options)) {
+    return [];
+  }
+
+  return item.options
+    .map((option) => ({
+      option,
+      quantity: getMultiOptionQuantity(item, option),
+    }))
+    .filter((entry) => entry.quantity > 0);
+}
+
 function updateMultiOptionQuantity(item, option, delta) {
   if (!item || !option) {
     return;
   }
 
+  setMultiOptionQuantity(item, option, getMultiOptionQuantity(item, option) + delta);
+}
+
+function setMultiOptionQuantity(item, option, quantity) {
+  if (!item || !option) {
+    return;
+  }
+
   const key = buildOptionQuantityKey(item, option);
-  const nextQuantity = Math.max(0, getMultiOptionQuantity(item, option) + delta);
+  const nextQuantity = Math.max(0, quantity);
   state.selectedOptionQuantities[key] = nextQuantity;
   renderOptions(item);
 }
@@ -4557,6 +4649,82 @@ function formatDetailCategoryLabel(item) {
   }
 
   return categoryLabel || sectionTitle;
+}
+
+function shouldShowRoseLimitedGlint(item) {
+  return item?.id === "rose-n5";
+}
+
+function renderRoseLimitedGlintMarkup() {
+  return `
+    <span class="limited-glint" aria-hidden="true">
+      <svg class="limited-glint__spark limited-glint__spark--primary" viewBox="0 0 12 12" focusable="false">
+        <path d="M6 0.8 7.35 4.65 11.2 6 7.35 7.35 6 11.2 4.65 7.35 0.8 6 4.65 4.65Z" />
+      </svg>
+      <svg class="limited-glint__spark limited-glint__spark--soft" viewBox="0 0 12 12" focusable="false">
+        <path d="M6 1.5 7 5 10.5 6 7 7 6 10.5 5 7 1.5 6 5 5Z" />
+      </svg>
+    </span>
+  `;
+}
+
+function renderItemCategoryMarkup(item) {
+  const categoryLabel = getItemCategoryLabel(item).trim();
+  if (!categoryLabel) {
+    return "";
+  }
+
+  const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+
+  return `
+    <span class="item-card__label${sparkleMarkup ? " item-card__label--rose-glint" : ""}">
+      ${escapeHtml(categoryLabel)}
+      ${sparkleMarkup}
+    </span>
+  `;
+}
+
+function renderDetailCategoryMarkup(item) {
+  const sectionTitle = findSectionTitleForItem(item.id).trim();
+  const categoryLabel = getItemCategoryLabel(item).trim();
+  const safeSection = escapeHtml(sectionTitle);
+  const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+  const categoryMarkup = categoryLabel
+    ? `
+        <span class="sheet-kicker__category${sparkleMarkup ? " sheet-kicker__category--rose-glint" : ""}">
+          ${escapeHtml(categoryLabel)}
+          ${sparkleMarkup}
+        </span>
+      `
+    : "";
+
+  if (sectionTitle && categoryLabel) {
+    const normalizedSection = normalizeLabel(sectionTitle);
+    const normalizedCategory = normalizeLabel(categoryLabel);
+
+    if (normalizedSection === normalizedCategory) {
+      return `<span class="sheet-kicker__section">${safeSection}</span>`;
+    }
+
+    if (normalizedCategory.includes(normalizedSection)) {
+      return categoryMarkup;
+    }
+
+    if (normalizedSection.includes(normalizedCategory)) {
+      return `<span class="sheet-kicker__section">${safeSection}</span>`;
+    }
+
+    return `
+      <span class="sheet-kicker__section">${safeSection},</span>
+      ${categoryMarkup}
+    `;
+  }
+
+  if (categoryMarkup) {
+    return categoryMarkup;
+  }
+
+  return safeSection ? `<span class="sheet-kicker__section">${safeSection}</span>` : "";
 }
 
 function normalizeLabel(value) {
@@ -5724,21 +5892,7 @@ function renderTastingNotesVisual(visual, context) {
 
 function renderTastingNotesIcon(icon) {
   if (icon === "eye") {
-    return `
-      <svg viewBox="0 0 48 48" role="presentation" focusable="false">
-        <circle cx="24" cy="24" r="18" fill="#8fded2" />
-        <path
-          d="M10.5 24s4.7-7 13.5-7 13.5 7 13.5 7-4.7 7-13.5 7-13.5-7-13.5-7Z"
-          fill="#f8fbfb"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <circle cx="24" cy="24" r="5.1" fill="currentColor" />
-        <circle cx="25.8" cy="22.1" r="1.35" fill="#ffffff" />
-      </svg>
-    `;
+    return '<span class="tasting-notes-emoji-icon" aria-hidden="true">👁️</span>';
   }
 
   if (icon === "nose") {
@@ -5766,6 +5920,10 @@ function renderTastingNotesIcon(icon) {
         />
       </svg>
     `;
+  }
+
+  if (icon === "mouth") {
+    return '<span class="tasting-notes-emoji-icon" aria-hidden="true">👅</span>';
   }
 
   if (icon === "style") {

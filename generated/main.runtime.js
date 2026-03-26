@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.686";
+  var APP_BUILD_LABEL = "V.1.687";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -453,6 +453,8 @@
   var detailDescription = document.querySelector("#detailDescription");
   var detailMeta = document.querySelector("#detailMeta");
   var detailOptions = document.querySelector("#detailOptions");
+  var detailFooter = document.querySelector("#detailFooter");
+  var detailSelectionStrip = document.querySelector("#detailSelectionStrip");
   var detailQuantity = document.querySelector("#detailQuantity");
   var addToCartButton = document.querySelector("#addToCart");
   var closeDetailButton = document.querySelector("#closeDetail");
@@ -529,10 +531,7 @@
       return;
     }
     if (shouldUseMultiOptionQuantityDetail(item)) {
-      const selectedEntries = item.options.map((option2) => ({
-        option: option2,
-        quantity: getMultiOptionQuantity(item, option2)
-      })).filter((entry) => entry.quantity > 0);
+      const selectedEntries = getMultiOptionSelectedEntries(item);
       if (!selectedEntries.length) {
         return;
       }
@@ -2626,7 +2625,7 @@
     if (availabilityState === "self-service") {
       return renderSelfServiceItemCard(item, unavailableLabel);
     }
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(isSelectionBlocked ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          <span class="item-card__label">').concat(item.category, "</span>\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(isSelectionBlocked ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
     ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }
@@ -2715,7 +2714,7 @@
     detailPanel.classList.toggle("sheet-panel--can-selector", shouldUseCanSelectorLayout(item));
     detailPanel.classList.toggle("sheet-panel--multi-quantities", shouldUseMultiOptionQuantityDetail(item));
     detailPanel.scrollTop = 0;
-    detailCategory.textContent = formatDetailCategoryLabel(item);
+    detailCategory.innerHTML = renderDetailCategoryMarkup(item);
     detailTitle.textContent = item.name;
     detailDescription.textContent = item.description;
     renderDetailMeta(item);
@@ -2848,7 +2847,10 @@
       return;
     }
     if (shouldUseMultiOptionQuantityDetail(item)) {
-      renderMultiOptionQuantityGroup(item, selectionGroups.length ? "Formato" : "");
+      renderMultiOptionQuantityGroup(
+        item,
+        getMultiOptionQuantityGroupLabel(item, selectionGroups.length > 0)
+      );
       updateDetailActionButton(item);
       return;
     }
@@ -2883,24 +2885,22 @@
       const optionSubtitle = getOptionModalSubtitle(option);
       const toneClass = getOptionToneClass(option);
       const layoutClass = getOptionLayoutClass(option);
-      const quantityBadgeMarkup = optionQuantity > 0 ? '\n            <span class="option-qty-badge" aria-label="'.concat(optionQuantity, ' selezionati">\n              ').concat(optionQuantity, "\n            </span>\n          ") : "";
-      const removeButtonMarkup = optionQuantity > 0 ? '\n            <button\n              class="qty-btn option-qty-remove"\n              type="button"\n              data-option-qty-action="decrease"\n              aria-label="Riduci '.concat(escapeHtml(option.label), '"\n            >\n              \u2212\n            </button>\n          ') : "";
       const optionLabel = getOptionModalLabel(item, option) || option.label;
+      const safeOptionLabel = escapeHtml(optionLabel);
+      const quantityBadgeMarkup = optionQuantity > 0 ? '\n            <span class="option-qty-badge" aria-label="'.concat(optionQuantity, ' selezionati">\n              ').concat(optionQuantity, "\n            </span>\n          ") : "";
+      const removeButtonMarkup = optionQuantity > 0 ? '\n            <button\n              class="qty-btn option-qty-remove"\n              type="button"\n              data-option-qty-action="decrease"\n              aria-label="Riduci '.concat(safeOptionLabel, '"\n            >\n              <span class="option-qty-remove__icon" aria-hidden="true">\u2212</span>\n            </button>\n          ') : "";
       optionCard.className = "option-qty-card".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass.replace("option-btn", "option-qty-card")) : "").concat(optionQuantity > 0 ? " is-selected" : "");
       optionCard.setAttribute("role", "button");
       optionCard.setAttribute("tabindex", "0");
       optionCard.setAttribute(
         "aria-label",
-        optionQuantity > 0 ? "".concat(optionLabel, ", ").concat(optionQuantity, " selezionati. Tocca per aggiungere ancora.") : "Aggiungi ".concat(optionLabel)
+        optionQuantity > 0 ? "".concat(optionLabel, ", ").concat(optionQuantity, " selezionati. Tocca per aggiungere ancora o usa il meno per ridurre.") : "Aggiungi ".concat(optionLabel)
       );
-      optionCard.innerHTML = '\n      <div class="option-copy">\n        <span class="option-label">'.concat(optionLabel, "</span>\n        ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(optionSubtitle, "</span>") : "", "\n      </div>\n      ").concat(quantityBadgeMarkup, "\n      ").concat(removeButtonMarkup, "\n    ");
+      optionCard.innerHTML = '\n      <div class="option-copy">\n        <span class="option-label">'.concat(safeOptionLabel, "</span>\n        ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(escapeHtml(optionSubtitle), "</span>") : "", "\n      </div>\n      ").concat(quantityBadgeMarkup, "\n      ").concat(removeButtonMarkup, "\n    ");
       optionCard.addEventListener("click", () => {
         updateMultiOptionQuantity(item, option, 1);
       });
       optionCard.addEventListener("keydown", (event) => {
-        if (event.target instanceof Element && event.target.closest("[data-option-qty-action]")) {
-          return;
-        }
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           updateMultiOptionQuantity(item, option, 1);
@@ -2909,18 +2909,61 @@
       optionCard.querySelectorAll("[data-option-qty-action]").forEach((control) => {
         control.addEventListener("click", (event) => {
           event.stopPropagation();
-          const action = control.getAttribute("data-option-qty-action");
-          updateMultiOptionQuantity(item, option, action === "decrease" ? -1 : 1);
+          updateMultiOptionQuantity(item, option, -1);
         });
       });
       formatGroup.options.append(optionCard);
     });
     detailOptions.append(formatGroup.wrapper);
   }
+  function getMultiOptionQuantityGroupLabel(item, hasSelectionGroups = false) {
+    if (hasSelectionGroups) {
+      return "Formato";
+    }
+    if ((item == null ? void 0 : item.id) === "grappe-amari") {
+      return "Scegli tipologia e quantit\xE0";
+    }
+    return "Scegli opzione e quantit\xE0";
+  }
+  function renderDetailSelectionStrip(item) {
+    if (!detailSelectionStrip) {
+      return;
+    }
+    detailSelectionStrip.innerHTML = "";
+    detailSelectionStrip.hidden = true;
+    detailFooter == null ? void 0 : detailFooter.classList.remove("detail-footer--with-selection-strip");
+    if (!item || !shouldUseMultiOptionQuantityDetail(item)) {
+      return;
+    }
+    const selectedEntries = getMultiOptionSelectedEntries(item);
+    if (!selectedEntries.length) {
+      return;
+    }
+    const totalQuantity = selectedEntries.reduce((sum, entry) => sum + entry.quantity, 0);
+    const summaryLabel = getMultiOptionSelectionSummaryLabel(item, totalQuantity);
+    const chipsMarkup = selectedEntries.map(({ option, quantity }) => {
+      const optionLabel = escapeHtml(getOptionModalLabel(item, option) || option.label || "");
+      return '\n        <span class="detail-selection-chip">\n          <span class="detail-selection-chip__label">'.concat(optionLabel, '</span>\n          <span class="detail-selection-chip__qty">').concat(quantity, "\xD7</span>\n        </span>\n      ");
+    }).join("");
+    detailSelectionStrip.innerHTML = '\n    <div class="detail-selection-strip__header">\n      <span class="detail-selection-strip__label">Riepilogo selezione</span>\n      <span class="detail-selection-strip__count" aria-label="'.concat(escapeHtml(summaryLabel), '">').concat(totalQuantity, '</span>\n    </div>\n    <p class="detail-selection-strip__summary">Hai selezionato ').concat(escapeHtml(summaryLabel), '</p>\n    <div class="detail-selection-strip__chips">').concat(chipsMarkup, "</div>\n  ");
+    detailSelectionStrip.hidden = false;
+    detailSelectionStrip.setAttribute("aria-live", "polite");
+    detailFooter == null ? void 0 : detailFooter.classList.add("detail-footer--with-selection-strip");
+  }
+  function getMultiOptionSelectionSummaryLabel(item, totalQuantity) {
+    if (!item || totalQuantity <= 0) {
+      return "";
+    }
+    if (item.id === "grappe-amari") {
+      return "".concat(totalQuantity, " ").concat(pluralize(totalQuantity, "digestivo", "digestivi"));
+    }
+    return "".concat(totalQuantity, " ").concat(pluralize(totalQuantity, "selezione", "selezioni"));
+  }
   function updateDetailActionButton(item) {
     if (!addToCartButton) {
       return;
     }
+    renderDetailSelectionStrip(item);
     if (item && shouldUseMultiOptionQuantityDetail(item)) {
       const totalQuantity = getMultiOptionSelectedTotal(item);
       addToCartButton.textContent = "Aggiungi al riepilogo";
@@ -2937,6 +2980,7 @@
     if (item && shouldUseMultiOptionQuantityDetail(item)) {
       detailQuantity.innerHTML = "";
       detailQuantity.hidden = true;
+      detailFooter == null ? void 0 : detailFooter.classList.remove("detail-footer--with-quantity");
       updateDetailActionButton(item);
       return;
     }
@@ -2949,6 +2993,7 @@
       increaseButton.addEventListener("click", () => updateSelectedQuantity(1));
     }
     detailQuantity.hidden = false;
+    detailFooter == null ? void 0 : detailFooter.classList.add("detail-footer--with-quantity");
     if (item) {
       updateDetailActionButton(item);
     }
@@ -3000,12 +3045,27 @@
     }
     return item.options.reduce((sum, option) => sum + getMultiOptionQuantity(item, option), 0);
   }
+  function getMultiOptionSelectedEntries(item) {
+    if (!item || !Array.isArray(item.options)) {
+      return [];
+    }
+    return item.options.map((option) => ({
+      option,
+      quantity: getMultiOptionQuantity(item, option)
+    })).filter((entry) => entry.quantity > 0);
+  }
   function updateMultiOptionQuantity(item, option, delta) {
     if (!item || !option) {
       return;
     }
+    setMultiOptionQuantity(item, option, getMultiOptionQuantity(item, option) + delta);
+  }
+  function setMultiOptionQuantity(item, option, quantity) {
+    if (!item || !option) {
+      return;
+    }
     const key = buildOptionQuantityKey(item, option);
-    const nextQuantity = Math.max(0, getMultiOptionQuantity(item, option) + delta);
+    const nextQuantity = Math.max(0, quantity);
     state.selectedOptionQuantities[key] = nextQuantity;
     renderOptions(item);
   }
@@ -3421,24 +3481,44 @@
   function findSectionTitleForItem(itemId) {
     return itemSectionLookup[itemId] || "";
   }
-  function formatDetailCategoryLabel(item) {
+  function shouldShowRoseLimitedGlint(item) {
+    return (item == null ? void 0 : item.id) === "rose-n5";
+  }
+  function renderRoseLimitedGlintMarkup() {
+    return '\n    <span class="limited-glint" aria-hidden="true">\n      <svg class="limited-glint__spark limited-glint__spark--primary" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 0.8 7.35 4.65 11.2 6 7.35 7.35 6 11.2 4.65 7.35 0.8 6 4.65 4.65Z" />\n      </svg>\n      <svg class="limited-glint__spark limited-glint__spark--soft" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 1.5 7 5 10.5 6 7 7 6 10.5 5 7 1.5 6 5 5Z" />\n      </svg>\n    </span>\n  ';
+  }
+  function renderItemCategoryMarkup(item) {
+    const categoryLabel = getItemCategoryLabel(item).trim();
+    if (!categoryLabel) {
+      return "";
+    }
+    const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+    return '\n    <span class="item-card__label'.concat(sparkleMarkup ? " item-card__label--rose-glint" : "", '">\n      ').concat(escapeHtml(categoryLabel), "\n      ").concat(sparkleMarkup, "\n    </span>\n  ");
+  }
+  function renderDetailCategoryMarkup(item) {
     const sectionTitle = findSectionTitleForItem(item.id).trim();
     const categoryLabel = getItemCategoryLabel(item).trim();
+    const safeSection = escapeHtml(sectionTitle);
+    const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+    const categoryMarkup = categoryLabel ? '\n        <span class="sheet-kicker__category'.concat(sparkleMarkup ? " sheet-kicker__category--rose-glint" : "", '">\n          ').concat(escapeHtml(categoryLabel), "\n          ").concat(sparkleMarkup, "\n        </span>\n      ") : "";
     if (sectionTitle && categoryLabel) {
       const normalizedSection = normalizeLabel(sectionTitle);
       const normalizedCategory = normalizeLabel(categoryLabel);
       if (normalizedSection === normalizedCategory) {
-        return sectionTitle;
+        return '<span class="sheet-kicker__section">'.concat(safeSection, "</span>");
       }
       if (normalizedCategory.includes(normalizedSection)) {
-        return categoryLabel;
+        return categoryMarkup;
       }
       if (normalizedSection.includes(normalizedCategory)) {
-        return sectionTitle;
+        return '<span class="sheet-kicker__section">'.concat(safeSection, "</span>");
       }
-      return "".concat(sectionTitle, ", ").concat(categoryLabel);
+      return '\n      <span class="sheet-kicker__section">'.concat(safeSection, ",</span>\n      ").concat(categoryMarkup, "\n    ");
     }
-    return categoryLabel || sectionTitle;
+    if (categoryMarkup) {
+      return categoryMarkup;
+    }
+    return safeSection ? '<span class="sheet-kicker__section">'.concat(safeSection, "</span>") : "";
   }
   function normalizeLabel(value) {
     return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
@@ -4127,10 +4207,13 @@
   }
   function renderTastingNotesIcon(icon) {
     if (icon === "eye") {
-      return '\n      <svg viewBox="0 0 48 48" role="presentation" focusable="false">\n        <circle cx="24" cy="24" r="18" fill="#8fded2" />\n        <path\n          d="M10.5 24s4.7-7 13.5-7 13.5 7 13.5 7-4.7 7-13.5 7-13.5-7-13.5-7Z"\n          fill="#f8fbfb"\n          stroke="currentColor"\n          stroke-width="2.5"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n        <circle cx="24" cy="24" r="5.1" fill="currentColor" />\n        <circle cx="25.8" cy="22.1" r="1.35" fill="#ffffff" />\n      </svg>\n    ';
+      return '<span class="tasting-notes-emoji-icon" aria-hidden="true">\u{1F441}\uFE0F</span>';
     }
     if (icon === "nose") {
       return '\n      <svg viewBox="0 0 48 48" role="presentation" focusable="false">\n        <path\n          d="M28 7.5c4.7 2.1 8.3 6.2 10.7 11.2 2.5 5.4 4.2 10.9 4.2 15.4 0 5.1-2.2 8.8-6.3 10.8-2.2 1-4.7 1.5-7.5 1.5-4.3 0-8.5-.9-12.3-2.8-3.4-1.7-5.9-4.1-7.4-7.2-.8-1.6-.3-3.4 1.2-4.4 3.1-2.2 5.6-4.8 7.5-8 2.6-4.4 4.2-9.5 5.8-15.5.4-1.7 2.4-2.7 4.1-1Z"\n          fill="#e6c8cd"\n        />\n        <path\n          d="M24.3 5.8c-.8 5.4-2.3 10.3-4.8 14.7-2.6 4.7-6 8.7-10.3 12-.7.5-1 1.2-1 2 0 1.6 1.1 3.1 3.1 4.4 1.8 1.2 4.2 2 7.1 2.6 2.2.4 3.6 1.4 4.1 3.5"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="2.6"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n        <path\n          d="M19.5 27.5c2.3-1.3 5-1.7 8-1.3 3.3.4 6 1.9 8.1 4.6"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="2.6"\n          stroke-linecap="round"\n          stroke-linejoin="round"\n        />\n      </svg>\n    ';
+    }
+    if (icon === "mouth") {
+      return '<span class="tasting-notes-emoji-icon" aria-hidden="true">\u{1F445}</span>';
     }
     if (icon === "style") {
       return '\n      <svg viewBox="0 0 24 24" role="presentation" focusable="false">\n        <path\n          d="M5.8 4.8h12.4a1.7 1.7 0 0 1 1.7 1.7v11a1.7 1.7 0 0 1-1.7 1.7H5.8a1.7 1.7 0 0 1-1.7-1.7v-11a1.7 1.7 0 0 1 1.7-1.7Z"\n          fill="none"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linejoin="round"\n        />\n        <path\n          d="M8.1 9.2h7.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n        <path\n          d="M8.1 12.4h7.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n        <path\n          d="M8.1 15.6h4.8"\n          stroke="currentColor"\n          stroke-width="1.9"\n          stroke-linecap="round"\n        />\n      </svg>\n    ';
