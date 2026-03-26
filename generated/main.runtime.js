@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.687";
+  var APP_BUILD_LABEL = "V.1.688";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -2887,16 +2887,17 @@
       const layoutClass = getOptionLayoutClass(option);
       const optionLabel = getOptionModalLabel(item, option) || option.label;
       const safeOptionLabel = escapeHtml(optionLabel);
+      const illustrationsMarkup = renderOptionIllustrations(option);
       const quantityBadgeMarkup = optionQuantity > 0 ? '\n            <span class="option-qty-badge" aria-label="'.concat(optionQuantity, ' selezionati">\n              ').concat(optionQuantity, "\n            </span>\n          ") : "";
       const removeButtonMarkup = optionQuantity > 0 ? '\n            <button\n              class="qty-btn option-qty-remove"\n              type="button"\n              data-option-qty-action="decrease"\n              aria-label="Riduci '.concat(safeOptionLabel, '"\n            >\n              <span class="option-qty-remove__icon" aria-hidden="true">\u2212</span>\n            </button>\n          ') : "";
-      optionCard.className = "option-qty-card".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass.replace("option-btn", "option-qty-card")) : "").concat(optionQuantity > 0 ? " is-selected" : "");
+      optionCard.className = "option-qty-card".concat(toneClass ? " ".concat(toneClass) : "").concat(layoutClass ? " ".concat(layoutClass.replace("option-btn", "option-qty-card")) : "").concat(illustrationsMarkup ? " option-qty-card--with-illustrations" : "").concat(optionQuantity > 0 ? " is-selected" : "");
       optionCard.setAttribute("role", "button");
       optionCard.setAttribute("tabindex", "0");
       optionCard.setAttribute(
         "aria-label",
         optionQuantity > 0 ? "".concat(optionLabel, ", ").concat(optionQuantity, " selezionati. Tocca per aggiungere ancora o usa il meno per ridurre.") : "Aggiungi ".concat(optionLabel)
       );
-      optionCard.innerHTML = '\n      <div class="option-copy">\n        <span class="option-label">'.concat(safeOptionLabel, "</span>\n        ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(escapeHtml(optionSubtitle), "</span>") : "", "\n      </div>\n      ").concat(quantityBadgeMarkup, "\n      ").concat(removeButtonMarkup, "\n    ");
+      optionCard.innerHTML = "\n      ".concat(illustrationsMarkup, '\n      <div class="option-copy">\n        <span class="option-label">').concat(safeOptionLabel, "</span>\n        ").concat(optionSubtitle ? '<span class="option-subtitle">'.concat(escapeHtml(optionSubtitle), "</span>") : "", "\n      </div>\n      ").concat(quantityBadgeMarkup, "\n      ").concat(removeButtonMarkup, "\n    ");
       optionCard.addEventListener("click", () => {
         updateMultiOptionQuantity(item, option, 1);
       });
@@ -2945,7 +2946,7 @@
       const optionLabel = escapeHtml(getOptionModalLabel(item, option) || option.label || "");
       return '\n        <span class="detail-selection-chip">\n          <span class="detail-selection-chip__label">'.concat(optionLabel, '</span>\n          <span class="detail-selection-chip__qty">').concat(quantity, "\xD7</span>\n        </span>\n      ");
     }).join("");
-    detailSelectionStrip.innerHTML = '\n    <div class="detail-selection-strip__header">\n      <span class="detail-selection-strip__label">Riepilogo selezione</span>\n      <span class="detail-selection-strip__count" aria-label="'.concat(escapeHtml(summaryLabel), '">').concat(totalQuantity, '</span>\n    </div>\n    <p class="detail-selection-strip__summary">Hai selezionato ').concat(escapeHtml(summaryLabel), '</p>\n    <div class="detail-selection-strip__chips">').concat(chipsMarkup, "</div>\n  ");
+    detailSelectionStrip.innerHTML = '\n    <p class="detail-selection-strip__summary">Hai selezionato '.concat(escapeHtml(summaryLabel), '</p>\n    <div class="detail-selection-strip__chips">').concat(chipsMarkup, "</div>\n  ");
     detailSelectionStrip.hidden = false;
     detailSelectionStrip.setAttribute("aria-live", "polite");
     detailFooter == null ? void 0 : detailFooter.classList.add("detail-footer--with-selection-strip");
@@ -3702,6 +3703,48 @@
     }
     return String(option.subtitle).trim();
   }
+  function getOptionIllustrations(option) {
+    if (!option || !Array.isArray(option.illustrations)) {
+      return [];
+    }
+    return option.illustrations.filter(
+      (illustration) => illustration && typeof illustration.asset === "string" && illustration.asset.trim()
+    );
+  }
+  function buildOptionIllustrationStyle(illustration) {
+    if (!illustration || typeof illustration !== "object") {
+      return "";
+    }
+    const styles = [];
+    const mappings = [
+      ["top", "--option-illustration-top"],
+      ["right", "--option-illustration-right"],
+      ["bottom", "--option-illustration-bottom"],
+      ["left", "--option-illustration-left"],
+      ["width", "--option-illustration-width"],
+      ["height", "--option-illustration-height"],
+      ["rotate", "--option-illustration-rotate"],
+      ["opacity", "--option-illustration-opacity"]
+    ];
+    mappings.forEach(([key, cssVar]) => {
+      const value = illustration[key];
+      if (value !== void 0 && value !== null && value !== "") {
+        styles.push("".concat(cssVar, ": ").concat(value));
+      }
+    });
+    return styles.join("; ");
+  }
+  function renderOptionIllustrations(option) {
+    const illustrations = getOptionIllustrations(option);
+    if (!illustrations.length) {
+      return "";
+    }
+    const illustrationsMarkup = illustrations.map((illustration, index) => {
+      const style = buildOptionIllustrationStyle(illustration);
+      return '\n        <img\n          class="option-qty-card__illustration option-qty-card__illustration--'.concat(index + 1, '"\n          src="').concat(getVisualAsset(illustration.asset), '"\n          alt=""\n          aria-hidden="true"\n          loading="lazy"\n          decoding="async"\n          ').concat(style ? 'style="'.concat(style, '"') : "", "\n        />\n      ");
+    }).join("");
+    return '\n    <div class="option-qty-card__illustrations" aria-hidden="true">\n      '.concat(illustrationsMarkup, "\n    </div>\n  ");
+  }
   function getOptionToneClass(option) {
     if (!option || typeof option.tone !== "string") {
       return "";
@@ -4180,7 +4223,7 @@
     if (bodyLines.length) {
       classes.push("text-panel-visual--copy");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --text-panel-start: ').concat(visual.gradientStart || "#38281b", ";\n        --text-panel-end: ").concat(visual.gradientEnd || "#a67343", ";\n        --text-panel-label: ").concat(visual.labelColor || "#fffdf8", ";\n        --text-panel-script: ").concat(visual.scriptColor || "rgba(17, 17, 17, 0.72)", ";\n        --text-panel-body: ").concat(visual.bodyColor || visual.labelColor || "#fffdf8", ';\n      "\n    >\n      ').concat(bodyLines.length ? '\n        <div class="text-panel-visual__copy">\n          '.concat(bodyLines.map((line) => '<span class="text-panel-visual__copy-line">'.concat(escapeHtml(line), "</span>")).join(""), "\n        </div>\n      ") : "\n        ".concat(visual.script ? '<span class="text-panel-visual__script">'.concat(visual.script, "</span>") : "", '\n        <span class="text-panel-visual__label">').concat(visual.label, "</span>\n      "), "\n    </div>\n  ");
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      style="\n        --text-panel-start: ').concat(visual.gradientStart || "#38281b", ";\n        --text-panel-end: ").concat(visual.gradientEnd || "#a67343", ";\n        --text-panel-label: ").concat(visual.labelColor || "#fffdf8", ";\n        --text-panel-script: ").concat(visual.scriptColor || "rgba(17, 17, 17, 0.72)", ";\n        --text-panel-body: ").concat(visual.bodyColor || visual.labelColor || "#fffdf8", ";\n        ").concat(visual.bodyFontFamily ? "--text-panel-copy-font-family: ".concat(visual.bodyFontFamily, ";") : "", "\n        ").concat(visual.detailBodyFontFamily ? "--text-panel-copy-detail-font-family: ".concat(visual.detailBodyFontFamily, ";") : "", "\n        ").concat(visual.bodyFontWeight ? "--text-panel-copy-font-weight: ".concat(visual.bodyFontWeight, ";") : "", "\n        ").concat(visual.detailBodyFontWeight ? "--text-panel-copy-detail-font-weight: ".concat(visual.detailBodyFontWeight, ";") : "", "\n        ").concat(visual.bodyLineHeight ? "--text-panel-copy-line-height: ".concat(visual.bodyLineHeight, ";") : "", "\n        ").concat(visual.detailBodyLineHeight ? "--text-panel-copy-detail-line-height: ".concat(visual.detailBodyLineHeight, ";") : "", "\n        ").concat(visual.bodyFontSize ? "--text-panel-copy-size: ".concat(visual.bodyFontSize, ";") : "", "\n        ").concat(visual.detailBodyFontSize ? "--text-panel-copy-detail-size: ".concat(visual.detailBodyFontSize, ";") : "", '\n      "\n    >\n      ').concat(bodyLines.length ? '\n        <div class="text-panel-visual__copy">\n          '.concat(bodyLines.map((line) => '<span class="text-panel-visual__copy-line">'.concat(escapeHtml(line), "</span>")).join(""), "\n        </div>\n      ") : "\n        ".concat(visual.script ? '<span class="text-panel-visual__script">'.concat(visual.script, "</span>") : "", '\n        <span class="text-panel-visual__label">').concat(visual.label, "</span>\n      "), "\n    </div>\n  ");
   }
   function renderTastingNotesVisual(visual, context) {
     var _a2;

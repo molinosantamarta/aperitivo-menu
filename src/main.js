@@ -3738,6 +3738,7 @@ function renderMultiOptionQuantityGroup(item, label = "") {
     const layoutClass = getOptionLayoutClass(option);
     const optionLabel = getOptionModalLabel(item, option) || option.label;
     const safeOptionLabel = escapeHtml(optionLabel);
+    const illustrationsMarkup = renderOptionIllustrations(option);
     const quantityBadgeMarkup =
       optionQuantity > 0
         ? `
@@ -3762,7 +3763,9 @@ function renderMultiOptionQuantityGroup(item, label = "") {
 
     optionCard.className = `option-qty-card${toneClass ? ` ${toneClass}` : ""}${
       layoutClass ? ` ${layoutClass.replace("option-btn", "option-qty-card")}` : ""
-    }${optionQuantity > 0 ? " is-selected" : ""}`;
+    }${illustrationsMarkup ? " option-qty-card--with-illustrations" : ""}${
+      optionQuantity > 0 ? " is-selected" : ""
+    }`;
     optionCard.setAttribute("role", "button");
     optionCard.setAttribute("tabindex", "0");
     optionCard.setAttribute(
@@ -3772,6 +3775,7 @@ function renderMultiOptionQuantityGroup(item, label = "") {
         : `Aggiungi ${optionLabel}`
     );
     optionCard.innerHTML = `
+      ${illustrationsMarkup}
       <div class="option-copy">
         <span class="option-label">${safeOptionLabel}</span>
         ${optionSubtitle ? `<span class="option-subtitle">${escapeHtml(optionSubtitle)}</span>` : ""}
@@ -3849,10 +3853,6 @@ function renderDetailSelectionStrip(item) {
     .join("");
 
   detailSelectionStrip.innerHTML = `
-    <div class="detail-selection-strip__header">
-      <span class="detail-selection-strip__label">Riepilogo selezione</span>
-      <span class="detail-selection-strip__count" aria-label="${escapeHtml(summaryLabel)}">${totalQuantity}</span>
-    </div>
     <p class="detail-selection-strip__summary">Hai selezionato ${escapeHtml(summaryLabel)}</p>
     <div class="detail-selection-strip__chips">${chipsMarkup}</div>
   `;
@@ -4965,6 +4965,74 @@ function getOptionModalSubtitle(option) {
   return String(option.subtitle).trim();
 }
 
+function getOptionIllustrations(option) {
+  if (!option || !Array.isArray(option.illustrations)) {
+    return [];
+  }
+
+  return option.illustrations.filter(
+    (illustration) => illustration && typeof illustration.asset === "string" && illustration.asset.trim()
+  );
+}
+
+function buildOptionIllustrationStyle(illustration) {
+  if (!illustration || typeof illustration !== "object") {
+    return "";
+  }
+
+  const styles = [];
+  const mappings = [
+    ["top", "--option-illustration-top"],
+    ["right", "--option-illustration-right"],
+    ["bottom", "--option-illustration-bottom"],
+    ["left", "--option-illustration-left"],
+    ["width", "--option-illustration-width"],
+    ["height", "--option-illustration-height"],
+    ["rotate", "--option-illustration-rotate"],
+    ["opacity", "--option-illustration-opacity"],
+  ];
+
+  mappings.forEach(([key, cssVar]) => {
+    const value = illustration[key];
+    if (value !== undefined && value !== null && value !== "") {
+      styles.push(`${cssVar}: ${value}`);
+    }
+  });
+
+  return styles.join("; ");
+}
+
+function renderOptionIllustrations(option) {
+  const illustrations = getOptionIllustrations(option);
+  if (!illustrations.length) {
+    return "";
+  }
+
+  const illustrationsMarkup = illustrations
+    .map((illustration, index) => {
+      const style = buildOptionIllustrationStyle(illustration);
+
+      return `
+        <img
+          class="option-qty-card__illustration option-qty-card__illustration--${index + 1}"
+          src="${getVisualAsset(illustration.asset)}"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          ${style ? `style="${style}"` : ""}
+        />
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="option-qty-card__illustrations" aria-hidden="true">
+      ${illustrationsMarkup}
+    </div>
+  `;
+}
+
 function getOptionToneClass(option) {
   if (!option || typeof option.tone !== "string") {
     return "";
@@ -5780,6 +5848,14 @@ function renderTextPanelVisual(visual, context) {
         --text-panel-label: ${visual.labelColor || "#fffdf8"};
         --text-panel-script: ${visual.scriptColor || "rgba(17, 17, 17, 0.72)"};
         --text-panel-body: ${visual.bodyColor || visual.labelColor || "#fffdf8"};
+        ${visual.bodyFontFamily ? `--text-panel-copy-font-family: ${visual.bodyFontFamily};` : ""}
+        ${visual.detailBodyFontFamily ? `--text-panel-copy-detail-font-family: ${visual.detailBodyFontFamily};` : ""}
+        ${visual.bodyFontWeight ? `--text-panel-copy-font-weight: ${visual.bodyFontWeight};` : ""}
+        ${visual.detailBodyFontWeight ? `--text-panel-copy-detail-font-weight: ${visual.detailBodyFontWeight};` : ""}
+        ${visual.bodyLineHeight ? `--text-panel-copy-line-height: ${visual.bodyLineHeight};` : ""}
+        ${visual.detailBodyLineHeight ? `--text-panel-copy-detail-line-height: ${visual.detailBodyLineHeight};` : ""}
+        ${visual.bodyFontSize ? `--text-panel-copy-size: ${visual.bodyFontSize};` : ""}
+        ${visual.detailBodyFontSize ? `--text-panel-copy-detail-size: ${visual.detailBodyFontSize};` : ""}
       "
     >
       ${

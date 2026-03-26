@@ -25,11 +25,14 @@
             {
               "type": "text-panel",
               "bodyLines": [
-                "Una birra in stile belga,",
-                "delicata e speziata:",
-                "fresca, elegante",
-                "e molto dissetante."
+                "Stile belga,",
+                "delicata, speziata,",
+                "fresca ed elegante."
               ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "1.02",
+              "detailBodyFontSize": "clamp(1.12rem, 3.85vw, 1.28rem)",
               "gradientStart": "#d8bf95",
               "gradientEnd": "#f3e2c7",
               "bodyColor": "#6a4b2b"
@@ -117,7 +120,7 @@
           "page": 1,
           "name": "Ghe Sem",
           "category": "Artigianali",
-          "description": "Marzen 6% vol. 33 cl.",
+          "description": "Märzen 6% vol. 33 cl.",
           "visual": {
             "type": "beer-script",
             "label": "Ghe Sem",
@@ -234,7 +237,7 @@
             {
               "type": "text-panel",
               "bodyLines": [
-                "Una Session IPA moderna,",
+                "Session IPA moderna,",
                 "fresca, luppolata",
                 "e facile da bere."
               ],
@@ -337,7 +340,7 @@
             {
               "type": "text-panel",
               "bodyLines": [
-                "Una German Ale chiara,",
+                "German Ale chiara,",
                 "fruttata, conviviale,",
                 "molto beverina."
               ],
@@ -442,9 +445,8 @@
             {
               "type": "text-panel",
               "bodyLines": [
-                "Una Bitter inglese",
-                "tradizionale e ambrata:",
-                "snella, equilibrata",
+                "Bitter inglese",
+                "tradizionale: equilibrata",
                 "e di facile bevuta."
               ],
               "gradientStart": "#b34d29",
@@ -1872,6 +1874,24 @@
               "label": "Nanin",
               "displayLabel": "Nanin",
               "subtitle": "L'amaro alle erbe del Molino",
+              "illustrations": [
+                {
+                  "asset": "nanin-rosemary.svg",
+                  "left": "10px",
+                  "bottom": "-8px",
+                  "width": "46px",
+                  "rotate": "-12deg",
+                  "opacity": "0.11"
+                },
+                {
+                  "asset": "nanin-sage.svg",
+                  "top": "-2px",
+                  "right": "10px",
+                  "width": "48px",
+                  "rotate": "10deg",
+                  "opacity": "0.12"
+                }
+              ],
               "tone": "herbal-green",
               "layout": "full-row",
               "price": 4
