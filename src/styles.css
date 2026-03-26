@@ -2164,7 +2164,7 @@ a {
   width: var(--can-width, auto);
   height: var(--can-height, auto);
   transform: translateX(calc(-50% + var(--can-shift-x, 0px)))
-    translateY(calc(var(--can-extra-lift, 0px) * -1))
+    translateY(calc((var(--can-extra-lift, 0px) * -1) + var(--can-shift-y, 0px)))
     scale(var(--can-scale, 1))
     rotate(var(--can-rotate, 0deg));
   transform-origin: center bottom;
@@ -2580,7 +2580,7 @@ a {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  color: #fff9f1;
+  color: var(--coming-soon-text-color, #fff9f1);
   background: linear-gradient(
     135deg,
     var(--coming-soon-start, #e0a12a) 0%,
@@ -2591,7 +2591,7 @@ a {
     inset 0 0 0 1px rgba(255, 255, 255, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
     0 3px 8px rgba(56, 24, 12, 0.14);
-  text-shadow: 0 1px 0 rgba(76, 32, 18, 0.22);
+  text-shadow: var(--coming-soon-text-shadow, 0 1px 0 rgba(76, 32, 18, 0.22));
   letter-spacing: 0.01em;
   text-transform: none;
 }
@@ -3565,12 +3565,13 @@ a {
 
 .limited-glint {
   position: relative;
-  width: 18px;
-  height: 14px;
-  flex: 0 0 18px;
+  width: 20px;
+  height: 16px;
+  flex: 0 0 20px;
   margin-left: 1px;
   transform: translateY(-1px);
   isolation: isolate;
+  animation: limited-glint-drift 4.6s ease-in-out infinite;
 }
 
 .limited-glint::before {
@@ -3580,67 +3581,129 @@ a {
 .limited-glint__spark {
   position: absolute;
   display: block;
-  fill: rgba(255, 249, 252, 0.92);
-  stroke: rgba(248, 214, 225, 0.95);
-  stroke-width: 0.65;
-  opacity: 0.62;
+  fill: rgba(255, 252, 255, 0.98);
+  stroke: rgba(227, 151, 178, 0.96);
+  stroke-width: 0.82;
+  opacity: 0.76;
   overflow: visible;
-  filter:
-    drop-shadow(0 0 0.7px rgba(111, 35, 58, 0.72))
-    drop-shadow(0 1px 2px rgba(111, 35, 58, 0.34))
-    drop-shadow(0 0 4px rgba(255, 231, 241, 0.32));
+  filter: none;
   transform-origin: center;
-  animation: rose-limited-glint 6.2s ease-in-out infinite;
+  will-change: transform, opacity;
   z-index: 1;
 }
 
 .limited-glint__spark--primary {
   top: -1px;
   left: 0;
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
+  animation: rose-limited-glint-primary 3.35s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 }
 
 .limited-glint__spark--soft {
-  top: 7px;
-  left: 11px;
-  width: 6px;
-  height: 6px;
-  opacity: 0.42;
-  filter:
-    drop-shadow(0 0 0.55px rgba(111, 35, 58, 0.64))
-    drop-shadow(0 1px 1.6px rgba(111, 35, 58, 0.26))
-    drop-shadow(0 0 3px rgba(255, 231, 241, 0.24));
-  animation-delay: 1.2s;
-  animation-duration: 7s;
+  top: 8px;
+  left: 12px;
+  width: 6.5px;
+  height: 6.5px;
+  opacity: 0.56;
+  animation: rose-limited-glint-soft 2.9s cubic-bezier(0.4, 0, 0.24, 1) infinite;
+  animation-delay: 0.42s;
 }
 
-@keyframes rose-limited-glint {
+@keyframes limited-glint-drift {
   0%,
-  64%,
   100% {
+    transform: translateY(-1px) translateX(0) rotate(-3deg);
+  }
+
+  34% {
+    transform: translateY(-2px) translateX(0.5px) rotate(2deg);
+  }
+
+  67% {
+    transform: translateY(0) translateX(-0.4px) rotate(5deg);
+  }
+}
+
+@keyframes rose-limited-glint-primary {
+  0% {
+    opacity: 0.56;
+    transform: translate3d(0, 1px, 0) scale(0.82) rotate(0deg);
+  }
+
+  18% {
+    opacity: 0.98;
+    transform: translate3d(0, -0.5px, 0) scale(1.12) rotate(26deg);
+  }
+
+  34% {
+    opacity: 0.68;
+    transform: translate3d(0.2px, -1px, 0) scale(0.9) rotate(68deg);
+  }
+
+  52% {
+    opacity: 1;
+    transform: translate3d(-0.2px, -1.5px, 0) scale(1.2) rotate(116deg);
+  }
+
+  70% {
+    opacity: 0.64;
+    transform: translate3d(0, -0.4px, 0) scale(0.88) rotate(168deg);
+  }
+
+  86% {
+    opacity: 0.9;
+    transform: translate3d(0.15px, -1.1px, 0) scale(1.06) rotate(214deg);
+  }
+
+  100% {
+    opacity: 0.56;
+    transform: translate3d(0, 1px, 0) scale(0.82) rotate(252deg);
+  }
+}
+
+@keyframes rose-limited-glint-soft {
+  0% {
+    opacity: 0.42;
+    transform: translate3d(0, 1.4px, 0) scale(0.7) rotate(0deg);
+  }
+
+  22% {
+    opacity: 0.82;
+    transform: translate3d(0.2px, -0.4px, 0) scale(1.04) rotate(40deg);
+  }
+
+  44% {
     opacity: 0.5;
-    transform: scale(0.92) rotate(0deg);
+    transform: translate3d(-0.1px, -1px, 0) scale(0.8) rotate(96deg);
   }
-  72% {
-    opacity: 0.72;
-    transform: scale(1) rotate(16deg);
+
+  64% {
+    opacity: 0.9;
+    transform: translate3d(0.15px, -1.3px, 0) scale(1.08) rotate(152deg);
   }
-  78% {
-    opacity: 0.92;
-    transform: scale(1.14) rotate(42deg);
+
+  82% {
+    opacity: 0.48;
+    transform: translate3d(-0.15px, -0.2px, 0) scale(0.78) rotate(208deg);
   }
-  84% {
-    opacity: 0.58;
-    transform: scale(0.98) rotate(72deg);
+
+  100% {
+    opacity: 0.42;
+    transform: translate3d(0, 1.4px, 0) scale(0.7) rotate(260deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .limited-glint {
+    animation: none;
+    transform: translateY(-1px);
+  }
+
   .limited-glint__spark {
     animation: none;
-    opacity: 0.62;
-    transform: scale(0.96);
+    opacity: 0.74;
+    transform: scale(0.98);
   }
 }
 
@@ -4046,7 +4109,7 @@ a {
   gap: 8px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-btn {
+.sheet-panel--detail .option-group--wine-format .option-btn {
   grid-template-columns: 1fr;
   justify-items: center;
   align-content: center;
@@ -4056,12 +4119,12 @@ a {
   padding: 10px 10px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-copy {
+.sheet-panel--detail .option-group--wine-format .option-copy {
   justify-items: center;
   gap: 1px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .option-group--wine-format .option-price {
+.sheet-panel--detail .option-group--wine-format .option-price {
   white-space: nowrap;
 }
 
@@ -4189,6 +4252,13 @@ a {
   align-self: center;
 }
 
+.option-qty-card .option-price {
+  font-size: 0.92rem;
+  line-height: 1;
+  font-weight: 800;
+  color: rgba(76, 66, 57, 0.88);
+}
+
 .option-qty-card.option-btn--herbal-green.option-qty-card--full-row {
   min-height: 98px;
   padding: 18px 20px;
@@ -4275,6 +4345,255 @@ a {
   box-shadow:
     inset 0 0 0 2px rgba(34, 28, 22, 0.78),
     0 0 0 4px rgba(184, 140, 52, 0.18);
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-group__options--compact,
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-group__options--compact {
+  grid-template-columns: 1fr;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-group__options--compact {
+  gap: 10px;
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-group__options--compact {
+  gap: 8px;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--full-row {
+  min-height: 88px;
+  padding: 16px 18px;
+  border-radius: 16px;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--with-inline-selector.option-qty-card--full-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--full-row .option-copy {
+  width: 100%;
+  gap: 4px;
+  justify-items: start;
+  text-align: left;
+  padding-right: 40px;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--with-inline-selector.option-qty-card--full-row .option-copy {
+  padding-right: 0;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--full-row .option-label {
+  font-size: clamp(1.18rem, 4.6vw, 1.38rem);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-card.option-qty-card--full-row .option-price {
+  font-size: 1rem;
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-card.option-qty-card--full-row {
+  min-height: 74px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(246, 249, 252, 0.98), rgba(236, 242, 248, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(101, 119, 142, 0.14),
+    0 8px 16px rgba(66, 88, 110, 0.08);
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-card.option-qty-card--with-inline-selector.option-qty-card--full-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-card.option-qty-card--full-row .option-copy {
+  width: 100%;
+  gap: 3px;
+  justify-items: start;
+  text-align: left;
+  padding-right: 0;
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-card.option-qty-card--full-row .option-label {
+  font-size: clamp(1rem, 4vw, 1.12rem);
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-card.option-qty-card--full-row .option-price {
+  font-size: 0.94rem;
+  color: rgba(67, 78, 92, 0.88);
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-inline,
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-inline {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  grid-template-columns: 30px minmax(22px, auto) 30px;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow:
+    inset 0 0 0 1px rgba(61, 95, 122, 0.12),
+    0 6px 12px rgba(66, 98, 122, 0.08);
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-inline__btn,
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-inline__btn {
+  width: 30px;
+  height: 30px;
+}
+
+.sheet-panel--detail[data-detail-item-id="acqua"] .option-qty-inline__value,
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-inline__value {
+  min-width: 22px;
+  text-align: center;
+  font-size: 0.94rem;
+  line-height: 1;
+  font-weight: 800;
+  color: rgba(33, 61, 81, 0.94);
+}
+
+.sheet-panel--detail[data-detail-item-id="bibite"] .option-qty-inline {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.option-qty-card.option-btn--water-still {
+  background: linear-gradient(180deg, rgba(243, 250, 255, 0.98), rgba(228, 240, 248, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(111, 154, 184, 0.24),
+    0 10px 18px rgba(76, 114, 142, 0.08);
+}
+
+.option-qty-card.option-btn--water-still .option-label,
+.option-qty-card.option-btn--water-still .option-price {
+  color: rgba(40, 65, 84, 0.96);
+}
+
+.option-qty-card.option-btn--water-still .option-subtitle {
+  color: rgba(64, 92, 114, 0.78);
+}
+
+.option-qty-card.option-btn--water-still .option-qty-inline {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.option-qty-card.option-btn--water-sparkling {
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(244, 252, 255, 0.98), rgba(225, 241, 252, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(92, 154, 189, 0.24),
+    0 10px 18px rgba(64, 118, 150, 0.08);
+}
+
+.option-qty-card.option-btn--water-sparkling::before,
+.option-qty-card.option-btn--water-sparkling::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 10px;
+  width: var(--water-bubble-width, 52px);
+  height: var(--water-bubble-height, 48px);
+  pointer-events: none;
+  opacity: 0;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.24));
+  animation: water-sparkling-bubble-rise var(--water-bubble-duration, 3s) linear infinite;
+}
+
+.option-qty-card.option-btn--water-sparkling::before {
+  left: 8%;
+  --water-bubble-width: 58px;
+  --water-bubble-height: 50px;
+  --water-bubble-duration: 3.1s;
+  animation-delay: -1.6s;
+  background-image:
+    radial-gradient(circle at 14% 80%, rgba(255, 255, 255, 0.98) 0 18%, rgba(255, 255, 255, 0.5) 24%, transparent 42%),
+    radial-gradient(circle at 38% 52%, rgba(255, 255, 255, 0.96) 0 14%, rgba(255, 255, 255, 0.44) 20%, transparent 34%),
+    radial-gradient(circle at 74% 26%, rgba(255, 255, 255, 0.92) 0 15%, rgba(255, 255, 255, 0.4) 22%, transparent 36%),
+    radial-gradient(circle at 58% 8%, rgba(255, 255, 255, 0.86) 0 10%, rgba(255, 255, 255, 0.32) 16%, transparent 26%);
+}
+
+.option-qty-card.option-btn--water-sparkling::after {
+  right: 6%;
+  --water-bubble-width: 54px;
+  --water-bubble-height: 52px;
+  --water-bubble-duration: 2.7s;
+  animation-delay: -0.92s;
+  background-image:
+    radial-gradient(circle at 10% 66%, rgba(255, 255, 255, 0.97) 0 16%, rgba(255, 255, 255, 0.48) 23%, transparent 40%),
+    radial-gradient(circle at 44% 32%, rgba(255, 255, 255, 0.92) 0 14%, rgba(255, 255, 255, 0.38) 20%, transparent 34%),
+    radial-gradient(circle at 78% 74%, rgba(255, 255, 255, 0.94) 0 14%, rgba(255, 255, 255, 0.42) 22%, transparent 36%),
+    radial-gradient(circle at 64% 12%, rgba(255, 255, 255, 0.84) 0 9%, rgba(255, 255, 255, 0.3) 15%, transparent 24%);
+}
+
+.option-qty-card.option-btn--water-sparkling .option-copy,
+.option-qty-card.option-btn--water-sparkling .option-qty-inline {
+  position: relative;
+  z-index: 1;
+}
+
+.option-qty-card.option-btn--water-sparkling .option-label,
+.option-qty-card.option-btn--water-sparkling .option-price {
+  color: rgba(31, 73, 101, 0.96);
+}
+
+.option-qty-card.option-btn--water-sparkling .option-subtitle {
+  color: rgba(53, 103, 136, 0.8);
+}
+
+.option-qty-card.option-btn--water-sparkling .option-qty-inline {
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.option-qty-card.option-btn--water-still.is-selected {
+  background: linear-gradient(180deg, rgba(236, 247, 255, 0.98), rgba(215, 232, 244, 0.98));
+  box-shadow:
+    inset 0 0 0 2px rgba(73, 116, 147, 0.84),
+    0 12px 20px rgba(64, 108, 140, 0.14);
+}
+
+.option-qty-card.option-btn--water-sparkling.is-selected {
+  background: linear-gradient(180deg, rgba(235, 248, 255, 0.98), rgba(212, 233, 246, 0.98));
+  box-shadow:
+    inset 0 0 0 2px rgba(53, 126, 168, 0.84),
+    0 12px 20px rgba(56, 116, 150, 0.14);
+}
+
+@keyframes water-sparkling-bubble-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.76);
+  }
+
+  18% {
+    opacity: 0.92;
+  }
+
+  72% {
+    opacity: 0.78;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(2px, -18px, 0) scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option-qty-card.option-btn--water-sparkling::before,
+  .option-qty-card.option-btn--water-sparkling::after {
+    content: none;
+    animation: none;
+  }
 }
 
 .option-qty-badge {
@@ -4457,6 +4776,11 @@ a {
   box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.08);
 }
 
+.detail-quantity__pill[aria-disabled="true"] {
+  background: rgba(17, 17, 17, 0.035);
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.05);
+}
+
 .detail-quantity__btn {
   width: 32px;
   height: 32px;
@@ -4468,6 +4792,10 @@ a {
   font-size: 0.96rem;
   font-weight: 800;
   color: var(--ink);
+}
+
+.detail-quantity__pill[aria-disabled="true"] .detail-quantity__value {
+  color: rgba(84, 66, 52, 0.44);
 }
 
 .sheet-panel--detail .sheet-actions {
@@ -4523,16 +4851,19 @@ a {
   padding-inline: 16px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-quantity__pill {
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-quantity__pill,
+.sheet-panel--detail[data-detail-item-id="pinot-extra-dry"] .detail-quantity__pill {
   min-height: 44px;
   padding: 6px 6px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-footer--with-quantity .detail-actions .utility-btn--accent {
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-footer--with-quantity .detail-actions .utility-btn--accent,
+.sheet-panel--detail[data-detail-item-id="pinot-extra-dry"] .detail-footer--with-quantity .detail-actions .utility-btn--accent {
   min-height: 44px;
 }
 
-.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-actions .utility-btn--accent[disabled] {
+.sheet-panel--detail[data-detail-item-id="oltrepo"] .detail-actions .utility-btn--accent[disabled],
+.sheet-panel--detail[data-detail-item-id="pinot-extra-dry"] .detail-actions .utility-btn--accent[disabled] {
   opacity: 1;
   color: rgba(255, 250, 245, 0.76);
   background: linear-gradient(135deg, rgba(123, 107, 94, 0.94), rgba(91, 77, 67, 0.96));
@@ -4966,6 +5297,10 @@ a {
   line-height: 1.2;
   font-weight: 600;
   color: rgba(88, 70, 55, 0.76);
+}
+
+.option-subtitle--italic {
+  font-style: italic;
 }
 
 .option-label--solo {

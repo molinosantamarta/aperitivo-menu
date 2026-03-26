@@ -1349,11 +1349,16 @@
           "page": 1,
           "name": "Pinot, spumante extra dry",
           "category": "Bollicine",
-          "description": "Metodo Charmat, Az. Brega, Oltrepò Pavese.",
+          "description": "Metodo Charmat-Martinotti, Brega, Oltrepò Pavese.",
+          "compactDetailOptions": true,
+          "detailOptionStyle": "wine-format",
           "hideCardVisual": true,
           "visual": {
             "type": "photo-panel",
             "backgroundColor": "#efe8de"
+          },
+          "detailVisual": {
+            "type": "none"
           },
           "sideVisual": {
             "type": "floating-bottle",
@@ -1454,8 +1459,27 @@
           "hideCardVisual": true,
           "visual": {
             "type": "photo-panel",
+            "asset": "borgo-molino-back.jpg",
+            "position": "center center",
+            "size": "cover",
             "backgroundColor": "#efe8de"
           },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "borgo-molino-back.jpg",
+              "position": "center center",
+              "size": "cover",
+              "backgroundColor": "#efe8de"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "glera-zero-alt.jpg",
+              "position": "center center",
+              "size": "90% auto",
+              "backgroundColor": "#ffffff"
+            }
+          ],
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "glera-zero-floating.webp",
@@ -1566,6 +1590,8 @@
           "page": 2,
           "name": "Acqua",
           "category": "Altre bevande",
+          "compactDetailOptions": true,
+          "detailMultiOptionQuantities": true,
           "description": "Naturale o frizzante, bottiglia 50 cl.",
           "hideCardVisual": true,
           "visual": {
@@ -1576,6 +1602,9 @@
             "gradientEnd": "#edf8ff",
             "labelColor": "#fdfcff",
             "radius": "22px"
+          },
+          "detailVisual": {
+            "type": "none"
           },
           "sideVisual": {
             "type": "floating-bottle",
@@ -1588,24 +1617,18 @@
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
-          "selectionGroups": [
-            {
-              "id": "water-type",
-              "label": "Tipologia",
-              "options": [
-                {
-                  "label": "Naturale"
-                },
-                {
-                  "label": "Frizzante"
-                }
-              ]
-            }
-          ],
           "options": [
             {
-              "label": "",
-              "price": 1.5
+              "label": "Naturale",
+              "price": 1.5,
+              "tone": "water-still",
+              "layout": "full-row"
+            },
+            {
+              "label": "Frizzante",
+              "price": 1.5,
+              "tone": "water-sparkling",
+              "layout": "full-row"
             }
           ],
           "rect": [
@@ -1632,6 +1655,8 @@
           "page": 2,
           "name": "Bibite",
           "category": "Altre bevande",
+          "compactDetailOptions": true,
+          "detailMultiOptionQuantities": true,
           "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca. 33 cl.",
           "visual": {
             "type": "can-cluster",
@@ -1643,6 +1668,8 @@
                 "detailLeft": "22%",
                 "bottom": "-31%",
                 "height": "132px",
+                "cardScale": "0.814",
+                "detailShiftY": "20%",
                 "rotate": "-8deg",
                 "zIndex": 2,
                 "detailSelectedLift": "-2px",
@@ -1656,6 +1683,8 @@
                 "detailLeft": "40%",
                 "bottom": "-29%",
                 "height": "132px",
+                "cardScale": "0.814",
+                "detailShiftY": "20%",
                 "rotate": "-2deg",
                 "zIndex": 4,
                 "detailSelectedLift": "-2px",
@@ -1669,6 +1698,8 @@
                 "detailLeft": "57%",
                 "bottom": "-34%",
                 "height": "138px",
+                "cardScale": "0.814",
+                "detailShiftY": "20%",
                 "rotate": "4deg",
                 "zIndex": 3,
                 "detailSelectedLift": "-2px",
@@ -1682,6 +1713,8 @@
                 "detailLeft": "74%",
                 "bottom": "-32%",
                 "height": "138px",
+                "cardScale": "0.814",
+                "detailShiftY": "20%",
                 "rotate": "9deg",
                 "zIndex": 1,
                 "selectedLift": "1px",
@@ -1692,30 +1725,26 @@
               }
             ]
           },
-          "selectionGroups": [
-            {
-              "id": "bibita",
-              "label": "Bibita",
-              "options": [
-                {
-                  "label": "Coca-Cola"
-                },
-                {
-                  "label": "Coca Zero"
-                },
-                {
-                  "label": "Estathè Limone"
-                },
-                {
-                  "label": "Estathè Pesca"
-                }
-              ]
-            }
-          ],
           "options": [
             {
-              "label": "",
-              "price": 4
+              "label": "Coca-Cola",
+              "price": 4,
+              "layout": "full-row"
+            },
+            {
+              "label": "Coca Zero",
+              "price": 4,
+              "layout": "full-row"
+            },
+            {
+              "label": "Estathè Limone",
+              "price": 4,
+              "layout": "full-row"
+            },
+            {
+              "label": "Estathè Pesca",
+              "price": 4,
+              "layout": "full-row"
             }
           ],
           "rect": [
@@ -2044,6 +2073,7 @@
               "label": "Nanin",
               "displayLabel": "Nanin",
               "subtitle": "L'amaro alle erbe del Molino",
+              "subtitleStyle": "italic",
               "illustrations": [
                 {
                   "asset": "nanin-rosemary.svg",

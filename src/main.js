@@ -270,6 +270,33 @@ const displayFontPlan =
     (plan) => plan.family === DISPLAY_FONT_FAMILY
   ) || null;
 
+function isLocalRuntimeHost(hostname = window.location.hostname) {
+  if (!hostname) {
+    return true;
+  }
+
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname.indexOf("192.168.") === 0 ||
+    hostname.indexOf("10.") === 0 ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+  );
+}
+
+function shouldLoadClarity() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  if (window.location.protocol === "file:" || !window.isSecureContext || isLocalRuntimeHost()) {
+    return false;
+  }
+
+  return !(typeof navigator !== "undefined" && navigator.webdriver);
+}
+
 function getClarityApi() {
   return typeof window !== "undefined" && typeof window.clarity === "function"
     ? window.clarity
@@ -277,7 +304,7 @@ function getClarityApi() {
 }
 
 function loadClarityScript() {
-  if (clarityScriptRequested || !CLARITY_PROJECT_ID) {
+  if (clarityScriptRequested || !CLARITY_PROJECT_ID || !shouldLoadClarity()) {
     return;
   }
 
@@ -595,6 +622,11 @@ addToCartButton.addEventListener("click", () => {
   if (!option) {
     return;
   }
+
+  if (state.selectedQuantity <= 0) {
+    return;
+  }
+
   addItemToCart(item, option, state.selectedQuantity);
   persistCart();
   renderCart();
@@ -740,16 +772,7 @@ async function init() {
 }
 
 function registerServiceWorker() {
-  const host = window.location.hostname;
-  const isLocalHost =
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "0.0.0.0" ||
-    host.indexOf("192.168.") === 0 ||
-    host.indexOf("10.") === 0 ||
-    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
-
-  if (!("serviceWorker" in navigator) || !window.isSecureContext || isLocalHost) {
+  if (!("serviceWorker" in navigator) || !window.isSecureContext || isLocalRuntimeHost()) {
     return;
   }
 
@@ -3055,6 +3078,37 @@ function hexToRgb(hex) {
   };
 }
 
+function getColorRelativeLuminance(color) {
+  const rgb = hexToRgb(color);
+  if (!rgb) {
+    return null;
+  }
+
+  const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((value) => {
+    const channel = value / 255;
+    return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function shouldUseDarkComingSoonText(start, mid, end) {
+  const midLuminance = getColorRelativeLuminance(mid);
+  const endLuminance = getColorRelativeLuminance(end);
+
+  if (midLuminance === null || endLuminance === null) {
+    return false;
+  }
+
+  return (midLuminance + endLuminance) / 2 >= 0.62;
+}
+
+function getDarkComingSoonTextColor(start, mid, end) {
+  const sectionTone = mixHexColors(mid || start, end || mid || start, 0.52);
+  const systemDarkTone = mixHexColors("#171717", "#675c53", 0.42);
+  return mixHexColors(sectionTone, systemDarkTone, 0.78);
+}
+
 function renderSections() {
   menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
 
@@ -3450,11 +3504,17 @@ function getItemCardStyle(item, availabilityState) {
   const start = visual?.gradientStart || "#e0a12a";
   const mid = visual?.gradientMid || visual?.gradientEnd || "#d66a2f";
   const end = visual?.gradientEnd || "#b63b4a";
+  const usesDarkText = shouldUseDarkComingSoonText(start, mid, end);
+  const comingSoonTextColor = usesDarkText ? getDarkComingSoonTextColor(start, mid, end) : "#fff9f1";
 
   return [
     `--coming-soon-start: ${start}`,
     `--coming-soon-mid: ${mid}`,
     `--coming-soon-end: ${end}`,
+    `--coming-soon-text-color: ${comingSoonTextColor}`,
+    `--coming-soon-text-shadow: ${
+      usesDarkText ? "0 1px 0 rgba(255, 255, 255, 0.2)" : "0 1px 0 rgba(76, 32, 18, 0.22)"
+    }`,
   ].join("; ");
 }
 
@@ -3747,6 +3807,7 @@ function renderOptions(item) {
   const shouldShowFormat = item.options.length > 1;
   const usesStepFlow = usesSequentialWineDetailFlow(item);
   const selectionGroupsComplete = hasCompletedSelectionGroups(item);
+  const usesWineFormatStyle = usesWineFormatOptionStyle(item);
 
   if (!selectionGroups.length && !shouldShowFormat) {
     detailOptions.hidden = true;
@@ -3819,15 +3880,19 @@ function renderOptions(item) {
   }
 
   const formatGroup = createOptionGroup(
-    shouldShowFormat && (selectionGroups.length || usesStepFlow) ? "Formato" : "",
+    shouldShowFormat && (selectionGroups.length || usesStepFlow || usesWineFormatStyle) ? "Formato" : "",
     shouldUseCompactDetailOptions(item)
   );
   const formatEnabled = !usesStepFlow || selectionGroupsComplete;
   const hasSelectedFormat = hasSelectedDetailOption(item);
 
-  if (item?.id === "oltrepo") {
-    formatGroup.wrapper.classList.add("option-group--wine-format", "option-group--step");
+  if (usesWineFormatStyle) {
+    formatGroup.wrapper.classList.add("option-group--wine-format");
     formatGroup.options.classList.add("option-group__options--inline-pair");
+  }
+
+  if (item?.id === "oltrepo") {
+    formatGroup.wrapper.classList.add("option-group--step");
     formatGroup.wrapper.dataset.stepState = !formatEnabled ? "pending" : hasSelectedFormat ? "complete" : "current";
   }
 
@@ -3835,6 +3900,7 @@ function renderOptions(item) {
     const optionButton = document.createElement("button");
     const displayLabel = getOptionModalLabel(item, option);
     const optionSubtitle = getOptionModalSubtitle(option);
+    const optionSubtitleClass = getOptionModalSubtitleClass(option);
     const toneClass = getOptionToneClass(option);
     const layoutClass = getOptionLayoutClass(option);
     const hidePrice = shouldHideDetailOptionPrices(item);
@@ -3858,7 +3924,11 @@ function renderOptions(item) {
       ? `
           <span class="option-copy">
             <span class="option-label">${displayLabel}</span>
-            ${optionSubtitle ? `<span class="option-subtitle">${optionSubtitle}</span>` : ""}
+            ${
+              optionSubtitle
+                ? `<span class="option-subtitle${optionSubtitleClass ? ` ${optionSubtitleClass}` : ""}">${optionSubtitle}</span>`
+                : ""
+            }
           </span>
           ${hidePrice ? "" : `<span class="option-price">${formatPrice(option.price)}</span>`}
         `
@@ -3871,7 +3941,7 @@ function renderOptions(item) {
       }
       const previousIndex = state.selectedOptionIndex;
       state.selectedOptionIndex = index;
-      if (usesStepFlow && previousIndex !== index) {
+      if (usesGuidedDetailQuantityFlow(item) && previousIndex !== index) {
         state.selectedQuantity = 0;
       }
       renderOptions(item);
@@ -3886,18 +3956,21 @@ function renderOptions(item) {
 
 function renderMultiOptionQuantityGroup(item, label = "") {
   const formatGroup = createOptionGroup(label, shouldUseCompactDetailOptions(item));
+  const usesEmbeddedSelector = shouldUseEmbeddedMultiOptionSelector(item);
 
   item.options.forEach((option) => {
     const optionCard = document.createElement("article");
     const optionQuantity = getMultiOptionQuantity(item, option);
     const optionSubtitle = getOptionModalSubtitle(option);
+    const optionSubtitleClass = getOptionModalSubtitleClass(option);
     const toneClass = getOptionToneClass(option);
     const layoutClass = getOptionLayoutClass(option);
     const optionLabel = getOptionModalLabel(item, option) || option.label;
     const safeOptionLabel = escapeHtml(optionLabel);
     const illustrationsMarkup = renderOptionIllustrations(option);
+    const showPrice = !shouldHideDetailOptionPrices(item) && Number.isFinite(option?.price);
     const quantityBadgeMarkup =
-      optionQuantity > 0
+      !usesEmbeddedSelector && optionQuantity > 0
         ? `
             <span class="option-qty-badge" aria-label="${optionQuantity} selezionati">
               ${optionQuantity}
@@ -3905,7 +3978,7 @@ function renderMultiOptionQuantityGroup(item, label = "") {
           `
         : "";
     const removeButtonMarkup =
-      optionQuantity > 0
+      !usesEmbeddedSelector && optionQuantity > 0
         ? `
             <button
               class="qty-btn option-qty-remove"
@@ -3917,26 +3990,60 @@ function renderMultiOptionQuantityGroup(item, label = "") {
             </button>
           `
         : "";
+    const inlineSelectorMarkup = usesEmbeddedSelector
+      ? `
+          <div class="option-qty-inline" aria-label="Quantità ${safeOptionLabel}">
+            <button
+              class="qty-btn option-qty-inline__btn"
+              type="button"
+              data-option-qty-action="decrease"
+              aria-label="Riduci ${safeOptionLabel}"
+              ${optionQuantity <= 0 ? "disabled" : ""}
+            >
+              −
+            </button>
+            <span class="option-qty-inline__value" aria-live="polite">${optionQuantity}</span>
+            <button
+              class="qty-btn option-qty-inline__btn"
+              type="button"
+              data-option-qty-action="increase"
+              aria-label="Aggiungi ${safeOptionLabel}"
+            >
+              +
+            </button>
+          </div>
+        `
+      : "";
 
     optionCard.className = `option-qty-card${toneClass ? ` ${toneClass}` : ""}${
       layoutClass ? ` ${layoutClass.replace("option-btn", "option-qty-card")}` : ""
     }${illustrationsMarkup ? " option-qty-card--with-illustrations" : ""}${
+      usesEmbeddedSelector ? " option-qty-card--with-inline-selector" : ""
+    }${
       optionQuantity > 0 ? " is-selected" : ""
     }`;
     optionCard.setAttribute("role", "button");
     optionCard.setAttribute("tabindex", "0");
     optionCard.setAttribute(
       "aria-label",
-      optionQuantity > 0
-        ? `${optionLabel}, ${optionQuantity} selezionati. Tocca per aggiungere ancora o usa il meno per ridurre.`
-        : `Aggiungi ${optionLabel}`
+      usesEmbeddedSelector
+        ? `${optionLabel}, quantità ${optionQuantity}. Tocca la card o il più per aggiungere, usa il meno per ridurre.`
+        : optionQuantity > 0
+          ? `${optionLabel}, ${optionQuantity} selezionati. Tocca per aggiungere ancora o usa il meno per ridurre.`
+          : `Aggiungi ${optionLabel}`
     );
     optionCard.innerHTML = `
       ${illustrationsMarkup}
       <div class="option-copy">
         <span class="option-label">${safeOptionLabel}</span>
-        ${optionSubtitle ? `<span class="option-subtitle">${escapeHtml(optionSubtitle)}</span>` : ""}
+        ${
+          optionSubtitle
+            ? `<span class="option-subtitle${optionSubtitleClass ? ` ${optionSubtitleClass}` : ""}">${escapeHtml(optionSubtitle)}</span>`
+            : ""
+        }
+        ${showPrice ? `<span class="option-price">${formatPrice(option.price)}</span>` : ""}
       </div>
+      ${inlineSelectorMarkup}
       ${quantityBadgeMarkup}
       ${removeButtonMarkup}
     `;
@@ -3954,7 +4061,8 @@ function renderMultiOptionQuantityGroup(item, label = "") {
     optionCard.querySelectorAll("[data-option-qty-action]").forEach((control) => {
       control.addEventListener("click", (event) => {
         event.stopPropagation();
-        updateMultiOptionQuantity(item, option, -1);
+        const delta = control.getAttribute("data-option-qty-action") === "increase" ? 1 : -1;
+        updateMultiOptionQuantity(item, option, delta);
       });
     });
 
@@ -3969,11 +4077,27 @@ function getMultiOptionQuantityGroupLabel(item, hasSelectionGroups = false) {
     return "Formato";
   }
 
+  if (item?.id === "acqua") {
+    return "Tipologia";
+  }
+
+  if (item?.id === "bibite") {
+    return "Bibite";
+  }
+
   if (item?.id === "grappe-amari") {
     return "Scegli tipologia e quantità";
   }
 
   return "Scegli opzione e quantità";
+}
+
+function shouldUseEmbeddedMultiOptionSelector(item) {
+  return Boolean(item && ["acqua", "bibite"].includes(item.id));
+}
+
+function shouldUseShortDetailActionLabel(item) {
+  return Boolean(item && item.id === "pinot-extra-dry");
 }
 
 function renderDetailSelectionStrip(item) {
@@ -4023,6 +4147,14 @@ function getMultiOptionSelectionSummaryLabel(item, totalQuantity) {
     return "";
   }
 
+  if (item.id === "acqua") {
+    return `${totalQuantity} ${pluralize(totalQuantity, "bottiglia", "bottiglie")}`;
+  }
+
+  if (item.id === "bibite") {
+    return `${totalQuantity} ${pluralize(totalQuantity, "bibita", "bibite")}`;
+  }
+
   if (item.id === "grappe-amari") {
     return `${totalQuantity} ${pluralize(totalQuantity, "digestivo", "digestivi")}`;
   }
@@ -4035,10 +4167,10 @@ function updateDetailActionButton(item) {
     return;
   }
 
-  const actionLabel = item?.id === "oltrepo" ? "Aggiungi" : "Aggiungi al riepilogo";
-  const usesStepFlow = usesSequentialWineDetailFlow(item);
-  const stepFlowSelectionsReady = !usesStepFlow || isSequentialWineSelectionReady(item);
-  const stepFlowReadyToAdd = !usesStepFlow || isSequentialWineDetailReady(item);
+  const actionLabel = shouldUseShortDetailActionLabel(item) ? "Aggiungi" : "Aggiungi al riepilogo";
+  const usesGuidedQuantityFlow = usesGuidedDetailQuantityFlow(item);
+  const guidedSelectionsReady = !usesGuidedQuantityFlow || isGuidedDetailQuantitySelectionReady(item);
+  const guidedReadyToAdd = !usesGuidedQuantityFlow || isGuidedDetailQuantityReady(item);
 
   renderDetailSelectionStrip(item);
 
@@ -4052,9 +4184,9 @@ function updateDetailActionButton(item) {
 
   addToCartButton.textContent = actionLabel;
   addToCartButton.hidden = false;
-  addToCartButton.disabled = !stepFlowReadyToAdd;
-  addToCartButton.dataset.stepReady = stepFlowSelectionsReady ? "true" : "false";
-  if (stepFlowReadyToAdd) {
+  addToCartButton.disabled = !guidedReadyToAdd;
+  addToCartButton.dataset.stepReady = guidedSelectionsReady ? "true" : "false";
+  if (guidedReadyToAdd) {
     addToCartButton.removeAttribute("aria-disabled");
   } else {
     addToCartButton.setAttribute("aria-disabled", "true");
@@ -4072,7 +4204,9 @@ function renderQuantityControl() {
     return;
   }
 
-  if (item && usesSequentialWineDetailFlow(item) && !isSequentialWineSelectionReady(item)) {
+  const quantitySelectionReady = item ? isGuidedDetailQuantitySelectionReady(item) : true;
+
+  if (item && shouldHideDetailQuantityUntilSelection(item) && !quantitySelectionReady) {
     detailQuantity.innerHTML = "";
     detailQuantity.hidden = true;
     detailFooter?.classList.remove("detail-footer--with-quantity");
@@ -4080,15 +4214,16 @@ function renderQuantityControl() {
     return;
   }
 
-  const quantityFloor = item && usesSequentialWineDetailFlow(item) ? 0 : 1;
+  const quantityFloor = item && usesGuidedDetailQuantityFlow(item) ? 0 : 1;
+  const quantityDisabled = Boolean(item && shouldDisableDetailQuantityUntilSelection(item) && !quantitySelectionReady);
 
   detailQuantity.innerHTML = `
-    <div class="detail-quantity__pill" aria-label="Seleziona quantita">
+    <div class="detail-quantity__pill" aria-label="Seleziona quantita" ${quantityDisabled ? 'aria-disabled="true"' : ""}>
       <button
         class="qty-btn detail-quantity__btn"
         type="button"
         aria-label="Riduci quantita"
-        ${state.selectedQuantity <= quantityFloor ? "disabled" : ""}
+        ${state.selectedQuantity <= quantityFloor || quantityDisabled ? "disabled" : ""}
       >
         −
       </button>
@@ -4097,6 +4232,7 @@ function renderQuantityControl() {
         class="qty-btn detail-quantity__btn"
         type="button"
         aria-label="Aumenta quantita"
+        ${quantityDisabled ? "disabled" : ""}
       >
         +
       </button>
@@ -4138,16 +4274,22 @@ function resetDetailPanelLayout() {
 
 function updateSelectedQuantity(delta) {
   const item = itemLookup[state.selectedItemId];
-  const minimumQuantity = item && usesSequentialWineDetailFlow(item) ? 0 : 1;
+  if (item && usesGuidedDetailQuantityFlow(item) && !isGuidedDetailQuantitySelectionReady(item)) {
+    renderQuantityControl();
+    return;
+  }
+
+  const minimumQuantity = item && usesGuidedDetailQuantityFlow(item) ? 0 : 1;
   state.selectedQuantity = Math.max(minimumQuantity, state.selectedQuantity + delta);
   renderQuantityControl();
 }
 
 function initializeDetailState(item) {
   const usesStepFlow = usesSequentialWineDetailFlow(item);
-  state.selectedOptionIndex = usesStepFlow ? -1 : 0;
+  const usesGuidedQuantityFlow = usesGuidedDetailQuantityFlow(item);
+  state.selectedOptionIndex = usesGuidedQuantityFlow ? -1 : 0;
   state.selectedOptionQuantities = {};
-  state.selectedQuantity = usesStepFlow ? 0 : 1;
+  state.selectedQuantity = usesGuidedQuantityFlow ? 0 : 1;
   state.selectedSelections = {};
   state.detailEditorialSlide = buildDetailEditorialSlide(item);
 
@@ -5185,6 +5327,15 @@ function getSelectionGroups(item) {
   return Array.isArray(item.selectionGroups) ? item.selectionGroups : [];
 }
 
+function usesWineFormatOptionStyle(item) {
+  if (!item) {
+    return false;
+  }
+
+  const explicitStyle = normalizeLabel(item.detailOptionStyle || "");
+  return explicitStyle === "wine-format" || item.id === "oltrepo";
+}
+
 function getSelectedOption(item) {
   if (!item || !Array.isArray(item.options)) {
     return null;
@@ -5201,6 +5352,18 @@ function getSelectedSelectionIndex(group) {
 
 function usesSequentialWineDetailFlow(item) {
   return Boolean(item && item.id === "oltrepo");
+}
+
+function usesGuidedDetailQuantityFlow(item) {
+  return Boolean(item && ["oltrepo", "pinot-extra-dry"].includes(item.id));
+}
+
+function shouldHideDetailQuantityUntilSelection(item) {
+  return usesSequentialWineDetailFlow(item);
+}
+
+function shouldDisableDetailQuantityUntilSelection(item) {
+  return Boolean(item && item.id === "pinot-extra-dry");
 }
 
 function hasSelectedSelectionOption(group) {
@@ -5231,6 +5394,22 @@ function isSequentialWineSelectionReady(item) {
 
 function isSequentialWineDetailReady(item) {
   return isSequentialWineSelectionReady(item) && state.selectedQuantity > 0;
+}
+
+function isGuidedDetailQuantitySelectionReady(item) {
+  if (!item || !usesGuidedDetailQuantityFlow(item)) {
+    return true;
+  }
+
+  if (usesSequentialWineDetailFlow(item)) {
+    return isSequentialWineSelectionReady(item);
+  }
+
+  return hasSelectedDetailOption(item);
+}
+
+function isGuidedDetailQuantityReady(item) {
+  return isGuidedDetailQuantitySelectionReady(item) && state.selectedQuantity > 0;
 }
 
 function getSelectionOptionToneClass(item, group, selectionOption) {
@@ -5335,6 +5514,14 @@ function getOptionModalSubtitle(option) {
   }
 
   return String(option.subtitle).trim();
+}
+
+function getOptionModalSubtitleClass(option) {
+  if (!option || typeof option.subtitleStyle !== "string") {
+    return "";
+  }
+
+  return option.subtitleStyle.trim().toLowerCase() === "italic" ? "option-subtitle--italic" : "";
 }
 
 function getOptionIllustrations(option) {
@@ -5918,10 +6105,11 @@ function renderVisualByType(visual, context, item = null) {
 }
 
 function getDetailPreviewSlides(item) {
+  const detailVisual = getContextualVisual(item, "detail");
   const baseSlides = hasDetailGallery(item)
-    ? item.detailGallery.filter(Boolean)
-    : item.visual
-      ? [item.visual]
+    ? item.detailGallery.filter((visual) => visual && visual.type !== "none")
+    : detailVisual && detailVisual.type !== "none"
+      ? [detailVisual]
       : [];
   const orderedBaseSlides = reorderDetailPreviewSlides(baseSlides, item?.detailPreviewStartIndex);
   const editorialSlide = item.id === state.selectedItemId ? state.detailEditorialSlide : null;
@@ -6203,6 +6391,7 @@ function renderCanClusterVisual(visual, context, item = null) {
                 --can-width: ${getCanClusterItemValue(canItem, "width", context, "auto")};
                 --can-height: ${getCanClusterItemValue(canItem, "height", context, "auto")};
                 --can-rotate: ${getCanClusterItemValue(canItem, "rotate", context, "0deg")};
+                --can-shift-y: ${getCanClusterItemValue(canItem, "shiftY", context, "0px")};
                 --can-z: ${
                   activeCanIndex >= 0 && index === activeCanIndex
                     ? Number(getCanClusterItemValue(canItem, "zIndex", context, 1)) + 4
@@ -6221,7 +6410,7 @@ function renderCanClusterVisual(visual, context, item = null) {
                     ? activeCanIndex >= 0 && index === activeCanIndex
                       ? detailSelectedScale
                       : detailDefaultScale
-                    : "0.74"
+                    : getCanClusterItemValue(canItem, "scale", context, "0.74")
                 };
               "
             />
@@ -6598,6 +6787,10 @@ function buildTitleLogoStyle(visual) {
 function getContextualVisual(item, context = "detail") {
   if (!item) {
     return null;
+  }
+
+  if (context === "detail" && Object.prototype.hasOwnProperty.call(item, "detailVisual")) {
+    return item.detailVisual || null;
   }
 
   if (context === "card" && item.cardVisual) {
