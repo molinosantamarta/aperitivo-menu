@@ -60,7 +60,7 @@ assert(
   "Service worker root/public non allineati"
 );
 assert(
-  /APP_BUILD_LABEL = "V\.1\.\d+"/.test(buildMeta),
+  /APP_BUILD_LABEL = "V\.1\.0\.\d+"/.test(buildMeta),
   "Build label non valido in src/generated/build-meta.js"
 );
 

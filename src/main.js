@@ -1,4 +1,4 @@
-import { APP_BUILD_LABEL } from "./generated/build-meta.js";
+import { APP_BUILD_FOOTER_LABEL, APP_BUILD_LABEL } from "./generated/build-meta.js";
 
 window.__agriMenuRuntimeLoaded = true;
 
@@ -510,7 +510,7 @@ if (appLoaderBuild) {
 }
 
 if (siteBuild) {
-  siteBuild.textContent = `Versione ${APP_BUILD_LABEL}`;
+  siteBuild.textContent = APP_BUILD_FOOTER_LABEL;
 }
 
 window.addEventListener("resize", () => {

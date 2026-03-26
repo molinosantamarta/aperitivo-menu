@@ -2173,7 +2173,7 @@ a {
 }
 
 .item-card[data-item-id="oltrepo"] .can-cluster-visual {
-  min-height: 160px;
+  min-height: 148px;
   isolation: isolate;
   overflow: visible;
   background: transparent;
@@ -2183,7 +2183,7 @@ a {
 .item-card[data-item-id="oltrepo"] .can-cluster-visual::before {
   content: "";
   position: absolute;
-  inset: 30px 0 0;
+  inset: 24px 0 0;
   border-radius: 22px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
@@ -2197,12 +2197,29 @@ a {
   z-index: 0;
 }
 
+.item-card[data-item-id="oltrepo"] .can-cluster-visual::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 30px;
+  border-radius: 0 0 22px 22px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(234, 220, 223, 0) 0%,
+      rgba(255, 255, 255, 0.14) 38%,
+      rgba(244, 236, 239, 0.42) 70%,
+      rgba(234, 220, 223, 0.84) 100%
+    );
+  pointer-events: none;
+  z-index: 5;
+}
+
 .item-card[data-item-id="oltrepo"] .can-cluster-visual__can {
-  bottom: calc(var(--can-bottom, -26%) + 44px);
-  filter:
-    drop-shadow(0 18px 24px rgba(58, 31, 38, 0.26))
-    drop-shadow(0 0 8px rgba(255, 255, 255, 0.42))
-    drop-shadow(0 0 14px rgba(255, 255, 255, 0.16));
+  bottom: calc(var(--can-bottom, -26%) + 18px);
+  filter: none;
   animation: none;
 }
 

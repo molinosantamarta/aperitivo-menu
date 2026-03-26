@@ -20,7 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.697";
+  var APP_BUILD_LABEL = "V.1.0.698";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.698";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -498,7 +499,7 @@
     appLoaderBuild.textContent = APP_BUILD_LABEL;
   }
   if (siteBuild) {
-    siteBuild.textContent = "Versione ".concat(APP_BUILD_LABEL);
+    siteBuild.textContent = APP_BUILD_FOOTER_LABEL;
   }
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();
