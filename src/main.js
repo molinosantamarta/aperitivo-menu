@@ -3519,20 +3519,29 @@ function renderDetailMeta(item) {
     return;
   }
 
+  const tagline = typeof item?.detailTagline === "string" ? item.detailTagline.trim() : "";
   const mention = item?.producerMention;
   const resources = Array.isArray(item?.producerResources)
     ? item.producerResources.filter((resource) => resource && resource.href && resource.label)
     : [];
 
-  if ((!mention || !mention.handle || !mention.href) && resources.length === 0) {
+  const hasMention = Boolean(mention && mention.handle && mention.href);
+  const isTaglineOnly = Boolean(tagline) && !hasMention && resources.length === 0;
+
+  if (!tagline && !hasMention && resources.length === 0) {
     detailMeta.innerHTML = "";
     detailMeta.hidden = true;
+    detailMeta.classList.remove("detail-meta--tagline-only");
     return;
   }
 
   const parts = [];
 
-  if (mention && mention.handle && mention.href) {
+  if (tagline) {
+    parts.push(`<p class="detail-tagline">${escapeHtml(tagline)}</p>`);
+  }
+
+  if (hasMention) {
     const normalizedHandle = String(mention.handle).trim().replace(/^@+/, "");
     const safeHandle = escapeHtml(normalizedHandle);
     const safeHref = escapeHtml(mention.href);
@@ -3581,6 +3590,7 @@ function renderDetailMeta(item) {
 
   detailMeta.innerHTML = parts.join("");
   detailMeta.hidden = false;
+  detailMeta.classList.toggle("detail-meta--tagline-only", isTaglineOnly);
 }
 
 function openCart() {
@@ -3945,6 +3955,7 @@ function applyDetailPanelLayout(item) {
 
   resetDetailPanelLayout();
   detailPanel.classList.add(`sheet-panel--detail-${detailLayout}`);
+  detailPanel.classList.toggle("sheet-panel--beer-item", isBeerItem(item));
   detailPanel.dataset.detailLayout = detailLayout;
 }
 
@@ -3953,6 +3964,7 @@ function resetDetailPanelLayout() {
     detailPanel.classList.remove(className);
   });
 
+  detailPanel.classList.remove("sheet-panel--beer-item");
   delete detailPanel.dataset.detailLayout;
 }
 
@@ -4037,12 +4049,14 @@ function refreshDetailPreview(item) {
     return;
   }
 
+  const hasGallery = hasDetailPreviewGallery(item);
+
   detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}${
-    hasDetailPreviewGallery(item) ? " sheet-preview--gallery" : ""
+    hasGallery ? " sheet-preview--gallery" : " sheet-preview--single"
   }${
     state.detailEditorialSlide ? " sheet-preview--editorial-gallery" : ""
   }${
-    isArtisanalBeerItem(item) || isDrinkItem(item) ? " sheet-preview--beer-script-framed" : ""
+    hasGallery && (isArtisanalBeerItem(item) || isDrinkItem(item)) ? " sheet-preview--beer-script-framed" : ""
   }`;
   detailPreview.innerHTML = renderDetailPreview(item);
   setupDetailGallery();
@@ -5693,6 +5707,13 @@ function renderPhotoPanelVisual(visual, context, item) {
     classes.push("photo-panel-visual--deferred");
   }
 
+  const detailCaption =
+    context === "detail" && typeof visual?.detailCaption === "string" ? visual.detailCaption.trim() : "";
+
+  if (detailCaption) {
+    classes.push("photo-panel-visual--with-caption");
+  }
+
   return `
     <div
       class="${classes.join(" ")}"
@@ -5703,8 +5724,19 @@ function renderPhotoPanelVisual(visual, context, item) {
         --photo-panel-size: ${visual.size || "cover"};
         --photo-panel-bg: ${visual.backgroundColor || "transparent"};
         --photo-panel-blend: ${visual.blendMode || "normal"};
+        ${visual.detailCaptionFontFamily ? `--photo-panel-caption-font-family: ${visual.detailCaptionFontFamily};` : ""}
+        ${visual.detailCaptionFontSize ? `--photo-panel-caption-size: ${visual.detailCaptionFontSize};` : ""}
+        ${visual.detailCaptionLineHeight ? `--photo-panel-caption-line-height: ${visual.detailCaptionLineHeight};` : ""}
+        ${visual.detailCaptionLetterSpacing ? `--photo-panel-caption-letter-spacing: ${visual.detailCaptionLetterSpacing};` : ""}
+        ${visual.detailCaptionColor ? `--photo-panel-caption-color: ${visual.detailCaptionColor};` : ""}
       "
-    ></div>
+    >
+      ${
+        detailCaption
+          ? `<span class="photo-panel-visual__caption">${escapeHtml(detailCaption)}</span>`
+          : ""
+      }
+    </div>
   `;
 }
 

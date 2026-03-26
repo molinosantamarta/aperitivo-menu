@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.690";
+  var APP_BUILD_LABEL = "V.1.691";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -2744,15 +2744,22 @@
     if (!detailMeta) {
       return;
     }
+    const tagline = typeof (item == null ? void 0 : item.detailTagline) === "string" ? item.detailTagline.trim() : "";
     const mention = item == null ? void 0 : item.producerMention;
     const resources = Array.isArray(item == null ? void 0 : item.producerResources) ? item.producerResources.filter((resource) => resource && resource.href && resource.label) : [];
-    if ((!mention || !mention.handle || !mention.href) && resources.length === 0) {
+    const hasMention = Boolean(mention && mention.handle && mention.href);
+    const isTaglineOnly = Boolean(tagline) && !hasMention && resources.length === 0;
+    if (!tagline && !hasMention && resources.length === 0) {
       detailMeta.innerHTML = "";
       detailMeta.hidden = true;
+      detailMeta.classList.remove("detail-meta--tagline-only");
       return;
     }
     const parts = [];
-    if (mention && mention.handle && mention.href) {
+    if (tagline) {
+      parts.push('<p class="detail-tagline">'.concat(escapeHtml(tagline), "</p>"));
+    }
+    if (hasMention) {
       const normalizedHandle = String(mention.handle).trim().replace(/^@+/, "");
       const safeHandle = escapeHtml(normalizedHandle);
       const safeHref = escapeHtml(mention.href);
@@ -2772,6 +2779,7 @@
     });
     detailMeta.innerHTML = parts.join("");
     detailMeta.hidden = false;
+    detailMeta.classList.toggle("detail-meta--tagline-only", isTaglineOnly);
   }
   function openCart() {
     rememberLastFocusedElement();
@@ -3003,12 +3011,14 @@
     const detailLayout = getDetailLayout(item);
     resetDetailPanelLayout();
     detailPanel.classList.add("sheet-panel--detail-".concat(detailLayout));
+    detailPanel.classList.toggle("sheet-panel--beer-item", isBeerItem(item));
     detailPanel.dataset.detailLayout = detailLayout;
   }
   function resetDetailPanelLayout() {
     DETAIL_LAYOUT_CLASS_NAMES.forEach((className) => {
       detailPanel.classList.remove(className);
     });
+    detailPanel.classList.remove("sheet-panel--beer-item");
     delete detailPanel.dataset.detailLayout;
   }
   function updateSelectedQuantity(delta) {
@@ -3074,7 +3084,8 @@
     if (!detailPreview || !item) {
       return;
     }
-    detailPreview.className = "sheet-preview".concat(getDetailPreviewClass(item)).concat(hasDetailPreviewGallery(item) ? " sheet-preview--gallery" : "").concat(state.detailEditorialSlide ? " sheet-preview--editorial-gallery" : "").concat(isArtisanalBeerItem(item) || isDrinkItem(item) ? " sheet-preview--beer-script-framed" : "");
+    const hasGallery = hasDetailPreviewGallery(item);
+    detailPreview.className = "sheet-preview".concat(getDetailPreviewClass(item)).concat(hasGallery ? " sheet-preview--gallery" : " sheet-preview--single").concat(state.detailEditorialSlide ? " sheet-preview--editorial-gallery" : "").concat(hasGallery && (isArtisanalBeerItem(item) || isDrinkItem(item)) ? " sheet-preview--beer-script-framed" : "");
     detailPreview.innerHTML = renderDetailPreview(item);
     setupDetailGallery();
   }
@@ -4167,7 +4178,11 @@
     if (shouldDeferImage) {
       classes.push("photo-panel-visual--deferred");
     }
-    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ';\n      "\n    ></div>\n  ');
+    const detailCaption = context === "detail" && typeof (visual == null ? void 0 : visual.detailCaption) === "string" ? visual.detailCaption.trim() : "";
+    if (detailCaption) {
+      classes.push("photo-panel-visual--with-caption");
+    }
+    return '\n    <div\n      class="'.concat(classes.join(" "), '"\n      ').concat(shouldDeferImage ? 'data-photo-panel-image="'.concat(imageUrl, '" data-photo-panel-loaded="false"') : "", '\n      style="\n        --photo-panel-image: ').concat(shouldDeferImage ? "none" : imageUrl ? "url('".concat(imageUrl, "')") : "none", ";\n        --photo-panel-position: ").concat(visual.position || "center center", ";\n        --photo-panel-size: ").concat(visual.size || "cover", ";\n        --photo-panel-bg: ").concat(visual.backgroundColor || "transparent", ";\n        --photo-panel-blend: ").concat(visual.blendMode || "normal", ";\n        ").concat(visual.detailCaptionFontFamily ? "--photo-panel-caption-font-family: ".concat(visual.detailCaptionFontFamily, ";") : "", "\n        ").concat(visual.detailCaptionFontSize ? "--photo-panel-caption-size: ".concat(visual.detailCaptionFontSize, ";") : "", "\n        ").concat(visual.detailCaptionLineHeight ? "--photo-panel-caption-line-height: ".concat(visual.detailCaptionLineHeight, ";") : "", "\n        ").concat(visual.detailCaptionLetterSpacing ? "--photo-panel-caption-letter-spacing: ".concat(visual.detailCaptionLetterSpacing, ";") : "", "\n        ").concat(visual.detailCaptionColor ? "--photo-panel-caption-color: ".concat(visual.detailCaptionColor, ";") : "", '\n      "\n    >\n      ').concat(detailCaption ? '<span class="photo-panel-visual__caption">'.concat(escapeHtml(detailCaption), "</span>") : "", "\n    </div>\n  ");
   }
   function renderCanClusterVisual(visual, context, item = null) {
     const classes = ["can-cluster-visual"];
