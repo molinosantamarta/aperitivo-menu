@@ -488,6 +488,7 @@ const appLoaderBarFill = document.querySelector("#appLoaderBarFill");
 const appLoaderPercent = document.querySelector("#appLoaderPercent");
 const appLoaderMessage = document.querySelector("#appLoaderMessage");
 const appLoaderBuild = document.querySelector("#appLoaderBuild");
+const siteBuild = document.querySelector("#siteBuild");
 const promoAgriCarousel = document.querySelector("#promoAgriCarousel");
 const promoAgriViewport = document.querySelector("#promoAgriViewport");
 const promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
@@ -506,6 +507,10 @@ const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
 
 if (appLoaderBuild) {
   appLoaderBuild.textContent = APP_BUILD_LABEL;
+}
+
+if (siteBuild) {
+  siteBuild.textContent = `Versione ${APP_BUILD_LABEL}`;
 }
 
 window.addEventListener("resize", () => {

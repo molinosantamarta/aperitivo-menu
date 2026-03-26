@@ -1463,6 +1463,12 @@ a {
   text-wrap: balance;
 }
 
+#section-taglieri .menu-section__footer-note {
+  margin-top: 30px;
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+
 .menu-group {
   scroll-margin-top: var(--section-scroll-offset);
 }
@@ -3138,6 +3144,17 @@ a {
   line-height: 1.45;
   text-align: center;
   text-wrap: balance;
+}
+
+.site-build {
+  margin: -14px auto 18px;
+  color: rgba(93, 79, 68, 0.46);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 @media (max-width: 420px) {

@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.695";
+  var APP_BUILD_LABEL = "V.1.696";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -478,6 +478,7 @@
   var appLoaderPercent = document.querySelector("#appLoaderPercent");
   var appLoaderMessage = document.querySelector("#appLoaderMessage");
   var appLoaderBuild = document.querySelector("#appLoaderBuild");
+  var siteBuild = document.querySelector("#siteBuild");
   var promoAgriCarousel = document.querySelector("#promoAgriCarousel");
   var promoAgriViewport = document.querySelector("#promoAgriViewport");
   var promoAgriVideoTrack = document.querySelector("#promoAgriVideoTrack");
@@ -495,6 +496,9 @@
   var formatShowcaseLink = document.querySelector("#formatShowcaseLink");
   if (appLoaderBuild) {
     appLoaderBuild.textContent = APP_BUILD_LABEL;
+  }
+  if (siteBuild) {
+    siteBuild.textContent = "Versione ".concat(APP_BUILD_LABEL);
   }
   window.addEventListener("resize", () => {
     syncSectionScrollOffset();

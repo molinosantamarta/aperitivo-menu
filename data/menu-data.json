@@ -83,7 +83,7 @@
           ],
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "bianchina-floating.png",
+            "asset": "bianchina-floating.webp",
             "width": "124px",
             "height": "259px",
             "right": "14px",
@@ -408,7 +408,7 @@
           ],
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "casciaball-floating.png",
+            "asset": "casciaball-floating.webp",
             "width": "124px",
             "height": "259px",
             "right": "14px",
@@ -577,7 +577,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "moretti-33.png",
+            "asset": "moretti-33.webp",
             "width": "106px",
             "height": "223px",
             "right": "16px",
@@ -627,7 +627,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "birra-spina.png",
+            "asset": "birra-spina.webp",
             "width": "112px",
             "height": "236px",
             "right": "8px",
@@ -745,7 +745,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "campari-floating.png",
+            "asset": "campari-floating.webp",
             "width": "99px",
             "height": "209px",
             "right": "2px",
@@ -805,7 +805,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "sarti-floating.png",
+            "asset": "sarti-floating.webp",
             "width": "99px",
             "height": "209px",
             "right": "2px",
@@ -870,7 +870,7 @@
           },
           "accentVisual": {
             "type": "floating-accent",
-            "asset": "sambuco-floating.png",
+            "asset": "sambuco-floating.webp",
             "width": "117px",
             "height": "117px",
             "right": "56px",
@@ -992,7 +992,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.png",
+            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.webp",
             "width": "86px",
             "height": "218px",
             "right": "16px",
@@ -1111,7 +1111,7 @@
           "detailDescription": "Vini bianchi e rossi, fermi e vivaci. Az. Agricola Luciano Brega.",
           "cardVisual": {
             "type": "can-cluster",
-            "asset": "oltrepo-back.png",
+            "asset": "oltrepo-back.webp",
             "backgroundColor": "#eadcdf",
             "position": "center center",
             "size": "cover",
@@ -1164,7 +1164,7 @@
           },
           "visual": {
             "type": "photo-panel",
-            "asset": "oltrepo-back.png",
+            "asset": "oltrepo-back.webp",
             "position": "center center",
             "size": "cover",
             "selectionAssets": {
@@ -1301,7 +1301,7 @@
           ],
           "visual": {
             "type": "photo-panel",
-            "asset": "rossodelupo-back.png",
+            "asset": "rossodelupo-back.webp",
             "position": "39% center",
             "size": "82% auto",
             "backgroundColor": "#6b2030",
@@ -1390,14 +1390,14 @@
           "description": "Brut metodo classico, 40 mesi sui lieviti, millesimato, Lombardia.",
           "visual": {
             "type": "photo-panel",
-            "asset": "40lune-back.jpeg",
+            "asset": "40lune-back.webp",
             "position": "center 18%",
             "size": "cover"
           },
           "detailGallery": [
             {
               "type": "photo-panel",
-              "asset": "40lune-back.jpeg",
+              "asset": "40lune-back.webp",
               "position": "center 18%",
               "size": "cover"
             },
@@ -1410,7 +1410,7 @@
           ],
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "quarantalune-floating.png",
+            "asset": "quarantalune-floating.webp",
             "width": "98px",
             "height": "256px",
             "right": "10px",
@@ -1451,7 +1451,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "glera-zero-floating.png",
+            "asset": "glera-zero-floating.webp",
             "width": "74px",
             "height": "201px",
             "right": "24px",
@@ -1572,7 +1572,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "acqua-naturale-floating.png",
+            "asset": "acqua-naturale-floating.webp",
             "width": "67px",
             "height": "167px",
             "right": "18px",
@@ -1631,7 +1631,7 @@
             "backgroundColor": "#cfd7e4",
             "items": [
               {
-                "asset": "bibite-coca.png",
+                "asset": "bibite-coca.webp",
                 "left": "27%",
                 "detailLeft": "24%",
                 "bottom": "-31%",
@@ -1657,7 +1657,7 @@
                 "floatDelay": "-1.2s"
               },
               {
-                "asset": "bibite-te-limone.png",
+                "asset": "bibite-te-limone.webp",
                 "left": "60%",
                 "detailLeft": "60%",
                 "bottom": "-34%",
@@ -1670,7 +1670,7 @@
                 "floatDelay": "-0.4s"
               },
               {
-                "asset": "bibite-te-pesca.png",
+                "asset": "bibite-te-pesca.webp",
                 "left": "75%",
                 "detailLeft": "78%",
                 "bottom": "-32%",
@@ -1748,7 +1748,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "aranciata-rossa-lurisia-floating.png",
+            "asset": "aranciata-rossa-lurisia-floating.webp",
             "width": "177px",
             "height": "426px",
             "right": "-18px",
@@ -1979,7 +1979,7 @@
           "description": "Amari, grappe, distillati e liquori. Scopri il nuovo amaro alle erbe firmato Molino Santa Marta. (4€/cad.)",
           "visual": {
             "type": "photo-panel",
-            "asset": "grappe-amari-back.jpg",
+            "asset": "grappe-amari-back.webp",
             "position": "center 18%",
             "size": "cover"
           },
@@ -2068,7 +2068,7 @@
       "title": "Taglieri",
       "kicker": "Taglieri & sfiziosità",
       "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate da gustare insieme.",
-      "footerNote": "Su prenotazione sono disponibili anche varianti vegane, vegetariane, senza lattosio e altre richieste: basta comunicarlo.",
+      "footerNote": "Su prenotazione sono disponibili anche varianti vegane, vegetariane, senza lattosio e altre richieste, da concordare gentilmente in anticipo.",
       "accent": "#c96f11",
       "accentSoft": "#ffe0ba",
       "items": [
@@ -2157,7 +2157,7 @@
           "serviceNote": "Ordina e ritira in autonomia al carretto nel parco.",
           "visual": {
             "type": "photo-panel",
-            "asset": "agri-gelato-photo.jpeg",
+            "asset": "agri-gelato-photo.webp",
             "position": "center 72%",
             "size": "cover"
           },
