@@ -5856,6 +5856,7 @@ function renderTextPanelVisual(visual, context) {
         ${visual.detailBodyLineHeight ? `--text-panel-copy-detail-line-height: ${visual.detailBodyLineHeight};` : ""}
         ${visual.bodyFontSize ? `--text-panel-copy-size: ${visual.bodyFontSize};` : ""}
         ${visual.detailBodyFontSize ? `--text-panel-copy-detail-size: ${visual.detailBodyFontSize};` : ""}
+        ${visual.detailBodyMobileFontSize ? `--text-panel-copy-detail-mobile-size: ${visual.detailBodyMobileFontSize};` : ""}
       "
     >
       ${

@@ -31,8 +31,9 @@
               ],
               "detailBodyFontFamily": "var(--font-beer-script)",
               "detailBodyFontWeight": "400",
-              "detailBodyLineHeight": "1.02",
-              "detailBodyFontSize": "clamp(1.12rem, 3.85vw, 1.28rem)",
+              "detailBodyLineHeight": "0.9",
+              "detailBodyFontSize": "clamp(1.14rem, 3.5vw, 1.32rem)",
+              "detailBodyMobileFontSize": "clamp(1.9rem, 7.4vw, 2.32rem)",
               "gradientStart": "#d8bf95",
               "gradientEnd": "#f3e2c7",
               "bodyColor": "#6a4b2b"
@@ -138,6 +139,11 @@
                 "prodotta in decozione,",
                 "maltata e armoniosa."
               ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "0.88",
+              "detailBodyFontSize": "clamp(1.04rem, 3.15vw, 1.18rem)",
+              "detailBodyMobileFontSize": "clamp(1.5rem, 5.8vw, 1.86rem)",
               "gradientStart": "#7a130f",
               "gradientEnd": "#f06f49",
               "bodyColor": "#fff7f2"
@@ -241,6 +247,11 @@
                 "fresca, luppolata",
                 "e facile da bere."
               ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "0.9",
+              "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
+              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
               "gradientStart": "#3b7f7b",
               "gradientEnd": "#84c7bf",
               "bodyColor": "#fffdfb"
@@ -344,6 +355,11 @@
                 "fruttata, conviviale,",
                 "molto beverina."
               ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "0.9",
+              "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
+              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
               "gradientStart": "#a84f21",
               "gradientEnd": "#e6a45a",
               "bodyColor": "#fff8f1"
@@ -449,6 +465,11 @@
                 "tradizionale: equilibrata",
                 "e di facile bevuta."
               ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "0.9",
+              "detailBodyFontSize": "clamp(1.12rem, 3.4vw, 1.28rem)",
+              "detailBodyMobileFontSize": "clamp(1.72rem, 6.6vw, 2.08rem)",
               "gradientStart": "#b34d29",
               "gradientEnd": "#f29a5b",
               "bodyColor": "#fff9f3"
