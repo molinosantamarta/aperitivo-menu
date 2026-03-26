@@ -9,7 +9,7 @@ const APP_SHELL = [
   "./generated/main.runtime.20260325n.js",
   "./menu-assets/sgb-molino-black.png?v=20260325n",
   "./menu-assets/instagram-logo.webp?v=20260325n",
-  "./farfalla-bianca.gif?v=20260325n",
+  "./farfalla-bianca.webp?v=20260325n",
   "./pwa/apple-touch-icon.png",
   "./pwa/favicon-32.png",
   "./pwa/icon-192.png",

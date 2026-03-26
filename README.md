@@ -19,7 +19,7 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 │   │   ├── footer.png
 │   │   ├── instagram-logo.webp
 │   │   └── sgb-molino-black.png
-│   └── farfalla-bianca.gif
+│   └── farfalla-bianca.webp
 ├── scripts/
 │   ├── assets/
 │   │   └── extract_ape_assets.py

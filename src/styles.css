@@ -715,6 +715,10 @@ a {
   line-height: var(--description-line-height);
 }
 
+.sheet-description {
+  white-space: pre-line;
+}
+
 .hero-copy .intro {
   max-width: 33ch;
   margin: 22px auto 0;
@@ -1447,6 +1451,16 @@ a {
 .menu-section__items {
   display: grid;
   gap: 14px;
+}
+
+.menu-section__footer-note {
+  max-width: 35ch;
+  margin: 18px auto 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  text-align: center;
+  color: rgba(255, 250, 242, 0.78);
+  text-wrap: balance;
 }
 
 .menu-group {

@@ -691,7 +691,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "aperol-floating.png",
+            "asset": "aperol-floating.webp",
             "width": "142px",
             "height": "298px",
             "right": "-10px",
@@ -859,7 +859,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "pinot-extra-dry-floating.png",
+            "asset": "pinot-extra-dry-floating.webp",
             "width": "80px",
             "height": "200px",
             "right": "22px",
@@ -925,7 +925,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-floating.png",
+            "asset": "gin-floating.webp",
             "width": "65px",
             "height": "180px",
             "right": "28px",
@@ -936,7 +936,7 @@
           },
           "accentVisual": {
             "type": "floating-bottle",
-            "asset": "fever-tonica-cutout.png",
+            "asset": "fever-tonica-cutout.webp",
             "width": "35px",
             "height": "125px",
             "right": "76px",
@@ -1046,7 +1046,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-floating.png",
+            "asset": "gin-floating.webp",
             "width": "65px",
             "height": "180px",
             "right": "28px",
@@ -1057,7 +1057,7 @@
           },
           "accentVisual": {
             "type": "floating-accent",
-            "asset": "lemon-floating.png",
+            "asset": "lemon-floating.webp",
             "width": "72px",
             "height": "66px",
             "right": "78px",
@@ -1228,6 +1228,7 @@
           "name": "Rosso del Lupo",
           "category": "Vino",
           "description": "Valcalepio rosso fermo DOC, BIO.",
+          "detailDescription": "Valcalepio Rosso fermo DOC Bio.\nAz. Agricola Tosca.",
           "detailGallery": [
             {
               "type": "text-panel",
@@ -1241,7 +1242,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1258,7 +1259,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1275,7 +1276,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1292,7 +1293,7 @@
               "detailBodyFontWeight": "800",
               "detailBodyLineHeight": "1.04",
               "detailBodyFontSize": "clamp(0.96rem, 2.9vw, 1.1rem)",
-              "detailBodyMobileFontSize": "clamp(1.12rem, 4.35vw, 1.34rem)",
+              "detailBodyMobileFontSize": "clamp(1.06rem, 4.15vw, 1.28rem)",
               "gradientStart": "#6b2030",
               "gradientEnd": "#8a3144",
               "bodyColor": "#fff6f3"
@@ -1308,7 +1309,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "rosso-del-lupo-floating.png",
+            "asset": "rosso-del-lupo-floating.webp",
             "width": "96px",
             "height": "266px",
             "right": "10px",
@@ -1349,7 +1350,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "pinot-extra-dry-floating.png",
+            "asset": "pinot-extra-dry-floating.webp",
             "width": "101px",
             "height": "251px",
             "right": "8px",
@@ -1643,7 +1644,7 @@
                 "floatDelay": "-0.8s"
               },
               {
-                "asset": "bibite-coca-zero.png",
+                "asset": "bibite-coca-zero.webp",
                 "left": "42%",
                 "detailLeft": "42%",
                 "bottom": "-29%",
@@ -1824,7 +1825,7 @@
           ],
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "kombucha-limone-floating.png",
+            "asset": "kombucha-limone-floating.webp",
             "deferAsset": true,
             "width": "82px",
             "height": "176px",
@@ -1933,7 +1934,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "iced-coffee-floating.png",
+            "asset": "iced-coffee-floating.webp",
             "width": "86px",
             "height": "164px",
             "right": "14px",
@@ -2067,6 +2068,7 @@
       "title": "Taglieri",
       "kicker": "Taglieri & sfiziosità",
       "description": "Le proposte da condividere del Molino, tra salumi, pane fatto in casa e sfiziosità pensate da gustare insieme.",
+      "footerNote": "Su prenotazione sono disponibili anche varianti vegane, vegetariane, senza lattosio e altre richieste: basta comunicarlo.",
       "accent": "#c96f11",
       "accentSoft": "#ffe0ba",
       "items": [

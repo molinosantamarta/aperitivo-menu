@@ -3206,6 +3206,7 @@ function loadDeferredCanClusterVisual(can) {
 
 function renderSection(section, isLeadSection) {
   const sectionSurface = getSectionSurfaceColor(section.id);
+  const sectionFooterNote = String(section?.footerNote || "").trim();
 
   if (section.layout === "grouped" && Array.isArray(section.groups)) {
     return `
@@ -3249,6 +3250,11 @@ function renderSection(section, isLeadSection) {
               })
               .join("")}
           </div>
+          ${
+            sectionFooterNote
+              ? `<p class="menu-section__footer-note">${escapeHtml(sectionFooterNote)}</p>`
+              : ""
+          }
         </div>
       </section>
     `;
@@ -3269,6 +3275,11 @@ function renderSection(section, isLeadSection) {
         <div class="menu-section__items">
           ${section.items.map((item) => renderItemCard(item)).join("")}
         </div>
+        ${
+          sectionFooterNote
+            ? `<p class="menu-section__footer-note">${escapeHtml(sectionFooterNote)}</p>`
+            : ""
+        }
       </div>
     </section>
   `;

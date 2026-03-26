@@ -20,7 +20,7 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.694";
+  var APP_BUILD_LABEL = "V.1.695";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -2620,15 +2620,16 @@
   }
   function renderSection(section, isLeadSection) {
     const sectionSurface = getSectionSurfaceColor(section.id);
+    const sectionFooterNote = String((section == null ? void 0 : section.footerNote) || "").trim();
     if (section.layout === "grouped" && Array.isArray(section.groups)) {
       return '\n      <section\n        class="menu-section menu-section--grouped'.concat(isLeadSection ? " menu-section--lead" : "", '"\n        id="section-').concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n      >\n        <div class="menu-section__inner">\n          <div class="menu-section__header menu-section__header--centered">\n            <h2>').concat(section.title, '</h2>\n            <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n              ').concat(section.groups.map(
         (group) => '\n                    <a class="menu-section__group-pill" href="#section-'.concat(section.id, "-").concat(group.id, '">\n                      ').concat(group.label, "\n                    </a>\n                  ")
       ).join(""), '\n            </div>\n          </div>\n          <div class="menu-group-stack">\n            ').concat(section.groups.map((group) => {
         const items = section.items.filter((item) => item.group === group.id);
         return '\n                  <section class="menu-group" id="section-'.concat(section.id, "-").concat(group.id, '">\n                    <div class="menu-group__header">\n                      <span class="menu-group__pill">').concat(group.label, '</span>\n                      <p class="menu-group__description').concat(group.description ? "" : " menu-group__description--empty", '">\n                        ').concat(group.description || "&nbsp;", '\n                      </p>\n                    </div>\n                    <div class="menu-section__items">\n                      ').concat(items.map((item) => renderItemCard(item)).join(""), "\n                    </div>\n                  </section>\n                ");
-      }).join(""), "\n          </div>\n        </div>\n      </section>\n    ");
+      }).join(""), "\n          </div>\n          ").concat(sectionFooterNote ? '<p class="menu-section__footer-note">'.concat(escapeHtml(sectionFooterNote), "</p>") : "", "\n        </div>\n      </section>\n    ");
     }
-    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n      </div>\n    </section>\n  ");
+    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n        ").concat(sectionFooterNote ? '<p class="menu-section__footer-note">'.concat(escapeHtml(sectionFooterNote), "</p>") : "", "\n      </div>\n    </section>\n  ");
   }
   function renderItemCard(item) {
     const isArtisanalBeer = isArtisanalBeerItem(item);
