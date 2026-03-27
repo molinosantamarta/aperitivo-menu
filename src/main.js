@@ -3891,7 +3891,7 @@ function openDetail(itemId) {
   detailPanel.scrollTop = 0;
   detailCategory.innerHTML = renderDetailCategoryMarkup(item);
   detailTitle.textContent = item.name;
-  detailDescription.textContent = getItemDetailDescription(item);
+  refreshDetailDescription(item);
   renderDetailMeta(item);
   refreshDetailPreview(item);
   renderOptions(item);
@@ -4098,6 +4098,7 @@ function renderOptions(item) {
         if (usesStepFlow && previousIndex !== index) {
           state.selectedQuantity = 0;
         }
+        refreshDetailDescription(item);
         if (!updateDetailPreviewSelectionState(item)) {
           refreshDetailPreview(item);
         }
@@ -4188,6 +4189,7 @@ function renderOptions(item) {
       if (usesGuidedDetailQuantityFlow(item) && previousIndex !== index) {
         state.selectedQuantity = 0;
       }
+      refreshDetailDescription(item);
       renderOptions(item);
       renderQuantityControl();
     });
@@ -5696,7 +5698,25 @@ function getSelectedSelectionLabels(item) {
     .filter(Boolean);
 }
 
-function getItemDetailDescription(item) {
+function getSelectedSelectionOption(item, groupId = "") {
+  if (!item) {
+    return null;
+  }
+
+  const selectionGroups = getSelectionGroups(item);
+  const targetGroup = groupId
+    ? selectionGroups.find((group) => group?.id === groupId) || null
+    : selectionGroups[0] || null;
+
+  if (!targetGroup || !Array.isArray(targetGroup.options)) {
+    return null;
+  }
+
+  const selectedIndex = getSelectedSelectionIndex(targetGroup);
+  return selectedIndex >= 0 ? targetGroup.options[selectedIndex] || null : null;
+}
+
+function getBaseItemDetailDescription(item) {
   if (!item) {
     return "";
   }
@@ -5706,6 +5726,27 @@ function getItemDetailDescription(item) {
   }
 
   return item.description || "";
+}
+
+function getItemDetailDescription(item) {
+  if (!item) {
+    return "";
+  }
+
+  const selectedWineStyle = getSelectedSelectionOption(item, "wine-style");
+  if (typeof selectedWineStyle?.detailDescription === "string" && selectedWineStyle.detailDescription.trim()) {
+    return selectedWineStyle.detailDescription.trim();
+  }
+
+  return getBaseItemDetailDescription(item);
+}
+
+function refreshDetailDescription(item) {
+  if (!detailDescription) {
+    return;
+  }
+
+  detailDescription.textContent = getItemDetailDescription(item);
 }
 
 function buildSelectionSummaryLabel(item, option) {

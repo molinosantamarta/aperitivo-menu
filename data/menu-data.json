@@ -1184,16 +1184,20 @@
               "label": "Tipologia",
               "options": [
                 {
-                  "label": "Bonarda"
+                  "label": "Bonarda",
+                  "detailDescription": "Rosso vivace, secco e vellutato, con note di ciliegia."
                 },
                 {
-                  "label": "Segrete"
+                  "label": "Segrete",
+                  "detailDescription": "Rosso strutturato e persistente, con note fruttate e speziate."
                 },
                 {
-                  "label": "Chardonnay"
+                  "label": "Chardonnay",
+                  "detailDescription": "Bianco vivace, morbido ed elegante, con note di mela."
                 },
                 {
-                  "label": "Pinot Grigio"
+                  "label": "Pinot Grigio",
+                  "detailDescription": "Bianco secco e vellutato, floreale, con note di ginepro."
                 }
               ]
             }

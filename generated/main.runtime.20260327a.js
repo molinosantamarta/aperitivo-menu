@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.704";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.704";
+  var APP_BUILD_LABEL = "V.1.0.705";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.705";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -3060,7 +3060,7 @@
     detailPanel.scrollTop = 0;
     detailCategory.innerHTML = renderDetailCategoryMarkup(item);
     detailTitle.textContent = item.name;
-    detailDescription.textContent = getItemDetailDescription(item);
+    refreshDetailDescription(item);
     renderDetailMeta(item);
     refreshDetailPreview(item);
     renderOptions(item);
@@ -3202,6 +3202,7 @@
           if (usesStepFlow && previousIndex !== index) {
             state.selectedQuantity = 0;
           }
+          refreshDetailDescription(item);
           if (!updateDetailPreviewSelectionState(item)) {
             refreshDetailPreview(item);
           }
@@ -3262,6 +3263,7 @@
         if (usesGuidedDetailQuantityFlow(item) && previousIndex !== index) {
           state.selectedQuantity = 0;
         }
+        refreshDetailDescription(item);
         renderOptions(item);
         renderQuantityControl();
       });
@@ -4259,7 +4261,19 @@
       return selectedIndex >= 0 ? ((_a2 = group.options[selectedIndex]) == null ? void 0 : _a2.label) || "" : "";
     }).filter(Boolean);
   }
-  function getItemDetailDescription(item) {
+  function getSelectedSelectionOption(item, groupId = "") {
+    if (!item) {
+      return null;
+    }
+    const selectionGroups = getSelectionGroups(item);
+    const targetGroup = groupId ? selectionGroups.find((group) => (group == null ? void 0 : group.id) === groupId) || null : selectionGroups[0] || null;
+    if (!targetGroup || !Array.isArray(targetGroup.options)) {
+      return null;
+    }
+    const selectedIndex = getSelectedSelectionIndex(targetGroup);
+    return selectedIndex >= 0 ? targetGroup.options[selectedIndex] || null : null;
+  }
+  function getBaseItemDetailDescription(item) {
     if (!item) {
       return "";
     }
@@ -4267,6 +4281,22 @@
       return item.detailDescription.trim();
     }
     return item.description || "";
+  }
+  function getItemDetailDescription(item) {
+    if (!item) {
+      return "";
+    }
+    const selectedWineStyle = getSelectedSelectionOption(item, "wine-style");
+    if (typeof (selectedWineStyle == null ? void 0 : selectedWineStyle.detailDescription) === "string" && selectedWineStyle.detailDescription.trim()) {
+      return selectedWineStyle.detailDescription.trim();
+    }
+    return getBaseItemDetailDescription(item);
+  }
+  function refreshDetailDescription(item) {
+    if (!detailDescription) {
+      return;
+    }
+    detailDescription.textContent = getItemDetailDescription(item);
   }
   function buildSelectionSummaryLabel(item, option) {
     const parts = [...getSelectedSelectionLabels(item)];
