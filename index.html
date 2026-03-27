@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="it" data-app-ready="false" data-font-gate="booting">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -18,23 +18,54 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#f7f1ea" />
     <meta name="format-detection" content="telephone=no" />
-    <link rel="manifest" href="./manifest.webmanifest?v=20260325n" />
+    <link rel="manifest" href="./manifest.webmanifest?v=20260327a" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="./pwa/apple-touch-icon.png?v=20260325n"
+      href="./pwa/apple-touch-icon.png?v=20260327a"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="./pwa/favicon-32.png?v=20260325n"
+      href="./pwa/favicon-32.png?v=20260327a"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      html[data-app-ready="false"],
+      body[data-app-ready="false"] {
+        overflow: hidden;
+        background: #deccb7;
+      }
+
+      body[data-app-ready="false"] {
+        overscroll-behavior: none;
+        touch-action: none;
+      }
+
+      body[data-app-ready="false"] .page-shell,
+      body[data-app-ready="false"] .cart-fab,
+      body[data-app-ready="false"] .sheet-backdrop,
+      body[data-app-ready="false"] .promo-agri-lightbox {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+
+      #appLoader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(180deg, #f3e6d6 0%, #deccb7 100%);
+      }
+    </style>
     <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Montserrat:wght@500;700;800;900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="./src/fonts/montserrat-latin-variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <link
       rel="preload"
@@ -66,19 +97,24 @@
     />
     <link
       rel="preload"
-      href="./menu-assets/sgb-molino-black.png?v=20260325n"
+      href="./menu-assets/sgb-molino-black.png?v=20260327a"
       as="image"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./src/styles.css?v=20260325n" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260327a" />
   </head>
-  <body class="is-loading fonts-critical-loading loader-fonts-loading">
+  <body
+    class="is-loading fonts-critical-loading loader-fonts-loading"
+    data-app-ready="false"
+    data-font-gate="booting"
+    aria-busy="true"
+  >
     <div class="app-loader app-loader--card-hidden" id="appLoader" role="status" aria-live="polite" aria-atomic="true">
       <div class="app-loader__intro" id="appLoaderIntro" aria-hidden="true">
         <img
           class="app-loader__intro-logo"
           data-shell-asset
-          src="./menu-assets/sgb-molino-black.png?v=20260325n"
+          src="./menu-assets/sgb-molino-black.png?v=20260327a"
           alt=""
           decoding="async"
           fetchpriority="high"
@@ -111,7 +147,7 @@
       </div>
       <p class="app-loader__build" id="appLoaderBuild" aria-hidden="true"></p>
     </div>
-    <div class="page-shell">
+    <div class="page-shell" aria-busy="true" aria-hidden="true" inert>
       <header class="hero-card">
         <div class="hero-copy">
           <p class="eyebrow hero-copy__eyebrow">Menu digitale</p>
@@ -127,7 +163,7 @@
               <img
                 class="hero-butterfly__image"
                 data-shell-asset
-                src="./farfalla-bianca.webp?v=20260325n"
+                src="./farfalla-bianca.webp?v=20260327a"
                 alt=""
                 decoding="async"
                 fetchpriority="high"
@@ -184,7 +220,7 @@
                 <span class="utility-btn__icon" aria-hidden="true">
                   <img
                     data-shell-asset
-                    src="./menu-assets/instagram-logo.webp?v=20260325n"
+                    src="./menu-assets/instagram-logo.webp?v=20260327a"
                     alt=""
                   />
                 </span>
@@ -219,7 +255,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-picnic.png?v=20260325n"
+                      data-deferred-src="./format-carousel/bbq-picnic.png?v=20260327a"
                       alt="Format BBQ Picnic"
                       loading="lazy"
                       decoding="async"
@@ -240,7 +276,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-stelle.png?v=20260325n"
+                      data-deferred-src="./format-carousel/bbq-stelle.png?v=20260327a"
                       alt="Format BBQ sotto le stelle"
                       loading="lazy"
                       decoding="async"
@@ -261,7 +297,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/cinema.png?v=20260325n"
+                      data-deferred-src="./format-carousel/cinema.png?v=20260327a"
                       alt="Format Cinema"
                       loading="lazy"
                       decoding="async"
@@ -282,7 +318,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/country.png?v=20260325n"
+                      data-deferred-src="./format-carousel/country.png?v=20260327a"
                       alt="Format Country"
                       loading="lazy"
                       decoding="async"
@@ -303,7 +339,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/dam.png?v=20260325n"
+                      data-deferred-src="./format-carousel/dam.png?v=20260327a"
                       alt="Format Domenica al Molino"
                       loading="lazy"
                       decoding="async"
@@ -324,7 +360,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/ig-agrieventi.png?v=20260325n"
+                      data-deferred-src="./format-carousel/ig-agrieventi.png?v=20260327a"
                       alt="Instagram Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -345,7 +381,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/agrieventi-logo.png?v=20260325n"
+                      data-deferred-src="./format-carousel/agrieventi-logo.png?v=20260327a"
                       alt="Logo Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -366,7 +402,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-hub.png?v=20260325n"
+                      data-deferred-src="./format-carousel/bbq-hub.png?v=20260327a"
                       alt="Format BBQ Hub"
                       loading="lazy"
                       decoding="async"
@@ -428,7 +464,7 @@
           >
             <img
               data-shell-asset
-              src="./menu-assets/sgb-molino-black.png?v=20260325n"
+              src="./menu-assets/sgb-molino-black.png?v=20260327a"
               alt="Agriturismo Molino Santa Marta"
             />
           </a>
@@ -477,7 +513,7 @@
       </div>
     </div>
 
-    <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine">
+    <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine" aria-hidden="true" inert>
       <span class="cart-fab__label">Riepilogo</span>
       <span class="cart-fab__count" id="cartCount" aria-live="polite">0</span>
     </button>
@@ -573,54 +609,76 @@
           host.indexOf("192.168.") === 0 ||
           host.indexOf("10.") === 0 ||
           /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+        var moduleFallbackLoaded = false;
+        var localModuleProbeStarted = false;
+        var moduleProbeUrl = "./src/main.js?v=20260327a";
+        var runtimeCandidates = [
+          { src: "./generated/main.runtime.20260327a.js" },
+          { src: "./generated/main.runtime.js?v=20260327a" }
+        ];
+        var candidateIndex = 0;
+
+        var loadModuleFallback = function () {
+          if (moduleFallbackLoaded || window.__agriMenuRuntimeLoaded) {
+            return;
+          }
+
+          moduleFallbackLoaded = true;
+          var moduleScript = document.createElement("script");
+          moduleScript.defer = true;
+          moduleScript.type = "module";
+          moduleScript.src = moduleProbeUrl;
+          moduleScript.onerror = loadRuntime;
+          document.body.appendChild(moduleScript);
+        };
+
+        var loadRuntime = function () {
+          if (candidateIndex >= runtimeCandidates.length) {
+            return;
+          }
+
+          var candidate = runtimeCandidates[candidateIndex++];
+          var runtimeScript = document.createElement("script");
+          runtimeScript.defer = true;
+          runtimeScript.src = candidate.src;
+          runtimeScript.onerror = loadRuntime;
+          runtimeScript.onload = function () {
+            window.setTimeout(function () {
+              if (!window.__agriMenuRuntimeLoaded) {
+                loadRuntime();
+              }
+            }, 1200);
+          };
+          document.body.appendChild(runtimeScript);
+        };
+
+        var probeLocalModule = function () {
+          if (localModuleProbeStarted) {
+            return;
+          }
+
+          localModuleProbeStarted = true;
+
+          fetch(moduleProbeUrl, {
+            method: "HEAD",
+            cache: "no-store"
+          })
+            .then(function (response) {
+              if (response && response.ok) {
+                loadModuleFallback();
+                return;
+              }
+
+              loadRuntime();
+            })
+            .catch(function () {
+              loadRuntime();
+            });
+        };
+
         if (isLocalHost) {
-          var script = document.createElement("script");
-          script.defer = true;
-          script.type = "module";
-          script.src = "./src/main.js?v=20260325n";
-          document.body.appendChild(script);
+          probeLocalModule();
         } else {
-          var moduleFallbackLoaded = false;
-          var runtimeCandidates = [
-            { src: "./generated/main.runtime.20260325n.js" },
-            { src: "./generated/main.runtime.js?v=20260325n" }
-          ];
-          var candidateIndex = 0;
-
-          var loadModuleFallback = function () {
-            if (moduleFallbackLoaded || window.__agriMenuRuntimeLoaded) {
-              return;
-            }
-
-            moduleFallbackLoaded = true;
-            var moduleScript = document.createElement("script");
-            moduleScript.defer = true;
-            moduleScript.type = "module";
-            moduleScript.src = "./src/main.js?v=20260325n";
-            document.body.appendChild(moduleScript);
-          };
-
-          var loadRuntime = function () {
-            if (candidateIndex >= runtimeCandidates.length) {
-              loadModuleFallback();
-              return;
-            }
-
-            var candidate = runtimeCandidates[candidateIndex++];
-            var runtimeScript = document.createElement("script");
-            runtimeScript.defer = true;
-            runtimeScript.src = candidate.src;
-            runtimeScript.onerror = loadRuntime;
-            runtimeScript.onload = function () {
-              window.setTimeout(function () {
-                if (!window.__agriMenuRuntimeLoaded) {
-                  loadRuntime();
-                }
-              }, 1200);
-            };
-            document.body.appendChild(runtimeScript);
-          };
-
           loadRuntime();
         }
       })();

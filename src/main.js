@@ -9,17 +9,23 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260325n";
+const APP_VERSION = "20260327a";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
 const LOADER_MIN_DURATION = 6000;
 const LOADER_FONT_TIMEOUT = 12000;
-const FONT_LOAD_TIMEOUT = 20000;
-const STRICT_FONT_LOAD_TIMEOUT = 45000;
+const FONT_LOAD_TIMEOUT = 12000;
+const STRICT_FONT_LOAD_TIMEOUT = 12000;
+const FONT_GATE_RETRY_COUNT = 1;
+const FONT_GATE_RETRY_DELAY = 900;
+const APP_REVEAL_STABILITY_FRAMES = 2;
 const DISPLAY_FONT_REVEAL_CONFIRMATIONS = 3;
 const CRITICAL_IMAGE_LOAD_TIMEOUT = 22000;
 const CRITICAL_IMAGE_RETRY_COUNT = 2;
+const FONT_GATE_DEBUG_QUERY_KEY = "fontGateDebug";
+const FONT_GATE_DEBUG_STORAGE_KEY = "agriMenuFontGateDebug";
+const FONT_GATE_LOG_PREFIX = "[font-gate]";
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
 const LOADER_MESSAGE_INTERVAL = 1900;
@@ -48,6 +54,12 @@ const LOADER_MESSAGES = [
   "sforno il pane al latte",
   "scoppiettano i popcorn",
   "il parco si accende lentamente",
+];
+const SLOW_FONT_LOADER_MESSAGES = [
+  "connessione lenta, continuo a preparare il menu",
+  "aspetto ancora i font essenziali per il layout",
+  "prima corretto, poi visibile",
+  "sto verificando che il menu sia stabile davvero",
 ];
 const PROMO_AGRI_VIDEOS = [
   {
@@ -168,6 +180,7 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Lulo Clean",
       descriptor: '700 1rem "Lulo Clean"',
       sample: "DOMENICA AL MOLINO",
+      blocking: true,
       verifyMetrics: true,
       metricDescriptor: '700 48px "Lulo Clean", "Montserrat", sans-serif',
       metricFallbackDescriptor: '700 48px "Montserrat", sans-serif',
@@ -180,8 +193,17 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Montserrat",
       descriptor: '700 1rem "Montserrat"',
       sample: "Agri-Eventi 100%",
+      blocking: true,
       selectors: "loader eyebrow, note, percent, CTA labels",
-      source: "Google Fonts",
+      source: "self-hosted preload",
+    },
+    {
+      family: "Montserrat",
+      descriptor: '900 1rem "Montserrat"',
+      sample: "100%",
+      blocking: true,
+      selectors: "loader percent and strong numeric emphasis",
+      source: "self-hosted preload",
     },
   ],
   critical: [
@@ -189,6 +211,7 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Housky Demo",
       descriptor: '400 1rem "Housky Demo"',
       sample: "al Molino",
+      blocking: true,
       verifyMetrics: true,
       metricDescriptor: '400 52px "Housky Demo", Georgia, serif',
       metricFallbackDescriptor: '400 52px Georgia, serif',
@@ -201,6 +224,7 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "Factually Handwriting",
       descriptor: '400 1rem "Factually Handwriting"',
       sample: "Aperitivo e agrigelato",
+      blocking: true,
       verifyMetrics: true,
       metricDescriptor: '400 46px "Factually Handwriting", "Times New Roman", serif',
       metricFallbackDescriptor: '400 46px "Times New Roman", serif',
@@ -213,27 +237,30 @@ const FONT_BOOTSTRAP_PLAN = {
       family: "SignPainter",
       descriptor: '400 1rem "SignPainter"',
       sample: "Iced Latte Tropical",
+      blocking: true,
       verifyMetrics: true,
       metricDescriptor: '400 50px "SignPainter", Georgia, serif',
       metricFallbackDescriptor: '400 50px Georgia, serif',
       metricSample: "Spritz Tropical Iced Latte Bianchina",
       metricMinDelta: 10,
       selectors: "beer-script visuals and label treatments",
-      source: "local file",
+      source: "local preload",
     },
     {
       family: "Montserrat",
-      descriptor: '500 1rem "Montserrat"',
+      descriptor: '400 1rem "Montserrat"',
       sample: "Menu digitale aperitivi 0123456789",
-      selectors: "body copy, descriptions, cards, navigation",
-      source: "Google Fonts",
+      blocking: true,
+      selectors: "body copy, descriptions, categories, product cards",
+      source: "self-hosted preload",
     },
     {
       family: "Montserrat",
       descriptor: '800 1rem "Montserrat"',
       sample: "Seguici su Instagram",
+      blocking: true,
       selectors: "buttons, chips, badges, emphasis labels",
-      source: "Google Fonts",
+      source: "self-hosted preload",
     },
   ],
   deferred: [
@@ -242,7 +269,7 @@ const FONT_BOOTSTRAP_PLAN = {
       descriptor: '500 1rem "Caveat"',
       sample: "Molino",
       selectors: "decorative fallback only",
-      source: "Google Fonts",
+      source: "self-hosted deferred",
     },
   ],
 };
@@ -260,10 +287,8 @@ const REQUIRED_FONT_PLANS = dedupeFontPlans([
   ...FONT_BOOTSTRAP_PLAN.loader,
   ...FONT_BOOTSTRAP_PLAN.critical,
 ]);
-const BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(isCustomBlockingFontPlan);
-const NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter(
-  (plan) => !isCustomBlockingFontPlan(plan)
-);
+const BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter((plan) => plan?.blocking === true);
+const NON_BLOCKING_REQUIRED_FONT_PLANS = REQUIRED_FONT_PLANS.filter((plan) => plan?.blocking !== true);
 const DEFERRED_FONT_PLANS = dedupeFontPlans(FONT_BOOTSTRAP_PLAN.deferred);
 const displayFontPlan =
   [...LOADER_FONT_PLANS, ...BLOCKING_REQUIRED_FONT_PLANS, ...NON_BLOCKING_REQUIRED_FONT_PLANS].find(
@@ -309,6 +334,7 @@ function loadClarityScript() {
   }
 
   clarityScriptRequested = true;
+  logFontGate("clarity:script-requested");
   window.clarity =
     window.clarity ||
     function () {
@@ -318,6 +344,14 @@ function loadClarityScript() {
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.clarity.ms/tag/${CLARITY_PROJECT_ID}`;
+  script.onload = () => {
+    logFontGate("clarity:script-loaded", {
+      appReady: rootElement.dataset.appReady || "unknown",
+      fontGate: rootElement.dataset.fontGate || "unknown",
+    });
+    setClarityTag("app_ready", rootElement.dataset.appReady || "unknown");
+    setClarityTag("font_gate_state", rootElement.dataset.fontGate || "unknown");
+  };
   script.onerror = () => {
     // Ignore analytics failures to keep Safari and the app shell responsive.
   };
@@ -498,6 +532,8 @@ const DETAIL_LAYOUT_CLASS_NAMES = [
 ];
 let isCartSummaryView = false;
 
+const rootElement = document.documentElement;
+const pageShell = document.querySelector(".page-shell");
 const sectionNav = document.querySelector("#sectionNav");
 const menuSections = document.querySelector("#menuSections");
 const pageOutro = document.querySelector(".page-outro");
@@ -554,6 +590,8 @@ const formatShowcaseKicker = document.querySelector("#formatShowcaseKicker");
 const formatShowcaseTitle = document.querySelector("#formatShowcaseTitle");
 const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
 const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
+const fontGateStartedAt = performance.now();
+const fontGateDebugEnabled = shouldEnableFontGateDebug();
 
 if (appLoaderBuild) {
   appLoaderBuild.textContent = APP_BUILD_LABEL;
@@ -563,11 +601,113 @@ if (siteBuild) {
   siteBuild.textContent = APP_BUILD_FOOTER_LABEL;
 }
 
+setAppInteractivityLocked(true);
+setAppReadyState(false, "booting");
+logFontGate("bootstrap:script-evaluated", {
+  readyState: document.readyState,
+  version: APP_VERSION,
+});
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+      logFontGate("dom:contentloaded");
+    },
+    { once: true }
+  );
+} else {
+  logFontGate("dom:already-ready", { readyState: document.readyState });
+}
+
 window.addEventListener("resize", () => {
   syncSectionScrollOffset();
   refreshSectionNavStickyStart();
   queueActiveSectionRefresh();
 }, { passive: true });
+
+function shouldEnableFontGateDebug() {
+  try {
+    const url = new URL(window.location.href);
+    const queryValue = url.searchParams.get(FONT_GATE_DEBUG_QUERY_KEY);
+    if (queryValue === "1" || queryValue === "true") {
+      return true;
+    }
+    if (queryValue === "0" || queryValue === "false") {
+      return false;
+    }
+
+    const storedValue = window.localStorage?.getItem(FONT_GATE_DEBUG_STORAGE_KEY);
+    if (storedValue === "1" || storedValue === "true") {
+      return true;
+    }
+    if (storedValue === "0" || storedValue === "false") {
+      return false;
+    }
+  } catch (error) {
+    // Fall back to the default below.
+  }
+
+  return true;
+}
+
+function getFontGateElapsedMs() {
+  return Math.round((performance.now() - fontGateStartedAt) * 10) / 10;
+}
+
+function logFontGate(message, details) {
+  if (!fontGateDebugEnabled || typeof console === "undefined") {
+    return;
+  }
+
+  const prefix = `${FONT_GATE_LOG_PREFIX} +${getFontGateElapsedMs()}ms ${message}`;
+  if (details === undefined) {
+    console.log(prefix);
+    return;
+  }
+
+  console.log(prefix, details);
+}
+
+function setAppReadyState(isReady, fontGateState = isReady ? "ready" : "loading", reason = "") {
+  const readyValue = isReady ? "true" : "false";
+
+  rootElement.dataset.appReady = readyValue;
+  pageBody.dataset.appReady = readyValue;
+  rootElement.dataset.fontGate = fontGateState;
+  pageBody.dataset.fontGate = fontGateState;
+
+  if (reason) {
+    rootElement.dataset.appReadyReason = reason;
+    pageBody.dataset.appReadyReason = reason;
+  } else {
+    delete rootElement.dataset.appReadyReason;
+    delete pageBody.dataset.appReadyReason;
+  }
+}
+
+function setAppInteractivityLocked(isLocked) {
+  const busyValue = isLocked ? "true" : "false";
+  pageBody.setAttribute("aria-busy", busyValue);
+
+  [pageShell, cartFab].forEach((element) => {
+    if (!element) {
+      return;
+    }
+
+    if (isLocked) {
+      element.setAttribute("inert", "");
+      element.setAttribute("aria-hidden", "true");
+    } else {
+      element.removeAttribute("inert");
+      element.setAttribute("aria-hidden", "false");
+    }
+  });
+
+  if (pageShell) {
+    pageShell.setAttribute("aria-busy", busyValue);
+  }
+}
 window.addEventListener("scroll", queueActiveSectionRefresh, { passive: true });
 
 const loaderProgressState = {
@@ -690,9 +830,13 @@ registerServiceWorker();
 init();
 
 async function init() {
+  setAppReadyState(false, "loading");
+  logFontGate("bootstrap:start");
+
   let menuAssetsReadyPromise = Promise.resolve();
   const menuDataPromise = loadMenuData()
     .then((menuData) => {
+      logFontGate("menu-data:loaded");
       setLoaderTaskProgress("menuData", 1);
       return menuData;
     })
@@ -700,20 +844,24 @@ async function init() {
       error.bootPhase = "menu-data";
       throw error;
     });
-  const fontsReadyPromise = waitForRequiredFonts()
-    .then(async () => {
-      await waitForDisplayFontRevealGate();
+  const fontsReadyPromise = waitForCriticalFontGate()
+    .then(() => {
       syncDisplayFontSpacingFromMetrics();
       pageBody.classList.remove("fonts-critical-loading");
       pageBody.classList.add("fonts-critical-ready");
+      setAppReadyState(false, "fonts-ready");
       setLoaderTaskProgress("fonts", 1);
+      logFontGate("font-gate:ready");
     })
     .catch((error) => {
-      console.warn("Font critici non confermati entro il timeout, continuo in fallback.", error);
-      syncDisplayFontSpacing(false);
       pageBody.classList.remove("fonts-critical-loading");
-      pageBody.classList.add("fonts-critical-fallback", "loader-fonts-fallback");
-      setLoaderTaskProgress("fonts", 1);
+      pageBody.classList.add("loader-fonts-fallback");
+      setAppReadyState(false, "blocked-timeout", "fonts");
+      error.bootPhase = "fonts";
+      logFontGate("font-gate:blocked", {
+        error: error?.message || String(error),
+      });
+      throw error;
     });
   const deferredFontsReadyPromise = waitForDeferredFonts().then(() => {
     setLoaderTaskProgress("deferredFonts", 1);
@@ -754,16 +902,26 @@ async function init() {
       shellAssetsReadyPromise,
       minimumLoaderPromise,
     ]);
-    revealApp();
+    await revealApp();
   } catch (error) {
     console.error("Errore durante il caricamento del menu:", error);
     await promiseAllSettledCompat([deferredFontsReadyPromise]);
 
     if (error.bootPhase === "menu-data" || error.bootPhase === "render") {
-      await promiseAllSettledCompat([fontsReadyPromise, minimumLoaderPromise, shellAssetsReadyPromise]);
+      const settledBootstrapPrerequisites = await promiseAllSettledCompat([
+        fontsReadyPromise,
+        minimumLoaderPromise,
+        shellAssetsReadyPromise,
+      ]);
+      const fontsResult = settledBootstrapPrerequisites[0];
+      if (fontsResult?.status === "rejected") {
+        showBootstrapFailureState(fontsResult.reason);
+        return;
+      }
+
       syncLoaderProgress("Menu non disponibile");
       renderMenuLoadingState("retry");
-      revealApp();
+      await revealApp();
       return;
     }
 
@@ -915,6 +1073,14 @@ function showBootstrapFailureState(error) {
     return;
   }
 
+  const isFontGateFailure = error?.bootPhase === "fonts";
+  setAppInteractivityLocked(true);
+  setAppReadyState(false, isFontGateFailure ? "blocked-timeout" : "blocked-error", error?.bootPhase || "bootstrap");
+  logFontGate("bootstrap:blocked", {
+    phase: error?.bootPhase || "unknown",
+    error: error?.message || String(error),
+  });
+
   if (loaderMessageIntervalId != null) {
     window.clearInterval(loaderMessageIntervalId);
     loaderMessageIntervalId = null;
@@ -940,20 +1106,20 @@ function showBootstrapFailureState(error) {
   const bar = appLoader.querySelector(".app-loader__bar");
 
   if (eyebrow) {
-    eyebrow.textContent = "Caricamento";
+    eyebrow.textContent = isFontGateFailure ? "Connessione lenta" : "Caricamento";
   }
 
   if (title) {
     title.textContent =
-      error && error.bootPhase === "fonts"
-        ? "Sto completando i font essenziali."
+      isFontGateFailure
+        ? "Stiamo ancora preparando il menu."
         : "Sto ancora preparando la pagina.";
   }
 
   if (note) {
     note.textContent =
-      error && error.bootPhase === "fonts"
-        ? "Aspetto i font necessari per mostrare il layout in modo leggibile. Se resta bloccata, prova a ricaricare."
+      isFontGateFailure
+        ? "Aspetto ancora i font critici per mostrare il layout corretto e stabile. Il menu resta volutamente bloccato finché non sono pronti. Puoi riprovare."
         : "Qualcosa ha rallentato il bootstrap iniziale. Se resta bloccata, prova a ricaricare.";
     note.classList.remove("is-transitioning");
   }
@@ -970,9 +1136,11 @@ function showBootstrapFailureState(error) {
     retryButton = document.createElement("button");
     retryButton.type = "button";
     retryButton.className = "utility-btn utility-btn--accent app-loader__action";
-    retryButton.textContent = "Ricarica la pagina";
+    retryButton.textContent = isFontGateFailure ? "Riprova" : "Ricarica la pagina";
     retryButton.addEventListener("click", () => window.location.reload());
     appLoader.querySelector(".app-loader__card")?.appendChild(retryButton);
+  } else {
+    retryButton.textContent = isFontGateFailure ? "Riprova" : "Ricarica la pagina";
   }
 }
 
@@ -1791,14 +1959,64 @@ function syncDisplayFontSpacingFromMetrics() {
   syncDisplayFontSpacing(displayFontPlan ? isFontMetricReady(displayFontPlan) : false);
 }
 
-async function waitForDisplayFontRevealGate() {
+async function waitForCriticalFontGate() {
+  if (!("fonts" in document) || !document.fonts?.load || !document.fonts?.check) {
+    throw new Error("Il browser non supporta Font Loading API: non posso confermare i font critici.");
+  }
+
+  const maxAttempts = FONT_GATE_RETRY_COUNT + 1;
+  logFontGate("font-gate:start", {
+    blockingFonts: BLOCKING_REQUIRED_FONT_PLANS.map((plan) => plan.family),
+    attempts: maxAttempts,
+  });
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const isRetryAttempt = attempt > 1;
+
+    if (isRetryAttempt) {
+      setAppReadyState(false, "retrying-fonts");
+      setLoaderMessages(SLOW_FONT_LOADER_MESSAGES);
+      syncLoaderProgress("Connessione lenta, continuo a preparare il menu");
+      logFontGate("font-gate:retrying", { attempt, maxAttempts });
+      await wait(FONT_GATE_RETRY_DELAY);
+    }
+
+    try {
+      await waitForRequiredFonts({
+        blockingTimeout: STRICT_FONT_LOAD_TIMEOUT,
+        nonBlockingTimeout: FONT_LOAD_TIMEOUT,
+      });
+      await waitForDisplayFontRevealGate({
+        timeout: STRICT_FONT_LOAD_TIMEOUT,
+      });
+      return;
+    } catch (error) {
+      logFontGate("font-gate:attempt-failed", {
+        attempt,
+        maxAttempts,
+        error: error?.message || String(error),
+      });
+
+      if (attempt >= maxAttempts) {
+        throw error;
+      }
+    }
+  }
+}
+
+async function waitForDisplayFontRevealGate(options = {}) {
   if (!displayFontPlan) {
     return;
   }
 
+  const { timeout = STRICT_FONT_LOAD_TIMEOUT } = options;
+  logFontGate("display-font:stability-check:start", {
+    family: displayFontPlan.family,
+  });
+
   await waitForFontMetrics(displayFontPlan, {
     strict: true,
-    timeout: STRICT_FONT_LOAD_TIMEOUT,
+    timeout,
   });
 
   let confirmations = 0;
@@ -1811,6 +2029,9 @@ async function waitForDisplayFontRevealGate() {
     }
 
     if (confirmations >= DISPLAY_FONT_REVEAL_CONFIRMATIONS) {
+      logFontGate("display-font:stability-check:ready", {
+        family: displayFontPlan.family,
+      });
       return;
     }
 
@@ -1833,72 +2054,74 @@ async function waitForDisplayFontRevealGate() {
   }
 }
 
-async function waitForRequiredFonts() {
-  const blockingMetricPlans = BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
-  const nonBlockingMetricPlans = NON_BLOCKING_REQUIRED_FONT_PLANS.filter((plan) => plan.verifyMetrics);
+async function waitForRequiredFonts(options = {}) {
+  const {
+    blockingTimeout = STRICT_FONT_LOAD_TIMEOUT,
+    nonBlockingTimeout = FONT_LOAD_TIMEOUT,
+  } = options;
 
-  if ("fonts" in document) {
-    await Promise.all([
-      ...BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
-        waitForFontLoad(plan, {
-          strict: true,
-          timeout: STRICT_FONT_LOAD_TIMEOUT,
-        })
-      ),
-      ...NON_BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
-        waitForFontLoad(plan, {
-          timeout: FONT_LOAD_TIMEOUT,
-        })
-      ),
-    ]);
-
-    if (document.fonts.ready) {
-      try {
-        await waitWithTimeout(document.fonts.ready, STRICT_FONT_LOAD_TIMEOUT);
-      } catch (error) {
-        // Keep going: the blocking custom fonts are verified with dedicated
-        // metric checks below and must resolve before reveal.
-      }
-    }
+  if (!("fonts" in document) || !document.fonts?.load || !document.fonts?.check) {
+    throw new Error("Font Loading API non disponibile.");
   }
 
   await Promise.all([
-    ...blockingMetricPlans.map((plan) =>
-      waitForFontMetrics(plan, {
+    ...BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
+      waitForFontPlanReady(plan, {
         strict: true,
-        timeout: STRICT_FONT_LOAD_TIMEOUT,
+        timeout: blockingTimeout,
       })
     ),
-    ...nonBlockingMetricPlans.map((plan) =>
-      waitForFontMetrics(plan, {
-        timeout: FONT_LOAD_TIMEOUT,
+    ...NON_BLOCKING_REQUIRED_FONT_PLANS.map((plan) =>
+      waitForFontPlanReady(plan, {
+        timeout: nonBlockingTimeout,
       })
     ),
   ]);
+
+  if (document.fonts.ready) {
+    logFontGate("document.fonts.ready:waiting");
+    try {
+      await waitWithTimeout(document.fonts.ready, blockingTimeout);
+      logFontGate("document.fonts.ready:resolved");
+    } catch (error) {
+      logFontGate("document.fonts.ready:timeout", {
+        error: error?.message || "timeout",
+      });
+    }
+  }
 }
 
 async function waitForLoaderFonts() {
-  const metricPlans = LOADER_FONT_PLANS.filter((plan) => plan.verifyMetrics);
-
-  if ("fonts" in document && LOADER_FONT_PLANS.length) {
-    await Promise.all(
-      LOADER_FONT_PLANS.map((plan) =>
-        waitForFontLoad(plan, {
-          strict: true,
-          timeout: LOADER_FONT_TIMEOUT,
-        })
-      )
-    );
+  if (!("fonts" in document) || !document.fonts?.load || !document.fonts?.check || !LOADER_FONT_PLANS.length) {
+    throw new Error("Font Loading API non disponibile per il loader.");
   }
 
   await Promise.all(
-    metricPlans.map((plan) =>
-      waitForFontMetrics(plan, {
+    LOADER_FONT_PLANS.map((plan) =>
+      waitForFontPlanReady(plan, {
         strict: true,
         timeout: LOADER_FONT_TIMEOUT,
       })
     )
   );
+}
+
+async function waitForFontPlanReady(fontPlan, options = {}) {
+  const logContext = {
+    family: fontPlan.family,
+    descriptor: fontPlan.descriptor,
+    selectors: fontPlan.selectors,
+    timeout: options.timeout,
+  };
+
+  logFontGate("font:load:start", logContext);
+  await waitForFontLoad(fontPlan, options);
+  logFontGate("font:load:declared-ready", logContext);
+
+  if (fontPlan.verifyMetrics) {
+    await waitForFontMetrics(fontPlan, options);
+    logFontGate("font:metrics:ready", logContext);
+  }
 }
 
 async function waitForFontLoad(fontPlan, options = {}) {
@@ -2377,14 +2600,28 @@ function dedupeFontPlans(plans) {
   });
 }
 
-function isCustomBlockingFontPlan(plan) {
-  return Boolean(plan?.source && /^local\b/i.test(plan.source));
+function forceLayoutFlush() {
+  void pageBody.offsetHeight;
+  if (pageShell) {
+    void pageShell.offsetHeight;
+  }
 }
 
-function revealApp() {
+async function waitForStableRevealFrames(frameCount = APP_REVEAL_STABILITY_FRAMES) {
+  forceLayoutFlush();
+  for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
+    await waitForNextPaint();
+  }
+  forceLayoutFlush();
+}
+
+async function revealApp() {
   if (appHasRevealed) {
     return;
   }
+
+  logFontGate("app-reveal:preparing");
+  await waitForStableRevealFrames();
 
   if (loaderMessageIntervalId != null) {
     window.clearInterval(loaderMessageIntervalId);
@@ -2408,14 +2645,21 @@ function revealApp() {
   appHasRevealed = true;
   pageBody.classList.remove("is-loading", "fonts-critical-loading", "loader-fonts-loading");
   pageBody.classList.add("app-ready", "fonts-critical-ready", "loader-fonts-ready");
+  setAppInteractivityLocked(false);
+  setAppReadyState(true, "ready");
+  logFontGate("app-ready", {
+    totalWaitMs: getFontGateElapsedMs(),
+  });
   if (appLoader) {
     appLoader.setAttribute("aria-hidden", "true");
     appLoader.classList.add("is-hidden");
+    logFontGate("loader:hide-start");
   }
 
   window.setTimeout(() => {
     if (appLoader) {
       appLoader.remove();
+      logFontGate("loader:removed");
     }
   }, 320);
 
@@ -4093,7 +4337,7 @@ function getMultiOptionQuantityGroupLabel(item, hasSelectionGroups = false) {
 }
 
 function shouldUseEmbeddedMultiOptionSelector(item) {
-  return Boolean(item && ["acqua", "bibite"].includes(item.id));
+  return Boolean(item && ["acqua", "bibite", "grappe-amari"].includes(item.id));
 }
 
 function shouldUseShortDetailActionLabel(item) {

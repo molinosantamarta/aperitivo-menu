@@ -1,3 +1,63 @@
+/* Self-hosted text faces keep the first render under our control, so the gate can
+   wait for the real files instead of depending on a third-party stylesheet. */
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fonts/montserrat-latin-variable.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fonts/montserrat-latin-variable.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fonts/montserrat-latin-variable.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fonts/montserrat-latin-variable.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./fonts/montserrat-latin-variable.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Caveat is decorative-only. We keep it self-hosted, but allow swapping because
+   it does not participate in the font gate for the first usable frame. */
+@font-face {
+  font-family: "Caveat";
+  src: url("./fonts/caveat-latin-variable.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Caveat";
+  src: url("./fonts/caveat-latin-variable.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Local custom faces with non-standard metrics: keep them blocked until the app
    confirms they are ready, instead of letting fallback fonts alter the layout. */
 @font-face {
@@ -88,14 +148,29 @@ body.is-loading {
 
 body.is-loading .page-shell,
 body.is-loading .cart-fab,
-body.is-loading .sheet-backdrop {
+body.is-loading .sheet-backdrop,
+body.is-loading .promo-agri-lightbox,
+body[data-app-ready="false"] .page-shell,
+body[data-app-ready="false"] .cart-fab,
+body[data-app-ready="false"] .sheet-backdrop,
+body[data-app-ready="false"] .promo-agri-lightbox {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 
+body.is-loading .page-shell,
+body.is-loading .cart-fab,
+body.is-loading .sheet-backdrop {
+  user-select: none;
+}
+
 body.app-ready .page-shell,
-body.app-ready .cart-fab {
+body.app-ready .cart-fab,
+body[data-app-ready="true"] .page-shell,
+body[data-app-ready="true"] .cart-fab {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
@@ -143,7 +218,7 @@ a {
 .app-loader {
   position: fixed;
   inset: 0;
-  z-index: 120;
+  z-index: 9999;
   display: grid;
   place-items: center;
   padding: 18px var(--shell-side-padding);
