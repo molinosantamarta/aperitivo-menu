@@ -59,18 +59,6 @@
         place-items: center;
         background: linear-gradient(180deg, #f3e6d6 0%, #deccb7 100%);
       }
-
-      #appLoaderRetry {
-        display: none;
-        margin-top: 1rem;
-        padding: 0.82rem 1.2rem;
-        border: 0;
-        border-radius: 999px;
-        background: #225c39;
-        color: #fffaf4;
-        font: 700 0.95rem/1.1 "Montserrat", sans-serif;
-        cursor: pointer;
-      }
     </style>
     <link
       rel="preload"
@@ -156,7 +144,6 @@
         >
           <span class="app-loader__bar-fill" id="appLoaderBarFill"></span>
         </div>
-        <button id="appLoaderRetry" type="button">Ricarica la pagina</button>
       </div>
       <p class="app-loader__build" id="appLoaderBuild" aria-hidden="true"></p>
     </div>
@@ -682,75 +669,15 @@
             port === "8081");
         var moduleFallbackLoaded = false;
         var localModuleProbeStarted = false;
-        var bootFailed = false;
         var moduleProbeUrl = "./src/main.js?v=20260327a";
         var runtimeCandidates = [
           { src: "./generated/main.runtime.20260327a.js" },
           { src: "./generated/main.runtime.js?v=20260327a" }
         ];
         var candidateIndex = 0;
-        var runtimeBootTimeoutId = null;
-
-        var showBootFailureState = function (message) {
-          if (bootFailed) {
-            return;
-          }
-
-          bootFailed = true;
-          window.clearTimeout(runtimeBootTimeoutId);
-
-          var note = document.getElementById("appLoaderMessage");
-          var percent = document.getElementById("appLoaderPercent");
-          var build = document.getElementById("appLoaderBuild");
-          var retryButton = document.getElementById("appLoaderRetry");
-          var progressBar = document.getElementById("appLoaderBar");
-          var card = document.querySelector("#appLoader .app-loader__card");
-
-          document.documentElement.dataset.appReady = "false";
-          document.documentElement.dataset.appReadyReason = "runtime-bootstrap";
-          document.body.dataset.appReady = "false";
-          document.body.dataset.appReadyReason = "runtime-bootstrap";
-          document.body.classList.add("bootstrap-failed");
-
-          if (note) {
-            note.textContent =
-              message ||
-              "Sto ancora preparando la pagina. Se resta cosi, prova a ricaricare.";
-          }
-
-          if (percent) {
-            percent.textContent = "!";
-          }
-
-          if (build) {
-            build.textContent = "Bootstrap runtime non completato";
-            build.removeAttribute("aria-hidden");
-          }
-
-          if (progressBar) {
-            progressBar.setAttribute("aria-hidden", "true");
-          }
-
-          if (card) {
-            card.style.opacity = "1";
-            card.style.visibility = "visible";
-            card.style.transform = "translateY(0) scale(1)";
-          }
-
-          if (retryButton) {
-            retryButton.style.display = "inline-flex";
-            retryButton.addEventListener(
-              "click",
-              function () {
-                window.location.reload();
-              },
-              { once: true }
-            );
-          }
-        };
 
         var loadModuleFallback = function () {
-          if (moduleFallbackLoaded || window.__agriMenuRuntimeLoaded || bootFailed) {
+          if (moduleFallbackLoaded || window.__agriMenuRuntimeLoaded) {
             return;
           }
 
@@ -764,14 +691,7 @@
         };
 
         var loadRuntime = function () {
-          if (bootFailed) {
-            return;
-          }
-
           if (candidateIndex >= runtimeCandidates.length) {
-            showBootFailureState(
-              "Non sono riuscito a completare il bootstrap del menu. Riprova tra qualche secondo."
-            );
             return;
           }
 
@@ -791,7 +711,7 @@
         };
 
         var probeLocalModule = function () {
-          if (localModuleProbeStarted || bootFailed) {
+          if (localModuleProbeStarted) {
             return;
           }
 
@@ -813,14 +733,6 @@
               loadRuntime();
             });
         };
-
-        runtimeBootTimeoutId = window.setTimeout(function () {
-          if (!window.__agriMenuRuntimeLoaded) {
-            showBootFailureState(
-              "Il menu sta impiegando troppo ad avviarsi. Se resta bloccato, prova a ricaricare."
-            );
-          }
-        }, 12000);
 
         if (isLikelyDevServer) {
           probeLocalModule();
