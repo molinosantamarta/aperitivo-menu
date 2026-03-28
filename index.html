@@ -519,7 +519,7 @@
           src="about:blank"
           title="Video Agri-Eventi"
           loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen
         ></iframe>
@@ -573,6 +573,14 @@
     </button>
 
     <div class="sheet-backdrop" id="detailSheet" aria-hidden="true">
+      <button
+        class="sheet-close sheet-close--floating"
+        id="closeDetailFloating"
+        type="button"
+        aria-label="Chiudi"
+      >
+        ✕
+      </button>
       <section
         class="sheet-panel sheet-panel--detail"
         role="dialog"

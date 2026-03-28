@@ -567,6 +567,7 @@ const detailSelectionStrip = document.querySelector("#detailSelectionStrip");
 const detailQuantity = document.querySelector("#detailQuantity");
 const addToCartButton = document.querySelector("#addToCart");
 const closeDetailButton = document.querySelector("#closeDetail");
+const closeDetailFloatingButton = document.querySelector("#closeDetailFloating");
 const closeCartButton = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
@@ -739,7 +740,10 @@ const loaderProgressState = {
 };
 
 cartFab.addEventListener("click", openCart);
-closeDetailButton.addEventListener("click", closeDetail);
+const detailCloseButtons = [closeDetailButton, closeDetailFloatingButton].filter(Boolean);
+detailCloseButtons.forEach((button) => {
+  button.addEventListener("click", closeDetail);
+});
 closeCartButton.addEventListener("click", closeCart);
 serviceCallLightboxBackdrop?.addEventListener("click", closeCallWaiterLightbox);
 serviceCallLightboxClose?.addEventListener("click", closeCallWaiterLightbox);
@@ -3977,7 +3981,7 @@ function openDetail(itemId) {
   detailSheet.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
   trackDetailModalOpen(item);
-  focusElement(closeDetailButton);
+  focusElement(getPreferredDetailCloseButton());
 }
 
 function closeDetail(options = {}) {
@@ -3993,6 +3997,17 @@ function closeDetail(options = {}) {
   detailSheet.classList.remove("is-open");
   detailSheet.setAttribute("aria-hidden", "true");
   syncModalOpenState({ restoreFocus });
+}
+
+function getPreferredDetailCloseButton() {
+  if (
+    closeDetailFloatingButton &&
+    window.matchMedia("(max-width: 700px)").matches
+  ) {
+    return closeDetailFloatingButton;
+  }
+
+  return closeDetailButton;
 }
 
 function renderDetailMeta(item) {

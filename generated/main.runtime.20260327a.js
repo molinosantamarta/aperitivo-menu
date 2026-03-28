@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.711";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.711";
+  var APP_BUILD_LABEL = "V.1.0.712";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.712";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -540,6 +540,7 @@
   var detailQuantity = document.querySelector("#detailQuantity");
   var addToCartButton = document.querySelector("#addToCart");
   var closeDetailButton = document.querySelector("#closeDetail");
+  var closeDetailFloatingButton = document.querySelector("#closeDetailFloating");
   var closeCartButton = document.querySelector("#closeCart");
   var cartCount = document.querySelector("#cartCount");
   var cartItems = document.querySelector("#cartItems");
@@ -691,7 +692,10 @@
     timeGate: 0
   };
   cartFab.addEventListener("click", openCart);
-  closeDetailButton.addEventListener("click", closeDetail);
+  var detailCloseButtons = [closeDetailButton, closeDetailFloatingButton].filter(Boolean);
+  detailCloseButtons.forEach((button) => {
+    button.addEventListener("click", closeDetail);
+  });
   closeCartButton.addEventListener("click", closeCart);
   serviceCallLightboxBackdrop == null ? void 0 : serviceCallLightboxBackdrop.addEventListener("click", closeCallWaiterLightbox);
   serviceCallLightboxClose == null ? void 0 : serviceCallLightboxClose.addEventListener("click", closeCallWaiterLightbox);
@@ -3133,7 +3137,7 @@
     detailSheet.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
     trackDetailModalOpen(item);
-    focusElement(closeDetailButton);
+    focusElement(getPreferredDetailCloseButton());
   }
   function closeDetail(options = {}) {
     const { restoreFocus = true } = options;
@@ -3148,6 +3152,12 @@
     detailSheet.classList.remove("is-open");
     detailSheet.setAttribute("aria-hidden", "true");
     syncModalOpenState({ restoreFocus });
+  }
+  function getPreferredDetailCloseButton() {
+    if (closeDetailFloatingButton && window.matchMedia("(max-width: 700px)").matches) {
+      return closeDetailFloatingButton;
+    }
+    return closeDetailButton;
   }
   function renderDetailMeta(item) {
     if (!detailMeta) {
