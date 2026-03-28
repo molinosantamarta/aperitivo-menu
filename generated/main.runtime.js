@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.709";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.709";
+  var APP_BUILD_LABEL = "V.1.0.710";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.710";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -3828,7 +3828,7 @@
     });
     const actions = document.createElement("div");
     actions.className = "cart-generated-actions";
-    actions.innerHTML = '\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>\n      <span class="utility-btn--call-waiter__beta">Beta</span>\n    </button>\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--ghost" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
+    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>\n      <span class="utility-btn--call-waiter__beta">Beta</span>\n    </button>\n  ');
     (_a2 = actions.querySelector('[data-generated-action="call-waiter"]')) == null ? void 0 : _a2.addEventListener("click", (event) => {
       openCallWaiterLightbox(event.currentTarget);
     });

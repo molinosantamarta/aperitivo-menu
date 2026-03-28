@@ -5044,15 +5044,15 @@ function renderGeneratedCartSummary() {
   const actions = document.createElement("div");
   actions.className = "cart-generated-actions";
   actions.innerHTML = `
-    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">
-      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>
-      <span class="utility-btn--call-waiter__beta">Beta</span>
-    </button>
     <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">
       ${editSummaryLabel}
     </button>
-    <button class="utility-btn utility-btn--ghost" type="button" data-generated-action="close">
+    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">
       Chiudi
+    </button>
+    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">
+      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>
+      <span class="utility-btn--call-waiter__beta">Beta</span>
     </button>
   `;
 

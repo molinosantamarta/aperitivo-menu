@@ -1060,6 +1060,14 @@ a {
     0 8px 18px rgba(42, 31, 18, 0.04);
 }
 
+.utility-btn--tertiary {
+  color: rgba(108, 78, 52, 0.9);
+  background: rgba(247, 240, 231, 0.82);
+  box-shadow:
+    inset 0 0 0 1px rgba(136, 105, 78, 0.14),
+    0 6px 14px rgba(42, 31, 18, 0.03);
+}
+
 .utility-btn--ghost {
   min-height: 42px;
   color: rgba(108, 78, 52, 0.88);
@@ -1525,16 +1533,17 @@ a {
 }
 
 .service-call-lightbox__status-note {
-  color: rgba(122, 91, 62, 0.78);
+  color: rgba(108, 78, 52, 0.84);
   font-size: 0.76rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .service-call-lightbox__subtitle {
   margin: 0;
-  color: rgba(108, 78, 52, 0.86);
+  color: rgba(74, 50, 32, 0.94);
   font-size: 0.88rem;
+  font-weight: 700;
   line-height: 1.35;
   text-wrap: balance;
 }
@@ -5810,7 +5819,8 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  padding: 12px 0 6px;
+  padding: 14px 0 4px;
+  align-items: stretch;
 }
 
 .cart-generated-actions .utility-btn {
@@ -5819,6 +5829,12 @@ a {
 
 .cart-generated-actions [data-generated-action="call-waiter"] {
   grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.cart-generated-actions [data-generated-action="edit"],
+.cart-generated-actions [data-generated-action="close"] {
+  min-height: 46px;
 }
 
 .cart-footer__actions {
