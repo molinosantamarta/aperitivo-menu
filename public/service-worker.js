@@ -36,10 +36,31 @@ const APP_SHELL = [
   "./sheet-config-fallback.json"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(SHELL_CACHE).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
+function isCacheableResponse(response) {
+  return Boolean(response && response.ok && (response.type === "basic" || response.type === "default"));
+}
+
+async function warmShellCache() {
+  const cache = await caches.open(SHELL_CACHE);
+
+  await Promise.all(
+    APP_SHELL.map(async (asset) => {
+      try {
+        const response = await fetch(asset, { cache: "no-store" });
+        if (!isCacheableResponse(response)) {
+          return;
+        }
+
+        await cache.put(asset, response.clone());
+      } catch (error) {
+        // Skip optional shell assets rather than failing the whole install.
+      }
+    })
   );
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(warmShellCache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -70,8 +91,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put("./index.html", copy));
+          if (isCacheableResponse(response)) {
+            const copy = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put("./index.html", copy));
+          }
           return response;
         })
         .catch(async () => {
@@ -93,8 +116,10 @@ self.addEventListener("fetch", (event) => {
       }
 
       return fetch(request).then((response) => {
-        const copy = response.clone();
-        caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
+        if (isCacheableResponse(response)) {
+          const copy = response.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
+        }
         return response;
       });
     })

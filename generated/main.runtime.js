@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.710";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.710";
+  var APP_BUILD_LABEL = "V.1.0.711";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.711";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -39,6 +39,8 @@
   var LOADER_FONT_TIMEOUT = 12e3;
   var FONT_LOAD_TIMEOUT = 12e3;
   var STRICT_FONT_LOAD_TIMEOUT = 12e3;
+  var JSON_FETCH_TIMEOUT = 6500;
+  var SHEET_FETCH_TIMEOUT = 8e3;
   var FONT_GATE_RETRY_COUNT = 1;
   var FONT_GATE_RETRY_DELAY = 900;
   var APP_REVEAL_STABILITY_FRAMES = 2;
@@ -1258,7 +1260,9 @@
     });
   }
   async function loadMenuData() {
-    const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json");
+    const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json", {
+      validate: isValidMenuDataPayload
+    });
     const sheetConfig = await loadSheetConfig();
     const sheetCsvUrl = sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string" ? sheetConfig.googleSheetCsvUrl.trim() : "";
     if (!sheetCsvUrl) {
@@ -1277,20 +1281,30 @@
   }
   async function loadSheetConfig() {
     return fetchJsonFromCandidates(SHEET_CONFIG_URLS, "data/sheet-config.json", {
-      fallbackValue: {}
+      fallbackValue: {},
+      validate: isValidSheetConfigPayload
     });
   }
   async function fetchJsonFromCandidates(urls, label, options = {}) {
-    const { fallbackValue } = options;
+    const {
+      fallbackValue,
+      validate = null,
+      timeout = JSON_FETCH_TIMEOUT
+    } = options;
     let lastError = null;
     for (const url of urls) {
       try {
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url, { cache: "no-store" }, timeout);
         if (!response.ok) {
           lastError = new Error("Impossibile caricare ".concat(label, " (").concat(response.status, ")"));
           continue;
         }
-        return await response.json();
+        const payload = await response.json();
+        if (typeof validate === "function" && !validate(payload)) {
+          lastError = new Error("Formato non valido per ".concat(label));
+          continue;
+        }
+        return payload;
       } catch (error) {
         lastError = error;
       }
@@ -1301,12 +1315,20 @@
     throw lastError || new Error("Impossibile caricare ".concat(label));
   }
   async function loadSheetRows(sheetCsvUrl) {
-    const response = await fetch(sheetCsvUrl, { cache: "no-store" });
+    const response = await fetchWithTimeout(sheetCsvUrl, { cache: "no-store" }, SHEET_FETCH_TIMEOUT);
     if (!response.ok) {
       throw new Error("Impossibile caricare il CSV del Google Sheet (".concat(response.status, ")"));
     }
     const csvText = await response.text();
     return parseCsvRows(csvText);
+  }
+  function isValidMenuDataPayload(payload) {
+    return Boolean(
+      payload && typeof payload === "object" && Array.isArray(payload.sections) && payload.sections.length > 0
+    );
+  }
+  function isValidSheetConfigPayload(payload) {
+    return Boolean(payload && typeof payload === "object" && !Array.isArray(payload));
   }
   function parseCsvRows(csvText) {
     const rows = [];
@@ -2150,6 +2172,20 @@
       const separator = path.includes("?") ? "&" : "?";
       return "".concat(path).concat(separator, "v=").concat(APP_VERSION);
     }
+  }
+  function fetchWithTimeout(resource, init2 = {}, timeout = JSON_FETCH_TIMEOUT) {
+    if (typeof AbortController === "undefined" || !timeout || timeout <= 0) {
+      return fetch(resource, init2);
+    }
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      controller.abort();
+    }, timeout);
+    return fetch(resource, __spreadProps(__spreadValues({}, init2), {
+      signal: controller.signal
+    })).finally(() => {
+      window.clearTimeout(timeoutId);
+    });
   }
   function wait(duration) {
     return new Promise((resolve) => window.setTimeout(resolve, duration));

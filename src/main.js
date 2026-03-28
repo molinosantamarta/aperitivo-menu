@@ -17,6 +17,8 @@ const LOADER_MIN_DURATION = 6000;
 const LOADER_FONT_TIMEOUT = 12000;
 const FONT_LOAD_TIMEOUT = 12000;
 const STRICT_FONT_LOAD_TIMEOUT = 12000;
+const JSON_FETCH_TIMEOUT = 6500;
+const SHEET_FETCH_TIMEOUT = 8000;
 const FONT_GATE_RETRY_COUNT = 1;
 const FONT_GATE_RETRY_DELAY = 900;
 const APP_REVEAL_STABILITY_FRAMES = 2;
@@ -1446,7 +1448,9 @@ function scrollNavLinkIntoView(link) {
 }
 
 async function loadMenuData() {
-  const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json");
+  const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json", {
+    validate: isValidMenuDataPayload,
+  });
   const sheetConfig = await loadSheetConfig();
   const sheetCsvUrl =
     sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string"
@@ -1473,22 +1477,33 @@ async function loadMenuData() {
 async function loadSheetConfig() {
   return fetchJsonFromCandidates(SHEET_CONFIG_URLS, "data/sheet-config.json", {
     fallbackValue: {},
+    validate: isValidSheetConfigPayload,
   });
 }
 
 async function fetchJsonFromCandidates(urls, label, options = {}) {
-  const { fallbackValue } = options;
+  const {
+    fallbackValue,
+    validate = null,
+    timeout = JSON_FETCH_TIMEOUT,
+  } = options;
   let lastError = null;
 
   for (const url of urls) {
     try {
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url, { cache: "no-store" }, timeout);
       if (!response.ok) {
         lastError = new Error(`Impossibile caricare ${label} (${response.status})`);
         continue;
       }
 
-      return await response.json();
+      const payload = await response.json();
+      if (typeof validate === "function" && !validate(payload)) {
+        lastError = new Error(`Formato non valido per ${label}`);
+        continue;
+      }
+
+      return payload;
     } catch (error) {
       lastError = error;
     }
@@ -1502,13 +1517,26 @@ async function fetchJsonFromCandidates(urls, label, options = {}) {
 }
 
 async function loadSheetRows(sheetCsvUrl) {
-  const response = await fetch(sheetCsvUrl, { cache: "no-store" });
+  const response = await fetchWithTimeout(sheetCsvUrl, { cache: "no-store" }, SHEET_FETCH_TIMEOUT);
   if (!response.ok) {
     throw new Error(`Impossibile caricare il CSV del Google Sheet (${response.status})`);
   }
 
   const csvText = await response.text();
   return parseCsvRows(csvText);
+}
+
+function isValidMenuDataPayload(payload) {
+  return Boolean(
+    payload &&
+      typeof payload === "object" &&
+      Array.isArray(payload.sections) &&
+      payload.sections.length > 0
+  );
+}
+
+function isValidSheetConfigPayload(payload) {
+  return Boolean(payload && typeof payload === "object" && !Array.isArray(payload));
 }
 
 function parseCsvRows(csvText) {
@@ -2578,6 +2606,24 @@ function buildVersionedPath(path) {
     const separator = path.includes("?") ? "&" : "?";
     return `${path}${separator}v=${APP_VERSION}`;
   }
+}
+
+function fetchWithTimeout(resource, init = {}, timeout = JSON_FETCH_TIMEOUT) {
+  if (typeof AbortController === "undefined" || !timeout || timeout <= 0) {
+    return fetch(resource, init);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => {
+    controller.abort();
+  }, timeout);
+
+  return fetch(resource, {
+    ...init,
+    signal: controller.signal,
+  }).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
 }
 
 function wait(duration) {
