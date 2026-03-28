@@ -6,6 +6,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "../..");
 
 const copies = [
+  ["public/data/menu-data.json", "public/menu-data.json"],
+  ["public/data/sheet-config.json", "public/sheet-config.json"],
+  ["public/menu-data.json", "menu-data.json"],
+  ["public/sheet-config.json", "sheet-config.json"],
   ["public/generated/main.runtime.js", "generated/main.runtime.js"],
   ["public/manifest.webmanifest", "manifest.webmanifest"],
   ["public/service-worker.js", "service-worker.js"],

@@ -28,7 +28,10 @@ const APP_SHELL = [
   "./pwa/icon-192.png",
   "./pwa/icon-512.png",
   "./pwa/icon-512-maskable.png",
-  "./data/menu-data.json"
+  "./data/menu-data.json",
+  "./data/sheet-config.json",
+  "./menu-data.json",
+  "./sheet-config.json"
 ];
 
 self.addEventListener("install", (event) => {

@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.706";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.706";
+  var APP_BUILD_LABEL = "V.1.0.707";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.707";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -48,8 +48,14 @@
   var FONT_GATE_DEBUG_QUERY_KEY = "fontGateDebug";
   var FONT_GATE_DEBUG_STORAGE_KEY = "agriMenuFontGateDebug";
   var FONT_GATE_LOG_PREFIX = "[font-gate]";
-  var MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
-  var SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+  var MENU_DATA_URLS = [
+    buildVersionedPath("./data/menu-data.json"),
+    buildVersionedPath("./menu-data.json")
+  ];
+  var SHEET_CONFIG_URLS = [
+    buildVersionedPath("./data/sheet-config.json"),
+    buildVersionedPath("./sheet-config.json")
+  ];
   var COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
   var COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";
   var LOADER_MESSAGE_INTERVAL = 1900;
@@ -1250,11 +1256,7 @@
     });
   }
   async function loadMenuData() {
-    const response = await fetch(MENU_DATA_URL);
-    if (!response.ok) {
-      throw new Error("Impossibile caricare data/menu-data.json (".concat(response.status, ")"));
-    }
-    const baseData = await response.json();
+    const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json");
     const sheetConfig = await loadSheetConfig();
     const sheetCsvUrl = sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string" ? sheetConfig.googleSheetCsvUrl.trim() : "";
     if (!sheetCsvUrl) {
@@ -1272,15 +1274,29 @@
     }
   }
   async function loadSheetConfig() {
-    try {
-      const response = await fetch(SHEET_CONFIG_URL);
-      if (!response.ok) {
-        return {};
+    return fetchJsonFromCandidates(SHEET_CONFIG_URLS, "data/sheet-config.json", {
+      fallbackValue: {}
+    });
+  }
+  async function fetchJsonFromCandidates(urls, label, options = {}) {
+    const { fallbackValue } = options;
+    let lastError = null;
+    for (const url of urls) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          lastError = new Error("Impossibile caricare ".concat(label, " (").concat(response.status, ")"));
+          continue;
+        }
+        return await response.json();
+      } catch (error) {
+        lastError = error;
       }
-      return response.json();
-    } catch (error) {
-      return {};
     }
+    if (fallbackValue !== void 0) {
+      return fallbackValue;
+    }
+    throw lastError || new Error("Impossibile caricare ".concat(label));
   }
   async function loadSheetRows(sheetCsvUrl) {
     const response = await fetch(sheetCsvUrl, { cache: "no-store" });
@@ -3810,7 +3826,7 @@
     });
     const actions = document.createElement("div");
     actions.className = "cart-generated-actions";
-    actions.innerHTML = '\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      Chiama operatore\n    </button>\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--ghost" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
+    actions.innerHTML = '\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>\n      <span class="utility-btn--call-waiter__beta">Beta</span>\n    </button>\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--ghost" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
     (_a2 = actions.querySelector('[data-generated-action="call-waiter"]')) == null ? void 0 : _a2.addEventListener("click", (event) => {
       openCallWaiterLightbox(event.currentTarget);
     });

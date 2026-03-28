@@ -26,8 +26,14 @@ const CRITICAL_IMAGE_RETRY_COUNT = 2;
 const FONT_GATE_DEBUG_QUERY_KEY = "fontGateDebug";
 const FONT_GATE_DEBUG_STORAGE_KEY = "agriMenuFontGateDebug";
 const FONT_GATE_LOG_PREFIX = "[font-gate]";
-const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
-const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+const MENU_DATA_URLS = [
+  buildVersionedPath("./data/menu-data.json"),
+  buildVersionedPath("./menu-data.json"),
+];
+const SHEET_CONFIG_URLS = [
+  buildVersionedPath("./data/sheet-config.json"),
+  buildVersionedPath("./sheet-config.json"),
+];
 const COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
 const COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";
 const LOADER_MESSAGE_INTERVAL = 1900;
@@ -1438,12 +1444,7 @@ function scrollNavLinkIntoView(link) {
 }
 
 async function loadMenuData() {
-  const response = await fetch(MENU_DATA_URL);
-  if (!response.ok) {
-    throw new Error(`Impossibile caricare data/menu-data.json (${response.status})`);
-  }
-
-  const baseData = await response.json();
+  const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json");
   const sheetConfig = await loadSheetConfig();
   const sheetCsvUrl =
     sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string"
@@ -1468,16 +1469,34 @@ async function loadMenuData() {
 }
 
 async function loadSheetConfig() {
-  try {
-    const response = await fetch(SHEET_CONFIG_URL);
-    if (!response.ok) {
-      return {};
-    }
+  return fetchJsonFromCandidates(SHEET_CONFIG_URLS, "data/sheet-config.json", {
+    fallbackValue: {},
+  });
+}
 
-    return response.json();
-  } catch (error) {
-    return {};
+async function fetchJsonFromCandidates(urls, label, options = {}) {
+  const { fallbackValue } = options;
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        lastError = new Error(`Impossibile caricare ${label} (${response.status})`);
+        continue;
+      }
+
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+    }
   }
+
+  if (fallbackValue !== undefined) {
+    return fallbackValue;
+  }
+
+  throw lastError || new Error(`Impossibile caricare ${label}`);
 }
 
 async function loadSheetRows(sheetCsvUrl) {
@@ -5024,7 +5043,8 @@ function renderGeneratedCartSummary() {
   actions.className = "cart-generated-actions";
   actions.innerHTML = `
     <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">
-      Chiama operatore
+      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>
+      <span class="utility-btn--call-waiter__beta">Beta</span>
     </button>
     <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">
       ${editSummaryLabel}

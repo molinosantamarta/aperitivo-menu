@@ -2,4 +2,8 @@ node_modules
 dist
 .DS_Store
 public/generated
+public/menu-data.json
+public/sheet-config.json
+menu-data.json
+sheet-config.json
 agri-menu.png
