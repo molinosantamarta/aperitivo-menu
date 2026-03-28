@@ -6,14 +6,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, "../..");
 
 const copies = [
-  ["public/data/menu-data.json", "public/menu-data.json"],
-  ["public/data/menu-data.json", "public/menu-data-fallback.json"],
-  ["public/data/sheet-config.json", "public/sheet-config.json"],
-  ["public/data/sheet-config.json", "public/sheet-config-fallback.json"],
-  ["public/menu-data.json", "menu-data.json"],
-  ["public/menu-data-fallback.json", "menu-data-fallback.json"],
-  ["public/sheet-config.json", "sheet-config.json"],
-  ["public/sheet-config-fallback.json", "sheet-config-fallback.json"],
+  ["public/data/menu-data.json", "data/menu-data.json"],
+  ["public/data/sheet-config.json", "data/sheet-config.json"],
+  ["public/data/menu-data.json", "menu-data.json"],
+  ["public/data/menu-data.json", "menu-data-fallback.json"],
+  ["public/data/sheet-config.json", "sheet-config.json"],
+  ["public/data/sheet-config.json", "sheet-config-fallback.json"],
   ["public/generated/main.runtime.js", "generated/main.runtime.js"],
   ["public/manifest.webmanifest", "manifest.webmanifest"],
   ["public/service-worker.js", "service-worker.js"],
