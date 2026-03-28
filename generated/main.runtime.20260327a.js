@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.707";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.707";
+  var APP_BUILD_LABEL = "V.1.0.708";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.708";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -50,11 +50,13 @@
   var FONT_GATE_LOG_PREFIX = "[font-gate]";
   var MENU_DATA_URLS = [
     buildVersionedPath("./data/menu-data.json"),
-    buildVersionedPath("./menu-data.json")
+    buildVersionedPath("./menu-data.json"),
+    buildVersionedPath("./menu-data-fallback.json")
   ];
   var SHEET_CONFIG_URLS = [
     buildVersionedPath("./data/sheet-config.json"),
-    buildVersionedPath("./sheet-config.json")
+    buildVersionedPath("./sheet-config.json"),
+    buildVersionedPath("./sheet-config-fallback.json")
   ];
   var COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
   var COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";

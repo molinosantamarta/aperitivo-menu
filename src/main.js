@@ -29,10 +29,12 @@ const FONT_GATE_LOG_PREFIX = "[font-gate]";
 const MENU_DATA_URLS = [
   buildVersionedPath("./data/menu-data.json"),
   buildVersionedPath("./menu-data.json"),
+  buildVersionedPath("./menu-data-fallback.json"),
 ];
 const SHEET_CONFIG_URLS = [
   buildVersionedPath("./data/sheet-config.json"),
   buildVersionedPath("./sheet-config.json"),
+  buildVersionedPath("./sheet-config-fallback.json"),
 ];
 const COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
 const COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";

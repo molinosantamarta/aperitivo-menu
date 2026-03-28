@@ -4,6 +4,10 @@ dist
 public/generated
 public/menu-data.json
 public/sheet-config.json
+public/menu-data-fallback.json
+public/sheet-config-fallback.json
 menu-data.json
 sheet-config.json
+menu-data-fallback.json
+sheet-config-fallback.json
 agri-menu.png

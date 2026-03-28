@@ -31,7 +31,9 @@ const APP_SHELL = [
   "./data/menu-data.json",
   "./data/sheet-config.json",
   "./menu-data.json",
-  "./sheet-config.json"
+  "./sheet-config.json",
+  "./menu-data-fallback.json",
+  "./sheet-config-fallback.json"
 ];
 
 self.addEventListener("install", (event) => {
