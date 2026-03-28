@@ -43,6 +43,14 @@ Versione mobile-first del menu `Domenica al Molino`, pensata per QR code e per e
 - `scripts/assets/`: utility che producono o aggiornano asset grafici.
 - `scripts/sheets/`: utility dedicate al flusso Google Sheet.
 
+## Fonte dati
+
+L'unica fonte dati del menu e della configurazione foglio e `public/data/`.
+
+- modifica sempre [menu-data.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/menu-data.json) e [sheet-config.json](/Users/andrea/Desktop/Menu%20Digitale%20Aperitivi/public/data/sheet-config.json)
+- in sviluppo il sito legge `./data/...`, ma quel path viene servito da Vite partendo da `public/data/`
+- in build Vite copia automaticamente `public/data/` dentro `dist/data/`, quindi non serve mantenere una seconda copia nel repository
+
 ## Sviluppo locale
 
 ```bash

@@ -28,6 +28,8 @@ const FONT_GATE_DEBUG_STORAGE_KEY = "agriMenuFontGateDebug";
 const FONT_GATE_LOG_PREFIX = "[font-gate]";
 const MENU_DATA_URL = buildVersionedPath("./data/menu-data.json");
 const SHEET_CONFIG_URL = buildVersionedPath("./data/sheet-config.json");
+const COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
+const COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";
 const LOADER_MESSAGE_INTERVAL = 1900;
 const LOADER_MESSAGE_FADE_DURATION = 420;
 const LOADER_PROGRESS_WEIGHTS = {
@@ -478,6 +480,7 @@ let loaderMessageIndex = 0;
 let loaderStartedAt = null;
 let appHasRevealed = false;
 let lastFocusedElement = null;
+let lastServiceCallTriggerButton = null;
 let loaderCardRevealPromise = null;
 let resolveLoaderClockStarted = () => {};
 let lastSpritzEditorialFactIndex = -1;
@@ -583,6 +586,10 @@ const promoAgriLightbox = document.querySelector("#promoAgriLightbox");
 const promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
 const promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
 const promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
+const serviceCallLightbox = document.querySelector("#serviceCallLightbox");
+const serviceCallLightboxBackdrop = document.querySelector("#serviceCallLightboxBackdrop");
+const serviceCallLightboxClose = document.querySelector("#serviceCallLightboxClose");
+const serviceCallLightboxFrame = document.querySelector("#serviceCallLightboxFrame");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -724,6 +731,8 @@ const loaderProgressState = {
 cartFab.addEventListener("click", openCart);
 closeDetailButton.addEventListener("click", closeDetail);
 closeCartButton.addEventListener("click", closeCart);
+serviceCallLightboxBackdrop?.addEventListener("click", closeCallWaiterLightbox);
+serviceCallLightboxClose?.addEventListener("click", closeCallWaiterLightbox);
 detailSheet.addEventListener("click", (event) => {
   if (event.target === detailSheet) {
     closeDetail();
@@ -806,6 +815,7 @@ sectionNav?.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    closeCallWaiterLightbox();
     closeDetail();
     closeCart();
     return;
@@ -5013,14 +5023,20 @@ function renderGeneratedCartSummary() {
   const actions = document.createElement("div");
   actions.className = "cart-generated-actions";
   actions.innerHTML = `
+    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">
+      Chiama operatore
+    </button>
     <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">
       ${editSummaryLabel}
     </button>
-    <button class="utility-btn utility-btn--accent" type="button" data-generated-action="close">
+    <button class="utility-btn utility-btn--ghost" type="button" data-generated-action="close">
       Chiudi
     </button>
   `;
 
+  actions.querySelector('[data-generated-action="call-waiter"]')?.addEventListener("click", (event) => {
+    openCallWaiterLightbox(event.currentTarget);
+  });
   actions.querySelector('[data-generated-action="edit"]')?.addEventListener("click", () => {
     setCartSummaryView(false);
   });
@@ -5485,7 +5501,12 @@ function getOpenModalPanel() {
 }
 
 function hasOpenModal() {
-  return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open");
+  return (
+    detailSheet.classList.contains("is-open") ||
+    cartSheet.classList.contains("is-open") ||
+    !serviceCallLightbox?.hidden ||
+    !promoAgriLightbox?.hidden
+  );
 }
 
 function syncModalOpenState(options = {}) {
@@ -5554,6 +5575,39 @@ function persistCart() {
   } catch (error) {
     // Ignore storage failures on browsers with restricted storage access.
   }
+}
+
+function buildComandaCallWaiterUrl() {
+  const url = new URL(COMANDA_MENU_URL);
+  url.searchParams.set("wuc", COMANDA_WUC_CODE);
+  return url.toString();
+}
+
+function openCallWaiterLightbox(triggerButton = null) {
+  const targetUrl = buildComandaCallWaiterUrl();
+  if (!serviceCallLightbox || !serviceCallLightboxFrame) {
+    return;
+  }
+
+  lastServiceCallTriggerButton = triggerButton instanceof HTMLElement ? triggerButton : null;
+  serviceCallLightbox.hidden = false;
+  serviceCallLightbox.setAttribute("aria-hidden", "false");
+  serviceCallLightboxFrame.setAttribute("src", targetUrl);
+  pageBody.classList.add("modal-open");
+  serviceCallLightboxClose?.focus();
+}
+
+function closeCallWaiterLightbox() {
+  if (!serviceCallLightbox || serviceCallLightbox.hidden) {
+    return;
+  }
+
+  serviceCallLightbox.hidden = true;
+  serviceCallLightbox.setAttribute("aria-hidden", "true");
+  serviceCallLightboxFrame?.setAttribute("src", "about:blank");
+  syncModalOpenState({ restoreFocus: false });
+  lastServiceCallTriggerButton?.focus();
+  lastServiceCallTriggerButton = null;
 }
 
 function rgbaFromHex(color, alpha) {

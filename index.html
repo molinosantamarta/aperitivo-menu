@@ -513,6 +513,47 @@
       </div>
     </div>
 
+    <div class="service-call-lightbox" id="serviceCallLightbox" aria-hidden="true" hidden>
+      <button
+        class="service-call-lightbox__backdrop"
+        id="serviceCallLightboxBackdrop"
+        type="button"
+        aria-label="Chiudi chiamata operatore"
+      ></button>
+      <div
+        class="service-call-lightbox__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="serviceCallLightboxTitle"
+      >
+        <div class="service-call-lightbox__header">
+          <div class="service-call-lightbox__copy">
+            <span class="u-visually-hidden" id="serviceCallLightboxTitle">Chiama cameriere</span>
+            <div class="service-call-lightbox__status-row">
+              <span class="service-call-lightbox__beta">Beta</span>
+              <span class="service-call-lightbox__status-note">Funzione in test</span>
+            </div>
+            <p class="service-call-lightbox__subtitle">Premi l'icona in basso a destra e inserisci il numero del tavolo.</p>
+          </div>
+          <button
+            class="service-call-lightbox__close"
+            id="serviceCallLightboxClose"
+            type="button"
+          >
+            Chiudi
+          </button>
+        </div>
+        <iframe
+          class="service-call-lightbox__frame"
+          id="serviceCallLightboxFrame"
+          src="about:blank"
+          title="Chiamata cameriere"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+    </div>
+
     <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine" aria-hidden="true" inert>
       <span class="cart-fab__label">Riepilogo</span>
       <span class="cart-fab__count" id="cartCount" aria-live="polite">0</span>
