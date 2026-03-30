@@ -690,7 +690,7 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "aperol-floating.webp",
+            "asset": "aperol-floating.png",
             "width": "142px",
             "height": "298px",
             "right": "-10px",
