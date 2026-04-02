@@ -23,7 +23,6 @@
   function cacheElements() {
     els.statusBanner = document.getElementById("statusBanner");
     els.refreshButton = document.getElementById("refreshButton");
-    els.syncButton = document.getElementById("syncButton");
     els.newItemButton = document.getElementById("newItemButton");
     els.searchInput = document.getElementById("searchInput");
     els.sectionFilter = document.getElementById("sectionFilter");
@@ -60,7 +59,6 @@
 
   function bindEvents() {
     els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico i dati dal foglio..."));
-    els.syncButton.addEventListener("click", handleSyncRequest);
     els.newItemButton.addEventListener("click", () => openCreateForm());
     els.resetButton.addEventListener("click", () => openCreateForm());
     els.searchInput.addEventListener("input", (event) => {
@@ -127,31 +125,16 @@
     event.preventDefault();
 
     const payload = collectFormPayload();
-    setBusy(true, "Salvo il prodotto e aggiorno il menu live...");
+    setBusy(true, "Salvo il prodotto nel database menu...");
 
     google.script.run
       .withSuccessHandler((result) => {
         state.currentItemId = result.item.id;
-        state.lastMessage = `Prodotto salvato. Live sync: ${result.syncInfo.rowCount} righe aggiornate.`;
+        state.lastMessage = "Prodotto salvato.";
         loadBootstrap(state.lastMessage);
       })
       .withFailureHandler(handleFailure)
       .saveItem(payload);
-  }
-
-  function handleSyncRequest() {
-    setBusy(true, "Rigenero database-semplice...");
-
-    google.script.run
-      .withSuccessHandler((result) => {
-        setBusy(false);
-        showBanner(
-          `Sincronizzazione completata: ${result.rowCount} righe riscritte in ${result.liveTabName}.`,
-          "success"
-        );
-      })
-      .withFailureHandler(handleFailure)
-      .syncLegacyLiveTab();
   }
 
   function handleFailure(error) {
@@ -182,15 +165,15 @@
   }
 
   function renderSummary(payload) {
-    const liveSyncAt = payload.liveSyncAt ? formatDateTime(payload.liveSyncAt) : "non ancora sincronizzato";
     const editorLabel = payload.actorEmail || payload.actorLabel || "account connesso";
+    const publicEndpoint = payload.publicMenuEndpoint || "";
     const securityHint = state.settings.allowed_editor_emails
       ? "Allowlist email attiva."
-      : "Allowlist email vuota: prima del deploy finale conviene impostarla in admin_settings.";
+      : "Allowlist email vuota: va bene finche la web app admin resta privata.";
 
     els.catalogMeta.innerHTML = `
       <strong>${state.items.length}</strong> prodotti caricati<br />
-      Ultimo sync live: ${escapeHtml(liveSyncAt)}<br />
+      Pubblicazione dati: ${publicEndpoint ? "endpoint Apps Script attivo" : "endpoint da configurare"}<br />
       ${escapeHtml(securityHint)}
     `;
 
@@ -208,9 +191,11 @@
     els.itemList.innerHTML = filteredItems
       .map((item) => {
         const badges = [
-          renderBadge(item.visibility_state === "nascosto" ? "Nascosto" : "Visibile", item.visibility_state === "nascosto" ? "hidden" : "success"),
+          renderBadge(
+            item.visibility_state === "nascosto" ? "Nascosto" : "Visibile",
+            item.visibility_state === "nascosto" ? "hidden" : "success"
+          ),
           renderBadge(item.availability_state || "disponibile", getAvailabilityBadgeTone(item.availability_state)),
-          renderBadge(item.render_mode === "legacy" ? "Legacy" : "Standard"),
         ]
           .join("");
 
@@ -379,7 +364,6 @@
 
   function setBusy(isBusy, message = "") {
     document.body.style.cursor = isBusy ? "progress" : "";
-    els.syncButton.disabled = isBusy;
     els.refreshButton.disabled = isBusy;
     els.newItemButton.disabled = isBusy;
     els.resetButton.disabled = isBusy;

@@ -1446,10 +1446,26 @@ async function loadMenuData() {
     validate: isValidMenuDataPayload,
   });
   const sheetConfig = await loadSheetConfig();
+  const sheetApiUrl =
+    sheetConfig && typeof sheetConfig.googleSheetApiUrl === "string"
+      ? sheetConfig.googleSheetApiUrl.trim()
+      : "";
   const sheetCsvUrl =
     sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string"
       ? sheetConfig.googleSheetCsvUrl.trim()
       : "";
+
+  if (sheetApiUrl) {
+    try {
+      const sheetPayload = await loadSheetApiPayload(sheetApiUrl);
+      const sheetRows = getSheetRowsFromPayload(sheetPayload);
+      if (sheetRows.length || Array.isArray(sheetPayload?.sections)) {
+        return applySheetPayloadToMenu(baseData, sheetPayload);
+      }
+    } catch (error) {
+      console.warn("Impossibile caricare i dati menu da Apps Script:", error);
+    }
+  }
 
   if (!sheetCsvUrl) {
     return baseData;
@@ -1520,6 +1536,12 @@ async function loadSheetRows(sheetCsvUrl) {
   return parseCsvRows(csvText);
 }
 
+async function loadSheetApiPayload(sheetApiUrl) {
+  return fetchJsonFromCandidates([sheetApiUrl], "data menu Apps Script", {
+    validate: isValidSheetApiPayload,
+  });
+}
+
 function isValidMenuDataPayload(payload) {
   return Boolean(
     payload &&
@@ -1531,6 +1553,45 @@ function isValidMenuDataPayload(payload) {
 
 function isValidSheetConfigPayload(payload) {
   return Boolean(payload && typeof payload === "object" && !Array.isArray(payload));
+}
+
+function isValidSheetApiPayload(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return false;
+  }
+
+  if (Array.isArray(payload.rows)) {
+    return true;
+  }
+
+  return Array.isArray(payload.items);
+}
+
+function getSheetRowsFromPayload(payload) {
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  if (Array.isArray(payload.rows)) {
+    return payload.rows.filter((row) => row && row.id);
+  }
+
+  if (Array.isArray(payload.items)) {
+    return payload.items.filter((row) => row && row.id);
+  }
+
+  return [];
+}
+
+function applySheetPayloadToMenu(baseMenu, payload) {
+  const withSections = applySheetSectionsToMenu(baseMenu, Array.isArray(payload?.sections) ? payload.sections : []);
+  const rows = getSheetRowsFromPayload(payload);
+
+  if (!rows.length) {
+    return withSections;
+  }
+
+  return applySheetRowsToMenu(withSections, rows);
 }
 
 function parseCsvRows(csvText) {
@@ -1660,6 +1721,48 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
         return item;
       });
   });
+
+  return nextMenu;
+}
+
+function applySheetSectionsToMenu(baseMenu, sectionRows) {
+  if (!Array.isArray(sectionRows) || !sectionRows.length) {
+    return JSON.parse(JSON.stringify(baseMenu));
+  }
+
+  const nextMenu = JSON.parse(JSON.stringify(baseMenu));
+  const rowLookup = new Map(
+    sectionRows
+      .filter((row) => row && row.section_id)
+      .map((row) => [row.section_id, row])
+  );
+
+  nextMenu.sections = nextMenu.sections
+    .filter((section) => {
+      const row = rowLookup.get(section.id);
+      return row ? resolveSheetVisibility(row, true) : true;
+    })
+    .map((section, index) => {
+      const row = rowLookup.get(section.id);
+      if (!row) {
+        section.__sheetPosition = index;
+        return section;
+      }
+
+      section.title = getFirstSheetValue(row.title, section.title) || section.title;
+      section.kicker = getFirstSheetValue(row.kicker, section.kicker) || section.kicker;
+      section.description = getFirstSheetValue(row.description, section.description) || section.description;
+      section.accent = getFirstSheetValue(row.accent, section.accent) || section.accent;
+      section.accentSoft = getFirstSheetValue(row.accent_soft, section.accentSoft) || section.accentSoft;
+      section.footerNote = getFirstSheetValue(row.footer_note, section.footerNote) || section.footerNote;
+      section.__sheetPosition = parseSheetInteger(getFirstSheetValue(row.sort_order), index);
+      return section;
+    })
+    .sort((left, right) => getSheetPosition(left) - getSheetPosition(right))
+    .map((section) => {
+      delete section.__sheetPosition;
+      return section;
+    });
 
   return nextMenu;
 }

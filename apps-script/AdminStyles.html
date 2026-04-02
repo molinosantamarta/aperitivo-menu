@@ -222,6 +222,12 @@
     color: rgba(35, 22, 15, 0.84);
   }
 
+  .field__hint {
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
   .field input,
   .field select,
   .field textarea {
@@ -260,6 +266,10 @@
   .catalog-meta,
   .editor-card__meta {
     font-size: 0.88rem;
+  }
+
+  .hint-copy {
+    font-size: 0.84rem;
   }
 
   .item-list {
@@ -394,6 +404,10 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
+  }
+
+  .option-grid--main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .option-grid--stacked {

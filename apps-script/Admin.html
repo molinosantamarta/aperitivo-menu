@@ -4,22 +4,22 @@
     <base target="_top" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agri Menu Admin</title>
+    <title>Menumal - gestione del menu digitale</title>
     <?!= include('AdminStyles'); ?>
   </head>
   <body>
     <div class="admin-shell">
       <header class="admin-topbar">
         <div>
-          <p class="admin-eyebrow">Agri Menu Admin</p>
-          <h1>Gestione prodotti e sincronizzazione menu</h1>
+          <p class="admin-eyebrow">Menumal</p>
+          <h1>Gestione del menu digitale</h1>
           <p class="admin-subtitle">
-            Salvi qui, il tab <strong>database-semplice</strong> viene aggiornato in automatico.
+            Per i prodotti gia presenti modifica qui soprattutto prezzo, descrizione e disponibilita.
           </p>
         </div>
         <div class="admin-actions">
           <button class="ghost-btn" id="refreshButton" type="button">Ricarica dati</button>
-          <button class="primary-btn" id="syncButton" type="button">Sincronizza ora</button>
+          <button class="primary-btn" id="newItemButton" type="button">Nuovo prodotto</button>
         </div>
       </header>
 
@@ -30,7 +30,7 @@
           <div class="sidebar-card">
             <div class="sidebar-card__header">
               <h2>Catalogo</h2>
-              <button class="secondary-btn" id="newItemButton" type="button">Nuovo prodotto</button>
+              <span class="hint-copy">Seleziona un prodotto o creane uno nuovo.</span>
             </div>
             <label class="field">
               <span>Cerca</span>
@@ -63,36 +63,18 @@
                 </label>
 
                 <label class="field">
-                  <span>ID tecnico</span>
-                  <input id="idInput" name="id" type="text" placeholder="generato dal nome" />
+                  <span>Sezione</span>
+                  <select id="sectionInput" name="section_id" required></select>
                 </label>
 
                 <label class="field">
-                  <span>Sezione</span>
-                  <select id="sectionInput" name="section_id" required></select>
+                  <span>Prezzo</span>
+                  <input id="option1PriceInput" name="option_1_price" type="text" placeholder="6" required />
                 </label>
 
                 <label class="field field--span-2">
                   <span>Descrizione</span>
                   <textarea id="descriptionInput" name="description" rows="4"></textarea>
-                </label>
-
-                <label class="field">
-                  <span>Categoria</span>
-                  <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
-                </label>
-
-                <label class="field">
-                  <span>Ordine</span>
-                  <input id="sortOrderInput" name="sort_order" type="number" min="0" step="1" />
-                </label>
-
-                <label class="field">
-                  <span>Visibilita</span>
-                  <select id="visibilityInput" name="visibility_state">
-                    <option value="visibile">Visibile</option>
-                    <option value="nascosto">Nascosto</option>
-                  </select>
                 </label>
 
                 <label class="field">
@@ -105,24 +87,19 @@
                   </select>
                 </label>
 
-                <label class="field">
-                  <span>Tipo scheda</span>
-                  <select id="renderModeInput" name="render_mode">
-                    <option value="standard">Standard</option>
-                    <option value="legacy">Legacy</option>
-                  </select>
-                </label>
-
-                <label class="field">
+                <label class="field field--span-2">
                   <span>URL immagine</span>
                   <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
+                  <small class="field__hint">
+                    Usalo soprattutto per prodotti nuovi. I prodotti legacy continuano a usare la grafica gia definita nel progetto.
+                  </small>
                 </label>
               </div>
 
               <section class="option-stack">
                 <div class="option-card">
-                  <h3>Prezzo principale</h3>
-                  <div class="option-grid">
+                  <h3>Dettaglio principale</h3>
+                  <div class="option-grid option-grid--main">
                     <label class="field">
                       <span>Etichetta</span>
                       <input id="option1LabelInput" name="option_1_label" type="text" placeholder="es. 33 cl" />
@@ -136,16 +113,38 @@
                         placeholder="facoltativa"
                       />
                     </label>
-                    <label class="field">
-                      <span>Prezzo</span>
-                      <input id="option1PriceInput" name="option_1_price" type="text" placeholder="6" required />
-                    </label>
                   </div>
                 </div>
 
                 <details class="option-card">
-                  <summary>Prezzi aggiuntivi</summary>
+                  <summary>Avanzate</summary>
                   <div class="option-grid option-grid--stacked">
+                    <label class="field">
+                      <span>ID tecnico</span>
+                      <input id="idInput" name="id" type="text" placeholder="generato dal nome" />
+                    </label>
+                    <label class="field">
+                      <span>Categoria</span>
+                      <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
+                    </label>
+                    <label class="field">
+                      <span>Ordine</span>
+                      <input id="sortOrderInput" name="sort_order" type="number" min="0" step="1" />
+                    </label>
+                    <label class="field">
+                      <span>Visibilita</span>
+                      <select id="visibilityInput" name="visibility_state">
+                        <option value="visibile">Visibile</option>
+                        <option value="nascosto">Nascosto</option>
+                      </select>
+                    </label>
+                    <label class="field">
+                      <span>Tipo scheda</span>
+                      <select id="renderModeInput" name="render_mode">
+                        <option value="standard">Standard</option>
+                        <option value="legacy">Legacy</option>
+                      </select>
+                    </label>
                     <label class="field">
                       <span>Opzione 2 etichetta</span>
                       <input id="option2LabelInput" name="option_2_label" type="text" />
@@ -171,26 +170,24 @@
                       <span>Opzione 3 prezzo</span>
                       <input id="option3PriceInput" name="option_3_price" type="text" />
                     </label>
+                    <label class="field field--span-2">
+                      <span>Note interne</span>
+                      <textarea id="notesInput" name="notes" rows="3"></textarea>
+                    </label>
+                  </div>
+                  <div class="form-grid form-grid--compact">
+                    <label class="checkbox-field">
+                      <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
+                      <span>Mostra il suggerimento dettagli</span>
+                    </label>
+
+                    <label class="checkbox-field">
+                      <input id="legacyManagedInput" name="legacy_sheet_managed" type="checkbox" />
+                      <span>Prodotto legacy</span>
+                    </label>
                   </div>
                 </details>
               </section>
-
-              <div class="form-grid form-grid--compact">
-                <label class="checkbox-field">
-                  <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
-                  <span>Mostra il suggerimento “tocca per i dettagli”</span>
-                </label>
-
-                <label class="checkbox-field">
-                  <input id="legacyManagedInput" name="legacy_sheet_managed" type="checkbox" />
-                  <span>Prodotto gia presente nel menu storico</span>
-                </label>
-              </div>
-
-              <label class="field">
-                <span>Note interne</span>
-                <textarea id="notesInput" name="notes" rows="3"></textarea>
-              </label>
 
               <div class="form-actions">
                 <button class="ghost-btn" id="resetButton" type="button">Nuovo vuoto</button>

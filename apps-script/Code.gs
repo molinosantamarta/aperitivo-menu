@@ -76,16 +76,37 @@ var LIVE_EXPORT_COLUMNS = [
   'notes',
 ];
 
-function doGet() {
+function doGet(e) {
+  var mode = sanitizeCell_(e && e.parameter ? e.parameter.mode : '').toLowerCase();
+
+  if (mode === 'menu' || mode === 'data' || mode === 'menu-json') {
+    return createPublicMenuResponse_();
+  }
+
   assertAuthorized_();
   return HtmlService.createTemplateFromFile('Admin')
     .evaluate()
-    .setTitle('Agri Menu Admin')
+    .setTitle('Menumal - gestione del menu digitale')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }
 
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+function createPublicMenuResponse_() {
+  return ContentService.createTextOutput(JSON.stringify(buildPublicMenuPayload_())).setMimeType(
+    ContentService.MimeType.JSON
+  );
+}
+
+function buildPublicMenuPayload_() {
+  return {
+    version: 'admin-v2',
+    generatedAt: new Date().toISOString(),
+    sections: getAdminSections_().map(mapSectionToPublicPayload_),
+    items: getAdminItems_().map(mapItemToPublicPayload_),
+  };
 }
 
 function getBootstrapData() {
@@ -100,6 +121,7 @@ function getBootstrapData() {
     settings: settings,
     liveTabName: SHEET_NAMES.live,
     liveSyncAt: settings.last_live_sync_at || '',
+    publicMenuEndpoint: buildPublicMenuUrl_(),
   };
 }
 
@@ -383,6 +405,8 @@ function parsePrice_(value) {
 }
 
 function buildLiveExportRow_(item) {
+  var visualMode = item.render_mode === 'legacy' ? 'inherit' : item.image_url ? 'photo-panel' : 'text-panel';
+
   return {
     'nome attuale (solo riferimento)': item.name || item.id,
     id: item.id,
@@ -406,7 +430,53 @@ function buildLiveExportRow_(item) {
     option_3_price: item.option_3_price || '',
     image_url: item.image_url || '',
     show_detail_hint: item.show_detail_hint || 'si',
-    visual_mode: item.image_url ? 'photo-panel' : item.render_mode === 'legacy' ? 'inherit' : 'text-panel',
+    visual_mode: visualMode,
+    notes: item.notes || '',
+  };
+}
+
+function mapSectionToPublicPayload_(section) {
+  return {
+    section_id: section.section_id || '',
+    sort_order: section.sort_order || '',
+    title: section.title || '',
+    kicker: section.kicker || '',
+    description: section.description || '',
+    visible: section.visible || 'si',
+    accent: section.accent || '',
+    accent_soft: section.accent_soft || '',
+    footer_note: section.footer_note || '',
+    source_mode: section.source_mode || '',
+  };
+}
+
+function mapItemToPublicPayload_(item) {
+  var visualMode = item.render_mode === 'legacy' ? 'inherit' : item.image_url ? 'photo-panel' : 'text-panel';
+
+  return {
+    id: item.id || '',
+    section_id: item.section_id || '',
+    sort_order: item.sort_order || '',
+    position: item.sort_order || '',
+    render_mode: item.render_mode || 'standard',
+    legacy_sheet_managed: item.legacy_sheet_managed || 'no',
+    visibility_state: item.visibility_state || 'visibile',
+    availability_state: item.availability_state || 'disponibile',
+    name: item.name || '',
+    description: item.description || '',
+    category: item.category || '',
+    option_1_label: item.option_1_label || '',
+    option_1_display_label: item.option_1_display_label || '',
+    option_1_price: item.option_1_price || '',
+    option_2_label: item.option_2_label || '',
+    option_2_display_label: item.option_2_display_label || '',
+    option_2_price: item.option_2_price || '',
+    option_3_label: item.option_3_label || '',
+    option_3_display_label: item.option_3_display_label || '',
+    option_3_price: item.option_3_price || '',
+    image_url: item.image_url || '',
+    show_detail_hint: item.show_detail_hint || 'si',
+    visual_mode: visualMode,
     notes: item.notes || '',
   };
 }
@@ -631,4 +701,13 @@ function stripTrailingZeros_(value) {
 function safeJsonStringify_(value) {
   var raw = JSON.stringify(value || {});
   return raw.length > 49000 ? raw.slice(0, 48997) + '...' : raw;
+}
+
+function buildPublicMenuUrl_() {
+  try {
+    var serviceUrl = ScriptApp.getService().getUrl();
+    return serviceUrl ? serviceUrl + '?mode=menu' : '';
+  } catch (error) {
+    return '';
+  }
 }
