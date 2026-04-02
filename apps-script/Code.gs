@@ -116,6 +116,28 @@ function saveItem(payload) {
   };
 }
 
+function deleteItem(itemId) {
+  var actor = assertAuthorized_();
+  var normalizedId = sanitizeId_(itemId);
+
+  if (!normalizedId) {
+    throw new Error('Serve un ID valido per eliminare il prodotto.');
+  }
+
+  var deletedRow = deleteRowById_(SHEET_NAMES.items, ITEM_COLUMNS, 'id', normalizedId);
+  if (!deletedRow) {
+    throw new Error('Prodotto non trovato nel database menu.');
+  }
+
+  logAudit_(actor, 'delete_item', 'item', normalizedId, deletedRow);
+
+  return {
+    ok: true,
+    itemId: normalizedId,
+    deletedAt: new Date().toISOString(),
+  };
+}
+
 function getAdminSections_() {
   return readRows_(SHEET_NAMES.sections).sort(function (left, right) {
     return parseInteger_(left.sort_order, 9999) - parseInteger_(right.sort_order, 9999);
@@ -464,6 +486,33 @@ function upsertRowById_(sheetName, columns, idColumn, rowObject) {
   }
 
   sheet.getRange(targetRowIndex, 1, 1, headers.length).setValues([serializedRow]);
+}
+
+function deleteRowById_(sheetName, columns, idColumn, idValue) {
+  var sheet = ensureSheet_(sheetName, columns);
+  var values = sheet.getDataRange().getDisplayValues();
+  var headers = values[0] || [];
+  var idColumnIndex = headers.indexOf(idColumn);
+
+  if (idColumnIndex === -1) {
+    throw new Error('Colonna ID non trovata nel foglio ' + sheetName + '.');
+  }
+
+  for (var rowIndex = 1; rowIndex < values.length; rowIndex += 1) {
+    if (sanitizeCell_(values[rowIndex][idColumnIndex]) !== idValue) {
+      continue;
+    }
+
+    var deletedRow = headers.reduce(function (entry, header, index) {
+      entry[header] = sanitizeCell_(values[rowIndex][index]);
+      return entry;
+    }, {});
+
+    sheet.deleteRow(rowIndex + 1);
+    return deletedRow;
+  }
+
+  return null;
 }
 
 function upsertSetting_(key, value, notes) {

@@ -94,7 +94,8 @@
   .sidebar-card__header,
   .editor-card__header,
   .form-actions,
-  .admin-actions {
+  .admin-actions,
+  .form-actions__group {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -151,6 +152,11 @@
     justify-content: flex-end;
   }
 
+  .form-actions__group {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
   .admin-banner {
     margin-top: 18px;
     padding: 14px 18px;
@@ -177,7 +183,8 @@
 
   .primary-btn,
   .secondary-btn,
-  .ghost-btn {
+  .ghost-btn,
+  .danger-btn {
     appearance: none;
     border: 0;
     border-radius: 999px;
@@ -203,9 +210,16 @@
     color: var(--accent-strong);
   }
 
+  .danger-btn {
+    background: rgba(161, 55, 43, 0.12);
+    color: var(--danger);
+    border: 1px solid rgba(161, 55, 43, 0.2);
+  }
+
   .primary-btn:hover,
   .secondary-btn:hover,
-  .ghost-btn:hover {
+  .ghost-btn:hover,
+  .danger-btn:hover {
     transform: translateY(-1px);
   }
 

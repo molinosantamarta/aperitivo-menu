@@ -32,6 +32,7 @@
     els.editorMeta = document.getElementById("editorMeta");
     els.itemForm = document.getElementById("itemForm");
     els.resetButton = document.getElementById("resetButton");
+    els.deleteButton = document.getElementById("deleteButton");
 
     els.idInput = document.getElementById("idInput");
     els.nameInput = document.getElementById("nameInput");
@@ -61,6 +62,7 @@
     els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico i dati dal foglio..."));
     els.newItemButton.addEventListener("click", () => openCreateForm());
     els.resetButton.addEventListener("click", () => openCreateForm());
+    els.deleteButton.addEventListener("click", handleDelete);
     els.searchInput.addEventListener("input", (event) => {
       state.filters.search = event.target.value.trim().toLowerCase();
       renderItemList();
@@ -142,6 +144,32 @@
       error && error.message ? error.message : "C'e stato un problema durante l'operazione richiesta.";
     setBusy(false);
     showBanner(message, "error");
+  }
+
+  function handleDelete() {
+    if (state.isCreating || !state.currentItemId) {
+      return;
+    }
+
+    const currentItem = state.items.find((item) => item.id === state.currentItemId);
+    const itemLabel = currentItem?.name || state.currentItemId;
+    const confirmed = window.confirm(`Eliminare definitivamente "${itemLabel}" da Menumal?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy(true, "Elimino il prodotto dal database menu...");
+
+    google.script.run
+      .withSuccessHandler(() => {
+        state.currentItemId = "";
+        state.isCreating = true;
+        state.lastMessage = "Prodotto eliminato.";
+        loadBootstrap(state.lastMessage);
+      })
+      .withFailureHandler(handleFailure)
+      .deleteItem(state.currentItemId);
   }
 
   function renderSectionOptions() {
@@ -266,6 +294,7 @@
 
     els.editorTitle.textContent = "Nuovo prodotto";
     els.editorMeta.textContent = "Compila i campi e salva.";
+    updateDeleteButton();
     renderItemList();
   }
 
@@ -298,6 +327,7 @@
     els.detailHintInput.checked = normalizeToggle(item.show_detail_hint, true);
     els.legacyManagedInput.checked = normalizeToggle(item.legacy_sheet_managed, false);
     els.notesInput.value = item.notes || "";
+    updateDeleteButton();
   }
 
   function collectFormPayload() {
@@ -378,6 +408,12 @@
     if (isBusy && message) {
       showBanner(message, "info");
     }
+  }
+
+  function updateDeleteButton() {
+    const showDelete = !state.isCreating && Boolean(state.currentItemId);
+    els.deleteButton.hidden = !showDelete;
+    els.deleteButton.disabled = !showDelete;
   }
 
   function showBanner(message, tone = "info") {
