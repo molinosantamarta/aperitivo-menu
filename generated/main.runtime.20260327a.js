@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.714";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.714";
+  var APP_BUILD_LABEL = "V.1.0.715";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.715";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -60,8 +60,6 @@
     buildVersionedPath("./sheet-config.json"),
     buildVersionedPath("./sheet-config-fallback.json")
   ];
-  var COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
-  var COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";
   var LOADER_MESSAGE_INTERVAL = 1900;
   var LOADER_MESSAGE_FADE_DURATION = 420;
   var LOADER_PROGRESS_WEIGHTS = {
@@ -465,7 +463,6 @@
   var loaderStartedAt = null;
   var appHasRevealed = false;
   var lastFocusedElement = null;
-  var lastServiceCallTriggerButton = null;
   var loaderCardRevealPromise = null;
   var resolveLoaderClockStarted = () => {
   };
@@ -570,10 +567,6 @@
   var promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
   var promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
   var promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
-  var serviceCallLightbox = document.querySelector("#serviceCallLightbox");
-  var serviceCallLightboxBackdrop = document.querySelector("#serviceCallLightboxBackdrop");
-  var serviceCallLightboxClose = document.querySelector("#serviceCallLightboxClose");
-  var serviceCallLightboxFrame = document.querySelector("#serviceCallLightboxFrame");
   var formatCarousel = document.querySelector("#formatCarousel");
   var formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   var formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -697,8 +690,6 @@
     button.addEventListener("click", closeDetail);
   });
   closeCartButton.addEventListener("click", closeCart);
-  serviceCallLightboxBackdrop == null ? void 0 : serviceCallLightboxBackdrop.addEventListener("click", closeCallWaiterLightbox);
-  serviceCallLightboxClose == null ? void 0 : serviceCallLightboxClose.addEventListener("click", closeCallWaiterLightbox);
   detailSheet.addEventListener("click", (event) => {
     if (event.target === detailSheet) {
       closeDetail();
@@ -766,7 +757,6 @@
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      closeCallWaiterLightbox();
       closeDetail();
       closeCart();
       return;
@@ -1390,6 +1380,8 @@
     const aliases = {
       sezione: "section_id",
       ordine: "position",
+      sort_order: "position",
+      posizione: "position",
       visibilita: "visibility_state",
       visibilita_visibile_nascosto: "visibility_state",
       visibile: "visibility_state",
@@ -1399,6 +1391,11 @@
       disponibilita: "availability_state",
       disponibilita_disponibile_non_disponibile_in_arrivo: "availability_state",
       disponibile: "availability_state",
+      nome: "name",
+      descrizione: "description",
+      categoria: "category",
+      immagine: "image_url",
+      immagine_url: "image_url",
       variante: "variante_1",
       prezzo: "prezzo_1"
     };
@@ -1407,6 +1404,7 @@
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));
     const rowLookup = new Map(sheetRows.map((row) => [row.id, row]));
+    const existingItemIds = collectMenuItemIds(nextMenu);
     nextMenu.sections.forEach((section) => {
       section.items = section.items.filter((item) => {
         const row = getManagedSheetRow(item, rowLookup);
@@ -1414,10 +1412,11 @@
       }).map((item, index) => {
         const row = getManagedSheetRow(item, rowLookup);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
-        nextItem.__sheetPosition = parseSheetInteger(row ? row.position : null, index);
+        nextItem.__sheetPosition = getSheetRowPosition(row, index);
         return nextItem;
       });
     });
+    appendSheetOnlyItems(nextMenu, sheetRows, existingItemIds);
     nextMenu.sections.forEach((section) => {
       section.items = section.items.sort((left, right) => getSheetPosition(left) - getSheetPosition(right)).map((item) => {
         delete item.__sheetPosition;
@@ -1425,6 +1424,43 @@
       });
     });
     return nextMenu;
+  }
+  function collectMenuItemIds(menu) {
+    const ids = /* @__PURE__ */ new Set();
+    (menu.sections || []).forEach((section) => {
+      (section.items || []).forEach((item) => {
+        if (item && item.id) {
+          ids.add(item.id);
+        }
+      });
+    });
+    return ids;
+  }
+  function appendSheetOnlyItems(menu, sheetRows, existingItemIds) {
+    const sectionLookup = (menu.sections || []).reduce((lookup, section) => {
+      lookup.set(section.id, section);
+      return lookup;
+    }, /* @__PURE__ */ new Map());
+    sheetRows.forEach((row) => {
+      if (!row || !row.id || existingItemIds.has(row.id) || !resolveSheetVisibility(row, true)) {
+        return;
+      }
+      const sectionId = getSheetRowSectionId(row);
+      if (!sectionId) {
+        return;
+      }
+      const section = sectionLookup.get(sectionId);
+      if (!section) {
+        return;
+      }
+      const nextItem = buildItemFromSheetRow(row, section);
+      if (!nextItem) {
+        return;
+      }
+      nextItem.__sheetPosition = getSheetRowPosition(row, section.items.length);
+      section.items.push(nextItem);
+      existingItemIds.add(nextItem.id);
+    });
   }
   function getManagedSheetRow(item, rowLookup) {
     if (!item || item.excludeFromSheet === true) {
@@ -1434,6 +1470,22 @@
   }
   function updateItemFromSheet(item, row, section) {
     const nextItem = __spreadValues({}, item);
+    const nextName = getSheetRowName(row);
+    const nextDescription = getSheetRowDescription(row);
+    const nextCategory = getSheetRowCategory(row);
+    const nextDetailLayout = resolveSheetDetailLayout(row, nextItem.detailLayout || "");
+    if (nextName) {
+      nextItem.name = nextName;
+    }
+    if (nextDescription) {
+      nextItem.description = nextDescription;
+    }
+    if (nextCategory) {
+      nextItem.category = nextCategory;
+    }
+    if (nextDetailLayout) {
+      nextItem.detailLayout = nextDetailLayout;
+    }
     if (row.show_detail_hint) {
       nextItem.showDetailHint = parseSheetBoolean(
         row.show_detail_hint,
@@ -1453,9 +1505,39 @@
     }
     return nextItem;
   }
+  function buildItemFromSheetRow(row, section) {
+    const name = getSheetRowName(row);
+    const description = getSheetRowDescription(row);
+    const category = getSheetRowCategory(row);
+    const options = parseSheetOptions(row);
+    if (!name || !section || !options.length) {
+      return null;
+    }
+    const renderMode = normalizeSheetRenderMode(row.render_mode);
+    const nextItem = {
+      id: row.id,
+      name,
+      description,
+      category,
+      options,
+      renderMode: renderMode || "standard",
+      detailLayout: resolveSheetDetailLayout(row, "rapid"),
+      showDetailHint: parseSheetBoolean(row.show_detail_hint, true)
+    };
+    applySheetAvailabilityToItem(nextItem, row, "available");
+    const visual = buildSheetVisual(row, section, null, name);
+    if (visual) {
+      nextItem.visual = visual;
+    }
+    return nextItem;
+  }
   function buildSheetVisual(row, section, existingVisual, fallbackName) {
-    const visualMode = (row.visual_mode || "").toLowerCase();
+    const visualMode = normalizeSheetVisualMode(row.visual_mode);
+    const imageUrl = getFirstSheetValue(row.image_url);
     if (!visualMode) {
+      if (imageUrl && !existingVisual) {
+        return buildSheetPhotoPanelVisual(row, imageUrl);
+      }
       if (existingVisual) {
         return existingVisual;
       }
@@ -1471,6 +1553,9 @@
     }
     if (visualMode === "inherit") {
       return existingVisual;
+    }
+    if (visualMode === "photo-panel") {
+      return buildSheetPhotoPanelVisual(row, imageUrl);
     }
     if (visualMode === "beer-script") {
       return {
@@ -1493,6 +1578,88 @@
       labelColor: row.visual_label_color || "#fffdf8",
       scriptColor: row.visual_script_color || "rgba(17, 17, 17, 0.72)"
     };
+  }
+  function buildSheetPhotoPanelVisual(row, imageUrl) {
+    if (!imageUrl) {
+      return null;
+    }
+    return {
+      type: "photo-panel",
+      asset: imageUrl,
+      position: row.visual_position || row.image_position || "center center",
+      size: row.visual_size || row.image_size || "cover",
+      backgroundColor: row.visual_background_color || "transparent",
+      blendMode: row.visual_blend_mode || "normal",
+      detailCaption: row.detail_caption || row.visual_caption || ""
+    };
+  }
+  function normalizeSheetRenderMode(value) {
+    const normalized = normalizeLabel(value || "").replace(/\s+/g, "-");
+    if (!normalized) {
+      return "";
+    }
+    if (["legacy", "standard", "rapid", "showcase", "selector", "editorial"].includes(normalized)) {
+      return normalized;
+    }
+    if (["photo", "photo-panel"].includes(normalized)) {
+      return "standard";
+    }
+    return "";
+  }
+  function normalizeSheetVisualMode(value) {
+    const normalized = normalizeLabel(value || "").replace(/\s+/g, "-");
+    if (!normalized) {
+      return "";
+    }
+    if (normalized === "inherit") {
+      return normalized;
+    }
+    if (["photo", "photo-panel"].includes(normalized)) {
+      return "photo-panel";
+    }
+    if (["text", "text-panel"].includes(normalized)) {
+      return "text-panel";
+    }
+    if (normalized === "beer-script") {
+      return normalized;
+    }
+    return "";
+  }
+  function resolveSheetDetailLayout(row, fallbackLayout = "") {
+    const explicitLayout = normalizeLabel(getFirstSheetValue(row.detail_layout, row.detail_mode, row.render_mode));
+    if (["editorial", "selector", "showcase", "rapid"].includes(explicitLayout)) {
+      return explicitLayout;
+    }
+    const renderMode = normalizeSheetRenderMode(row.render_mode);
+    if (renderMode === "standard") {
+      return "rapid";
+    }
+    return fallbackLayout;
+  }
+  function getSheetRowName(row) {
+    return getFirstSheetValue(row == null ? void 0 : row.name, row == null ? void 0 : row.nome, row == null ? void 0 : row.nome_attuale_solo_riferimento);
+  }
+  function getSheetRowDescription(row) {
+    return getFirstSheetValue(row == null ? void 0 : row.description, row == null ? void 0 : row.descrizione);
+  }
+  function getSheetRowCategory(row) {
+    return getFirstSheetValue(row == null ? void 0 : row.category, row == null ? void 0 : row.categoria);
+  }
+  function getSheetRowSectionId(row) {
+    return getFirstSheetValue(row == null ? void 0 : row.section_id, row == null ? void 0 : row.sezione);
+  }
+  function getSheetRowPosition(row, fallbackValue) {
+    if (!row) {
+      return fallbackValue;
+    }
+    return parseSheetInteger(getFirstSheetValue(row.position, row.sort_order, row.ordine), fallbackValue);
+  }
+  function parseSheetOptions(row) {
+    const compactOptions = parseCompactSheetOptions(row);
+    if (compactOptions.length) {
+      return compactOptions;
+    }
+    return SHEET_OPTION_INDEXES.map((index) => buildSheetOption(index, row)).filter(Boolean);
   }
   function mergeSheetOptions(existingOptions, row) {
     const compactOptions = parseCompactSheetOptions(row);
@@ -1542,6 +1709,17 @@
       displayLabel: "",
       price: sharedPrice
     }));
+  }
+  function buildSheetOption(index, row) {
+    const optionInput = getSheetOptionInput(row, index);
+    if (!optionInput.hasValues || optionInput.price == null) {
+      return null;
+    }
+    return {
+      label: optionInput.label || "Opzione ".concat(index),
+      displayLabel: optionInput.displayLabel || "",
+      price: optionInput.price
+    };
   }
   function getSheetOptionInput(row, index) {
     const rawPrice = getFirstSheetValue(
@@ -1663,14 +1841,18 @@
     item.available = nextState === "available";
   }
   function parseSheetInteger(value, fallbackValue) {
-    const parsed = Number.parseInt(value, 10);
+    if (value == null || value === "") {
+      return fallbackValue;
+    }
+    const normalized = String(value).replace(/[^\d-]+/g, "").trim();
+    const parsed = Number.parseInt(normalized, 10);
     return Number.isFinite(parsed) ? parsed : fallbackValue;
   }
   function parseSheetNumber(value) {
     if (value == null || value === "") {
       return null;
     }
-    const normalized = String(value).replace(",", ".").trim();
+    const normalized = String(value).replace(/\s+/g, "").replace(/[^\d,.-]+/g, "").replace(",", ".").trim();
     const parsed = Number.parseFloat(normalized);
     return Number.isFinite(parsed) ? parsed : null;
   }
@@ -3855,7 +4037,7 @@
     renderCart();
   }
   function renderGeneratedCartSummary() {
-    var _a2, _b, _c;
+    var _a2, _b;
     const groupedEntries = groupGeneratedCartEntries(state.cart);
     groupedEntries.forEach((group) => {
       const groupSection = document.createElement("section");
@@ -3874,14 +4056,11 @@
     });
     const actions = document.createElement("div");
     actions.className = "cart-generated-actions";
-    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      <span class="utility-btn--call-waiter__label">Chiama cameriere</span>\n      <span class="utility-btn--call-waiter__beta">Beta</span>\n    </button>\n  ');
-    (_a2 = actions.querySelector('[data-generated-action="call-waiter"]')) == null ? void 0 : _a2.addEventListener("click", (event) => {
-      openCallWaiterLightbox(event.currentTarget);
-    });
-    (_b = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _b.addEventListener("click", () => {
+    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
+    (_a2 = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _a2.addEventListener("click", () => {
       setCartSummaryView(false);
     });
-    (_c = actions.querySelector('[data-generated-action="close"]')) == null ? void 0 : _c.addEventListener("click", () => {
+    (_b = actions.querySelector('[data-generated-action="close"]')) == null ? void 0 : _b.addEventListener("click", () => {
       closeCart();
     });
     cartGenerated.append(actions);
@@ -4178,7 +4357,7 @@
     return null;
   }
   function hasOpenModal() {
-    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(serviceCallLightbox == null ? void 0 : serviceCallLightbox.hidden) || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden);
+    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden);
   }
   function syncModalOpenState(options = {}) {
     const { restoreFocus = true } = options;
@@ -4235,34 +4414,6 @@
       window.localStorage.setItem("molino-cart", JSON.stringify(state.cart));
     } catch (error) {
     }
-  }
-  function buildComandaCallWaiterUrl() {
-    const url = new URL(COMANDA_MENU_URL);
-    url.searchParams.set("wuc", COMANDA_WUC_CODE);
-    return url.toString();
-  }
-  function openCallWaiterLightbox(triggerButton = null) {
-    const targetUrl = buildComandaCallWaiterUrl();
-    if (!serviceCallLightbox || !serviceCallLightboxFrame) {
-      return;
-    }
-    lastServiceCallTriggerButton = triggerButton instanceof HTMLElement ? triggerButton : null;
-    serviceCallLightbox.hidden = false;
-    serviceCallLightbox.setAttribute("aria-hidden", "false");
-    serviceCallLightboxFrame.setAttribute("src", targetUrl);
-    pageBody.classList.add("modal-open");
-    serviceCallLightboxClose == null ? void 0 : serviceCallLightboxClose.focus();
-  }
-  function closeCallWaiterLightbox() {
-    if (!serviceCallLightbox || serviceCallLightbox.hidden) {
-      return;
-    }
-    serviceCallLightbox.hidden = true;
-    serviceCallLightbox.setAttribute("aria-hidden", "true");
-    serviceCallLightboxFrame == null ? void 0 : serviceCallLightboxFrame.setAttribute("src", "about:blank");
-    syncModalOpenState({ restoreFocus: false });
-    lastServiceCallTriggerButton == null ? void 0 : lastServiceCallTriggerButton.focus();
-    lastServiceCallTriggerButton = null;
   }
   function rgbaFromHex(color, alpha) {
     const rgb = hexToRgb(color);
@@ -5069,11 +5220,11 @@
   }
   function getSideVisualImage(visual) {
     const assetName = visual && visual.asset ? visual.asset : "";
-    return buildVersionedPath("./menu-assets/items/".concat(assetName));
+    return resolveMenuAssetPath(assetName);
   }
   function getTitleLogoImage(visual) {
     const assetName = visual && visual.asset ? visual.asset : "";
-    return buildVersionedPath("./menu-assets/items/".concat(assetName));
+    return resolveMenuAssetPath(assetName);
   }
   function buildTitleLogoStyle(visual) {
     const styles = [];
@@ -5123,7 +5274,17 @@
     }
   }
   function getVisualAsset(assetName) {
-    return buildVersionedPath("./menu-assets/items/".concat(assetName));
+    return resolveMenuAssetPath(assetName);
+  }
+  function resolveMenuAssetPath(assetName) {
+    const normalized = String(assetName || "").trim();
+    if (!normalized) {
+      return "";
+    }
+    if (/^(?:https?:|data:|blob:|\/)/i.test(normalized)) {
+      return normalized;
+    }
+    return buildVersionedPath("./menu-assets/items/".concat(normalized));
   }
   function shouldDeferSideVisualAsset(item, sideVisual) {
     return Boolean(sideVisual && (sideVisual.deferAsset === true || shouldDeferLoaderAssetsForItem(item)));

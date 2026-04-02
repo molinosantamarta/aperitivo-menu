@@ -1,0 +1,454 @@
+<script>
+  const state = {
+    sections: [],
+    items: [],
+    settings: {},
+    currentItemId: "",
+    isCreating: true,
+    filters: {
+      search: "",
+      sectionId: "",
+    },
+    lastMessage: "",
+  };
+
+  const els = {};
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cacheElements();
+    bindEvents();
+    loadBootstrap("Carico catalogo e impostazioni...");
+  });
+
+  function cacheElements() {
+    els.statusBanner = document.getElementById("statusBanner");
+    els.refreshButton = document.getElementById("refreshButton");
+    els.syncButton = document.getElementById("syncButton");
+    els.newItemButton = document.getElementById("newItemButton");
+    els.searchInput = document.getElementById("searchInput");
+    els.sectionFilter = document.getElementById("sectionFilter");
+    els.catalogMeta = document.getElementById("catalogMeta");
+    els.itemList = document.getElementById("itemList");
+    els.editorTitle = document.getElementById("editorTitle");
+    els.editorMeta = document.getElementById("editorMeta");
+    els.itemForm = document.getElementById("itemForm");
+    els.resetButton = document.getElementById("resetButton");
+
+    els.idInput = document.getElementById("idInput");
+    els.nameInput = document.getElementById("nameInput");
+    els.sectionInput = document.getElementById("sectionInput");
+    els.descriptionInput = document.getElementById("descriptionInput");
+    els.categoryInput = document.getElementById("categoryInput");
+    els.sortOrderInput = document.getElementById("sortOrderInput");
+    els.visibilityInput = document.getElementById("visibilityInput");
+    els.availabilityInput = document.getElementById("availabilityInput");
+    els.renderModeInput = document.getElementById("renderModeInput");
+    els.imageUrlInput = document.getElementById("imageUrlInput");
+    els.option1LabelInput = document.getElementById("option1LabelInput");
+    els.option1DisplayLabelInput = document.getElementById("option1DisplayLabelInput");
+    els.option1PriceInput = document.getElementById("option1PriceInput");
+    els.option2LabelInput = document.getElementById("option2LabelInput");
+    els.option2DisplayLabelInput = document.getElementById("option2DisplayLabelInput");
+    els.option2PriceInput = document.getElementById("option2PriceInput");
+    els.option3LabelInput = document.getElementById("option3LabelInput");
+    els.option3DisplayLabelInput = document.getElementById("option3DisplayLabelInput");
+    els.option3PriceInput = document.getElementById("option3PriceInput");
+    els.detailHintInput = document.getElementById("detailHintInput");
+    els.legacyManagedInput = document.getElementById("legacyManagedInput");
+    els.notesInput = document.getElementById("notesInput");
+  }
+
+  function bindEvents() {
+    els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico i dati dal foglio..."));
+    els.syncButton.addEventListener("click", handleSyncRequest);
+    els.newItemButton.addEventListener("click", () => openCreateForm());
+    els.resetButton.addEventListener("click", () => openCreateForm());
+    els.searchInput.addEventListener("input", (event) => {
+      state.filters.search = event.target.value.trim().toLowerCase();
+      renderItemList();
+    });
+    els.sectionFilter.addEventListener("change", (event) => {
+      state.filters.sectionId = event.target.value;
+      renderItemList();
+    });
+    els.itemForm.addEventListener("submit", handleSave);
+    els.nameInput.addEventListener("input", () => {
+      if (state.isCreating && !els.idInput.dataset.locked) {
+        els.idInput.value = slugify(els.nameInput.value);
+      }
+    });
+    els.idInput.addEventListener("input", () => {
+      els.idInput.dataset.locked = els.idInput.value.trim() ? "true" : "";
+    });
+    els.sectionInput.addEventListener("change", () => {
+      if (state.isCreating && !els.sortOrderInput.value.trim()) {
+        els.sortOrderInput.value = String(getSuggestedSortOrder(els.sectionInput.value));
+      }
+    });
+  }
+
+  function loadBootstrap(message) {
+    setBusy(true, message || "Carico...");
+    google.script.run
+      .withSuccessHandler((payload) => {
+        state.sections = Array.isArray(payload.sections) ? payload.sections : [];
+        state.items = Array.isArray(payload.items) ? payload.items : [];
+        state.settings = payload.settings || {};
+
+        renderSectionOptions();
+        renderSummary(payload);
+
+        if (state.currentItemId) {
+          const currentItem = state.items.find((item) => item.id === state.currentItemId);
+          if (currentItem) {
+            fillForm(currentItem);
+            state.isCreating = false;
+          } else {
+            openCreateForm();
+          }
+        } else if (state.items.length) {
+          fillForm(state.items[0]);
+          state.isCreating = false;
+        } else {
+          openCreateForm();
+        }
+
+        renderItemList();
+        setBusy(false);
+        if (message) {
+          showBanner(message.replace("...", "."), "info");
+        }
+      })
+      .withFailureHandler(handleFailure)
+      .getBootstrapData();
+  }
+
+  function handleSave(event) {
+    event.preventDefault();
+
+    const payload = collectFormPayload();
+    setBusy(true, "Salvo il prodotto e aggiorno il menu live...");
+
+    google.script.run
+      .withSuccessHandler((result) => {
+        state.currentItemId = result.item.id;
+        state.lastMessage = `Prodotto salvato. Live sync: ${result.syncInfo.rowCount} righe aggiornate.`;
+        loadBootstrap(state.lastMessage);
+      })
+      .withFailureHandler(handleFailure)
+      .saveItem(payload);
+  }
+
+  function handleSyncRequest() {
+    setBusy(true, "Rigenero database-semplice...");
+
+    google.script.run
+      .withSuccessHandler((result) => {
+        setBusy(false);
+        showBanner(
+          `Sincronizzazione completata: ${result.rowCount} righe riscritte in ${result.liveTabName}.`,
+          "success"
+        );
+      })
+      .withFailureHandler(handleFailure)
+      .syncLegacyLiveTab();
+  }
+
+  function handleFailure(error) {
+    const message =
+      error && error.message ? error.message : "C'e stato un problema durante l'operazione richiesta.";
+    setBusy(false);
+    showBanner(message, "error");
+  }
+
+  function renderSectionOptions() {
+    const optionsMarkup = ['<option value="">Tutte le sezioni</option>']
+      .concat(
+        state.sections.map((section) => {
+          return `<option value="${escapeHtml(section.section_id)}">${escapeHtml(section.title || section.section_id)}</option>`;
+        })
+      )
+      .join("");
+
+    const editorOptionsMarkup = state.sections
+      .map((section) => {
+        return `<option value="${escapeHtml(section.section_id)}">${escapeHtml(section.title || section.section_id)}</option>`;
+      })
+      .join("");
+
+    els.sectionFilter.innerHTML = optionsMarkup;
+    els.sectionFilter.value = state.filters.sectionId;
+    els.sectionInput.innerHTML = editorOptionsMarkup;
+  }
+
+  function renderSummary(payload) {
+    const liveSyncAt = payload.liveSyncAt ? formatDateTime(payload.liveSyncAt) : "non ancora sincronizzato";
+    const editorLabel = payload.actorEmail || payload.actorLabel || "account connesso";
+    const securityHint = state.settings.allowed_editor_emails
+      ? "Allowlist email attiva."
+      : "Allowlist email vuota: prima del deploy finale conviene impostarla in admin_settings.";
+
+    els.catalogMeta.innerHTML = `
+      <strong>${state.items.length}</strong> prodotti caricati<br />
+      Ultimo sync live: ${escapeHtml(liveSyncAt)}<br />
+      ${escapeHtml(securityHint)}
+    `;
+
+    els.editorMeta.textContent = `Accesso: ${editorLabel}`;
+  }
+
+  function renderItemList() {
+    const filteredItems = getFilteredItems();
+
+    if (!filteredItems.length) {
+      els.itemList.innerHTML = `<div class="item-list__empty">Nessun prodotto trovato con questi filtri.</div>`;
+      return;
+    }
+
+    els.itemList.innerHTML = filteredItems
+      .map((item) => {
+        const badges = [
+          renderBadge(item.visibility_state === "nascosto" ? "Nascosto" : "Visibile", item.visibility_state === "nascosto" ? "hidden" : "success"),
+          renderBadge(item.availability_state || "disponibile", getAvailabilityBadgeTone(item.availability_state)),
+          renderBadge(item.render_mode === "legacy" ? "Legacy" : "Standard"),
+        ]
+          .join("");
+
+        return `
+          <button class="item-row${item.id === state.currentItemId && !state.isCreating ? " is-active" : ""}" type="button" data-item-id="${escapeHtml(item.id)}">
+            <div class="item-row__top">
+              <span class="item-row__name">${escapeHtml(item.name || item.id)}</span>
+              <span class="item-row__id">${escapeHtml(item.option_1_price || item.option_2_price || item.option_3_price || "-")}</span>
+            </div>
+            <div class="badge-row">${badges}</div>
+            <div class="item-row__description">
+              ${escapeHtml(resolveSectionLabel(item.section_id))} · ${escapeHtml(item.id)}
+            </div>
+            <div class="item-row__description">${escapeHtml(item.description || "Nessuna descrizione")}</div>
+          </button>
+        `;
+      })
+      .join("");
+
+    Array.from(els.itemList.querySelectorAll("[data-item-id]")).forEach((button) => {
+      button.addEventListener("click", () => {
+        const item = state.items.find((entry) => entry.id === button.dataset.itemId);
+        if (!item) {
+          return;
+        }
+
+        fillForm(item);
+        state.currentItemId = item.id;
+        state.isCreating = false;
+        renderItemList();
+      });
+    });
+  }
+
+  function getFilteredItems() {
+    return state.items.filter((item) => {
+      if (state.filters.sectionId && item.section_id !== state.filters.sectionId) {
+        return false;
+      }
+
+      if (!state.filters.search) {
+        return true;
+      }
+
+      const haystack = [item.id, item.name, item.description, item.category]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(state.filters.search);
+    });
+  }
+
+  function openCreateForm() {
+    state.isCreating = true;
+    state.currentItemId = "";
+    els.itemForm.reset();
+    els.idInput.dataset.locked = "";
+    els.visibilityInput.value = "visibile";
+    els.availabilityInput.value = "disponibile";
+    els.renderModeInput.value = "standard";
+    els.detailHintInput.checked = true;
+    els.legacyManagedInput.checked = false;
+
+    const preferredSectionId = state.filters.sectionId || state.sections[0]?.section_id || "";
+    if (preferredSectionId) {
+      els.sectionInput.value = preferredSectionId;
+      els.sortOrderInput.value = String(getSuggestedSortOrder(preferredSectionId));
+    }
+
+    els.editorTitle.textContent = "Nuovo prodotto";
+    els.editorMeta.textContent = "Compila i campi e salva.";
+    renderItemList();
+  }
+
+  function fillForm(item) {
+    state.currentItemId = item.id;
+    state.isCreating = false;
+    els.editorTitle.textContent = item.name || item.id;
+    els.editorMeta.textContent = `${resolveSectionLabel(item.section_id)} · id ${item.id}`;
+
+    els.idInput.value = item.id || "";
+    els.idInput.dataset.locked = item.id ? "true" : "";
+    els.nameInput.value = item.name || "";
+    els.sectionInput.value = item.section_id || "";
+    els.descriptionInput.value = item.description || "";
+    els.categoryInput.value = item.category || "";
+    els.sortOrderInput.value = item.sort_order || "";
+    els.visibilityInput.value = item.visibility_state || "visibile";
+    els.availabilityInput.value = item.availability_state || "disponibile";
+    els.renderModeInput.value = item.render_mode || "standard";
+    els.imageUrlInput.value = item.image_url || "";
+    els.option1LabelInput.value = item.option_1_label || "";
+    els.option1DisplayLabelInput.value = item.option_1_display_label || "";
+    els.option1PriceInput.value = item.option_1_price || "";
+    els.option2LabelInput.value = item.option_2_label || "";
+    els.option2DisplayLabelInput.value = item.option_2_display_label || "";
+    els.option2PriceInput.value = item.option_2_price || "";
+    els.option3LabelInput.value = item.option_3_label || "";
+    els.option3DisplayLabelInput.value = item.option_3_display_label || "";
+    els.option3PriceInput.value = item.option_3_price || "";
+    els.detailHintInput.checked = normalizeToggle(item.show_detail_hint, true);
+    els.legacyManagedInput.checked = normalizeToggle(item.legacy_sheet_managed, false);
+    els.notesInput.value = item.notes || "";
+  }
+
+  function collectFormPayload() {
+    const idValue = els.idInput.value.trim() || slugify(els.nameInput.value);
+
+    return {
+      id: idValue,
+      name: els.nameInput.value.trim(),
+      section_id: els.sectionInput.value,
+      description: els.descriptionInput.value.trim(),
+      category: els.categoryInput.value.trim(),
+      sort_order: els.sortOrderInput.value.trim(),
+      visibility_state: els.visibilityInput.value,
+      availability_state: els.availabilityInput.value,
+      render_mode: els.renderModeInput.value,
+      image_url: els.imageUrlInput.value.trim(),
+      option_1_label: els.option1LabelInput.value.trim(),
+      option_1_display_label: els.option1DisplayLabelInput.value.trim(),
+      option_1_price: els.option1PriceInput.value.trim(),
+      option_2_label: els.option2LabelInput.value.trim(),
+      option_2_display_label: els.option2DisplayLabelInput.value.trim(),
+      option_2_price: els.option2PriceInput.value.trim(),
+      option_3_label: els.option3LabelInput.value.trim(),
+      option_3_display_label: els.option3DisplayLabelInput.value.trim(),
+      option_3_price: els.option3PriceInput.value.trim(),
+      show_detail_hint: els.detailHintInput.checked,
+      legacy_sheet_managed: els.legacyManagedInput.checked,
+      notes: els.notesInput.value.trim(),
+    };
+  }
+
+  function getSuggestedSortOrder(sectionId) {
+    return (
+      state.items
+        .filter((item) => item.section_id === sectionId)
+        .reduce((maxValue, item) => {
+          const current = Number.parseInt(item.sort_order, 10);
+          return Number.isFinite(current) ? Math.max(maxValue, current) : maxValue;
+        }, 0) + 1
+    );
+  }
+
+  function resolveSectionLabel(sectionId) {
+    const section = state.sections.find((entry) => entry.section_id === sectionId);
+    return section ? section.title || section.section_id : sectionId || "Sezione";
+  }
+
+  function renderBadge(label, tone = "") {
+    return `<span class="badge${tone ? ` badge--${tone}` : ""}">${escapeHtml(label)}</span>`;
+  }
+
+  function getAvailabilityBadgeTone(value) {
+    if (value === "in arrivo") {
+      return "warning";
+    }
+    if (value === "non disponibile") {
+      return "danger";
+    }
+    if (value === "al carretto") {
+      return "info";
+    }
+    return "success";
+  }
+
+  function setBusy(isBusy, message = "") {
+    document.body.style.cursor = isBusy ? "progress" : "";
+    els.syncButton.disabled = isBusy;
+    els.refreshButton.disabled = isBusy;
+    els.newItemButton.disabled = isBusy;
+    els.resetButton.disabled = isBusy;
+    els.itemForm.querySelectorAll("input, select, textarea, button").forEach((element) => {
+      if (element.id === "resetButton") {
+        return;
+      }
+
+      element.disabled = isBusy;
+    });
+
+    if (isBusy && message) {
+      showBanner(message, "info");
+    }
+  }
+
+  function showBanner(message, tone = "info") {
+    els.statusBanner.hidden = false;
+    els.statusBanner.dataset.tone = tone;
+    els.statusBanner.textContent = message;
+  }
+
+  function normalizeToggle(value, fallback) {
+    if (typeof value === "boolean") {
+      return value;
+    }
+
+    const normalized = String(value || "")
+      .trim()
+      .toLowerCase();
+
+    if (["si", "sì", "yes", "true", "1"].includes(normalized)) {
+      return true;
+    }
+    if (["no", "false", "0"].includes(normalized)) {
+      return false;
+    }
+
+    return fallback;
+  }
+
+  function slugify(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function formatDateTime(value) {
+    try {
+      return new Intl.DateTimeFormat("it-IT", {
+        dateStyle: "short",
+        timeStyle: "short",
+      }).format(new Date(value));
+    } catch (error) {
+      return value;
+    }
+  }
+</script>

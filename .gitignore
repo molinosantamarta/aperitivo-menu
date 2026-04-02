@@ -3,3 +3,6 @@ dist
 .DS_Store
 public/generated
 agri-menu.png
+.codex-artifacts/
+.playwright-cli/
+output/

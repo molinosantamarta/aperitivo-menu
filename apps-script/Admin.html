@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agri Menu Admin</title>
+    <?!= include('AdminStyles'); ?>
+  </head>
+  <body>
+    <div class="admin-shell">
+      <header class="admin-topbar">
+        <div>
+          <p class="admin-eyebrow">Agri Menu Admin</p>
+          <h1>Gestione prodotti e sincronizzazione menu</h1>
+          <p class="admin-subtitle">
+            Salvi qui, il tab <strong>database-semplice</strong> viene aggiornato in automatico.
+          </p>
+        </div>
+        <div class="admin-actions">
+          <button class="ghost-btn" id="refreshButton" type="button">Ricarica dati</button>
+          <button class="primary-btn" id="syncButton" type="button">Sincronizza ora</button>
+        </div>
+      </header>
+
+      <section class="admin-banner" id="statusBanner" hidden></section>
+
+      <main class="admin-layout">
+        <aside class="admin-sidebar">
+          <div class="sidebar-card">
+            <div class="sidebar-card__header">
+              <h2>Catalogo</h2>
+              <button class="secondary-btn" id="newItemButton" type="button">Nuovo prodotto</button>
+            </div>
+            <label class="field">
+              <span>Cerca</span>
+              <input id="searchInput" type="search" placeholder="Nome, id o descrizione" />
+            </label>
+            <label class="field">
+              <span>Sezione</span>
+              <select id="sectionFilter"></select>
+            </label>
+            <div class="catalog-meta" id="catalogMeta"></div>
+            <div class="item-list" id="itemList" aria-live="polite"></div>
+          </div>
+        </aside>
+
+        <section class="admin-editor">
+          <div class="editor-card">
+            <div class="editor-card__header">
+              <div>
+                <p class="admin-eyebrow">Editor prodotto</p>
+                <h2 id="editorTitle">Nuovo prodotto</h2>
+              </div>
+              <div class="editor-card__meta" id="editorMeta"></div>
+            </div>
+
+            <form id="itemForm" class="item-form">
+              <div class="form-grid">
+                <label class="field field--span-2">
+                  <span>Nome prodotto</span>
+                  <input id="nameInput" name="name" type="text" required />
+                </label>
+
+                <label class="field">
+                  <span>ID tecnico</span>
+                  <input id="idInput" name="id" type="text" placeholder="generato dal nome" />
+                </label>
+
+                <label class="field">
+                  <span>Sezione</span>
+                  <select id="sectionInput" name="section_id" required></select>
+                </label>
+
+                <label class="field field--span-2">
+                  <span>Descrizione</span>
+                  <textarea id="descriptionInput" name="description" rows="4"></textarea>
+                </label>
+
+                <label class="field">
+                  <span>Categoria</span>
+                  <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
+                </label>
+
+                <label class="field">
+                  <span>Ordine</span>
+                  <input id="sortOrderInput" name="sort_order" type="number" min="0" step="1" />
+                </label>
+
+                <label class="field">
+                  <span>Visibilita</span>
+                  <select id="visibilityInput" name="visibility_state">
+                    <option value="visibile">Visibile</option>
+                    <option value="nascosto">Nascosto</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Disponibilita</span>
+                  <select id="availabilityInput" name="availability_state">
+                    <option value="disponibile">Disponibile</option>
+                    <option value="non disponibile">Non disponibile</option>
+                    <option value="in arrivo">In arrivo</option>
+                    <option value="al carretto">Al carretto</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>Tipo scheda</span>
+                  <select id="renderModeInput" name="render_mode">
+                    <option value="standard">Standard</option>
+                    <option value="legacy">Legacy</option>
+                  </select>
+                </label>
+
+                <label class="field">
+                  <span>URL immagine</span>
+                  <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
+                </label>
+              </div>
+
+              <section class="option-stack">
+                <div class="option-card">
+                  <h3>Prezzo principale</h3>
+                  <div class="option-grid">
+                    <label class="field">
+                      <span>Etichetta</span>
+                      <input id="option1LabelInput" name="option_1_label" type="text" placeholder="es. 33 cl" />
+                    </label>
+                    <label class="field">
+                      <span>Etichetta visiva</span>
+                      <input
+                        id="option1DisplayLabelInput"
+                        name="option_1_display_label"
+                        type="text"
+                        placeholder="facoltativa"
+                      />
+                    </label>
+                    <label class="field">
+                      <span>Prezzo</span>
+                      <input id="option1PriceInput" name="option_1_price" type="text" placeholder="6" required />
+                    </label>
+                  </div>
+                </div>
+
+                <details class="option-card">
+                  <summary>Prezzi aggiuntivi</summary>
+                  <div class="option-grid option-grid--stacked">
+                    <label class="field">
+                      <span>Opzione 2 etichetta</span>
+                      <input id="option2LabelInput" name="option_2_label" type="text" />
+                    </label>
+                    <label class="field">
+                      <span>Opzione 2 etichetta visiva</span>
+                      <input id="option2DisplayLabelInput" name="option_2_display_label" type="text" />
+                    </label>
+                    <label class="field">
+                      <span>Opzione 2 prezzo</span>
+                      <input id="option2PriceInput" name="option_2_price" type="text" />
+                    </label>
+
+                    <label class="field">
+                      <span>Opzione 3 etichetta</span>
+                      <input id="option3LabelInput" name="option_3_label" type="text" />
+                    </label>
+                    <label class="field">
+                      <span>Opzione 3 etichetta visiva</span>
+                      <input id="option3DisplayLabelInput" name="option_3_display_label" type="text" />
+                    </label>
+                    <label class="field">
+                      <span>Opzione 3 prezzo</span>
+                      <input id="option3PriceInput" name="option_3_price" type="text" />
+                    </label>
+                  </div>
+                </details>
+              </section>
+
+              <div class="form-grid form-grid--compact">
+                <label class="checkbox-field">
+                  <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
+                  <span>Mostra il suggerimento “tocca per i dettagli”</span>
+                </label>
+
+                <label class="checkbox-field">
+                  <input id="legacyManagedInput" name="legacy_sheet_managed" type="checkbox" />
+                  <span>Prodotto gia presente nel menu storico</span>
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Note interne</span>
+                <textarea id="notesInput" name="notes" rows="3"></textarea>
+              </label>
+
+              <div class="form-actions">
+                <button class="ghost-btn" id="resetButton" type="button">Nuovo vuoto</button>
+                <button class="primary-btn" id="saveButton" type="submit">Salva prodotto</button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <?!= include('AdminScripts'); ?>
+  </body>
+</html>

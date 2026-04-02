@@ -1,4 +1,13 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import {
+  copyFileSync,
+  cpSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+} from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,6 +41,18 @@ function removeNoiseFiles(directory) {
   }
 }
 
+function copyPath(source, destination) {
+  mkdirSync(dirname(destination), { recursive: true });
+  rmSync(destination, { force: true, recursive: true });
+
+  if (lstatSync(source).isDirectory()) {
+    cpSync(source, destination, { recursive: true });
+    return;
+  }
+
+  copyFileSync(source, destination);
+}
+
 if (!existsSync(distRoot)) {
   console.log("dist postprocess skipped (dist mancante)");
   process.exit(0);
@@ -55,8 +76,7 @@ for (const [sourceRel, destinationRel] of copies) {
     continue;
   }
 
-  mkdirSync(dirname(destination), { recursive: true });
-  cpSync(source, destination, { recursive: true });
+  copyPath(source, destination);
 }
 
 const appVersion = getAppVersion();
@@ -65,8 +85,7 @@ if (appVersion) {
   const versionedRuntime = resolve(projectRoot, `dist/generated/main.runtime.${appVersion}.js`);
 
   if (existsSync(runtimeSource)) {
-    mkdirSync(dirname(versionedRuntime), { recursive: true });
-    cpSync(runtimeSource, versionedRuntime);
+    copyPath(runtimeSource, versionedRuntime);
   }
 }
 
