@@ -4,202 +4,368 @@
     <base target="_top" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Menumal - gestione del menu digitale</title>
+    <title>Menumal: gestione del menu digitale Agri-Eventi</title>
     <?!= include('AdminStyles'); ?>
   </head>
   <body>
     <div class="admin-shell">
       <header class="admin-topbar">
-        <div>
-          <p class="admin-eyebrow">Menumal</p>
-          <h1>Gestione del menu digitale</h1>
-          <p class="admin-subtitle">
-            Per i prodotti gia presenti modifica qui soprattutto prezzo, descrizione e disponibilita.
-          </p>
-        </div>
-        <div class="admin-actions">
-          <button class="ghost-btn" id="refreshButton" type="button">Ricarica dati</button>
-          <button class="primary-btn" id="newItemButton" type="button">Nuovo prodotto</button>
+        <div class="admin-intro">
+          <div class="brand-lockup">
+            <img
+              class="brand-icon"
+              id="brandIcon"
+              data-local-src="/menumal-logo.png"
+              alt="Logo Menumal"
+              width="68"
+              height="68"
+              hidden
+            />
+            <h1 class="brand-title" aria-label="Menumal">
+              <span class="brand-title__main">MENU</span><span class="brand-title__accent">MAL</span>
+            </h1>
+          </div>
+          <p class="admin-kicker">Gestisci i prodotti del menu QR</p>
+          <div class="admin-intro__actions">
+            <button class="ghost-btn admin-refresh-button" id="refreshButton" type="button" aria-label="Ricarica dati" title="Ricarica dati">
+              Ricarica
+            </button>
+            <div class="admin-loader" id="headerStatus" role="status" aria-live="polite" aria-atomic="true" hidden>
+              <span class="admin-loader__dot" aria-hidden="true"></span>
+              <span id="headerStatusText"></span>
+            </div>
+          </div>
         </div>
       </header>
 
-      <section class="admin-banner" id="statusBanner" hidden></section>
+      <section class="entry-card" id="entryPanel">
+        <div class="entry-card__header">
+          <p class="admin-eyebrow">Inizia da qui</p>
+          <h2>Che cosa vuoi fare?</h2>
+          <p class="hint-copy">Aggiungi un prodotto nuovo oppure cerca un prodotto gia presente da modificare.</p>
+        </div>
+        <div class="entry-card__actions">
+          <button class="entry-action entry-action--primary" id="entryCreateButton" type="button">
+            <span class="entry-action__icon" aria-hidden="true">+</span>
+            <span class="entry-action__content">
+              <strong>Nuovo prodotto</strong>
+              <span>Apri solo l editor e compila i campi del nuovo prodotto.</span>
+            </span>
+          </button>
+          <button class="entry-action" id="entryBrowseButton" type="button">
+            <span class="entry-action__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path
+                  d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+            <span class="entry-action__content">
+              <strong>Modifica prodotto</strong>
+              <span>Apri il catalogo e cerca velocemente il prodotto da aggiornare.</span>
+            </span>
+          </button>
+        </div>
+      </section>
 
-      <main class="admin-layout">
-        <aside class="admin-sidebar">
-          <div class="sidebar-card">
-            <div class="sidebar-card__header">
-              <h2>Catalogo</h2>
-              <span class="hint-copy">Seleziona un prodotto o creane uno nuovo.</span>
+      <section class="screen-modal" id="browseModal" hidden>
+        <div class="screen-modal__backdrop"></div>
+        <div class="screen-modal__panel screen-modal__panel--catalog" role="dialog" aria-modal="true" aria-labelledby="browseModalTitle">
+          <div class="sidebar-card screen-card">
+            <div class="sidebar-card__header sidebar-card__header--stack">
+              <button class="back-link" id="browseBackButton" type="button">
+                <span aria-hidden="true">←</span>
+                <span>Home</span>
+              </button>
+              <div>
+                <h2 id="browseModalTitle">Catalogo</h2>
+                <span class="hint-copy">Cerca il prodotto da modificare.</span>
+              </div>
             </div>
-            <label class="field">
-              <span>Cerca</span>
-              <input id="searchInput" type="search" placeholder="Nome, id o descrizione" />
-            </label>
-            <label class="field">
-              <span>Sezione</span>
-              <select id="sectionFilter"></select>
-            </label>
+            <div class="sidebar-filters">
+              <label class="field">
+                <span>Cerca prodotto</span>
+                <input id="searchInput" type="search" placeholder="Nome o id" />
+              </label>
+              <label class="field">
+                <span>Sezione</span>
+                <select id="sectionFilter"></select>
+              </label>
+            </div>
             <div class="catalog-meta" id="catalogMeta"></div>
             <div class="item-list" id="itemList" aria-live="polite"></div>
           </div>
-        </aside>
+        </div>
+      </section>
 
-        <section class="admin-editor">
-          <div class="editor-card">
-            <div class="editor-card__header">
-              <div>
-                <p class="admin-eyebrow">Editor prodotto</p>
-                <h2 id="editorTitle">Nuovo prodotto</h2>
+      <section class="screen-modal screen-modal--stacked" id="editorModal" hidden>
+        <div class="screen-modal__backdrop"></div>
+        <div class="screen-modal__panel screen-modal__panel--editor" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+          <div class="editor-card screen-card">
+            <div class="editor-card__header editor-card__header--stack">
+              <button class="back-link" id="editorScreenBackButton" type="button">
+                <span aria-hidden="true">←</span>
+                <span id="editorScreenBackLabel">Indietro</span>
+              </button>
+              <div class="editor-card__heading">
+                <div>
+                  <p class="admin-eyebrow">Editor prodotto</p>
+                  <h2 id="editorTitle">Nuovo prodotto</h2>
+                </div>
+                <div class="editor-card__meta" id="editorMeta"></div>
               </div>
-              <div class="editor-card__meta" id="editorMeta"></div>
             </div>
 
             <form id="itemForm" class="item-form">
-              <div class="form-grid">
-                <label class="field field--span-2">
-                  <span>Nome prodotto</span>
-                  <input id="nameInput" name="name" type="text" required />
-                </label>
+              <div class="editor-step-progress" id="editorStepIndicator"></div>
 
-                <label class="field">
-                  <span>Sezione</span>
-                  <select id="sectionInput" name="section_id" required></select>
-                </label>
+              <section class="editor-step" data-step="0">
+                <div class="editor-step__header">
+                  <p class="editor-step__eyebrow">Passo 1</p>
+                  <h3>Base prodotto</h3>
+                  <p class="hint-copy">Inserisci le informazioni essenziali del prodotto.</p>
+                </div>
+                <div class="form-grid">
+                  <label class="field field--span-2">
+                    <span>Nome prodotto</span>
+                    <input id="nameInput" name="name" type="text" required />
+                  </label>
 
-                <label class="field">
-                  <span>Prezzo</span>
-                  <input id="option1PriceInput" name="option_1_price" type="text" placeholder="6" required />
-                </label>
+                  <label class="field">
+                    <span>Sezione</span>
+                    <select id="sectionInput" name="section_id" required></select>
+                  </label>
 
-                <label class="field field--span-2">
-                  <span>Descrizione</span>
-                  <textarea id="descriptionInput" name="description" rows="4"></textarea>
-                </label>
+                  <label class="field">
+                    <span>Prezzo</span>
+                    <input id="option1PriceInput" name="option_1_price" type="text" placeholder="0€" required />
+                  </label>
 
-                <label class="field">
-                  <span>Disponibilita</span>
-                  <select id="availabilityInput" name="availability_state">
-                    <option value="disponibile">Disponibile</option>
-                    <option value="non disponibile">Non disponibile</option>
-                    <option value="in arrivo">In arrivo</option>
-                    <option value="al carretto">Al carretto</option>
-                  </select>
-                </label>
+                  <label class="field field--span-2">
+                    <span>Descrizione</span>
+                    <textarea id="descriptionInput" name="description" rows="4"></textarea>
+                  </label>
+                </div>
+              </section>
 
-                <label class="field field--span-2">
-                  <span>URL immagine</span>
-                  <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
-                  <small class="field__hint">
-                    Usalo soprattutto per prodotti nuovi. I prodotti legacy continuano a usare la grafica gia definita nel progetto.
-                  </small>
-                </label>
-              </div>
+              <section class="editor-step" data-step="1" hidden>
+                <div class="editor-step__header">
+                  <p class="editor-step__eyebrow">Passo 2</p>
+                  <h3>Stato e immagine</h3>
+                  <p class="hint-copy">Decidi come mostrare il prodotto nel menu.</p>
+                </div>
+                <div class="form-grid">
+                  <label class="field">
+                    <span>Disponibilita</span>
+                    <select id="availabilityInput" name="availability_state">
+                      <option value="disponibile">Disponibile</option>
+                      <option value="non disponibile">Non disponibile</option>
+                      <option value="in arrivo">In arrivo</option>
+                      <option value="al carretto">Al carretto</option>
+                    </select>
+                  </label>
 
-              <section class="option-stack">
-                <div class="option-card">
-                  <h3>Dettaglio principale</h3>
-                  <div class="option-grid option-grid--main">
-                    <label class="field">
-                      <span>Etichetta</span>
-                      <input id="option1LabelInput" name="option_1_label" type="text" placeholder="es. 33 cl" />
-                    </label>
-                    <label class="field">
-                      <span>Etichetta visiva</span>
-                      <input
-                        id="option1DisplayLabelInput"
-                        name="option_1_display_label"
-                        type="text"
-                        placeholder="facoltativa"
-                      />
-                    </label>
-                  </div>
+                  <label class="field">
+                    <span>Visibilita</span>
+                    <select id="visibilityInput" name="visibility_state">
+                      <option value="visibile">Visibile</option>
+                      <option value="nascosto">Nascosto</option>
+                    </select>
+                  </label>
+
+                  <label class="field field--span-2">
+                    <span>URL immagine</span>
+                    <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
+                    <small class="field__hint">
+                      Usalo soprattutto per prodotti nuovi. I prodotti legacy continuano a usare la grafica gia definita nel progetto.
+                    </small>
+                  </label>
+                </div>
+              </section>
+
+              <section class="editor-step" data-step="2" hidden>
+                <div class="editor-step__header">
+                  <p class="editor-step__eyebrow">Passo 3</p>
+                  <h3>Dettagli extra</h3>
+                  <p class="hint-copy">Campi tecnici e varianti. Usali solo se ti servono.</p>
                 </div>
 
-                <details class="option-card">
-                  <summary>Avanzate</summary>
-                  <div class="option-grid option-grid--stacked">
-                    <label class="field">
-                      <span>ID tecnico</span>
-                      <input id="idInput" name="id" type="text" placeholder="generato dal nome" />
-                    </label>
-                    <label class="field">
-                      <span>Categoria</span>
-                      <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
-                    </label>
-                    <label class="field">
-                      <span>Ordine</span>
-                      <input id="sortOrderInput" name="sort_order" type="number" min="0" step="1" />
-                    </label>
-                    <label class="field">
-                      <span>Visibilita</span>
-                      <select id="visibilityInput" name="visibility_state">
-                        <option value="visibile">Visibile</option>
-                        <option value="nascosto">Nascosto</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span>Tipo scheda</span>
-                      <select id="renderModeInput" name="render_mode">
-                        <option value="standard">Standard</option>
-                        <option value="legacy">Legacy</option>
-                      </select>
-                    </label>
-                    <label class="field">
-                      <span>Opzione 2 etichetta</span>
-                      <input id="option2LabelInput" name="option_2_label" type="text" />
-                    </label>
-                    <label class="field">
-                      <span>Opzione 2 etichetta visiva</span>
-                      <input id="option2DisplayLabelInput" name="option_2_display_label" type="text" />
-                    </label>
-                    <label class="field">
-                      <span>Opzione 2 prezzo</span>
-                      <input id="option2PriceInput" name="option_2_price" type="text" />
-                    </label>
-
-                    <label class="field">
-                      <span>Opzione 3 etichetta</span>
-                      <input id="option3LabelInput" name="option_3_label" type="text" />
-                    </label>
-                    <label class="field">
-                      <span>Opzione 3 etichetta visiva</span>
-                      <input id="option3DisplayLabelInput" name="option_3_display_label" type="text" />
-                    </label>
-                    <label class="field">
-                      <span>Opzione 3 prezzo</span>
-                      <input id="option3PriceInput" name="option_3_price" type="text" />
-                    </label>
-                    <label class="field field--span-2">
-                      <span>Note interne</span>
-                      <textarea id="notesInput" name="notes" rows="3"></textarea>
-                    </label>
+                <section class="option-stack">
+                  <div class="option-card">
+                    <h3>Dettaglio principale</h3>
+                    <div class="option-grid option-grid--main">
+                      <label class="field">
+                        <span>Etichetta</span>
+                        <input id="option1LabelInput" name="option_1_label" type="text" placeholder="es. 33 cl" />
+                      </label>
+                      <label class="field">
+                        <span>Etichetta visiva</span>
+                        <input
+                          id="option1DisplayLabelInput"
+                          name="option_1_display_label"
+                          type="text"
+                          placeholder="facoltativa"
+                        />
+                      </label>
+                    </div>
                   </div>
-                  <div class="form-grid form-grid--compact">
-                    <label class="checkbox-field">
-                      <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
-                      <span>Mostra il suggerimento dettagli</span>
-                    </label>
 
-                    <label class="checkbox-field">
-                      <input id="legacyManagedInput" name="legacy_sheet_managed" type="checkbox" />
-                      <span>Prodotto legacy</span>
-                    </label>
+                  <div class="option-card">
+                    <h3>Avanzate</h3>
+                    <div class="option-grid option-grid--stacked">
+                      <label class="field">
+                        <span>ID tecnico</span>
+                        <input id="idInput" name="id" type="text" placeholder="generato dal nome" />
+                      </label>
+                      <label class="field">
+                        <span>Categoria</span>
+                        <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
+                      </label>
+                      <label class="field">
+                        <span>Ordine</span>
+                        <input id="sortOrderInput" name="sort_order" type="number" min="0" step="1" />
+                      </label>
+                      <label class="field">
+                        <span>Tipo scheda</span>
+                        <select id="renderModeInput" name="render_mode">
+                          <option value="standard">Standard</option>
+                          <option value="legacy">Legacy</option>
+                        </select>
+                      </label>
+                      <label class="field">
+                        <span>Opzione 2 etichetta</span>
+                        <input id="option2LabelInput" name="option_2_label" type="text" />
+                      </label>
+                      <label class="field">
+                        <span>Opzione 2 etichetta visiva</span>
+                        <input id="option2DisplayLabelInput" name="option_2_display_label" type="text" />
+                      </label>
+                      <label class="field">
+                        <span>Opzione 2 prezzo</span>
+                        <input id="option2PriceInput" name="option_2_price" type="text" />
+                      </label>
+
+                      <label class="field">
+                        <span>Opzione 3 etichetta</span>
+                        <input id="option3LabelInput" name="option_3_label" type="text" />
+                      </label>
+                      <label class="field">
+                        <span>Opzione 3 etichetta visiva</span>
+                        <input id="option3DisplayLabelInput" name="option_3_display_label" type="text" />
+                      </label>
+                      <label class="field">
+                        <span>Opzione 3 prezzo</span>
+                        <input id="option3PriceInput" name="option_3_price" type="text" />
+                      </label>
+                      <label class="field field--span-2">
+                        <span>Note interne</span>
+                        <textarea id="notesInput" name="notes" rows="3"></textarea>
+                      </label>
+                    </div>
+                    <div class="form-grid form-grid--compact">
+                      <label class="checkbox-field">
+                        <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
+                        <span>Mostra il suggerimento dettagli</span>
+                      </label>
+
+                      <label class="checkbox-field">
+                        <input id="legacyManagedInput" name="legacy_sheet_managed" type="checkbox" />
+                        <span>Prodotto legacy</span>
+                      </label>
+                    </div>
                   </div>
-                </details>
+                </section>
               </section>
 
               <div class="form-actions">
+                <div class="form-actions__group form-actions__group--nav">
+                  <button class="secondary-btn" id="editorStepBackButton" type="button">← Indietro</button>
+                  <button class="ghost-btn" id="editorStepNextButton" type="button">Avanti →</button>
+                </div>
                 <div class="form-actions__group">
-                  <button class="ghost-btn" id="resetButton" type="button">Nuovo vuoto</button>
                   <button class="danger-btn" id="deleteButton" type="button" hidden>Elimina prodotto</button>
                 </div>
-                <button class="primary-btn" id="saveButton" type="submit">Salva prodotto</button>
+                <button class="primary-btn" id="saveButton" type="submit">Salva nuovo prodotto</button>
               </div>
             </form>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      <button class="admin-help-toggle" id="helpButton" type="button">
+        Come funziona?
+      </button>
+
+      <div class="utility-modal" id="helpModal" hidden>
+        <div class="utility-modal__backdrop" id="helpBackdrop"></div>
+        <div class="utility-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+          <div class="utility-modal__header">
+            <div>
+              <p class="admin-eyebrow">Promemoria</p>
+              <h2 id="helpTitle">Come funziona Menumal</h2>
+            </div>
+            <button class="ghost-btn icon-btn icon-btn--compact" id="closeHelpButton" type="button" aria-label="Chiudi guida" title="Chiudi guida">
+              <span class="icon-btn__glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" />
+                </svg>
+              </span>
+              <span class="sr-only">Chiudi guida</span>
+            </button>
+          </div>
+
+          <div class="utility-modal__content">
+            <section class="utility-note">
+              <h3>Cosa gestisce cosa</h3>
+              <ul class="utility-note__list">
+                <li><strong>Menumal</strong> e il pannello admin per prodotti, prezzi, descrizioni, visibilita e disponibilita.</li>
+                <li><strong>Google Sheet</strong> e il database operativo dietro Menumal.</li>
+                <li><strong>Agri-Menu</strong> e il menu pubblico su GitHub Pages aperto dai clienti via QR.</li>
+              </ul>
+            </section>
+
+            <section class="utility-note">
+              <h3>Flusso dati</h3>
+              <ul class="utility-note__list">
+                <li>Tu modifichi un prodotto da Menumal.</li>
+                <li>Apps Script salva i dati nel Google Sheet.</li>
+                <li>Agri-Menu legge quei dati e aggiorna il menu mostrato ai clienti.</li>
+              </ul>
+            </section>
+
+            <section class="utility-note">
+              <h3>Quando usare Menumal</h3>
+              <ul class="utility-note__list">
+                <li>Aggiungere un prodotto semplice.</li>
+                <li>Cambiare prezzo, titolo o descrizione.</li>
+                <li>Mettere visibile, nascosto, in arrivo o esaurito.</li>
+              </ul>
+            </section>
+
+            <section class="utility-note">
+              <h3>Quando chiedere modifiche al codice</h3>
+              <ul class="utility-note__list">
+                <li>Card legacy personalizzate.</li>
+                <li>Carousel, animazioni, layout e stile.</li>
+                <li>Cambi strutturali di frontend, CSS o logica JS.</li>
+              </ul>
+            </section>
+
+            <section class="utility-note">
+              <h3>Deploy</h3>
+              <ul class="utility-note__list">
+                <li>Le modifiche ai contenuti fatte in Menumal non richiedono deploy GitHub.</li>
+                <li>Le modifiche grafiche o strutturali del menu pubblico richiedono aggiornamento del codice e pubblicazione.</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
 
     <?!= include('AdminScripts'); ?>

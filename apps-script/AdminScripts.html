@@ -5,6 +5,9 @@
     settings: {},
     currentItemId: "",
     isCreating: true,
+    view: "chooser",
+    editorReturnView: "chooser",
+    editorStep: 0,
     filters: {
       search: "",
       sectionId: "",
@@ -13,6 +16,7 @@
   };
 
   const els = {};
+  let headerStatusTimer = 0;
 
   document.addEventListener("DOMContentLoaded", () => {
     cacheElements();
@@ -21,9 +25,26 @@
   });
 
   function cacheElements() {
-    els.statusBanner = document.getElementById("statusBanner");
+    els.brandIcon = document.getElementById("brandIcon");
+    els.headerStatus = document.getElementById("headerStatus");
+    els.headerStatusText = document.getElementById("headerStatusText");
+    els.helpButton = document.getElementById("helpButton");
+    els.helpModal = document.getElementById("helpModal");
+    els.helpBackdrop = document.getElementById("helpBackdrop");
+    els.closeHelpButton = document.getElementById("closeHelpButton");
+    els.entryPanel = document.getElementById("entryPanel");
+    els.entryCreateButton = document.getElementById("entryCreateButton");
+    els.entryBrowseButton = document.getElementById("entryBrowseButton");
     els.refreshButton = document.getElementById("refreshButton");
-    els.newItemButton = document.getElementById("newItemButton");
+    els.browseModal = document.getElementById("browseModal");
+    els.editorModal = document.getElementById("editorModal");
+    els.browseBackButton = document.getElementById("browseBackButton");
+    els.editorScreenBackButton = document.getElementById("editorScreenBackButton");
+    els.editorScreenBackLabel = document.getElementById("editorScreenBackLabel");
+    els.editorStepIndicator = document.getElementById("editorStepIndicator");
+    els.editorSteps = Array.from(document.querySelectorAll(".editor-step"));
+    els.editorStepBackButton = document.getElementById("editorStepBackButton");
+    els.editorStepNextButton = document.getElementById("editorStepNextButton");
     els.searchInput = document.getElementById("searchInput");
     els.sectionFilter = document.getElementById("sectionFilter");
     els.catalogMeta = document.getElementById("catalogMeta");
@@ -31,7 +52,7 @@
     els.editorTitle = document.getElementById("editorTitle");
     els.editorMeta = document.getElementById("editorMeta");
     els.itemForm = document.getElementById("itemForm");
-    els.resetButton = document.getElementById("resetButton");
+    els.saveButton = document.getElementById("saveButton");
     els.deleteButton = document.getElementById("deleteButton");
 
     els.idInput = document.getElementById("idInput");
@@ -59,9 +80,16 @@
   }
 
   function bindEvents() {
-    els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico i dati dal foglio..."));
-    els.newItemButton.addEventListener("click", () => openCreateForm());
-    els.resetButton.addEventListener("click", () => openCreateForm());
+    els.helpButton?.addEventListener("click", openHelpModal);
+    els.helpBackdrop?.addEventListener("click", closeHelpModal);
+    els.closeHelpButton?.addEventListener("click", closeHelpModal);
+    els.entryCreateButton.addEventListener("click", enterCreateMode);
+    els.entryBrowseButton.addEventListener("click", enterBrowseMode);
+    els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico catalogo e impostazioni..."));
+    els.browseBackButton?.addEventListener("click", returnToChooser);
+    els.editorScreenBackButton?.addEventListener("click", handleEditorScreenBack);
+    els.editorStepBackButton?.addEventListener("click", handleEditorStepBack);
+    els.editorStepNextButton?.addEventListener("click", handleEditorStepNext);
     els.deleteButton.addEventListener("click", handleDelete);
     els.searchInput.addEventListener("input", (event) => {
       state.filters.search = event.target.value.trim().toLowerCase();
@@ -85,9 +113,11 @@
         els.sortOrderInput.value = String(getSuggestedSortOrder(els.sectionInput.value));
       }
     });
+    document.addEventListener("keydown", handleGlobalKeydown);
   }
 
   function loadBootstrap(message) {
+    hideBanner();
     setBusy(true, message || "Carico...");
     google.script.run
       .withSuccessHandler((payload) => {
@@ -95,28 +125,17 @@
         state.items = Array.isArray(payload.items) ? payload.items : [];
         state.settings = payload.settings || {};
 
+        applyBrandIcon();
         renderSectionOptions();
         renderSummary(payload);
-
-        if (state.currentItemId) {
-          const currentItem = state.items.find((item) => item.id === state.currentItemId);
-          if (currentItem) {
-            fillForm(currentItem);
-            state.isCreating = false;
-          } else {
-            openCreateForm();
-          }
-        } else if (state.items.length) {
-          fillForm(state.items[0]);
-          state.isCreating = false;
-        } else {
-          openCreateForm();
-        }
+        syncCurrentView();
 
         renderItemList();
+        updateInterfaceState();
         setBusy(false);
-        if (message) {
-          showBanner(message.replace("...", "."), "info");
+        if (state.lastMessage) {
+          showBanner(state.lastMessage, "success");
+          state.lastMessage = "";
         }
       })
       .withFailureHandler(handleFailure)
@@ -126,14 +145,20 @@
   function handleSave(event) {
     event.preventDefault();
 
+    if (state.editorStep < els.editorSteps.length - 1) {
+      handleEditorStepNext();
+      return;
+    }
+
     const payload = collectFormPayload();
     setBusy(true, "Salvo il prodotto nel database menu...");
 
     google.script.run
       .withSuccessHandler((result) => {
+        state.view = "edit";
         state.currentItemId = result.item.id;
-        state.lastMessage = "Prodotto salvato.";
-        loadBootstrap(state.lastMessage);
+        state.lastMessage = state.isCreating ? "Prodotto creato." : "Prodotto aggiornato.";
+        loadBootstrap("Aggiorno catalogo e impostazioni...");
       })
       .withFailureHandler(handleFailure)
       .saveItem(payload);
@@ -144,6 +169,47 @@
       error && error.message ? error.message : "C'e stato un problema durante l'operazione richiesta.";
     setBusy(false);
     showBanner(message, "error");
+  }
+
+  function handleGlobalKeydown(event) {
+    if (event.key === "Escape" && els.helpModal && !els.helpModal.hidden) {
+      closeHelpModal();
+    }
+  }
+
+  function applyBrandIcon() {
+    if (!els.brandIcon) {
+      return;
+    }
+
+    const isLocalPreview = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const iconUrl = state.settings.brand_icon_url || (isLocalPreview ? els.brandIcon.dataset.localSrc : "");
+
+    if (!iconUrl) {
+      els.brandIcon.hidden = true;
+      return;
+    }
+
+    els.brandIcon.hidden = false;
+    els.brandIcon.src = iconUrl;
+  }
+
+  function openHelpModal() {
+    if (!els.helpModal) {
+      return;
+    }
+
+    els.helpModal.hidden = false;
+    document.body.classList.add("is-utility-modal-open");
+  }
+
+  function closeHelpModal() {
+    if (!els.helpModal) {
+      return;
+    }
+
+    els.helpModal.hidden = true;
+    document.body.classList.remove("is-utility-modal-open");
   }
 
   function handleDelete() {
@@ -163,10 +229,13 @@
 
     google.script.run
       .withSuccessHandler(() => {
+        const returnView = state.editorReturnView === "browse" ? "browse" : "chooser";
         state.currentItemId = "";
-        state.isCreating = true;
+        state.isCreating = false;
+        state.view = returnView;
+        state.editorStep = 0;
         state.lastMessage = "Prodotto eliminato.";
-        loadBootstrap(state.lastMessage);
+        loadBootstrap("Aggiorno catalogo e impostazioni...");
       })
       .withFailureHandler(handleFailure)
       .deleteItem(state.currentItemId);
@@ -194,22 +263,32 @@
 
   function renderSummary(payload) {
     const editorLabel = payload.actorEmail || payload.actorLabel || "account connesso";
-    const publicEndpoint = payload.publicMenuEndpoint || "";
-    const securityHint = state.settings.allowed_editor_emails
-      ? "Allowlist email attiva."
-      : "Allowlist email vuota: va bene finche la web app admin resta privata.";
+    els.editorMeta.textContent = `Accesso: ${editorLabel}`;
+  }
+
+  function renderCatalogMeta(filteredItems = getFilteredItems()) {
+    const hiddenItemsCount = filteredItems.filter((item) => item.visibility_state === "nascosto").length;
+    const visibleSectionsCount = new Set(
+      filteredItems
+        .map((item) => item.section_id)
+        .filter(Boolean)
+    ).size;
+    const hasActiveFilters = Boolean(state.filters.search || state.filters.sectionId);
+    const itemsLabel = hasActiveFilters
+      ? `${filteredItems.length} di ${state.items.length} prodotti`
+      : `${state.items.length} prodotti`;
+    const sectionsLabel = hasActiveFilters ? visibleSectionsCount : state.sections.length;
 
     els.catalogMeta.innerHTML = `
-      <strong>${state.items.length}</strong> prodotti caricati<br />
-      Pubblicazione dati: ${publicEndpoint ? "endpoint Apps Script attivo" : "endpoint da configurare"}<br />
-      ${escapeHtml(securityHint)}
+      <span class="catalog-pill catalog-pill--strong">${itemsLabel}</span>
+      <span class="catalog-pill">${sectionsLabel} sezioni</span>
+      <span class="catalog-pill">${hiddenItemsCount} nascosti</span>
     `;
-
-    els.editorMeta.textContent = `Accesso: ${editorLabel}`;
   }
 
   function renderItemList() {
     const filteredItems = getFilteredItems();
+    renderCatalogMeta(filteredItems);
 
     if (!filteredItems.length) {
       els.itemList.innerHTML = `<div class="item-list__empty">Nessun prodotto trovato con questi filtri.</div>`;
@@ -218,6 +297,7 @@
 
     els.itemList.innerHTML = filteredItems
       .map((item) => {
+        const priceLabel = formatItemListPrice(item);
         const badges = [
           renderBadge(
             item.visibility_state === "nascosto" ? "Nascosto" : "Visibile",
@@ -231,13 +311,13 @@
           <button class="item-row${item.id === state.currentItemId && !state.isCreating ? " is-active" : ""}" type="button" data-item-id="${escapeHtml(item.id)}">
             <div class="item-row__top">
               <span class="item-row__name">${escapeHtml(item.name || item.id)}</span>
-              <span class="item-row__id">${escapeHtml(item.option_1_price || item.option_2_price || item.option_3_price || "-")}</span>
+              <span class="item-row__price">${escapeHtml(priceLabel)}</span>
+            </div>
+            <div class="item-row__meta">
+              <span>${escapeHtml(resolveSectionLabel(item.section_id))}</span>
+              <span>${escapeHtml(item.id)}</span>
             </div>
             <div class="badge-row">${badges}</div>
-            <div class="item-row__description">
-              ${escapeHtml(resolveSectionLabel(item.section_id))} · ${escapeHtml(item.id)}
-            </div>
-            <div class="item-row__description">${escapeHtml(item.description || "Nessuna descrizione")}</div>
           </button>
         `;
       })
@@ -251,9 +331,12 @@
         }
 
         fillForm(item);
+        state.view = "edit";
         state.currentItemId = item.id;
         state.isCreating = false;
+        state.editorReturnView = "browse";
         renderItemList();
+        updateInterfaceState();
       });
     });
   }
@@ -275,9 +358,19 @@
     });
   }
 
+  function formatItemListPrice(item) {
+    const rawPrice = item.option_1_price || item.option_2_price || item.option_3_price || "";
+    if (!rawPrice) {
+      return "-";
+    }
+
+    return `€ ${rawPrice}`;
+  }
+
   function openCreateForm() {
     state.isCreating = true;
     state.currentItemId = "";
+    state.editorStep = 0;
     els.itemForm.reset();
     els.idInput.dataset.locked = "";
     els.visibilityInput.value = "visibile";
@@ -294,13 +387,17 @@
 
     els.editorTitle.textContent = "Nuovo prodotto";
     els.editorMeta.textContent = "Compila i campi e salva.";
+    updateSaveButtonLabel();
     updateDeleteButton();
+    updateEditorScreenBackLabel();
+    updateEditorStepUI();
     renderItemList();
   }
 
   function fillForm(item) {
     state.currentItemId = item.id;
     state.isCreating = false;
+    state.editorStep = 0;
     els.editorTitle.textContent = item.name || item.id;
     els.editorMeta.textContent = `${resolveSectionLabel(item.section_id)} · id ${item.id}`;
 
@@ -327,7 +424,73 @@
     els.detailHintInput.checked = normalizeToggle(item.show_detail_hint, true);
     els.legacyManagedInput.checked = normalizeToggle(item.legacy_sheet_managed, false);
     els.notesInput.value = item.notes || "";
+    updateSaveButtonLabel();
     updateDeleteButton();
+    updateEditorScreenBackLabel();
+    updateEditorStepUI();
+  }
+
+  function enterCreateMode() {
+    state.view = "create";
+    state.editorReturnView = "chooser";
+    openCreateForm();
+    updateInterfaceState();
+  }
+
+  function enterBrowseMode() {
+    state.view = "browse";
+    state.isCreating = false;
+    state.editorReturnView = "browse";
+    state.editorStep = 0;
+    updateDeleteButton();
+    updateInterfaceState();
+    window.setTimeout(() => {
+      els.searchInput?.focus();
+      els.searchInput?.select();
+    }, 50);
+  }
+
+  function syncCurrentView() {
+    if (state.view === "create") {
+      state.editorReturnView = "chooser";
+      openCreateForm();
+      return;
+    }
+
+    if (state.view === "edit" && state.currentItemId) {
+      const currentItem = state.items.find((item) => item.id === state.currentItemId);
+      if (currentItem) {
+        fillForm(currentItem);
+        state.isCreating = false;
+        return;
+      }
+    }
+
+    state.currentItemId = "";
+    state.isCreating = false;
+    state.editorStep = 0;
+    if (!state.items.length) {
+      state.view = "create";
+      state.editorReturnView = "chooser";
+      openCreateForm();
+      return;
+    }
+
+    if (state.view !== "browse") {
+      state.view = "chooser";
+      state.editorReturnView = "chooser";
+    }
+  }
+
+  function updateInterfaceState() {
+    document.body.dataset.view = state.view;
+    document.body.dataset.editorStep = String(state.editorStep);
+    document.body.classList.toggle("is-screen-flow-open", state.view !== "chooser");
+    els.entryPanel.hidden = state.view !== "chooser";
+    els.browseModal.hidden = !(state.view === "browse" || (state.view === "edit" && state.editorReturnView === "browse"));
+    els.editorModal.hidden = !(state.view === "create" || state.view === "edit");
+    updateEditorScreenBackLabel();
+    updateEditorStepUI();
   }
 
   function collectFormPayload() {
@@ -395,19 +558,20 @@
   function setBusy(isBusy, message = "") {
     document.body.style.cursor = isBusy ? "progress" : "";
     els.refreshButton.disabled = isBusy;
-    els.newItemButton.disabled = isBusy;
-    els.resetButton.disabled = isBusy;
+    if (els.browseBackButton) els.browseBackButton.disabled = isBusy;
+    if (els.editorScreenBackButton) els.editorScreenBackButton.disabled = isBusy;
+    if (els.editorStepBackButton) els.editorStepBackButton.disabled = isBusy;
+    if (els.editorStepNextButton) els.editorStepNextButton.disabled = isBusy;
     els.itemForm.querySelectorAll("input, select, textarea, button").forEach((element) => {
-      if (element.id === "resetButton") {
-        return;
-      }
-
       element.disabled = isBusy;
     });
 
     if (isBusy && message) {
-      showBanner(message, "info");
+      showHeaderStatus(message, "info", { persistent: true });
+      return;
     }
+
+    clearHeaderStatus();
   }
 
   function updateDeleteButton() {
@@ -416,10 +580,158 @@
     els.deleteButton.disabled = !showDelete;
   }
 
+  function updateSaveButtonLabel() {
+    if (!els.saveButton) {
+      return;
+    }
+
+    els.saveButton.textContent = state.isCreating ? "Salva nuovo prodotto" : "Aggiorna prodotto";
+  }
+
+  function updateEditorScreenBackLabel() {
+    if (!els.editorScreenBackLabel) {
+      return;
+    }
+
+    els.editorScreenBackLabel.textContent = state.editorReturnView === "browse" ? "Catalogo" : "Home";
+  }
+
+  function handleEditorScreenBack() {
+    state.editorStep = 0;
+
+    if (state.editorReturnView === "browse") {
+      state.view = "browse";
+      updateInterfaceState();
+      return;
+    }
+
+    returnToChooser();
+  }
+
+  function returnToChooser() {
+    state.view = "chooser";
+    state.editorReturnView = "chooser";
+    state.currentItemId = "";
+    state.isCreating = false;
+    state.editorStep = 0;
+    updateDeleteButton();
+    updateInterfaceState();
+  }
+
+  function handleEditorStepBack() {
+    if (state.editorStep === 0) {
+      handleEditorScreenBack();
+      return;
+    }
+
+    state.editorStep = Math.max(0, state.editorStep - 1);
+    updateEditorStepUI();
+  }
+
+  function handleEditorStepNext() {
+    if (state.editorStep === 0 && !validatePrimaryStep()) {
+      return;
+    }
+
+    const lastStepIndex = Math.max(0, els.editorSteps.length - 1);
+    if (state.editorStep >= lastStepIndex) {
+      return;
+    }
+
+    state.editorStep += 1;
+    updateEditorStepUI();
+  }
+
+  function validatePrimaryStep() {
+    return [els.nameInput, els.sectionInput, els.option1PriceInput].every((field) => field.reportValidity());
+  }
+
+  function updateEditorStepUI() {
+    if (!els.editorSteps?.length) {
+      return;
+    }
+
+    const labels = ["Base", "Stato", "Extra"];
+    const lastStepIndex = els.editorSteps.length - 1;
+
+    els.editorSteps.forEach((stepElement, index) => {
+      stepElement.hidden = index !== state.editorStep;
+    });
+
+    if (els.editorStepIndicator) {
+      els.editorStepIndicator.innerHTML = labels
+        .map((label, index) => {
+          const classes = ["editor-step-pill"];
+          if (index === state.editorStep) {
+            classes.push("is-active");
+          } else if (index < state.editorStep) {
+            classes.push("is-complete");
+          }
+
+          return `<span class="${classes.join(" ")}">${index + 1}. ${escapeHtml(label)}</span>`;
+        })
+        .join("");
+    }
+
+    if (els.editorStepBackButton) {
+      els.editorStepBackButton.textContent = state.editorStep === 0 ? "← Indietro" : "← Passo prima";
+    }
+
+    if (els.editorStepNextButton) {
+      els.editorStepNextButton.hidden = state.editorStep >= lastStepIndex;
+    }
+
+    if (els.saveButton) {
+      els.saveButton.hidden = state.editorStep < lastStepIndex;
+    }
+  }
+
   function showBanner(message, tone = "info") {
-    els.statusBanner.hidden = false;
-    els.statusBanner.dataset.tone = tone;
-    els.statusBanner.textContent = message;
+    if (!message) {
+      hideBanner();
+      return;
+    }
+
+    showHeaderStatus(message, tone, { persistent: false });
+  }
+
+  function hideBanner() {
+    clearHeaderStatus();
+  }
+
+  function showHeaderStatus(message, tone = "info", options = {}) {
+    if (!els.headerStatus || !els.headerStatusText) {
+      return;
+    }
+
+    window.clearTimeout(headerStatusTimer);
+    if (els.refreshButton) {
+      els.refreshButton.hidden = true;
+    }
+    els.headerStatus.dataset.tone = tone;
+    els.headerStatusText.textContent = message;
+    els.headerStatus.hidden = false;
+
+    if (!options.persistent) {
+      const timeoutMs = tone === "error" ? 4200 : 2600;
+      headerStatusTimer = window.setTimeout(() => {
+        clearHeaderStatus();
+      }, timeoutMs);
+    }
+  }
+
+  function clearHeaderStatus() {
+    if (!els.headerStatus || !els.headerStatusText) {
+      return;
+    }
+
+    window.clearTimeout(headerStatusTimer);
+    els.headerStatus.hidden = true;
+    els.headerStatus.dataset.tone = "";
+    els.headerStatusText.textContent = "";
+    if (els.refreshButton) {
+      els.refreshButton.hidden = false;
+    }
   }
 
   function normalizeToggle(value, fallback) {
@@ -459,16 +771,5 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
-  }
-
-  function formatDateTime(value) {
-    try {
-      return new Intl.DateTimeFormat("it-IT", {
-        dateStyle: "short",
-        timeStyle: "short",
-      }).format(new Date(value));
-    } catch (error) {
-      return value;
-    }
   }
 </script>

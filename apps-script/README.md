@@ -40,6 +40,24 @@ Se in futuro vorrai 2 o 3 account autorizzati:
 - cambia `Who has access` in `Anyone with Google account`
 - compila `allowed_editor_emails` in `admin_settings`
 
+## Preview locale
+
+Per lavorare sull interfaccia di Menumal in locale senza toccare ogni volta Apps Script:
+
+1. avvia `npm run menumal:dev`
+2. apri [menumal-preview.html](/Users/andrea/Desktop/Agri-Menu/menumal-preview.html) dal server locale, per esempio `http://localhost:4175/menumal-preview.html`
+3. modifica questi file:
+   - [Admin.html](/Users/andrea/Desktop/Agri-Menu/apps-script/Admin.html)
+   - [AdminStyles.html](/Users/andrea/Desktop/Agri-Menu/apps-script/AdminStyles.html)
+   - [AdminScripts.html](/Users/andrea/Desktop/Agri-Menu/apps-script/AdminScripts.html)
+
+La preview locale simula `google.script.run` e salva i test in `localStorage`, quindi:
+- puoi provare inserimento, modifica ed eliminazione prodotti
+- non tocchi il Google Sheet
+- non tocchi il deployment Menumal reale
+
+Quando la UI e stabile, copi gli stessi file nel progetto Apps Script e fai `New version`.
+
 ## Flusso dati
 
 1. l admin salva su `admin_items`

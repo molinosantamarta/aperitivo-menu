@@ -58,7 +58,7 @@ function doGet(e) {
   assertAuthorized_();
   return HtmlService.createTemplateFromFile('Admin')
     .evaluate()
-    .setTitle('Menumal - gestione del menu digitale')
+    .setTitle('Menumal: gestione del menu digitale Agri-Eventi')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }
 
