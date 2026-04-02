@@ -63,10 +63,9 @@ function doGet(e) {
     .evaluate()
     .setTitle(MENUMAL_TITLE)
     .setFaviconUrl(MENUMAL_ICON_URL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .addMetaTag('apple-mobile-web-app-capable', 'yes')
     .addMetaTag('mobile-web-app-capable', 'yes')
-    .addMetaTag('apple-mobile-web-app-title', 'Menumal')
-    .addMetaTag('theme-color', '#770505')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 
   return output;
