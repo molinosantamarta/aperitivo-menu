@@ -1,4 +1,6 @@
 var SPREADSHEET_ID = '1AwYzeqI5d47qc8BgQUIQh90rW9UvMQQrEmOK9XR1Cho';
+var MENUMAL_TITLE = 'Menumal: gestione del menu digitale Agri-Eventi';
+var MENUMAL_ICON_URL = 'https://molinosantamarta.github.io/aperitivo-menu/public/menumal-logo.png';
 
 var SHEET_NAMES = {
   sections: 'admin_sections',
@@ -50,16 +52,24 @@ var AUDIT_COLUMNS = ['timestamp', 'actor_email', 'action', 'target_type', 'targe
 
 function doGet(e) {
   var mode = sanitizeCell_(e && e.parameter ? e.parameter.mode : '').toLowerCase();
+  var output;
 
   if (mode === 'menu' || mode === 'data' || mode === 'menu-json') {
     return createPublicMenuResponse_();
   }
 
   assertAuthorized_();
-  return HtmlService.createTemplateFromFile('Admin')
+  output = HtmlService.createTemplateFromFile('Admin')
     .evaluate()
-    .setTitle('Menumal: gestione del menu digitale Agri-Eventi')
+    .setTitle(MENUMAL_TITLE)
+    .setFaviconUrl(MENUMAL_ICON_URL)
+    .addMetaTag('apple-mobile-web-app-capable', 'yes')
+    .addMetaTag('mobile-web-app-capable', 'yes')
+    .addMetaTag('apple-mobile-web-app-title', 'Menumal')
+    .addMetaTag('theme-color', '#770505')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
+
+  return output;
 }
 
 function include(filename) {
@@ -84,6 +94,10 @@ function buildPublicMenuPayload_() {
 function getBootstrapData() {
   var actor = assertAuthorized_();
   var settings = getSettingsObject_();
+
+  if (!settings.brand_icon_url) {
+    settings.brand_icon_url = MENUMAL_ICON_URL;
+  }
 
   return {
     actorEmail: actor.email,
