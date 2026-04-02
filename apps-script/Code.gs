@@ -556,7 +556,9 @@ function assertAuthorized_() {
   var activeEmail = sanitizeCell_(Session.getActiveUser().getEmail()).toLowerCase();
   var fallbackLabel = sanitizeCell_(Session.getTemporaryActiveUserKey()) || 'utente-non-identificato';
 
-  if (allowedEmails.length && (!activeEmail || allowedEmails.indexOf(activeEmail) === -1)) {
+  // In una web app Apps Script l'email attiva puo non essere disponibile.
+  // Manteniamo l'allowlist solo quando Google espone davvero l'identita dell'utente.
+  if (allowedEmails.length && activeEmail && allowedEmails.indexOf(activeEmail) === -1) {
     throw new Error(
       'Questo account Google non e autorizzato. Controlla la chiave allowed_editor_emails in admin_settings.'
     );
