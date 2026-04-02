@@ -196,7 +196,7 @@
 
         <div class="launcher-status" aria-live="polite">
           <strong id="launcherStatusTitle">Sto aprendo Menumal...</strong>
-          <p id="launcherStatusText">Se non parte subito, usa il pulsante qui sotto.</p>
+          <p id="launcherStatusText">Redirect automatico tra 10 secondi. Se preferisci, usa subito il pulsante qui sotto.</p>
           <div class="launcher-progress" aria-hidden="true"></div>
         </div>
 
@@ -234,12 +234,12 @@
 
         if (isStandalone) {
           statusTitle.textContent = "Apro Menumal dalla Home...";
-          statusText.textContent = "Se l'apertura automatica non parte, usa il pulsante Apri Menumal.";
+          statusText.textContent = "Redirect automatico tra 10 secondi. Se preferisci, usa il pulsante Apri Menumal.";
         }
 
         window.setTimeout(() => {
           window.location.assign(menumalUrl);
-        }, isStandalone ? 350 : 900);
+        }, 10000);
       })();
     </script>
   </body>
