@@ -7,9 +7,9 @@ Questo e il pannello admin del menu, versionato nella stessa repo ma pensato per
 - legge `admin_sections`, `admin_items`, `admin_settings`, `admin_audit_log`
 - salva e aggiorna i prodotti dal browser
 - scrive uno storico minimo in `admin_audit_log`
-- rigenera `database-semplice` a ogni salvataggio
+- espone un endpoint JSON pubblico con `?mode=menu`
 
-Quindi il sito pubblico continua a leggere lo stesso CSV pubblicato di prima, ma con colonne piu ricche e con supporto per prodotti nuovi.
+Il sito pubblico puo leggere direttamente l endpoint JSON Apps Script, senza passare da un tab CSV intermedio.
 
 ## File
 
@@ -44,11 +44,12 @@ Se in futuro vorrai 2 o 3 account autorizzati:
 
 1. l admin salva su `admin_items`
 2. `Code.gs` aggiorna `admin_audit_log`
-3. `Code.gs` rigenera `database-semplice`
-4. il menu pubblico continua a leggere il CSV pubblicato di `database-semplice`
+3. `Code.gs` espone il menu pubblico via `?mode=menu`
+4. il frontend pubblico legge quell endpoint JSON
 
 ## Note
 
 - per i prodotti nuovi, l immagine usa `image_url`
 - se `image_url` e vuoto, il frontend crea una card testuale semplice
 - per i prodotti legacy, `render_mode=legacy` mantiene il comportamento del menu principale
+- per mettere online l endpoint pubblico, serve un deployment web app accessibile pubblicamente per la sola lettura

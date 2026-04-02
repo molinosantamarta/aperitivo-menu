@@ -100,11 +100,6 @@ const items = menu.sections.flatMap((section, sectionIndex) =>
 
 const settings = [
   {
-    key: "legacy_live_tab",
-    value: "database-semplice",
-    notes: "Tab attualmente usato dal sito pubblico via CSV Google Sheet.",
-  },
-  {
     key: "admin_items_tab",
     value: "admin_items",
     notes: "Base futura per CRUD prodotti dall'admin Apps Script.",
@@ -121,13 +116,13 @@ const settings = [
   },
   {
     key: "public_data_mode",
-    value: "legacy-json-plus-sheet-overrides",
-    notes: "Stato corrente del frontend prima della migrazione.",
+    value: "apps-script-json-endpoint",
+    notes: "Il frontend pubblico legge un endpoint JSON esposto da Apps Script.",
   },
   {
     key: "migration_status",
-    value: "seeded-not-live",
-    notes: "I nuovi tab sono scaffolding e non sono ancora la sorgente live.",
+    value: "admin-tabs-live",
+    notes: "I tab admin sono la sorgente dati operativa del menu.",
   },
   {
     key: "allowed_editor_emails",
@@ -135,14 +130,14 @@ const settings = [
     notes: "Allowlist opzionale per la web app Apps Script. Separare piu email con virgola.",
   },
   {
-    key: "live_sync_strategy",
-    value: "admin-items-to-database-semplice",
-    notes: "Il backend admin rigenera il tab live legacy a ogni salvataggio.",
+    key: "public_menu_endpoint",
+    value: "",
+    notes: "URL pubblico del deployment Apps Script usato dal sito con ?mode=menu.",
   },
   {
-    key: "last_live_sync_at",
+    key: "public_menu_deployment_status",
     value: "",
-    notes: "Vuoto finche la web app Apps Script non esegue la prima sincronizzazione.",
+    notes: "Compilare dopo il deploy pubblico dell endpoint JSON.",
   },
   {
     key: "seed_generated_at",
@@ -248,7 +243,7 @@ function buildItemNotes(item, override) {
   const notes = [];
 
   if (item.excludeFromSheet === true) {
-    notes.push("Oggi non e gestito dal tab live database-semplice.");
+    notes.push("Gestione operativa prevista via dati admin o personalizzazione nel progetto.");
   }
 
   if (override) {

@@ -5,7 +5,6 @@ var SHEET_NAMES = {
   items: 'admin_items',
   settings: 'admin_settings',
   audit: 'admin_audit_log',
-  live: 'database-semplice',
 };
 
 var SECTION_COLUMNS = [
@@ -48,33 +47,6 @@ var ITEM_COLUMNS = [
 
 var SETTINGS_COLUMNS = ['key', 'value', 'notes'];
 var AUDIT_COLUMNS = ['timestamp', 'actor_email', 'action', 'target_type', 'target_id', 'details_json'];
-
-var LIVE_EXPORT_COLUMNS = [
-  'nome attuale (solo riferimento)',
-  'id',
-  'visibilita (visibile/nascosto)',
-  'disponibilita (disponibile/non disponibile/in arrivo)',
-  'prezzo',
-  'section_id',
-  'position',
-  'name',
-  'description',
-  'category',
-  'render_mode',
-  'option_1_label',
-  'option_1_display_label',
-  'option_1_price',
-  'option_2_label',
-  'option_2_display_label',
-  'option_2_price',
-  'option_3_label',
-  'option_3_display_label',
-  'option_3_price',
-  'image_url',
-  'show_detail_hint',
-  'visual_mode',
-  'notes',
-];
 
 function doGet(e) {
   var mode = sanitizeCell_(e && e.parameter ? e.parameter.mode : '').toLowerCase();
@@ -119,8 +91,6 @@ function getBootstrapData() {
     sections: getAdminSections_(),
     items: getAdminItems_(),
     settings: settings,
-    liveTabName: SHEET_NAMES.live,
-    liveSyncAt: settings.last_live_sync_at || '',
     publicMenuEndpoint: buildPublicMenuUrl_(),
   };
 }
@@ -139,77 +109,10 @@ function saveItem(payload) {
   upsertRowById_(SHEET_NAMES.items, ITEM_COLUMNS, 'id', item);
   logAudit_(actor, 'save_item', 'item', item.id, item);
 
-  var syncInfo = syncLegacyLiveTab_();
   return {
     ok: true,
     item: item,
-    syncInfo: syncInfo,
     savedAt: new Date().toISOString(),
-  };
-}
-
-function syncLegacyLiveTab() {
-  var actor = assertAuthorized_();
-  var syncInfo = syncLegacyLiveTab_();
-  logAudit_(actor, 'sync_live_tab', 'sheet', SHEET_NAMES.live, syncInfo);
-  return syncInfo;
-}
-
-function syncLegacyLiveTab_() {
-  var sections = getAdminSections_();
-  var sectionOrderLookup = {};
-  sections.forEach(function (section, index) {
-    sectionOrderLookup[section.section_id] = parseInteger_(section.sort_order, index);
-  });
-
-  var liveRows = getAdminItems_()
-    .sort(function (left, right) {
-      var leftSection = parseInteger_(sectionOrderLookup[left.section_id], 9999);
-      var rightSection = parseInteger_(sectionOrderLookup[right.section_id], 9999);
-
-      if (leftSection !== rightSection) {
-        return leftSection - rightSection;
-      }
-
-      var leftOrder = parseInteger_(left.sort_order, 9999);
-      var rightOrder = parseInteger_(right.sort_order, 9999);
-      if (leftOrder !== rightOrder) {
-        return leftOrder - rightOrder;
-      }
-
-      return String(left.name || left.id).localeCompare(String(right.name || right.id));
-    })
-    .map(buildLiveExportRow_);
-  var syncedAt = new Date().toISOString();
-  var liveSheet = ensureSheet_(SHEET_NAMES.live, LIVE_EXPORT_COLUMNS);
-  var values = [LIVE_EXPORT_COLUMNS].concat(
-    liveRows.map(function (row) {
-      return LIVE_EXPORT_COLUMNS.map(function (header) {
-        return row[header] || '';
-      });
-    })
-  );
-
-  liveSheet.clearContents();
-  liveSheet
-    .getRange(1, 1, values.length, LIVE_EXPORT_COLUMNS.length)
-    .setValues(values);
-  liveSheet
-    .getRange(1, 1, Math.max(values.length, 1), LIVE_EXPORT_COLUMNS.length)
-    .clearFormat();
-  liveSheet.setFrozenRows(1);
-
-  upsertSetting_('migration_status', 'live-tab-synced', 'database-semplice viene rigenerato dall admin.');
-  upsertSetting_(
-    'last_live_sync_at',
-    syncedAt,
-    'Timestamp dell ultima sincronizzazione automatica dal pannello admin.'
-  );
-
-  return {
-    liveTabName: SHEET_NAMES.live,
-    rowCount: liveRows.length,
-    syncedAt: syncedAt,
   };
 }
 
@@ -404,37 +307,6 @@ function parsePrice_(value) {
   return isFinite(parsed) ? parsed : null;
 }
 
-function buildLiveExportRow_(item) {
-  var visualMode = item.render_mode === 'legacy' ? 'inherit' : item.image_url ? 'photo-panel' : 'text-panel';
-
-  return {
-    'nome attuale (solo riferimento)': item.name || item.id,
-    id: item.id,
-    'visibilita (visibile/nascosto)': item.visibility_state || 'visibile',
-    'disponibilita (disponibile/non disponibile/in arrivo)': item.availability_state || 'disponibile',
-    prezzo: getPrimaryPrice_(item),
-    section_id: item.section_id || '',
-    position: item.sort_order || '',
-    name: item.name || '',
-    description: item.description || '',
-    category: item.category || '',
-    render_mode: item.render_mode || 'standard',
-    option_1_label: item.option_1_label || '',
-    option_1_display_label: item.option_1_display_label || '',
-    option_1_price: item.option_1_price || '',
-    option_2_label: item.option_2_label || '',
-    option_2_display_label: item.option_2_display_label || '',
-    option_2_price: item.option_2_price || '',
-    option_3_label: item.option_3_label || '',
-    option_3_display_label: item.option_3_display_label || '',
-    option_3_price: item.option_3_price || '',
-    image_url: item.image_url || '',
-    show_detail_hint: item.show_detail_hint || 'si',
-    visual_mode: visualMode,
-    notes: item.notes || '',
-  };
-}
-
 function mapSectionToPublicPayload_(section) {
   return {
     section_id: section.section_id || '',
@@ -479,10 +351,6 @@ function mapItemToPublicPayload_(item) {
     visual_mode: visualMode,
     notes: item.notes || '',
   };
-}
-
-function getPrimaryPrice_(item) {
-  return item.option_1_price || item.option_2_price || item.option_3_price || '';
 }
 
 function getNextSortOrder_(sectionId, currentId) {
@@ -569,9 +437,6 @@ function getExpectedColumnsForSheet_(sheetName) {
   }
   if (sheetName === SHEET_NAMES.audit) {
     return AUDIT_COLUMNS;
-  }
-  if (sheetName === SHEET_NAMES.live) {
-    return LIVE_EXPORT_COLUMNS;
   }
 
   return [];
