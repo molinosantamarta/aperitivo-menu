@@ -6,6 +6,7 @@ Questo e il pannello admin del menu, versionato nella stessa repo ma pensato per
 
 - legge `admin_sections`, `admin_items`, `admin_settings`, `admin_audit_log`
 - salva e aggiorna i prodotti dal browser
+- puo caricare un immagine da file o rullino, salvarla in Google Drive e scrivere `image_url` automaticamente
 - scrive uno storico minimo in `admin_audit_log`
 - espone un endpoint JSON pubblico con `?mode=menu`
 
@@ -28,7 +29,11 @@ Il sito pubblico puo leggere direttamente l endpoint JSON Apps Script, senza pas
 5. Nel tab `admin_settings` aggiungi, quando vuoi attivare la allowlist, una riga:
    - `key`: `allowed_editor_emails`
    - `value`: una o piu email separate da virgola
-6. Fai `Deploy -> New deployment -> Web app`.
+6. Se vuoi gestire gli upload immagine in una cartella Drive dedicata, puoi aggiungere:
+   - `key`: `uploads_drive_folder_id`
+   - `value`: ID della cartella Drive
+   Se manca, Menumal crea e riusa automaticamente una cartella `Menumal Uploads`.
+7. Fai `Deploy -> New deployment -> Web app`.
 
 Impostazione consigliata per partire:
 
@@ -67,7 +72,12 @@ Quando la UI e stabile, copi gli stessi file nel progetto Apps Script e fai `New
 
 ## Note
 
-- per i prodotti nuovi, l immagine usa `image_url`
+- per i prodotti nuovi puoi:
+  - caricare una foto da file o rullino
+  - oppure inserire manualmente `image_url`
+- se carichi un file, Menumal salva l immagine in Drive e aggiorna `image_url` nel foglio
+- Menumal salva anche `image_asset_id` per poter sostituire o eliminare in modo pulito i file Drive collegati
 - se `image_url` e vuoto, il frontend crea una card testuale semplice
 - per i prodotti legacy, `render_mode=legacy` mantiene il comportamento del menu principale
 - per mettere online l endpoint pubblico, serve un deployment web app accessibile pubblicamente per la sola lettura
+- dopo aver aggiunto l upload immagine, Apps Script chiedera una nuova autorizzazione Drive al primo deploy

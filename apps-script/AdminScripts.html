@@ -13,6 +13,8 @@
     publicMenuEndpoint: "",
     liveMenuSummary: null,
     lastMessage: "",
+    lastMessageTone: "success",
+    imagePreviewObjectUrl: "",
   };
 
   const els = {};
@@ -25,18 +27,17 @@
   });
 
   function cacheElements() {
-    els.brandIcon = document.getElementById("brandIcon");
     els.headerStatus = document.getElementById("headerStatus");
     els.headerStatusText = document.getElementById("headerStatusText");
     els.helpButton = document.getElementById("helpButton");
     els.helpModal = document.getElementById("helpModal");
     els.helpBackdrop = document.getElementById("helpBackdrop");
     els.closeHelpButton = document.getElementById("closeHelpButton");
+    els.helpPayloadLink = document.getElementById("helpPayloadLink");
     els.entryPanel = document.getElementById("entryPanel");
     els.entryCreateButton = document.getElementById("entryCreateButton");
     els.entryBrowseButton = document.getElementById("entryBrowseButton");
     els.refreshButton = document.getElementById("refreshButton");
-    els.openPublicMenuLink = document.getElementById("openPublicMenuLink");
     els.liveSummary = document.getElementById("liveSummary");
     els.browseModal = document.getElementById("browseModal");
     els.editorModal = document.getElementById("editorModal");
@@ -48,6 +49,8 @@
     els.itemList = document.getElementById("itemList");
     els.editorTitle = document.getElementById("editorTitle");
     els.editorMeta = document.getElementById("editorMeta");
+    els.statusGroup = document.getElementById("statusGroup");
+    els.statusSummary = document.getElementById("statusSummary");
     els.itemForm = document.getElementById("itemForm");
     els.saveButton = document.getElementById("saveButton");
     els.deleteButton = document.getElementById("deleteButton");
@@ -61,7 +64,13 @@
     els.visibilityInput = document.getElementById("visibilityInput");
     els.availabilityInput = document.getElementById("availabilityInput");
     els.renderModeInput = document.getElementById("renderModeInput");
+    els.imageFileInput = document.getElementById("imageFileInput");
+    els.imageFileHint = document.getElementById("imageFileHint");
     els.imageUrlInput = document.getElementById("imageUrlInput");
+    els.imagePreviewCard = document.getElementById("imagePreviewCard");
+    els.imagePreviewImage = document.getElementById("imagePreviewImage");
+    els.imagePreviewLabel = document.getElementById("imagePreviewLabel");
+    els.imagePreviewMeta = document.getElementById("imagePreviewMeta");
     els.option1LabelInput = document.getElementById("option1LabelInput");
     els.option1DisplayLabelInput = document.getElementById("option1DisplayLabelInput");
     els.option1PriceInput = document.getElementById("option1PriceInput");
@@ -87,7 +96,7 @@
     els.editorScreenBackButton?.addEventListener("click", handleEditorScreenBack);
     els.deleteButton?.addEventListener("click", handleDelete);
     els.searchInput?.addEventListener("input", (event) => {
-      state.filters.search = event.target.value.trim().toLowerCase();
+      state.filters.search = normalizeSearchText(event.target.value);
       renderItemList();
     });
     els.itemForm?.addEventListener("submit", handleSave);
@@ -104,43 +113,61 @@
         els.sortOrderInput.value = String(getSuggestedSortOrder(els.sectionInput.value));
       }
     });
+    els.visibilityInput?.addEventListener("change", updateStatusPresentation);
+    els.availabilityInput?.addEventListener("change", updateStatusPresentation);
+    els.imageFileInput?.addEventListener("change", updateImageFileHint);
+    els.imageFileInput?.addEventListener("change", updateImagePreview);
+    els.imageUrlInput?.addEventListener("input", updateImageFileHint);
+    els.imageUrlInput?.addEventListener("change", updateImageFileHint);
+    els.imageUrlInput?.addEventListener("input", updateImagePreview);
+    els.imageUrlInput?.addEventListener("change", updateImagePreview);
     document.addEventListener("keydown", handleGlobalKeydown);
   }
 
   function loadBootstrap(message) {
+    const startedAt = Date.now();
+    const minimumLoaderMs = 720;
     clearHeaderStatus();
     setBusy(true, message || "Carico...");
 
     google.script.run
       .withSuccessHandler((payload) => {
-        state.sections = Array.isArray(payload.sections) ? payload.sections : [];
-        state.items = Array.isArray(payload.items) ? payload.items : [];
-        state.settings = payload.settings || {};
-        state.publicMenuEndpoint = payload.publicMenuEndpoint || "";
-        state.liveMenuSummary = payload.liveMenuSummary || {
-          itemCount: state.items.length,
-          sectionCount: state.sections.length,
-          generatedAt: "",
-        };
+        const remainingMs = Math.max(0, minimumLoaderMs - (Date.now() - startedAt));
+        window.setTimeout(() => {
+          state.sections = Array.isArray(payload.sections) ? payload.sections : [];
+          state.items = Array.isArray(payload.items) ? payload.items : [];
+          state.settings = payload.settings || {};
+          state.publicMenuEndpoint = payload.publicMenuEndpoint || "";
+          state.liveMenuSummary = payload.liveMenuSummary || {
+            itemCount: state.items.length,
+            sectionCount: state.sections.length,
+            generatedAt: "",
+          };
 
-        applyBrandIcon();
-        renderSectionOptions();
-        renderLiveSummary();
-        syncCurrentView();
-        renderItemList();
-        updateInterfaceState();
-        setBusy(false);
+          renderSectionOptions();
+          renderLiveSummary();
+          syncCurrentView();
+          renderItemList();
+          updateInterfaceState();
+          setBusy(false);
 
-        if (state.lastMessage) {
-          showHeaderStatus(state.lastMessage, "success");
-          state.lastMessage = "";
-        }
+          if (state.lastMessage) {
+            showHeaderStatus(state.lastMessage, state.lastMessageTone || "success");
+            state.lastMessage = "";
+            state.lastMessageTone = "success";
+          }
+        }, remainingMs);
       })
-      .withFailureHandler(handleFailure)
+      .withFailureHandler((error) => {
+        const remainingMs = Math.max(0, minimumLoaderMs - (Date.now() - startedAt));
+        window.setTimeout(() => {
+          handleFailure(error);
+        }, remainingMs);
+      })
       .getBootstrapData();
   }
 
-  function handleSave(event) {
+  async function handleSave(event) {
     event.preventDefault();
 
     const requiredFields = [els.nameInput, els.sectionInput, els.option1PriceInput].filter(Boolean);
@@ -149,21 +176,54 @@
       return;
     }
 
-    const payload = collectFormPayload();
+    const hasSelectedImage = Boolean(els.imageFileInput?.files?.length);
+    if (hasSelectedImage) {
+      setBusy(true, "Leggo l'immagine selezionata...");
+    }
+
+    let payload;
+    try {
+      payload = await buildSavePayloadWithImageUpload();
+    } catch (error) {
+      handleFailure(error);
+      return;
+    }
+
     const wasCreating = state.isCreating;
+    if (wasCreating) {
+      state.view = "chooser";
+      state.editorReturnView = "chooser";
+      updateInterfaceState();
+    }
+
     setBusy(true, wasCreating ? "Salvo il nuovo prodotto..." : "Aggiorno il prodotto...");
 
     google.script.run
       .withSuccessHandler((result) => {
-        state.currentItemId = result.item.id;
+        state.currentItemId = "";
         state.isCreating = false;
-        state.view = "edit";
+        state.view = "chooser";
+        state.editorReturnView = "chooser";
+        const isVerified = Boolean(result?.liveVerification?.found);
         state.lastMessage = wasCreating
-          ? "Prodotto salvato. Foglio e dati live ricaricati."
-          : "Prodotto aggiornato. Foglio e dati live ricaricati.";
+          ? isVerified
+            ? "Prodotto salvato e verificato nel payload live."
+            : "Prodotto salvato, ma non trovato nel payload live."
+          : isVerified
+            ? "Prodotto aggiornato e verificato nel payload live."
+            : "Prodotto aggiornato, ma non trovato nel payload live.";
+        state.lastMessageTone = isVerified ? "success" : "error";
         loadBootstrap("Rileggo Google Sheet e menu live...");
       })
-      .withFailureHandler(handleFailure)
+      .withFailureHandler((error) => {
+        if (wasCreating) {
+          state.view = "create";
+          state.editorReturnView = "chooser";
+          updateInterfaceState();
+          focusEditorPrimaryField();
+        }
+        handleFailure(error);
+      })
       .saveItem(payload);
   }
 
@@ -173,6 +233,8 @@
     }
 
     const currentItem = state.items.find((item) => item.id === state.currentItemId);
+    const previousItemId = state.currentItemId;
+    const previousReturnView = state.editorReturnView;
     const itemLabel = currentItem?.name || state.currentItemId;
     const confirmed = window.confirm(`Eliminare definitivamente "${itemLabel}" da Menumal?`);
 
@@ -180,18 +242,36 @@
       return;
     }
 
+    state.view = "chooser";
+    state.editorReturnView = "chooser";
+    updateInterfaceState();
     setBusy(true, "Elimino il prodotto...");
 
     google.script.run
-      .withSuccessHandler(() => {
-        const returnView = state.editorReturnView === "browse" ? "browse" : "chooser";
+      .withSuccessHandler((result) => {
+        const isRemoved = !result?.liveVerification?.found;
         state.currentItemId = "";
         state.isCreating = false;
-        state.view = returnView;
-        state.lastMessage = "Prodotto eliminato. Foglio e dati live ricaricati.";
+        state.view = "chooser";
+        state.editorReturnView = "chooser";
+        state.lastMessage = isRemoved
+          ? "Prodotto eliminato e verificato fuori dal payload live."
+          : "Prodotto eliminato dal foglio, ma ancora presente nel payload live.";
+        state.lastMessageTone = isRemoved ? "success" : "error";
         loadBootstrap("Rileggo Google Sheet e menu live...");
       })
-      .withFailureHandler(handleFailure)
+      .withFailureHandler((error) => {
+        state.view = "edit";
+        state.editorReturnView = previousReturnView;
+        state.currentItemId = previousItemId;
+        state.isCreating = false;
+        if (currentItem) {
+          fillForm(currentItem);
+        }
+        updateInterfaceState();
+        focusEditorPrimaryField();
+        handleFailure(error);
+      })
       .deleteItem(state.currentItemId);
   }
 
@@ -206,23 +286,6 @@
     if (event.key === "Escape" && els.helpModal && !els.helpModal.hidden) {
       closeHelpModal();
     }
-  }
-
-  function applyBrandIcon() {
-    if (!els.brandIcon) {
-      return;
-    }
-
-    const isLocalPreview = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-    const iconUrl = state.settings.brand_icon_url || (isLocalPreview ? els.brandIcon.dataset.localSrc : "");
-
-    if (!iconUrl) {
-      els.brandIcon.hidden = true;
-      return;
-    }
-
-    els.brandIcon.hidden = false;
-    els.brandIcon.src = iconUrl;
   }
 
   function openHelpModal() {
@@ -256,29 +319,22 @@
   }
 
   function renderLiveSummary() {
-    if (!els.liveSummary) {
-      return;
+    if (els.helpPayloadLink) {
+      if (state.publicMenuEndpoint) {
+        els.helpPayloadLink.href = state.publicMenuEndpoint;
+        els.helpPayloadLink.hidden = false;
+      } else {
+        els.helpPayloadLink.href = "#";
+        els.helpPayloadLink.hidden = true;
+      }
     }
-
-    const itemCount = state.liveMenuSummary?.itemCount ?? state.items.length;
-    const sectionCount = state.liveMenuSummary?.sectionCount ?? state.sections.length;
-    const generatedAt = state.liveMenuSummary?.generatedAt ? formatDateTime(state.liveMenuSummary.generatedAt) : "";
-    const endpointLink = state.publicMenuEndpoint
-      ? `<a class="live-summary__link" href="${escapeHtml(state.publicMenuEndpoint)}" target="_blank" rel="noopener noreferrer">Apri payload live</a>`
-      : "";
-
-    els.liveSummary.innerHTML = `
-      <div class="live-summary__row">
-        <span class="live-summary__pill live-summary__pill--strong">${escapeHtml(String(itemCount))} prodotti live</span>
-        <span class="live-summary__pill">${escapeHtml(String(sectionCount))} sezioni</span>
-        ${generatedAt ? `<span class="live-summary__pill">Aggiornato ${escapeHtml(generatedAt)}</span>` : ""}
-      </div>
-      <p class="live-summary__text">Menumal legge il Google Sheet e Agri-Menu usa lo stesso payload live.</p>
-      ${endpointLink ? `<div class="live-summary__links">${endpointLink}</div>` : ""}
-    `;
   }
 
   function renderCatalogMeta(filteredItems = getFilteredItems()) {
+    if (!els.catalogMeta) {
+      return;
+    }
+
     const hiddenItemsCount = filteredItems.filter((item) => item.visibility_state === "nascosto").length;
     const hasActiveSearch = Boolean(state.filters.search);
     const itemsLabel = hasActiveSearch
@@ -304,6 +360,7 @@
     els.itemList.innerHTML = filteredItems
       .map((item) => {
         const priceLabel = formatItemListPrice(item);
+        const rowTone = getItemRowTone(item.visibility_state, item.availability_state);
         const badges = [
           renderBadge(
             item.visibility_state === "nascosto" ? "Nascosto" : "Visibile",
@@ -313,16 +370,15 @@
         ].join("");
 
         return `
-          <button class="item-row${item.id === state.currentItemId && !state.isCreating ? " is-active" : ""}" type="button" data-item-id="${escapeHtml(item.id)}">
+          <button class="item-row item-row--${escapeHtml(rowTone)}${item.id === state.currentItemId && !state.isCreating ? " is-active" : ""}" type="button" data-item-id="${escapeHtml(item.id)}">
             <div class="item-row__top">
               <span class="item-row__name">${escapeHtml(item.name || item.id)}</span>
               <span class="item-row__price">${escapeHtml(priceLabel)}</span>
             </div>
-            <div class="item-row__meta">
-              <span>${escapeHtml(resolveSectionLabel(item.section_id))}</span>
-              <span>${escapeHtml(item.id)}</span>
+            <div class="item-row__bottom">
+              <span class="item-row__section">${escapeHtml(resolveSectionLabel(item.section_id))}</span>
+              <div class="badge-row">${badges}</div>
             </div>
-            <div class="badge-row">${badges}</div>
           </button>
         `;
       })
@@ -342,6 +398,7 @@
         state.editorReturnView = "browse";
         renderItemList();
         updateInterfaceState();
+        focusEditorPrimaryField();
       });
     });
   }
@@ -352,7 +409,7 @@
         return true;
       }
 
-      const haystack = [item.id, item.name, item.description, item.category].join(" ").toLowerCase();
+      const haystack = normalizeSearchText([item.id, item.name, item.description, item.category].join(" "));
       return haystack.includes(state.filters.search);
     });
   }
@@ -376,6 +433,9 @@
     els.renderModeInput.value = "standard";
     els.detailHintInput.checked = true;
     els.legacyManagedInput.checked = false;
+    if (els.imageFileInput) {
+      els.imageFileInput.value = "";
+    }
 
     const preferredSectionId = state.sections[0]?.section_id || "";
     if (preferredSectionId) {
@@ -384,10 +444,14 @@
     }
 
     els.editorTitle.textContent = "Nuovo prodotto";
-    els.editorMeta.textContent = "Compila i campi e salva. Il prodotto verra scritto nel foglio e riletto dal menu live.";
+    els.editorMeta.textContent = "";
     updateSaveButtonLabel();
     updateDeleteButton();
     updateEditorScreenBackLabel();
+    updateEditorFormMode();
+    updateStatusPresentation();
+    updateImageFileHint();
+    updateImagePreview();
     renderItemList();
   }
 
@@ -395,7 +459,7 @@
     state.currentItemId = item.id;
     state.isCreating = false;
     els.editorTitle.textContent = item.name || item.id;
-    els.editorMeta.textContent = `${resolveSectionLabel(item.section_id)} · id ${item.id}`;
+    els.editorMeta.textContent = `ID ${item.id}`;
 
     els.idInput.value = item.id || "";
     els.idInput.dataset.locked = item.id ? "true" : "";
@@ -407,6 +471,9 @@
     els.visibilityInput.value = item.visibility_state || "visibile";
     els.availabilityInput.value = item.availability_state || "disponibile";
     els.renderModeInput.value = item.render_mode || "standard";
+    if (els.imageFileInput) {
+      els.imageFileInput.value = "";
+    }
     els.imageUrlInput.value = item.image_url || "";
     els.option1LabelInput.value = item.option_1_label || "";
     els.option1DisplayLabelInput.value = item.option_1_display_label || "";
@@ -423,6 +490,10 @@
     updateSaveButtonLabel();
     updateDeleteButton();
     updateEditorScreenBackLabel();
+    updateEditorFormMode();
+    updateStatusPresentation();
+    updateImageFileHint();
+    updateImagePreview();
   }
 
   function enterCreateMode() {
@@ -430,6 +501,7 @@
     state.editorReturnView = "chooser";
     openCreateForm();
     updateInterfaceState();
+    focusEditorPrimaryField();
   }
 
   function enterBrowseMode() {
@@ -491,9 +563,12 @@
 
   function collectFormPayload() {
     const idValue = els.idInput.value.trim() || slugify(els.nameInput.value);
+    const currentItem = state.items.find((item) => item.id === state.currentItemId);
 
     return {
       id: idValue,
+      previous_id: state.isCreating ? "" : state.currentItemId,
+      image_asset_id: state.isCreating ? "" : currentItem?.image_asset_id || "",
       name: els.nameInput.value.trim(),
       section_id: els.sectionInput.value,
       description: els.descriptionInput.value.trim(),
@@ -516,6 +591,54 @@
       legacy_sheet_managed: els.legacyManagedInput.checked,
       notes: els.notesInput.value.trim(),
     };
+  }
+
+  async function buildSavePayloadWithImageUpload() {
+    const payload = collectFormPayload();
+    const uploadPayload = await readSelectedImageUpload();
+
+    if (uploadPayload) {
+      payload.uploaded_image_data_url = uploadPayload.dataUrl;
+      payload.uploaded_image_name = uploadPayload.name;
+      payload.uploaded_image_type = uploadPayload.type;
+      payload.uploaded_image_size = String(uploadPayload.size);
+    }
+
+    return payload;
+  }
+
+  function readSelectedImageUpload() {
+    const file = els.imageFileInput?.files?.[0];
+    if (!file) {
+      return Promise.resolve(null);
+    }
+
+    if (!file.type || !file.type.startsWith("image/")) {
+      return Promise.reject(new Error("Seleziona un file immagine valido."));
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      return Promise.reject(new Error("Mantieni l'immagine sotto 10 MB."));
+    }
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        resolve({
+          dataUrl: String(reader.result || ""),
+          name: file.name || "immagine",
+          type: file.type || "image/jpeg",
+          size: file.size || 0,
+        });
+      };
+
+      reader.onerror = () => {
+        reject(new Error("Non riesco a leggere il file immagine selezionato."));
+      };
+
+      reader.readAsDataURL(file);
+    });
   }
 
   function getSuggestedSortOrder(sectionId) {
@@ -546,6 +669,22 @@
       return "danger";
     }
     if (value === "al carretto") {
+      return "info";
+    }
+    return "success";
+  }
+
+  function getItemRowTone(visibilityState, availabilityState) {
+    if (visibilityState === "nascosto") {
+      return "hidden";
+    }
+    if (availabilityState === "non disponibile") {
+      return "danger";
+    }
+    if (availabilityState === "in arrivo") {
+      return "warning";
+    }
+    if (availabilityState === "al carretto") {
       return "info";
     }
     return "success";
@@ -592,7 +731,7 @@
       return;
     }
 
-    els.saveButton.textContent = state.isCreating ? "Salva nuovo prodotto" : "Aggiorna prodotto";
+    els.saveButton.textContent = state.isCreating ? "Salva" : "Aggiorna";
   }
 
   function updateEditorScreenBackLabel() {
@@ -618,8 +757,128 @@
     state.editorReturnView = "chooser";
     state.currentItemId = "";
     state.isCreating = false;
+    releaseImagePreviewObjectUrl();
     updateDeleteButton();
     updateInterfaceState();
+    window.setTimeout(() => {
+      els.entryCreateButton?.focus();
+    }, 30);
+  }
+
+  function updateEditorFormMode() {
+    if (els.statusGroup) {
+      els.statusGroup.hidden = state.isCreating;
+    }
+  }
+
+  function updateStatusPresentation() {
+    if (!els.statusGroup || state.isCreating) {
+      return;
+    }
+
+    const visibilityState = els.visibilityInput?.value || "visibile";
+    const availabilityState = els.availabilityInput?.value || "disponibile";
+    const tone = getItemRowTone(visibilityState, availabilityState);
+    let title = "Prodotto visibile e disponibile.";
+    let detail = "Il cliente lo vede nel menu QR e puo ordinarlo normalmente.";
+
+    if (visibilityState === "nascosto") {
+      title = "Prodotto nascosto.";
+      detail = "Il cliente non lo vede nel menu QR, anche se i dati restano salvati.";
+    } else if (availabilityState === "non disponibile") {
+      title = "Prodotto visibile ma non disponibile.";
+      detail = "Il cliente lo vede, ma con stato non disponibile.";
+    } else if (availabilityState === "in arrivo") {
+      title = "Prodotto visibile e in arrivo.";
+      detail = "Il cliente lo vede nel menu QR con indicazione in arrivo.";
+    } else if (availabilityState === "al carretto") {
+      title = "Prodotto visibile al carretto.";
+      detail = "Il cliente lo vede come disponibile al carretto.";
+    }
+
+    els.statusGroup.dataset.tone = tone;
+    if (els.statusSummary) {
+      els.statusSummary.innerHTML = `
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(detail)}</span>
+      `;
+    }
+  }
+
+  function updateImageFileHint() {
+    if (!els.imageFileHint) {
+      return;
+    }
+
+    const selectedFile = els.imageFileInput?.files?.[0];
+    const currentLink = els.imageUrlInput?.value?.trim();
+
+    if (selectedFile) {
+      els.imageFileHint.textContent = `File selezionato: ${selectedFile.name}`;
+      return;
+    }
+
+    if (currentLink) {
+      els.imageFileHint.textContent = "Nessun nuovo file selezionato. Resta l'immagine gia salvata.";
+      return;
+    }
+
+    els.imageFileHint.textContent = "Scegli una foto da file o rullino.";
+  }
+
+  function updateImagePreview() {
+    if (!els.imagePreviewCard || !els.imagePreviewImage || !els.imagePreviewMeta || !els.imagePreviewLabel) {
+      return;
+    }
+
+    releaseImagePreviewObjectUrl();
+
+    const selectedFile = els.imageFileInput?.files?.[0];
+    const currentLink = els.imageUrlInput?.value?.trim();
+
+    if (selectedFile) {
+      state.imagePreviewObjectUrl = URL.createObjectURL(selectedFile);
+      els.imagePreviewCard.hidden = false;
+      els.imagePreviewCard.classList.remove("image-preview-card--empty");
+      els.imagePreviewImage.hidden = false;
+      els.imagePreviewImage.src = state.imagePreviewObjectUrl;
+      els.imagePreviewLabel.textContent = "Nuova immagine selezionata";
+      els.imagePreviewMeta.textContent = selectedFile.name;
+      return;
+    }
+
+    if (currentLink) {
+      els.imagePreviewCard.hidden = false;
+      els.imagePreviewCard.classList.remove("image-preview-card--empty");
+      els.imagePreviewImage.hidden = false;
+      els.imagePreviewImage.src = currentLink;
+      els.imagePreviewLabel.textContent = "Immagine attuale";
+      els.imagePreviewMeta.textContent = currentLink;
+      return;
+    }
+
+    els.imagePreviewCard.hidden = true;
+    els.imagePreviewCard.classList.add("image-preview-card--empty");
+    els.imagePreviewImage.hidden = true;
+    els.imagePreviewImage.removeAttribute("src");
+    els.imagePreviewLabel.textContent = "Anteprima immagine";
+    els.imagePreviewMeta.textContent = "Nessuna immagine attiva.";
+  }
+
+  function releaseImagePreviewObjectUrl() {
+    if (!state.imagePreviewObjectUrl) {
+      return;
+    }
+
+    URL.revokeObjectURL(state.imagePreviewObjectUrl);
+    state.imagePreviewObjectUrl = "";
+  }
+
+  function focusEditorPrimaryField() {
+    window.setTimeout(() => {
+      els.nameInput?.focus();
+      els.nameInput?.select?.();
+    }, 40);
   }
 
   function showHeaderStatus(message, tone = "info", options = {}) {
@@ -628,9 +887,6 @@
     }
 
     window.clearTimeout(headerStatusTimer);
-    if (els.refreshButton) {
-      els.refreshButton.hidden = true;
-    }
     els.headerStatus.dataset.tone = tone;
     els.headerStatusText.textContent = message;
     els.headerStatus.hidden = false;
@@ -652,9 +908,6 @@
     els.headerStatus.hidden = true;
     els.headerStatus.dataset.tone = "";
     els.headerStatusText.textContent = "";
-    if (els.refreshButton) {
-      els.refreshButton.hidden = false;
-    }
   }
 
   function normalizeToggle(value, fallback) {
@@ -685,6 +938,14 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-+|-+$/g, "");
+  }
+
+  function normalizeSearchText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
   }
 
   function formatDateTime(value) {

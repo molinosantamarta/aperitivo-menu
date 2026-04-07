@@ -149,7 +149,7 @@ function injectMarkup() {
     .replace("<?!= include('AdminScripts'); ?>", "");
 
   root.innerHTML = bodyMarkup;
-  document.title = "Menumal: gestione del menu digitale Agri-Eventi";
+  document.title = "MENUMAL | Modifica Menu QR";
 }
 
 function injectAdminRuntime() {
@@ -160,7 +160,11 @@ function injectAdminRuntime() {
 
   const runtimeElement = document.createElement("script");
   runtimeElement.id = PREVIEW_SCRIPT_ID;
-  runtimeElement.textContent = extractTagContent(adminScriptsSource, "script");
+  runtimeElement.textContent = `
+    (() => {
+      ${extractTagContent(adminScriptsSource, "script")}
+    })();
+  `;
   document.body.appendChild(runtimeElement);
 }
 
@@ -209,6 +213,7 @@ function buildBootstrapData() {
   const state = loadPreviewState();
   const sections = sortSections(state.sections);
   const items = sortItems(state.sections, state.items);
+  const visibleItemCount = items.filter((item) => item.visibility_state !== "nascosto").length;
   return {
     actorEmail: PREVIEW_ACTOR_EMAIL,
     actorLabel: "preview locale",
@@ -222,14 +227,24 @@ function buildBootstrapData() {
       generatedAt: new Date().toISOString(),
       sectionCount: sections.length,
       itemCount: items.length,
+      visibleItemCount,
+      hiddenItemCount: items.length - visibleItemCount,
     },
   };
 }
 
 function savePreviewItem(payload) {
   const state = loadPreviewState();
-  const item = normalizePreviewItemPayload(payload, state);
+  const previousId = sanitizeId(payload?.previous_id);
+  const previousItem = previousId ? state.items.find((entry) => entry.id === previousId) || null : null;
+  const item = normalizePreviewItemPayload(payload, state, previousItem);
   const itemIndex = state.items.findIndex((entry) => entry.id === item.id);
+  const previousItemIndex = previousId && previousId !== item.id ? state.items.findIndex((entry) => entry.id === previousId) : -1;
+  const isEditingSameItem = previousId && previousId === item.id;
+
+  if (itemIndex !== -1 && !isEditingSameItem) {
+    throw new Error("Esiste gia un prodotto con questo ID nella preview locale.");
+  }
 
   if (itemIndex === -1) {
     state.items.push(item);
@@ -237,11 +252,16 @@ function savePreviewItem(payload) {
     state.items[itemIndex] = item;
   }
 
+  if (previousItemIndex !== -1 && previousItemIndex !== itemIndex) {
+    state.items.splice(previousItemIndex, 1);
+  }
+
   savePreviewState(state);
   return {
     ok: true,
     item,
     savedAt: new Date().toISOString(),
+    liveVerification: buildPreviewLiveVerification(state, item.id),
   };
 }
 
@@ -264,13 +284,16 @@ function deletePreviewItem(itemId) {
     ok: true,
     itemId: normalizedId,
     deletedAt: new Date().toISOString(),
+    liveVerification: buildPreviewLiveVerification(state, normalizedId),
   };
 }
 
-function normalizePreviewItemPayload(payload, state) {
+function normalizePreviewItemPayload(payload, state, previousItem = null) {
   const sectionId = sanitizeText(payload?.section_id);
   const name = sanitizeText(payload?.name);
   const id = sanitizeId(payload?.id || name);
+  const uploadedImageDataUrl = sanitizeText(payload?.uploaded_image_data_url);
+  const currentLink = sanitizeText(payload?.image_url);
 
   if (!id) {
     throw new Error("Serve un ID valido per il prodotto.");
@@ -314,10 +337,27 @@ function normalizePreviewItemPayload(payload, state) {
     option_3_label: sanitizeText(payload?.option_3_label),
     option_3_display_label: sanitizeText(payload?.option_3_display_label),
     option_3_price: option3Price,
-    image_url: sanitizeText(payload?.image_url),
+    image_url: uploadedImageDataUrl || currentLink,
+    image_asset_id: resolvePreviewImageAssetId(payload, uploadedImageDataUrl, currentLink, previousItem, id),
     show_detail_hint: normalizeYesNo(payload?.show_detail_hint, true),
     notes: sanitizeText(payload?.notes),
   };
+}
+
+function resolvePreviewImageAssetId(payload, uploadedImageDataUrl, currentLink, previousItem, id) {
+  const payloadAssetId = sanitizeText(payload?.image_asset_id);
+  const previousAssetId = sanitizeText(previousItem?.image_asset_id);
+  const previousImageUrl = sanitizeText(previousItem?.image_url);
+
+  if (uploadedImageDataUrl) {
+    return `preview-upload:${id}`;
+  }
+
+  if (previousAssetId && currentLink !== previousImageUrl) {
+    return "";
+  }
+
+  return payloadAssetId || previousAssetId;
 }
 
 function loadPreviewState() {
@@ -339,6 +379,19 @@ function loadPreviewState() {
 
 function savePreviewState(state) {
   window.localStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(state));
+}
+
+function buildPreviewLiveVerification(state, itemId) {
+  const normalizedId = sanitizeId(itemId);
+  const sortedItems = sortItems(state.sections, state.items);
+  const matchedItem = sortedItems.find((entry) => entry.id === normalizedId) || null;
+
+  return {
+    itemId: normalizedId,
+    found: Boolean(matchedItem),
+    checkedAt: new Date().toISOString(),
+    item: matchedItem,
+  };
 }
 
 function sortSections(sections) {

@@ -75,6 +75,7 @@ Colonne:
 - `option_3_display_label`
 - `option_3_price`
 - `image_url`
+- `image_asset_id`
 - `show_detail_hint`
 - `notes`
 
@@ -93,6 +94,7 @@ Contiene chiavi di configurazione e stato migrazione, per esempio:
 - modalita pubblica attuale
 - stato della migrazione
 - allowlist email per l admin
+- eventuale cartella Drive per gli upload immagine
 - URL del deployment pubblico
 - timestamp dell'ultimo seed
 

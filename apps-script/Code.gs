@@ -1,5 +1,5 @@
 var SPREADSHEET_ID = '1AwYzeqI5d47qc8BgQUIQh90rW9UvMQQrEmOK9XR1Cho';
-var MENUMAL_TITLE = 'Menumal: gestione del menu digitale Agri-Eventi';
+var MENUMAL_TITLE = 'MENUMAL | Modifica Menu QR';
 var MENUMAL_ICON_URL = 'https://molinosantamarta.github.io/aperitivo-menu/public/menumal-logo.png';
 
 var SHEET_NAMES = {
@@ -43,6 +43,7 @@ var ITEM_COLUMNS = [
   'option_3_display_label',
   'option_3_price',
   'image_url',
+  'image_asset_id',
   'show_detail_hint',
   'notes',
 ];
@@ -94,6 +95,9 @@ function getBootstrapData() {
   var actor = assertAuthorized_();
   var settings = getSettingsObject_();
   var liveMenuPayload = buildPublicMenuPayload_();
+  var visibleItemCount = liveMenuPayload.items.filter(function (item) {
+    return item.visibility_state !== 'nascosto';
+  }).length;
 
   if (!settings.brand_icon_url) {
     settings.brand_icon_url = MENUMAL_ICON_URL;
@@ -110,6 +114,8 @@ function getBootstrapData() {
       generatedAt: liveMenuPayload.generatedAt,
       sectionCount: liveMenuPayload.sections.length,
       itemCount: liveMenuPayload.items.length,
+      visibleItemCount: visibleItemCount,
+      hiddenItemCount: liveMenuPayload.items.length - visibleItemCount,
     },
   };
 }
@@ -117,6 +123,12 @@ function getBootstrapData() {
 function saveItem(payload) {
   var actor = assertAuthorized_();
   var item = normalizeItemPayload_(payload);
+  var previousId = sanitizeId_(payload.previous_id || item.id);
+  var previousItem = previousId ? getAdminItemById_(previousId) : null;
+  var itemByNewId = item.id ? getAdminItemById_(item.id) : null;
+  var previousAssetId = previousItem ? sanitizeCell_(previousItem.image_asset_id) : '';
+  var resolvedAsset = null;
+  var verification = null;
   var validSectionIds = getAdminSections_().map(function (section) {
     return section.section_id;
   });
@@ -125,13 +137,48 @@ function saveItem(payload) {
     throw new Error('La sezione selezionata non esiste nei tab admin.');
   }
 
-  upsertRowById_(SHEET_NAMES.items, ITEM_COLUMNS, 'id', item);
-  logAudit_(actor, 'save_item', 'item', item.id, item);
+  if (itemByNewId && (!previousItem || previousId !== item.id) && itemByNewId.id === item.id) {
+    throw new Error('Esiste gia un prodotto con questo ID. Scegli un ID diverso.');
+  }
+
+  resolvedAsset = resolveItemImageAsset_(payload, item, previousItem);
+  item.image_url = resolvedAsset.imageUrl;
+  item.image_asset_id = resolvedAsset.imageAssetId;
+
+  try {
+    upsertRowById_(SHEET_NAMES.items, ITEM_COLUMNS, 'id', item);
+
+    if (previousItem && previousId !== item.id) {
+      deleteRowById_(SHEET_NAMES.items, ITEM_COLUMNS, 'id', previousId);
+    }
+
+    tryLogAudit_(actor, 'save_item', 'item', item.id, item);
+    verification = buildLiveVerification_(item.id);
+  } catch (error) {
+    if (
+      resolvedAsset &&
+      resolvedAsset.createdAssetId &&
+      resolvedAsset.createdAssetId !== previousAssetId
+    ) {
+      safeRemoveDriveFile_(resolvedAsset.createdAssetId);
+    }
+
+    throw error;
+  }
+
+  if (
+    resolvedAsset &&
+    resolvedAsset.assetToDeleteAfterSave &&
+    resolvedAsset.assetToDeleteAfterSave !== item.image_asset_id
+  ) {
+    safeRemoveDriveFile_(resolvedAsset.assetToDeleteAfterSave);
+  }
 
   return {
     ok: true,
     item: item,
     savedAt: new Date().toISOString(),
+    liveVerification: verification,
   };
 }
 
@@ -148,12 +195,14 @@ function deleteItem(itemId) {
     throw new Error('Prodotto non trovato nel database menu.');
   }
 
-  logAudit_(actor, 'delete_item', 'item', normalizedId, deletedRow);
+  safeRemoveDriveFile_(deletedRow.image_asset_id);
+  tryLogAudit_(actor, 'delete_item', 'item', normalizedId, deletedRow);
 
   return {
     ok: true,
     itemId: normalizedId,
     deletedAt: new Date().toISOString(),
+    liveVerification: buildLiveVerification_(normalizedId),
   };
 }
 
@@ -173,6 +222,11 @@ function getAdminItems_() {
     .filter(function (row) {
       return row.id;
     })
+    .map(function (row) {
+      var nextRow = Object.assign({}, row);
+      nextRow.image_url = resolveStoredImageUrl_(nextRow.image_asset_id, nextRow.image_url);
+      return nextRow;
+    })
     .sort(function (left, right) {
       var leftSectionOrder = parseInteger_(sectionOrderLookup[left.section_id], 9999);
       var rightSectionOrder = parseInteger_(sectionOrderLookup[right.section_id], 9999);
@@ -188,6 +242,22 @@ function getAdminItems_() {
 
       return String(left.name || left.id).localeCompare(String(right.name || right.id));
     });
+}
+
+function getAdminItemById_(itemId) {
+  var normalizedId = sanitizeId_(itemId);
+  if (!normalizedId) {
+    return null;
+  }
+
+  var items = getAdminItems_();
+  for (var index = 0; index < items.length; index += 1) {
+    if (sanitizeCell_(items[index].id) === normalizedId) {
+      return items[index];
+    }
+  }
+
+  return null;
 }
 
 function getSettingsObject_() {
@@ -255,8 +325,61 @@ function normalizeItemPayload_(payload) {
     option_3_display_label: optionValues.option_3_display_label,
     option_3_price: optionValues.option_3_price,
     image_url: imageUrl,
+    image_asset_id: sanitizeCell_(payload.image_asset_id),
     show_detail_hint: normalizeToggle_(payload.show_detail_hint, true),
     notes: notes,
+  };
+}
+
+function resolveItemImageAsset_(payload, item, previousItem) {
+  var uploadedImageDataUrl = sanitizeCell_(payload.uploaded_image_data_url);
+  var uploadedImageSize = parseInteger_(payload.uploaded_image_size, 0);
+  var contentType;
+  var blob;
+  var folder;
+  var file;
+  var previousImageUrl = previousItem ? sanitizeCell_(previousItem.image_url) : '';
+  var previousAssetId = previousItem ? sanitizeCell_(previousItem.image_asset_id) : '';
+
+  if (!uploadedImageDataUrl) {
+    if (previousAssetId && item.image_url !== previousImageUrl) {
+      return {
+        imageUrl: item.image_url,
+        imageAssetId: '',
+        createdAssetId: '',
+        assetToDeleteAfterSave: previousAssetId,
+      };
+    }
+
+    return {
+      imageUrl: item.image_url,
+      imageAssetId: previousAssetId,
+      createdAssetId: '',
+      assetToDeleteAfterSave: '',
+    };
+  }
+
+  if (uploadedImageSize > 10 * 1024 * 1024) {
+    throw new Error('Mantieni l immagine sotto 10 MB.');
+  }
+
+  contentType = getMimeTypeFromDataUrl_(uploadedImageDataUrl) || sanitizeCell_(payload.uploaded_image_type);
+  if (String(contentType || '').indexOf('image/') !== 0) {
+    throw new Error('Il file selezionato non e un immagine valida.');
+  }
+
+  blob = blobFromDataUrl_(uploadedImageDataUrl, contentType).setName(
+    buildUploadFileName_(item.id, payload.uploaded_image_name, contentType)
+  );
+  folder = ensureUploadsFolder_();
+  file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  return {
+    imageUrl: buildDriveImageUrl_(file.getId()),
+    imageAssetId: file.getId(),
+    createdAssetId: file.getId(),
+    assetToDeleteAfterSave: previousAssetId,
   };
 }
 
@@ -556,6 +679,14 @@ function logAudit_(actor, action, targetType, targetId, details) {
   sheet.appendRow(row);
 }
 
+function tryLogAudit_(actor, action, targetType, targetId, details) {
+  try {
+    logAudit_(actor, action, targetType, targetId, details);
+  } catch (error) {
+    // Non blocchiamo il salvataggio operativo se fallisce solo il log tecnico.
+  }
+}
+
 function assertAuthorized_() {
   var settings = getSettingsObject_();
   var allowedEmails = parseAllowedEmails_(settings.allowed_editor_emails || '');
@@ -633,9 +764,141 @@ function stripTrailingZeros_(value) {
     .replace(/(\.\d*[1-9])0+$/, '$1');
 }
 
+function ensureUploadsFolder_() {
+  var settings = getSettingsObject_();
+  var configuredFolderId = sanitizeCell_(settings.uploads_drive_folder_id);
+  var folder = null;
+  var existingFolders;
+
+  if (configuredFolderId) {
+    try {
+      folder = DriveApp.getFolderById(configuredFolderId);
+    } catch (error) {
+      folder = null;
+    }
+  }
+
+  if (!folder) {
+    existingFolders = DriveApp.getFoldersByName('Menumal Uploads');
+    folder = existingFolders.hasNext() ? existingFolders.next() : DriveApp.createFolder('Menumal Uploads');
+
+    upsertSetting_(
+      'uploads_drive_folder_id',
+      folder.getId(),
+      'Cartella Drive usata da Menumal per le immagini caricate dal form.'
+    );
+  }
+
+  return folder;
+}
+
+function getMimeTypeFromDataUrl_(dataUrl) {
+  var matches = String(dataUrl || '').match(/^data:([^;]+);base64,/i);
+  return matches && matches[1] ? matches[1] : '';
+}
+
+function blobFromDataUrl_(dataUrl, contentType) {
+  var matches = String(dataUrl || '').match(/^data:([^;]+);base64,(.+)$/i);
+  if (!matches || !matches[2]) {
+    throw new Error('Formato immagine non valido.');
+  }
+
+  return Utilities.newBlob(Utilities.base64Decode(matches[2]), contentType || matches[1] || 'image/jpeg');
+}
+
+function buildUploadFileName_(itemId, originalName, contentType) {
+  var safeId = sanitizeId_(itemId) || 'immagine';
+  var extension = getFileExtension_(originalName, contentType);
+  return safeId + '-' + new Date().getTime() + extension;
+}
+
+function getFileExtension_(originalName, contentType) {
+  var normalizedName = String(originalName || '').trim();
+  var dotIndex = normalizedName.lastIndexOf('.');
+  var mime = String(contentType || '').toLowerCase();
+
+  if (dotIndex !== -1) {
+    return normalizedName.slice(dotIndex).toLowerCase();
+  }
+
+  if (mime === 'image/png') {
+    return '.png';
+  }
+  if (mime === 'image/webp') {
+    return '.webp';
+  }
+  if (mime === 'image/gif') {
+    return '.gif';
+  }
+
+  return '.jpg';
+}
+
+function buildDriveImageUrl_(fileId) {
+  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(fileId);
+}
+
+function resolveStoredImageUrl_(imageAssetId, imageUrl) {
+  var normalizedAssetId = sanitizeCell_(imageAssetId);
+  var normalizedImageUrl = sanitizeCell_(imageUrl);
+
+  if (!normalizedAssetId) {
+    return normalizedImageUrl;
+  }
+
+  if (
+    !normalizedImageUrl ||
+    normalizedImageUrl.indexOf('https://drive.google.com/uc?export=view&id=') === 0 ||
+    normalizedImageUrl.indexOf('https://drive.usercontent.google.com/download?') === 0 ||
+    normalizedImageUrl.indexOf('https://lh3.googleusercontent.com/d/') === 0
+  ) {
+    return buildDriveImageUrl_(normalizedAssetId);
+  }
+
+  return normalizedImageUrl;
+}
+
+function safeRemoveDriveFile_(fileId) {
+  var normalizedId = sanitizeCell_(fileId);
+  var file;
+
+  if (!normalizedId) {
+    return;
+  }
+
+  try {
+    file = DriveApp.getFileById(normalizedId);
+    file.setTrashed(true);
+  } catch (error) {
+    // Ignoriamo file mancanti o gia rimossi: il record dati resta la fonte principale.
+  }
+}
+
 function safeJsonStringify_(value) {
   var raw = JSON.stringify(value || {});
   return raw.length > 49000 ? raw.slice(0, 48997) + '...' : raw;
+}
+
+function buildLiveVerification_(itemId) {
+  var normalizedId = sanitizeId_(itemId);
+  var payload = buildPublicMenuPayload_();
+  var matchedItem = null;
+
+  if (normalizedId) {
+    for (var index = 0; index < payload.items.length; index += 1) {
+      if (sanitizeCell_(payload.items[index].id) === normalizedId) {
+        matchedItem = payload.items[index];
+        break;
+      }
+    }
+  }
+
+  return {
+    itemId: normalizedId,
+    found: Boolean(matchedItem),
+    checkedAt: payload.generatedAt,
+    item: matchedItem,
+  };
 }
 
 function buildPublicMenuUrl_() {

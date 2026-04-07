@@ -4,66 +4,55 @@
     <base target="_top" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Menumal: gestione del menu digitale Agri-Eventi</title>
+    <title>MENUMAL | Modifica Menu QR</title>
     <?!= include('AdminStyles'); ?>
   </head>
   <body>
     <div class="admin-shell">
       <header class="admin-topbar">
-        <div class="admin-intro">
-          <div class="brand-lockup">
-            <img
-              class="brand-icon"
-              id="brandIcon"
-              data-local-src="/menumal-logo.png"
-              alt="Logo Menumal"
-              width="68"
-              height="68"
-              hidden
-            />
-            <h1 class="brand-title" aria-label="Menumal">
-              <span class="brand-title__main">MENU</span><span class="brand-title__accent">MAL</span>
-            </h1>
+        <div class="admin-topbar__main">
+          <div class="admin-topbar__identity">
+            <div class="admin-heading">
+              <h1 class="admin-title admin-title--system">MENUMAL</h1>
+              <p class="admin-title-note">Gestione rapida del menu QR.</p>
+            </div>
           </div>
-          <p class="admin-kicker">Gestisci i prodotti del menu QR</p>
-          <div class="admin-intro__toolbar">
-            <div class="admin-intro__actions">
-              <button class="ghost-btn admin-refresh-button" id="refreshButton" type="button" aria-label="Ricarica dati" title="Ricarica dati">
+
+          <div class="admin-topbar__actions">
+            <div class="admin-topbar__buttons">
+              <button class="primary-btn admin-refresh-button" id="refreshButton" type="button" aria-label="Ricarica dati" title="Ricarica dati">
                 Ricarica
               </button>
-              <div class="admin-loader" id="headerStatus" role="status" aria-live="polite" aria-atomic="true" hidden>
-                <span class="admin-loader__dot" aria-hidden="true"></span>
-                <span id="headerStatusText"></span>
+              <button class="ghost-btn admin-schema-button" id="helpButton" type="button">
+                Memo
+              </button>
+            </div>
+            <div class="admin-loader" id="headerStatus" role="status" aria-live="polite" aria-atomic="true" hidden>
+              <div class="admin-loader__content">
+                <span class="admin-loader__label" id="headerStatusText"></span>
+              </div>
+              <div class="admin-loader__bar" aria-hidden="true">
+                <span class="admin-loader__bar-fill"></span>
               </div>
             </div>
-            <a
-              class="secondary-btn admin-public-link"
-              id="openPublicMenuLink"
-              href="https://molinosantamarta.github.io/aperitivo-menu/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Apri menu cliente
-            </a>
           </div>
-          <div class="live-summary" id="liveSummary"></div>
         </div>
       </header>
 
-      <section class="entry-card" id="entryPanel">
+      <section class="entry-card entry-card--chooser" id="entryPanel">
         <div class="entry-card__header">
-          <p class="admin-eyebrow">Inizia da qui</p>
-          <h2>Che cosa vuoi fare?</h2>
-          <p class="hint-copy">Aggiungi un prodotto nuovo oppure cerca un prodotto gia presente da modificare.</p>
+          <h2>Cosa vuoi fare?</h2>
         </div>
+
         <div class="entry-card__actions">
           <button class="entry-action entry-action--primary" id="entryCreateButton" type="button">
             <span class="entry-action__icon" aria-hidden="true">+</span>
             <span class="entry-action__content">
               <strong>Nuovo prodotto</strong>
-              <span>Apri solo l editor e compila i campi del nuovo prodotto.</span>
+              <span>Aggiungi un prodotto.</span>
             </span>
           </button>
+
           <button class="entry-action" id="entryBrowseButton" type="button">
             <span class="entry-action__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">
@@ -79,7 +68,7 @@
             </span>
             <span class="entry-action__content">
               <strong>Modifica prodotto</strong>
-              <span>Apri il catalogo e cerca velocemente il prodotto da aggiornare.</span>
+              <span>Cerca un prodotto esistente.</span>
             </span>
           </button>
         </div>
@@ -88,24 +77,25 @@
       <section class="screen-modal" id="browseModal" hidden>
         <div class="screen-modal__backdrop"></div>
         <div class="screen-modal__panel screen-modal__panel--catalog" role="dialog" aria-modal="true" aria-labelledby="browseModalTitle">
-          <div class="sidebar-card screen-card">
-            <div class="sidebar-card__header sidebar-card__header--stack">
+          <div class="screen-card screen-card--catalog sidebar-card">
+            <div class="screen-card__header">
               <button class="back-link" id="browseBackButton" type="button">
                 <span aria-hidden="true">←</span>
                 <span>Home</span>
               </button>
-              <div>
-                <h2 id="browseModalTitle">Catalogo</h2>
-                <span class="hint-copy">Cerca il prodotto da modificare.</span>
+              <div class="screen-card__title-block">
+                <h2 id="browseModalTitle">Cerca prodotto</h2>
+                <p class="screen-card__description">Apri un prodotto esistente per aggiornarne dati, prezzo o disponibilita.</p>
               </div>
             </div>
-            <div class="sidebar-filters">
-              <label class="field">
-                <span>Cerca prodotto</span>
-                <input id="searchInput" type="search" placeholder="Nome o id" />
+
+            <div class="catalog-toolbar">
+              <label class="field catalog-toolbar__search">
+                <span>Cerca</span>
+                <input id="searchInput" type="search" placeholder="Nome prodotto" />
               </label>
             </div>
-            <div class="catalog-meta" id="catalogMeta"></div>
+
             <div class="item-list" id="itemList" aria-live="polite"></div>
           </div>
         </div>
@@ -114,93 +104,99 @@
       <section class="screen-modal screen-modal--stacked" id="editorModal" hidden>
         <div class="screen-modal__backdrop"></div>
         <div class="screen-modal__panel screen-modal__panel--editor" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
-          <div class="editor-card screen-card">
-            <div class="editor-card__header editor-card__header--stack">
+          <div class="screen-card screen-card--editor editor-card">
+            <div class="screen-card__header">
               <button class="back-link" id="editorScreenBackButton" type="button">
                 <span aria-hidden="true">←</span>
                 <span id="editorScreenBackLabel">Indietro</span>
               </button>
-              <div class="editor-card__heading">
-                <div>
-                  <p class="admin-eyebrow">Editor prodotto</p>
-                  <h2 id="editorTitle">Nuovo prodotto</h2>
-                </div>
+              <div class="screen-card__title-block">
+                <h2 id="editorTitle">Nuovo prodotto</h2>
                 <div class="editor-card__meta" id="editorMeta"></div>
               </div>
             </div>
 
             <form id="itemForm" class="item-form">
-              <section class="editor-group">
-                <div class="editor-group__header">
-                  <p class="editor-group__eyebrow">Base</p>
-                  <h3>Dati principali</h3>
-                  <p class="hint-copy">Inserisci le informazioni essenziali del prodotto.</p>
-                </div>
-                <div class="form-grid">
-                  <label class="field field--span-2">
-                    <span>Nome prodotto</span>
-                    <input id="nameInput" name="name" type="text" required />
-                  </label>
+              <div class="item-form__layout">
+                <section class="editor-group editor-group--primary">
+                  <div class="editor-group__header">
+                    <h3>Dati prodotto</h3>
+                  </div>
 
-                  <label class="field">
-                    <span>Sezione</span>
-                    <select id="sectionInput" name="section_id" required></select>
-                  </label>
+                  <div class="form-grid">
+                    <label class="field field--span-2">
+                      <span>Nome prodotto</span>
+                      <input id="nameInput" name="name" type="text" required />
+                    </label>
 
-                  <label class="field">
-                    <span>Prezzo</span>
-                    <input id="option1PriceInput" name="option_1_price" type="text" placeholder="0€" required />
-                  </label>
+                    <label class="field">
+                      <span>Sezione</span>
+                      <select id="sectionInput" name="section_id" required></select>
+                    </label>
 
-                  <label class="field field--span-2">
-                    <span>Descrizione</span>
-                    <textarea id="descriptionInput" name="description" rows="4"></textarea>
-                  </label>
-                </div>
-              </section>
+                    <label class="field">
+                      <span>Prezzo</span>
+                      <input id="option1PriceInput" name="option_1_price" type="text" placeholder="0€" required />
+                    </label>
 
-              <section class="editor-group">
-                <div class="editor-group__header">
-                  <p class="editor-group__eyebrow">Stato</p>
-                  <h3>Visibilita e immagine</h3>
-                  <p class="hint-copy">Decidi come mostrare il prodotto nel menu.</p>
-                </div>
-                <div class="form-grid">
-                  <label class="field">
-                    <span>Disponibilita</span>
-                    <select id="availabilityInput" name="availability_state">
-                      <option value="disponibile">Disponibile</option>
-                      <option value="non disponibile">Non disponibile</option>
-                      <option value="in arrivo">In arrivo</option>
-                      <option value="al carretto">Al carretto</option>
-                    </select>
-                  </label>
+                    <label class="field field--span-2">
+                      <span>Descrizione</span>
+                      <textarea id="descriptionInput" name="description" rows="4"></textarea>
+                    </label>
 
-                  <label class="field">
-                    <span>Visibilita</span>
-                    <select id="visibilityInput" name="visibility_state">
-                      <option value="visibile">Visibile</option>
-                      <option value="nascosto">Nascosto</option>
-                    </select>
-                  </label>
+                    <label class="field field--span-2">
+                      <span>Immagine</span>
+                      <input id="imageFileInput" name="image_file" type="file" accept="image/*" />
+                      <small class="field__hint" id="imageFileHint">Scegli una foto da file o rullino.</small>
+                    </label>
 
-                  <label class="field field--span-2">
-                    <span>URL immagine</span>
-                    <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
-                    <small class="field__hint">
-                      Usalo soprattutto per prodotti nuovi. I prodotti legacy continuano a usare la grafica gia definita nel progetto.
-                    </small>
-                  </label>
-                </div>
-              </section>
+                    <div class="image-preview-card image-preview-card--empty field--span-2" id="imagePreviewCard" hidden>
+                      <div class="image-preview-card__media">
+                        <img id="imagePreviewImage" alt="Anteprima immagine prodotto" hidden />
+                      </div>
+                      <div class="image-preview-card__content">
+                        <strong id="imagePreviewLabel">Anteprima immagine</strong>
+                        <span id="imagePreviewMeta">Nessuna immagine attiva.</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
 
-              <details class="option-card option-card--advanced">
+                <section class="editor-group editor-group--status" id="statusGroup">
+                  <div class="editor-group__header">
+                    <h3>Stato</h3>
+                  </div>
+
+                  <div class="form-grid">
+                    <label class="field">
+                      <span>Disponibilita</span>
+                      <select id="availabilityInput" name="availability_state">
+                        <option value="disponibile">Disponibile</option>
+                        <option value="non disponibile">Non disponibile</option>
+                        <option value="in arrivo">In arrivo</option>
+                        <option value="al carretto">Al carretto</option>
+                      </select>
+                    </label>
+
+                    <label class="field">
+                      <span>Visibilita</span>
+                      <select id="visibilityInput" name="visibility_state">
+                        <option value="visibile">Visibile</option>
+                        <option value="nascosto">Nascosto</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="status-summary" id="statusSummary" aria-live="polite"></div>
+                </section>
+              </div>
+
+              <details class="option-card option-card--advanced option-card--editor-advanced">
                 <summary>Opzioni avanzate</summary>
-                <p class="hint-copy">Usale solo se ti servono per prodotti legacy, varianti o dettagli tecnici.</p>
 
                 <div class="option-stack">
                   <div class="option-card option-card--nested">
-                    <h3>Dettaglio principale</h3>
+                    <h3>Varianti</h3>
                     <div class="option-grid option-grid--main">
                       <label class="field">
                         <span>Etichetta</span>
@@ -219,7 +215,7 @@
                   </div>
 
                   <div class="option-card option-card--nested">
-                    <h3>Avanzate</h3>
+                    <h3>Dettagli avanzati</h3>
                     <div class="option-grid option-grid--stacked">
                       <label class="field">
                         <span>ID tecnico</span>
@@ -228,6 +224,11 @@
                       <label class="field">
                         <span>Categoria</span>
                         <input id="categoryInput" name="category" type="text" placeholder="es. Artigianali" />
+                      </label>
+                      <label class="field field--span-2">
+                        <span>Link immagine</span>
+                        <input id="imageUrlInput" name="image_url" type="url" placeholder="https://..." />
+                        <small class="field__hint">Facoltativo. Se carichi un file, il link viene sostituito.</small>
                       </label>
                       <label class="field">
                         <span>Ordine</span>
@@ -252,7 +253,6 @@
                         <span>Opzione 2 prezzo</span>
                         <input id="option2PriceInput" name="option_2_price" type="text" />
                       </label>
-
                       <label class="field">
                         <span>Opzione 3 etichetta</span>
                         <input id="option3LabelInput" name="option_3_label" type="text" />
@@ -270,6 +270,7 @@
                         <textarea id="notesInput" name="notes" rows="3"></textarea>
                       </label>
                     </div>
+
                     <div class="form-grid form-grid--compact form-grid--advanced-toggles">
                       <label class="checkbox-field">
                         <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
@@ -296,16 +297,12 @@
         </div>
       </section>
 
-      <button class="admin-help-toggle" id="helpButton" type="button">
-        Come funziona?
-      </button>
-
       <div class="utility-modal" id="helpModal" hidden>
         <div class="utility-modal__backdrop" id="helpBackdrop"></div>
         <div class="utility-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
           <div class="utility-modal__header">
             <div>
-              <p class="admin-eyebrow">Promemoria</p>
+              <p class="admin-eyebrow">Promemoria per Pepe</p>
               <h2 id="helpTitle">Come funziona Menumal</h2>
             </div>
             <button class="ghost-btn icon-btn icon-btn--compact" id="closeHelpButton" type="button" aria-label="Chiudi guida" title="Chiudi guida">
@@ -320,47 +317,70 @@
 
           <div class="utility-modal__content">
             <section class="utility-note">
-              <h3>Cosa gestisce cosa</h3>
+              <h3>Architettura del sistema</h3>
               <ul class="utility-note__list">
-                <li><strong>Menumal</strong> e il pannello admin per prodotti, prezzi, descrizioni, visibilita e disponibilita.</li>
-                <li><strong>Google Sheet</strong> e il database operativo dietro Menumal.</li>
-                <li><strong>Agri-Menu</strong> e il menu pubblico su GitHub Pages aperto dai clienti via QR.</li>
+                <li><strong>Menumal</strong> e il pannello operativo: qui modifichi prodotti, prezzi, descrizioni, visibilita, disponibilita e immagini semplici.</li>
+                <li><strong>Google Sheet</strong> e il database sorgente del menu. I tab usati dal sistema sono `admin_sections`, `admin_items`, `admin_settings` e `admin_audit_log`.</li>
+                <li><strong>Apps Script</strong> e il backend di Menumal: legge e scrive il Google Sheet, espone il JSON live del menu e gestisce la logica admin.</li>
+                <li><strong>Agri-Menu</strong> e il menu pubblico aperto dai clienti via QR code. Legge l endpoint live di Apps Script e applica i dati ai layout del sito.</li>
+                <li><strong>GitHub</strong> contiene il codice del menu pubblico e anche i file sorgente di Menumal. Serve per modifiche grafiche, strutturali o di logica.</li>
               </ul>
             </section>
 
             <section class="utility-note">
-              <h3>Flusso dati</h3>
+              <h3>Dove vivono i dati</h3>
               <ul class="utility-note__list">
-                <li>Tu modifichi un prodotto da Menumal.</li>
-                <li>Apps Script salva i dati nel Google Sheet.</li>
-                <li>Menumal rilegge subito il foglio e ti mostra il riepilogo live aggiornato.</li>
-                <li>Agri-Menu legge lo stesso payload live esposto da Apps Script.</li>
+                <li><strong>Sezioni del menu</strong>: stanno in `admin_sections`.</li>
+                <li><strong>Prodotti del menu</strong>: stanno in `admin_items`.</li>
+                <li><strong>Impostazioni runtime</strong>: stanno in `admin_settings`.</li>
+                <li><strong>Storico operazioni</strong>: sta in `admin_audit_log`.</li>
+                <li>Il menu pubblico non usa piu il vecchio `database-semplice` e non usa piu il fallback CSV. La sorgente live e l endpoint JSON di Apps Script.</li>
               </ul>
             </section>
 
             <section class="utility-note">
-              <h3>Quando usare Menumal</h3>
+              <h3>Flusso di una modifica fatta da Menumal</h3>
               <ul class="utility-note__list">
-                <li>Aggiungere un prodotto semplice.</li>
-                <li>Cambiare prezzo, titolo o descrizione.</li>
-                <li>Mettere visibile, nascosto, in arrivo o esaurito.</li>
+                <li>Apri un prodotto esistente oppure crei un nuovo prodotto.</li>
+                <li>Menumal invia i dati ad Apps Script.</li>
+                <li>Apps Script salva il record nel Google Sheet.</li>
+                <li>Se carichi un immagine da file, Apps Script la salva su Google Drive e scrive nel foglio il riferimento finale dell immagine.</li>
+                <li>Dopo il salvataggio, Menumal rilegge il Google Sheet e verifica anche il payload live del menu.</li>
+                <li>Se tutto va bene, il cliente che apre Agri-Menu via QR vede i dati aggiornati senza deploy GitHub.</li>
+              </ul>
+              <p class="utility-note__link-row">
+                <a id="helpPayloadLink" href="#" target="_blank" rel="noopener noreferrer">Apri il payload live</a>
+              </p>
+            </section>
+
+            <section class="utility-note">
+              <h3>Che cosa cambia davvero per il cliente</h3>
+              <ul class="utility-note__list">
+                <li>Se un prodotto e <strong>visibile</strong>, il cliente lo vede nel menu.</li>
+                <li>Se un prodotto e <strong>nascosto</strong>, il cliente non lo vede, ma il record resta nel database.</li>
+                <li>Se un prodotto e <strong>disponibile</strong>, il cliente lo vede come ordinabile.</li>
+                <li>Se un prodotto e <strong>in arrivo</strong> o <strong>non disponibile</strong>, il cliente lo vede con quello stato.</li>
+                <li>Le card legacy continuano a usare la loro struttura grafica del sito, ma i contenuti principali possono essere aggiornati da Menumal.</li>
               </ul>
             </section>
 
             <section class="utility-note">
-              <h3>Quando chiedere modifiche al codice</h3>
+              <h3>Quando usare Menumal e quando serve codice</h3>
               <ul class="utility-note__list">
-                <li>Card legacy personalizzate.</li>
-                <li>Carousel, animazioni, layout e stile.</li>
-                <li>Cambi strutturali di frontend, CSS o logica JS.</li>
+                <li><strong>Usa Menumal</strong> per aggiungere prodotti semplici, cambiare prezzo, titolo, descrizione, visibilita, disponibilita e immagine.</li>
+                <li><strong>Serve il codice</strong> per layout speciali, card legacy personalizzate, animazioni, carousel, cambi CSS o cambi di logica frontend.</li>
+                <li>Se una modifica riguarda solo il contenuto di un prodotto, in genere non serve pubblicare GitHub.</li>
+                <li>Se una modifica cambia l aspetto o il comportamento del menu pubblico, serve intervenire nella repo e poi pubblicare.</li>
               </ul>
             </section>
 
             <section class="utility-note">
-              <h3>Deploy</h3>
+              <h3>Preview, deploy e manutenzione</h3>
               <ul class="utility-note__list">
-                <li>Le modifiche ai contenuti fatte in Menumal non richiedono deploy GitHub.</li>
-                <li>Le modifiche grafiche o strutturali del menu pubblico richiedono aggiornamento del codice e pubblicazione.</li>
+                <li>La preview locale di Menumal serve per provare la UI prima di aggiornare il progetto Apps Script reale.</li>
+                <li>Quando cambiano i file di Menumal, bisogna aggiornare `Code.gs`, `Admin.html`, `AdminStyles.html`, `AdminScripts.html` e, se necessario, `appsscript.json`, poi creare una <strong>New version</strong> in Apps Script.</li>
+                <li>Quando cambia Agri-Menu pubblico, il deploy passa da GitHub Pages.</li>
+                <li>Questa sezione <strong>Schema sistema</strong> va tenuta aggiornata ogni volta che cambiano flusso dati, tab del foglio, endpoint live, logica immagini o processo di deploy.</li>
               </ul>
             </section>
           </div>

@@ -5409,7 +5409,7 @@ function getGeneratedCartGroup(entry) {
     drink: { key: "drink", label: "Drink", order: 20 },
     bottiglie: { key: "bottiglie", label: "Bottiglie", order: 30 },
     "altre bevande": { key: "altre-bevande", label: "Altre bevande", order: 40 },
-    taglieri: { key: "taglieri", label: "Taglieri", order: 90 },
+    taglieri: { key: "taglieri", label: "Sfiziosità", order: 90 },
   };
 
   return groupMap[sectionTitle] || { key: "altri", label: "Altri prodotti", order: 100 };
