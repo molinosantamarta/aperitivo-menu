@@ -7,11 +7,11 @@
     isCreating: true,
     view: "chooser",
     editorReturnView: "chooser",
-    editorStep: 0,
     filters: {
       search: "",
-      sectionId: "",
     },
+    publicMenuEndpoint: "",
+    liveMenuSummary: null,
     lastMessage: "",
   };
 
@@ -36,17 +36,14 @@
     els.entryCreateButton = document.getElementById("entryCreateButton");
     els.entryBrowseButton = document.getElementById("entryBrowseButton");
     els.refreshButton = document.getElementById("refreshButton");
+    els.openPublicMenuLink = document.getElementById("openPublicMenuLink");
+    els.liveSummary = document.getElementById("liveSummary");
     els.browseModal = document.getElementById("browseModal");
     els.editorModal = document.getElementById("editorModal");
     els.browseBackButton = document.getElementById("browseBackButton");
     els.editorScreenBackButton = document.getElementById("editorScreenBackButton");
     els.editorScreenBackLabel = document.getElementById("editorScreenBackLabel");
-    els.editorStepIndicator = document.getElementById("editorStepIndicator");
-    els.editorSteps = Array.from(document.querySelectorAll(".editor-step"));
-    els.editorStepBackButton = document.getElementById("editorStepBackButton");
-    els.editorStepNextButton = document.getElementById("editorStepNextButton");
     els.searchInput = document.getElementById("searchInput");
-    els.sectionFilter = document.getElementById("sectionFilter");
     els.catalogMeta = document.getElementById("catalogMeta");
     els.itemList = document.getElementById("itemList");
     els.editorTitle = document.getElementById("editorTitle");
@@ -83,32 +80,26 @@
     els.helpButton?.addEventListener("click", openHelpModal);
     els.helpBackdrop?.addEventListener("click", closeHelpModal);
     els.closeHelpButton?.addEventListener("click", closeHelpModal);
-    els.entryCreateButton.addEventListener("click", enterCreateMode);
-    els.entryBrowseButton.addEventListener("click", enterBrowseMode);
-    els.refreshButton.addEventListener("click", () => loadBootstrap("Ricarico catalogo e impostazioni..."));
+    els.entryCreateButton?.addEventListener("click", enterCreateMode);
+    els.entryBrowseButton?.addEventListener("click", enterBrowseMode);
+    els.refreshButton?.addEventListener("click", () => loadBootstrap("Ricarico catalogo e impostazioni..."));
     els.browseBackButton?.addEventListener("click", returnToChooser);
     els.editorScreenBackButton?.addEventListener("click", handleEditorScreenBack);
-    els.editorStepBackButton?.addEventListener("click", handleEditorStepBack);
-    els.editorStepNextButton?.addEventListener("click", handleEditorStepNext);
-    els.deleteButton.addEventListener("click", handleDelete);
-    els.searchInput.addEventListener("input", (event) => {
+    els.deleteButton?.addEventListener("click", handleDelete);
+    els.searchInput?.addEventListener("input", (event) => {
       state.filters.search = event.target.value.trim().toLowerCase();
       renderItemList();
     });
-    els.sectionFilter.addEventListener("change", (event) => {
-      state.filters.sectionId = event.target.value;
-      renderItemList();
-    });
-    els.itemForm.addEventListener("submit", handleSave);
-    els.nameInput.addEventListener("input", () => {
+    els.itemForm?.addEventListener("submit", handleSave);
+    els.nameInput?.addEventListener("input", () => {
       if (state.isCreating && !els.idInput.dataset.locked) {
         els.idInput.value = slugify(els.nameInput.value);
       }
     });
-    els.idInput.addEventListener("input", () => {
+    els.idInput?.addEventListener("input", () => {
       els.idInput.dataset.locked = els.idInput.value.trim() ? "true" : "";
     });
-    els.sectionInput.addEventListener("change", () => {
+    els.sectionInput?.addEventListener("change", () => {
       if (state.isCreating && !els.sortOrderInput.value.trim()) {
         els.sortOrderInput.value = String(getSuggestedSortOrder(els.sectionInput.value));
       }
@@ -117,24 +108,31 @@
   }
 
   function loadBootstrap(message) {
-    hideBanner();
+    clearHeaderStatus();
     setBusy(true, message || "Carico...");
+
     google.script.run
       .withSuccessHandler((payload) => {
         state.sections = Array.isArray(payload.sections) ? payload.sections : [];
         state.items = Array.isArray(payload.items) ? payload.items : [];
         state.settings = payload.settings || {};
+        state.publicMenuEndpoint = payload.publicMenuEndpoint || "";
+        state.liveMenuSummary = payload.liveMenuSummary || {
+          itemCount: state.items.length,
+          sectionCount: state.sections.length,
+          generatedAt: "",
+        };
 
         applyBrandIcon();
         renderSectionOptions();
-        renderSummary(payload);
+        renderLiveSummary();
         syncCurrentView();
-
         renderItemList();
         updateInterfaceState();
         setBusy(false);
+
         if (state.lastMessage) {
-          showBanner(state.lastMessage, "success");
+          showHeaderStatus(state.lastMessage, "success");
           state.lastMessage = "";
         }
       })
@@ -145,30 +143,63 @@
   function handleSave(event) {
     event.preventDefault();
 
-    if (state.editorStep < els.editorSteps.length - 1) {
-      handleEditorStepNext();
+    const requiredFields = [els.nameInput, els.sectionInput, els.option1PriceInput].filter(Boolean);
+    const isValid = requiredFields.every((field) => field.reportValidity());
+    if (!isValid) {
       return;
     }
 
     const payload = collectFormPayload();
-    setBusy(true, "Salvo il prodotto nel database menu...");
+    const wasCreating = state.isCreating;
+    setBusy(true, wasCreating ? "Salvo il nuovo prodotto..." : "Aggiorno il prodotto...");
 
     google.script.run
       .withSuccessHandler((result) => {
-        state.view = "edit";
         state.currentItemId = result.item.id;
-        state.lastMessage = state.isCreating ? "Prodotto creato." : "Prodotto aggiornato.";
-        loadBootstrap("Aggiorno catalogo e impostazioni...");
+        state.isCreating = false;
+        state.view = "edit";
+        state.lastMessage = wasCreating
+          ? "Prodotto salvato. Foglio e dati live ricaricati."
+          : "Prodotto aggiornato. Foglio e dati live ricaricati.";
+        loadBootstrap("Rileggo Google Sheet e menu live...");
       })
       .withFailureHandler(handleFailure)
       .saveItem(payload);
+  }
+
+  function handleDelete() {
+    if (state.isCreating || !state.currentItemId) {
+      return;
+    }
+
+    const currentItem = state.items.find((item) => item.id === state.currentItemId);
+    const itemLabel = currentItem?.name || state.currentItemId;
+    const confirmed = window.confirm(`Eliminare definitivamente "${itemLabel}" da Menumal?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy(true, "Elimino il prodotto...");
+
+    google.script.run
+      .withSuccessHandler(() => {
+        const returnView = state.editorReturnView === "browse" ? "browse" : "chooser";
+        state.currentItemId = "";
+        state.isCreating = false;
+        state.view = returnView;
+        state.lastMessage = "Prodotto eliminato. Foglio e dati live ricaricati.";
+        loadBootstrap("Rileggo Google Sheet e menu live...");
+      })
+      .withFailureHandler(handleFailure)
+      .deleteItem(state.currentItemId);
   }
 
   function handleFailure(error) {
     const message =
       error && error.message ? error.message : "C'e stato un problema durante l'operazione richiesta.";
     setBusy(false);
-    showBanner(message, "error");
+    showHeaderStatus(message, "error");
   }
 
   function handleGlobalKeydown(event) {
@@ -212,77 +243,52 @@
     document.body.classList.remove("is-utility-modal-open");
   }
 
-  function handleDelete() {
-    if (state.isCreating || !state.currentItemId) {
-      return;
-    }
-
-    const currentItem = state.items.find((item) => item.id === state.currentItemId);
-    const itemLabel = currentItem?.name || state.currentItemId;
-    const confirmed = window.confirm(`Eliminare definitivamente "${itemLabel}" da Menumal?`);
-
-    if (!confirmed) {
-      return;
-    }
-
-    setBusy(true, "Elimino il prodotto dal database menu...");
-
-    google.script.run
-      .withSuccessHandler(() => {
-        const returnView = state.editorReturnView === "browse" ? "browse" : "chooser";
-        state.currentItemId = "";
-        state.isCreating = false;
-        state.view = returnView;
-        state.editorStep = 0;
-        state.lastMessage = "Prodotto eliminato.";
-        loadBootstrap("Aggiorno catalogo e impostazioni...");
-      })
-      .withFailureHandler(handleFailure)
-      .deleteItem(state.currentItemId);
-  }
-
   function renderSectionOptions() {
-    const optionsMarkup = ['<option value="">Tutte le sezioni</option>']
-      .concat(
-        state.sections.map((section) => {
-          return `<option value="${escapeHtml(section.section_id)}">${escapeHtml(section.title || section.section_id)}</option>`;
-        })
-      )
-      .join("");
+    if (!els.sectionInput) {
+      return;
+    }
 
-    const editorOptionsMarkup = state.sections
+    els.sectionInput.innerHTML = state.sections
       .map((section) => {
         return `<option value="${escapeHtml(section.section_id)}">${escapeHtml(section.title || section.section_id)}</option>`;
       })
       .join("");
-
-    els.sectionFilter.innerHTML = optionsMarkup;
-    els.sectionFilter.value = state.filters.sectionId;
-    els.sectionInput.innerHTML = editorOptionsMarkup;
   }
 
-  function renderSummary(payload) {
-    const editorLabel = payload.actorEmail || payload.actorLabel || "account connesso";
-    els.editorMeta.textContent = `Accesso: ${editorLabel}`;
+  function renderLiveSummary() {
+    if (!els.liveSummary) {
+      return;
+    }
+
+    const itemCount = state.liveMenuSummary?.itemCount ?? state.items.length;
+    const sectionCount = state.liveMenuSummary?.sectionCount ?? state.sections.length;
+    const generatedAt = state.liveMenuSummary?.generatedAt ? formatDateTime(state.liveMenuSummary.generatedAt) : "";
+    const endpointLink = state.publicMenuEndpoint
+      ? `<a class="live-summary__link" href="${escapeHtml(state.publicMenuEndpoint)}" target="_blank" rel="noopener noreferrer">Apri payload live</a>`
+      : "";
+
+    els.liveSummary.innerHTML = `
+      <div class="live-summary__row">
+        <span class="live-summary__pill live-summary__pill--strong">${escapeHtml(String(itemCount))} prodotti live</span>
+        <span class="live-summary__pill">${escapeHtml(String(sectionCount))} sezioni</span>
+        ${generatedAt ? `<span class="live-summary__pill">Aggiornato ${escapeHtml(generatedAt)}</span>` : ""}
+      </div>
+      <p class="live-summary__text">Menumal legge il Google Sheet e Agri-Menu usa lo stesso payload live.</p>
+      ${endpointLink ? `<div class="live-summary__links">${endpointLink}</div>` : ""}
+    `;
   }
 
   function renderCatalogMeta(filteredItems = getFilteredItems()) {
     const hiddenItemsCount = filteredItems.filter((item) => item.visibility_state === "nascosto").length;
-    const visibleSectionsCount = new Set(
-      filteredItems
-        .map((item) => item.section_id)
-        .filter(Boolean)
-    ).size;
-    const hasActiveFilters = Boolean(state.filters.search || state.filters.sectionId);
-    const itemsLabel = hasActiveFilters
+    const hasActiveSearch = Boolean(state.filters.search);
+    const itemsLabel = hasActiveSearch
       ? `${filteredItems.length} di ${state.items.length} prodotti`
       : `${state.items.length} prodotti`;
-    const sectionsLabel = hasActiveFilters ? visibleSectionsCount : state.sections.length;
 
     els.catalogMeta.innerHTML = `
-      <span class="catalog-pill catalog-pill--strong">${itemsLabel}</span>
-      <span class="catalog-pill">${sectionsLabel} sezioni</span>
-      <span class="catalog-pill">${hiddenItemsCount} nascosti</span>
+      <span class="catalog-pill catalog-pill--strong">${escapeHtml(itemsLabel)}</span>
+      <span class="catalog-pill">${escapeHtml(String(state.sections.length))} sezioni</span>
+      <span class="catalog-pill">${escapeHtml(String(hiddenItemsCount))} nascosti</span>
     `;
   }
 
@@ -291,7 +297,7 @@
     renderCatalogMeta(filteredItems);
 
     if (!filteredItems.length) {
-      els.itemList.innerHTML = `<div class="item-list__empty">Nessun prodotto trovato con questi filtri.</div>`;
+      els.itemList.innerHTML = `<div class="item-list__empty">Nessun prodotto trovato.</div>`;
       return;
     }
 
@@ -304,8 +310,7 @@
             item.visibility_state === "nascosto" ? "hidden" : "success"
           ),
           renderBadge(item.availability_state || "disponibile", getAvailabilityBadgeTone(item.availability_state)),
-        ]
-          .join("");
+        ].join("");
 
         return `
           <button class="item-row${item.id === state.currentItemId && !state.isCreating ? " is-active" : ""}" type="button" data-item-id="${escapeHtml(item.id)}">
@@ -343,17 +348,11 @@
 
   function getFilteredItems() {
     return state.items.filter((item) => {
-      if (state.filters.sectionId && item.section_id !== state.filters.sectionId) {
-        return false;
-      }
-
       if (!state.filters.search) {
         return true;
       }
 
-      const haystack = [item.id, item.name, item.description, item.category]
-        .join(" ")
-        .toLowerCase();
+      const haystack = [item.id, item.name, item.description, item.category].join(" ").toLowerCase();
       return haystack.includes(state.filters.search);
     });
   }
@@ -370,7 +369,6 @@
   function openCreateForm() {
     state.isCreating = true;
     state.currentItemId = "";
-    state.editorStep = 0;
     els.itemForm.reset();
     els.idInput.dataset.locked = "";
     els.visibilityInput.value = "visibile";
@@ -379,25 +377,23 @@
     els.detailHintInput.checked = true;
     els.legacyManagedInput.checked = false;
 
-    const preferredSectionId = state.filters.sectionId || state.sections[0]?.section_id || "";
+    const preferredSectionId = state.sections[0]?.section_id || "";
     if (preferredSectionId) {
       els.sectionInput.value = preferredSectionId;
       els.sortOrderInput.value = String(getSuggestedSortOrder(preferredSectionId));
     }
 
     els.editorTitle.textContent = "Nuovo prodotto";
-    els.editorMeta.textContent = "Compila i campi e salva.";
+    els.editorMeta.textContent = "Compila i campi e salva. Il prodotto verra scritto nel foglio e riletto dal menu live.";
     updateSaveButtonLabel();
     updateDeleteButton();
     updateEditorScreenBackLabel();
-    updateEditorStepUI();
     renderItemList();
   }
 
   function fillForm(item) {
     state.currentItemId = item.id;
     state.isCreating = false;
-    state.editorStep = 0;
     els.editorTitle.textContent = item.name || item.id;
     els.editorMeta.textContent = `${resolveSectionLabel(item.section_id)} · id ${item.id}`;
 
@@ -427,7 +423,6 @@
     updateSaveButtonLabel();
     updateDeleteButton();
     updateEditorScreenBackLabel();
-    updateEditorStepUI();
   }
 
   function enterCreateMode() {
@@ -441,7 +436,10 @@
     state.view = "browse";
     state.isCreating = false;
     state.editorReturnView = "browse";
-    state.editorStep = 0;
+    state.filters.search = "";
+    if (els.searchInput) {
+      els.searchInput.value = "";
+    }
     updateDeleteButton();
     updateInterfaceState();
     window.setTimeout(() => {
@@ -468,7 +466,7 @@
 
     state.currentItemId = "";
     state.isCreating = false;
-    state.editorStep = 0;
+
     if (!state.items.length) {
       state.view = "create";
       state.editorReturnView = "chooser";
@@ -484,13 +482,11 @@
 
   function updateInterfaceState() {
     document.body.dataset.view = state.view;
-    document.body.dataset.editorStep = String(state.editorStep);
     document.body.classList.toggle("is-screen-flow-open", state.view !== "chooser");
     els.entryPanel.hidden = state.view !== "chooser";
-    els.browseModal.hidden = !(state.view === "browse" || (state.view === "edit" && state.editorReturnView === "browse"));
+    els.browseModal.hidden = state.view !== "browse";
     els.editorModal.hidden = !(state.view === "create" || state.view === "edit");
     updateEditorScreenBackLabel();
-    updateEditorStepUI();
   }
 
   function collectFormPayload() {
@@ -557,12 +553,23 @@
 
   function setBusy(isBusy, message = "") {
     document.body.style.cursor = isBusy ? "progress" : "";
-    els.refreshButton.disabled = isBusy;
-    if (els.browseBackButton) els.browseBackButton.disabled = isBusy;
-    if (els.editorScreenBackButton) els.editorScreenBackButton.disabled = isBusy;
-    if (els.editorStepBackButton) els.editorStepBackButton.disabled = isBusy;
-    if (els.editorStepNextButton) els.editorStepNextButton.disabled = isBusy;
-    els.itemForm.querySelectorAll("input, select, textarea, button").forEach((element) => {
+
+    [
+      els.refreshButton,
+      els.entryCreateButton,
+      els.entryBrowseButton,
+      els.helpButton,
+      els.browseBackButton,
+      els.editorScreenBackButton,
+      els.searchInput,
+      els.deleteButton,
+    ]
+      .filter(Boolean)
+      .forEach((element) => {
+        element.disabled = isBusy;
+      });
+
+    els.itemForm?.querySelectorAll("input, select, textarea, button, summary").forEach((element) => {
       element.disabled = isBusy;
     });
 
@@ -597,8 +604,6 @@
   }
 
   function handleEditorScreenBack() {
-    state.editorStep = 0;
-
     if (state.editorReturnView === "browse") {
       state.view = "browse";
       updateInterfaceState();
@@ -613,90 +618,8 @@
     state.editorReturnView = "chooser";
     state.currentItemId = "";
     state.isCreating = false;
-    state.editorStep = 0;
     updateDeleteButton();
     updateInterfaceState();
-  }
-
-  function handleEditorStepBack() {
-    if (state.editorStep === 0) {
-      handleEditorScreenBack();
-      return;
-    }
-
-    state.editorStep = Math.max(0, state.editorStep - 1);
-    updateEditorStepUI();
-  }
-
-  function handleEditorStepNext() {
-    if (state.editorStep === 0 && !validatePrimaryStep()) {
-      return;
-    }
-
-    const lastStepIndex = Math.max(0, els.editorSteps.length - 1);
-    if (state.editorStep >= lastStepIndex) {
-      return;
-    }
-
-    state.editorStep += 1;
-    updateEditorStepUI();
-  }
-
-  function validatePrimaryStep() {
-    return [els.nameInput, els.sectionInput, els.option1PriceInput].every((field) => field.reportValidity());
-  }
-
-  function updateEditorStepUI() {
-    if (!els.editorSteps?.length) {
-      return;
-    }
-
-    const labels = ["Base", "Stato", "Extra"];
-    const lastStepIndex = els.editorSteps.length - 1;
-
-    els.editorSteps.forEach((stepElement, index) => {
-      stepElement.hidden = index !== state.editorStep;
-    });
-
-    if (els.editorStepIndicator) {
-      els.editorStepIndicator.innerHTML = labels
-        .map((label, index) => {
-          const classes = ["editor-step-pill"];
-          if (index === state.editorStep) {
-            classes.push("is-active");
-          } else if (index < state.editorStep) {
-            classes.push("is-complete");
-          }
-
-          return `<span class="${classes.join(" ")}">${index + 1}. ${escapeHtml(label)}</span>`;
-        })
-        .join("");
-    }
-
-    if (els.editorStepBackButton) {
-      els.editorStepBackButton.textContent = state.editorStep === 0 ? "← Indietro" : "← Passo prima";
-    }
-
-    if (els.editorStepNextButton) {
-      els.editorStepNextButton.hidden = state.editorStep >= lastStepIndex;
-    }
-
-    if (els.saveButton) {
-      els.saveButton.hidden = state.editorStep < lastStepIndex;
-    }
-  }
-
-  function showBanner(message, tone = "info") {
-    if (!message) {
-      hideBanner();
-      return;
-    }
-
-    showHeaderStatus(message, tone, { persistent: false });
-  }
-
-  function hideBanner() {
-    clearHeaderStatus();
   }
 
   function showHeaderStatus(message, tone = "info", options = {}) {
@@ -713,7 +636,7 @@
     els.headerStatus.hidden = false;
 
     if (!options.persistent) {
-      const timeoutMs = tone === "error" ? 4200 : 2600;
+      const timeoutMs = tone === "error" ? 4800 : 4000;
       headerStatusTimer = window.setTimeout(() => {
         clearHeaderStatus();
       }, timeoutMs);
@@ -762,6 +685,19 @@
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-+|-+$/g, "");
+  }
+
+  function formatDateTime(value) {
+    try {
+      return new Intl.DateTimeFormat("it-IT", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value));
+    } catch (error) {
+      return "";
+    }
   }
 
   function escapeHtml(value) {

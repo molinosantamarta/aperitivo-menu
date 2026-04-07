@@ -26,15 +26,27 @@
             </h1>
           </div>
           <p class="admin-kicker">Gestisci i prodotti del menu QR</p>
-          <div class="admin-intro__actions">
-            <button class="ghost-btn admin-refresh-button" id="refreshButton" type="button" aria-label="Ricarica dati" title="Ricarica dati">
-              Ricarica
-            </button>
-            <div class="admin-loader" id="headerStatus" role="status" aria-live="polite" aria-atomic="true" hidden>
-              <span class="admin-loader__dot" aria-hidden="true"></span>
-              <span id="headerStatusText"></span>
+          <div class="admin-intro__toolbar">
+            <div class="admin-intro__actions">
+              <button class="ghost-btn admin-refresh-button" id="refreshButton" type="button" aria-label="Ricarica dati" title="Ricarica dati">
+                Ricarica
+              </button>
+              <div class="admin-loader" id="headerStatus" role="status" aria-live="polite" aria-atomic="true" hidden>
+                <span class="admin-loader__dot" aria-hidden="true"></span>
+                <span id="headerStatusText"></span>
+              </div>
             </div>
+            <a
+              class="secondary-btn admin-public-link"
+              id="openPublicMenuLink"
+              href="https://molinosantamarta.github.io/aperitivo-menu/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Apri menu cliente
+            </a>
           </div>
+          <div class="live-summary" id="liveSummary"></div>
         </div>
       </header>
 
@@ -92,10 +104,6 @@
                 <span>Cerca prodotto</span>
                 <input id="searchInput" type="search" placeholder="Nome o id" />
               </label>
-              <label class="field">
-                <span>Sezione</span>
-                <select id="sectionFilter"></select>
-              </label>
             </div>
             <div class="catalog-meta" id="catalogMeta"></div>
             <div class="item-list" id="itemList" aria-live="polite"></div>
@@ -122,12 +130,10 @@
             </div>
 
             <form id="itemForm" class="item-form">
-              <div class="editor-step-progress" id="editorStepIndicator"></div>
-
-              <section class="editor-step" data-step="0">
-                <div class="editor-step__header">
-                  <p class="editor-step__eyebrow">Passo 1</p>
-                  <h3>Base prodotto</h3>
+              <section class="editor-group">
+                <div class="editor-group__header">
+                  <p class="editor-group__eyebrow">Base</p>
+                  <h3>Dati principali</h3>
                   <p class="hint-copy">Inserisci le informazioni essenziali del prodotto.</p>
                 </div>
                 <div class="form-grid">
@@ -153,10 +159,10 @@
                 </div>
               </section>
 
-              <section class="editor-step" data-step="1" hidden>
-                <div class="editor-step__header">
-                  <p class="editor-step__eyebrow">Passo 2</p>
-                  <h3>Stato e immagine</h3>
+              <section class="editor-group">
+                <div class="editor-group__header">
+                  <p class="editor-group__eyebrow">Stato</p>
+                  <h3>Visibilita e immagine</h3>
                   <p class="hint-copy">Decidi come mostrare il prodotto nel menu.</p>
                 </div>
                 <div class="form-grid">
@@ -188,15 +194,12 @@
                 </div>
               </section>
 
-              <section class="editor-step" data-step="2" hidden>
-                <div class="editor-step__header">
-                  <p class="editor-step__eyebrow">Passo 3</p>
-                  <h3>Dettagli extra</h3>
-                  <p class="hint-copy">Campi tecnici e varianti. Usali solo se ti servono.</p>
-                </div>
+              <details class="option-card option-card--advanced">
+                <summary>Opzioni avanzate</summary>
+                <p class="hint-copy">Usale solo se ti servono per prodotti legacy, varianti o dettagli tecnici.</p>
 
-                <section class="option-stack">
-                  <div class="option-card">
+                <div class="option-stack">
+                  <div class="option-card option-card--nested">
                     <h3>Dettaglio principale</h3>
                     <div class="option-grid option-grid--main">
                       <label class="field">
@@ -215,7 +218,7 @@
                     </div>
                   </div>
 
-                  <div class="option-card">
+                  <div class="option-card option-card--nested">
                     <h3>Avanzate</h3>
                     <div class="option-grid option-grid--stacked">
                       <label class="field">
@@ -267,7 +270,7 @@
                         <textarea id="notesInput" name="notes" rows="3"></textarea>
                       </label>
                     </div>
-                    <div class="form-grid form-grid--compact">
+                    <div class="form-grid form-grid--compact form-grid--advanced-toggles">
                       <label class="checkbox-field">
                         <input id="detailHintInput" name="show_detail_hint" type="checkbox" checked />
                         <span>Mostra il suggerimento dettagli</span>
@@ -279,14 +282,10 @@
                       </label>
                     </div>
                   </div>
-                </section>
-              </section>
+                </div>
+              </details>
 
               <div class="form-actions">
-                <div class="form-actions__group form-actions__group--nav">
-                  <button class="secondary-btn" id="editorStepBackButton" type="button">← Indietro</button>
-                  <button class="ghost-btn" id="editorStepNextButton" type="button">Avanti →</button>
-                </div>
                 <div class="form-actions__group">
                   <button class="danger-btn" id="deleteButton" type="button" hidden>Elimina prodotto</button>
                 </div>
@@ -334,7 +333,8 @@
               <ul class="utility-note__list">
                 <li>Tu modifichi un prodotto da Menumal.</li>
                 <li>Apps Script salva i dati nel Google Sheet.</li>
-                <li>Agri-Menu legge quei dati e aggiorna il menu mostrato ai clienti.</li>
+                <li>Menumal rilegge subito il foglio e ti mostra il riepilogo live aggiornato.</li>
+                <li>Agri-Menu legge lo stesso payload live esposto da Apps Script.</li>
               </ul>
             </section>
 

@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.719";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.719";
+  var APP_BUILD_LABEL = "V.1.0.727";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.727";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -40,7 +40,6 @@
   var FONT_LOAD_TIMEOUT = 12e3;
   var STRICT_FONT_LOAD_TIMEOUT = 12e3;
   var JSON_FETCH_TIMEOUT = 6500;
-  var SHEET_FETCH_TIMEOUT = 8e3;
   var FONT_GATE_RETRY_COUNT = 1;
   var FONT_GATE_RETRY_DELAY = 900;
   var APP_REVEAL_STABILITY_FRAMES = 2;
@@ -1259,7 +1258,6 @@
     });
     const sheetConfig = await loadSheetConfig();
     const sheetApiUrl = sheetConfig && typeof sheetConfig.googleSheetApiUrl === "string" ? sheetConfig.googleSheetApiUrl.trim() : "";
-    const sheetCsvUrl = sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string" ? sheetConfig.googleSheetCsvUrl.trim() : "";
     if (sheetApiUrl) {
       try {
         const sheetPayload = await loadSheetApiPayload(sheetApiUrl);
@@ -1271,19 +1269,7 @@
         console.warn("Impossibile caricare i dati menu da Apps Script:", error);
       }
     }
-    if (!sheetCsvUrl) {
-      return baseData;
-    }
-    try {
-      const sheetRows = await loadSheetRows(sheetCsvUrl);
-      if (!sheetRows.length) {
-        return baseData;
-      }
-      return applySheetRowsToMenu(baseData, sheetRows);
-    } catch (error) {
-      console.warn("Impossibile caricare le override dal Google Sheet:", error);
-      return baseData;
-    }
+    return baseData;
   }
   async function loadSheetConfig() {
     return fetchJsonFromCandidates(SHEET_CONFIG_URLS, "data/sheet-config.json", {
@@ -1319,14 +1305,6 @@
       return fallbackValue;
     }
     throw lastError || new Error("Impossibile caricare ".concat(label));
-  }
-  async function loadSheetRows(sheetCsvUrl) {
-    const response = await fetchWithTimeout(sheetCsvUrl, { cache: "no-store" }, SHEET_FETCH_TIMEOUT);
-    if (!response.ok) {
-      throw new Error("Impossibile caricare il CSV del Google Sheet (".concat(response.status, ")"));
-    }
-    const csvText = await response.text();
-    return parseCsvRows(csvText);
   }
   async function loadSheetApiPayload(sheetApiUrl) {
     return fetchJsonFromCandidates([sheetApiUrl], "data menu Apps Script", {
@@ -1369,83 +1347,6 @@
       return withSections;
     }
     return applySheetRowsToMenu(withSections, rows);
-  }
-  function parseCsvRows(csvText) {
-    const rows = [];
-    let currentCell = "";
-    let currentRow = [];
-    let insideQuotes = false;
-    for (let index = 0; index < csvText.length; index += 1) {
-      const char = csvText[index];
-      const nextChar = csvText[index + 1];
-      if (char === '"') {
-        if (insideQuotes && nextChar === '"') {
-          currentCell += '"';
-          index += 1;
-        } else {
-          insideQuotes = !insideQuotes;
-        }
-        continue;
-      }
-      if (char === "," && !insideQuotes) {
-        currentRow.push(currentCell);
-        currentCell = "";
-        continue;
-      }
-      if ((char === "\n" || char === "\r") && !insideQuotes) {
-        if (char === "\r" && nextChar === "\n") {
-          index += 1;
-        }
-        currentRow.push(currentCell);
-        currentCell = "";
-        if (currentRow.some((cell) => cell !== "")) {
-          rows.push(currentRow);
-        }
-        currentRow = [];
-        continue;
-      }
-      currentCell += char;
-    }
-    currentRow.push(currentCell);
-    if (currentRow.some((cell) => cell !== "")) {
-      rows.push(currentRow);
-    }
-    if (!rows.length) {
-      return [];
-    }
-    const [headers, ...dataRows] = rows;
-    return dataRows.map(
-      (cells) => headers.reduce((entry, header, index) => {
-        entry[normalizeSheetHeader(header)] = (cells[index] || "").trim();
-        return entry;
-      }, {})
-    ).filter((row) => row.id);
-  }
-  function normalizeSheetHeader(value) {
-    const normalized = value.trim().toLowerCase().replace(/\s+/g, "_").replace(/[()]/g, "").replace(/[\/,-]+/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-    const aliases = {
-      sezione: "section_id",
-      ordine: "position",
-      sort_order: "position",
-      posizione: "position",
-      visibilita: "visibility_state",
-      visibilita_visibile_nascosto: "visibility_state",
-      visibile: "visibility_state",
-      mostra: "visibility_state",
-      stato: "availability_state",
-      stato_disponibilita: "availability_state",
-      disponibilita: "availability_state",
-      disponibilita_disponibile_non_disponibile_in_arrivo: "availability_state",
-      disponibile: "availability_state",
-      nome: "name",
-      descrizione: "description",
-      categoria: "category",
-      immagine: "image_url",
-      immagine_url: "image_url",
-      variante: "variante_1",
-      prezzo: "prezzo_1"
-    };
-    return aliases[normalized] || normalized;
   }
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));

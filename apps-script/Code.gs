@@ -93,6 +93,7 @@ function buildPublicMenuPayload_() {
 function getBootstrapData() {
   var actor = assertAuthorized_();
   var settings = getSettingsObject_();
+  var liveMenuPayload = buildPublicMenuPayload_();
 
   if (!settings.brand_icon_url) {
     settings.brand_icon_url = MENUMAL_ICON_URL;
@@ -105,6 +106,11 @@ function getBootstrapData() {
     items: getAdminItems_(),
     settings: settings,
     publicMenuEndpoint: buildPublicMenuUrl_(),
+    liveMenuSummary: {
+      generatedAt: liveMenuPayload.generatedAt,
+      sectionCount: liveMenuPayload.sections.length,
+      itemCount: liveMenuPayload.items.length,
+    },
   };
 }
 

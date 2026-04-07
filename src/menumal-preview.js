@@ -207,15 +207,22 @@ function runAction(action, handlers) {
 
 function buildBootstrapData() {
   const state = loadPreviewState();
+  const sections = sortSections(state.sections);
+  const items = sortItems(state.sections, state.items);
   return {
     actorEmail: PREVIEW_ACTOR_EMAIL,
     actorLabel: "preview locale",
-    sections: sortSections(state.sections),
-    items: sortItems(state.sections, state.items),
+    sections,
+    items,
     settings: {
       allowed_editor_emails: PREVIEW_ACTOR_EMAIL,
     },
     publicMenuEndpoint: "preview://menu",
+    liveMenuSummary: {
+      generatedAt: new Date().toISOString(),
+      sectionCount: sections.length,
+      itemCount: items.length,
+    },
   };
 }
 
