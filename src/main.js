@@ -1450,10 +1450,6 @@ async function loadMenuData() {
     sheetConfig && typeof sheetConfig.googleSheetApiUrl === "string"
       ? sheetConfig.googleSheetApiUrl.trim()
       : "";
-  const sheetCsvUrl =
-    sheetConfig && typeof sheetConfig.googleSheetCsvUrl === "string"
-      ? sheetConfig.googleSheetCsvUrl.trim()
-      : "";
 
   if (sheetApiUrl) {
     try {
@@ -1467,21 +1463,7 @@ async function loadMenuData() {
     }
   }
 
-  if (!sheetCsvUrl) {
-    return baseData;
-  }
-
-  try {
-    const sheetRows = await loadSheetRows(sheetCsvUrl);
-    if (!sheetRows.length) {
-      return baseData;
-    }
-
-    return applySheetRowsToMenu(baseData, sheetRows);
-  } catch (error) {
-    console.warn("Impossibile caricare le override dal Google Sheet:", error);
-    return baseData;
-  }
+  return baseData;
 }
 
 async function loadSheetConfig() {
@@ -1524,16 +1506,6 @@ async function fetchJsonFromCandidates(urls, label, options = {}) {
   }
 
   throw lastError || new Error(`Impossibile caricare ${label}`);
-}
-
-async function loadSheetRows(sheetCsvUrl) {
-  const response = await fetchWithTimeout(sheetCsvUrl, { cache: "no-store" }, SHEET_FETCH_TIMEOUT);
-  if (!response.ok) {
-    throw new Error(`Impossibile caricare il CSV del Google Sheet (${response.status})`);
-  }
-
-  const csvText = await response.text();
-  return parseCsvRows(csvText);
 }
 
 async function loadSheetApiPayload(sheetApiUrl) {
@@ -1592,69 +1564,6 @@ function applySheetPayloadToMenu(baseMenu, payload) {
   }
 
   return applySheetRowsToMenu(withSections, rows);
-}
-
-function parseCsvRows(csvText) {
-  const rows = [];
-  let currentCell = "";
-  let currentRow = [];
-  let insideQuotes = false;
-
-  for (let index = 0; index < csvText.length; index += 1) {
-    const char = csvText[index];
-    const nextChar = csvText[index + 1];
-
-    if (char === '"') {
-      if (insideQuotes && nextChar === '"') {
-        currentCell += '"';
-        index += 1;
-      } else {
-        insideQuotes = !insideQuotes;
-      }
-      continue;
-    }
-
-    if (char === "," && !insideQuotes) {
-      currentRow.push(currentCell);
-      currentCell = "";
-      continue;
-    }
-
-    if ((char === "\n" || char === "\r") && !insideQuotes) {
-      if (char === "\r" && nextChar === "\n") {
-        index += 1;
-      }
-
-      currentRow.push(currentCell);
-      currentCell = "";
-      if (currentRow.some((cell) => cell !== "")) {
-        rows.push(currentRow);
-      }
-      currentRow = [];
-      continue;
-    }
-
-    currentCell += char;
-  }
-
-  currentRow.push(currentCell);
-  if (currentRow.some((cell) => cell !== "")) {
-    rows.push(currentRow);
-  }
-
-  if (!rows.length) {
-    return [];
-  }
-
-  const [headers, ...dataRows] = rows;
-  return dataRows
-    .map((cells) =>
-      headers.reduce((entry, header, index) => {
-        entry[normalizeSheetHeader(header)] = (cells[index] || "").trim();
-        return entry;
-      }, {})
-    )
-    .filter((row) => row.id);
 }
 
 function normalizeSheetHeader(value) {
