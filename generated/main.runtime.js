@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.742";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.742";
+  var APP_BUILD_LABEL = "V.1.0.745";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.745";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -1565,8 +1565,8 @@
     return {
       type: "photo-panel",
       asset: imageUrl,
-      position: row.visual_position || row.image_position || (isMilkshake ? "center center" : "center center"),
-      size: row.visual_size || row.image_size || (isMilkshake ? "88% auto" : "cover"),
+      position: row.visual_position || row.image_position || (isMilkshake ? "center 58%" : "center center"),
+      size: row.visual_size || row.image_size || (isMilkshake ? "84% auto" : "cover"),
       backgroundColor: row.visual_background_color || (isMilkshake ? "#ffffff" : "transparent"),
       blendMode: row.visual_blend_mode || "normal",
       detailCaption: row.detail_caption || row.visual_caption || ""
