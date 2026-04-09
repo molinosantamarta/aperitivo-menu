@@ -558,7 +558,7 @@
           "page": 1,
           "name": "Mè Piáss",
           "category": "Artigianali",
-          "description": "Mexican Lager con fresh lime 5% vol. 33 cl.",
+          "description": "Mexican Lager con lime 5% vol. 33 cl.",
           "showDetailHint": false,
           "visual": {
             "type": "beer-script",
@@ -573,7 +573,7 @@
               "type": "text-panel",
               "bodyLines": [
                 "Mexican Lager",
-                "con fresh lime."
+                "con lime."
               ],
               "detailBodyFontFamily": "var(--font-beer-script)",
               "detailBodyFontWeight": "400",

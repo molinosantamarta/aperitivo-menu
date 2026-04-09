@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.728";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.728";
+  var APP_BUILD_LABEL = "V.1.0.736";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.736";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -4088,7 +4088,7 @@
       drink: { key: "drink", label: "Drink", order: 20 },
       bottiglie: { key: "bottiglie", label: "Bottiglie", order: 30 },
       "altre bevande": { key: "altre-bevande", label: "Altre bevande", order: 40 },
-      taglieri: { key: "taglieri", label: "Sfiziosit\xE0", order: 90 }
+      taglieri: { key: "taglieri", label: "Taglieri", order: 90 }
     };
     return groupMap[sectionTitle] || { key: "altri", label: "Altri prodotti", order: 100 };
   }
@@ -4230,7 +4230,7 @@
     if (entry.itemId === "grappe-amari") {
       return "digestivi";
     }
-    if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
+    if (sectionTitle === "agri-gelato" || sectionTitle === "dolci" || category === "dolce freddo") {
       return "ignored";
     }
     if (sectionTitle === "taglieri" || category.includes("taglieri")) {

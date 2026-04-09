@@ -1546,6 +1546,7 @@ a {
 .menu-section__items {
   display: grid;
   gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .menu-section__footer-note {
