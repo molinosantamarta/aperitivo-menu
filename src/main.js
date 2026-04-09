@@ -1866,12 +1866,14 @@ function buildSheetPhotoPanelVisual(row, imageUrl) {
     return null;
   }
 
+  const isMilkshake = (row?.id || "") === "milkshake";
+
   return {
     type: "photo-panel",
     asset: imageUrl,
-    position: row.visual_position || row.image_position || "center center",
-    size: row.visual_size || row.image_size || "cover",
-    backgroundColor: row.visual_background_color || "transparent",
+    position: row.visual_position || row.image_position || (isMilkshake ? "center center" : "center center"),
+    size: row.visual_size || row.image_size || (isMilkshake ? "88% auto" : "cover"),
+    backgroundColor: row.visual_background_color || (isMilkshake ? "#ffffff" : "transparent"),
     blendMode: row.visual_blend_mode || "normal",
     detailCaption: row.detail_caption || row.visual_caption || "",
   };
