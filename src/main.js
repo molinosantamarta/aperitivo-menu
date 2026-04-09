@@ -5599,7 +5599,7 @@ function getCartSummaryBucket(entry) {
     return "digestivi";
   }
 
-  if (sectionTitle === "agri-gelato" || category === "dolce freddo") {
+  if (sectionTitle === "agri-gelato" || sectionTitle === "dolci" || category === "dolce freddo") {
     return "ignored";
   }
 
