@@ -554,6 +554,97 @@
           ]
         },
         {
+          "id": "me-piass",
+          "page": 1,
+          "name": "Mè Piáss",
+          "category": "Artigianali",
+          "description": "Mexican Lager con fresh lime 5% vol. 33 cl.",
+          "showDetailHint": false,
+          "visual": {
+            "type": "beer-script",
+            "label": "Mè Piáss",
+            "gradientStart": "#c8dd67",
+            "gradientMid": "#e7ef7f",
+            "gradientEnd": "#f8f176",
+            "labelColor": "#25301a"
+          },
+          "detailGallery": [
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Mexican Lager",
+                "con fresh lime,",
+                "spensierata e gioiosa."
+              ],
+              "detailBodyFontFamily": "var(--font-beer-script)",
+              "detailBodyFontWeight": "400",
+              "detailBodyLineHeight": "0.86",
+              "detailBodyFontSize": "clamp(1.22rem, 3.7vw, 1.42rem)",
+              "detailBodyMobileFontSize": "clamp(1.96rem, 7.55vw, 2.36rem)",
+              "gradientStart": "#b8cf57",
+              "gradientEnd": "#eef08a",
+              "bodyColor": "#263118"
+            },
+            {
+              "type": "tasting-notes",
+              "heading": "Spensierata e gioiosa",
+              "notes": [
+                {
+                  "icon": "eye",
+                  "title": "Alla vista",
+                  "body": "Birra di colore giallo paglierino. Schiuma pannosa, fine e persistente. Di buona carbonazione consona allo stile."
+                },
+                {
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Sentori di agrumi riconducibili al succo di lime, accostati a note di frutta tropicale matura."
+                },
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso sottile e delicato, con accenni limonosi che donano freschezza e refrigerio. Prosegue con passion fruit maltata e mango, chiudendo secca e aspra."
+                }
+              ],
+              "gradientStart": "#fcfbe9",
+              "gradientEnd": "#f3f7d7",
+              "accentColor": "#9fddc9",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "heading": "Accenni allo stile birraio",
+              "notes": [
+                {
+                  "title": "Lo stile",
+                  "body": "Le Mexican Lager sono birre a bassa fermentazione di ispirazione tedesca, nate negli stati meridionali degli USA al confine con il Messico. Usano, oltre al malto d'orzo, anche mais e riso: bionde di moderata gradazione, scorrevoli e facili da bere."
+                }
+              ],
+              "gradientStart": "#faf9ef",
+              "gradientEnd": "#f3f0dd",
+              "accentColor": "#d7e87a",
+              "inkColor": "#1e1f22"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "me-piass-floating.png",
+            "width": "92px",
+            "height": "320px",
+            "right": "18px",
+            "bottom": "6px",
+            "tilt": "10deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 6
+            }
+          ]
+        },
+        {
           "id": "moretti",
           "page": 1,
           "name": "Moretti",
