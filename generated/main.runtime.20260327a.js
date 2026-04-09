@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.745";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.745";
+  var APP_BUILD_LABEL = "V.1.0.746";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.746";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -4272,6 +4272,9 @@
     const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
     const categoryMarkup = categoryLabel ? '\n        <span class="sheet-kicker__category'.concat(sparkleMarkup ? " sheet-kicker__category--rose-glint" : "", '">\n          ').concat(escapeHtml(categoryLabel), "\n          ").concat(sparkleMarkup, "\n        </span>\n      ") : "";
     if (sectionTitle && categoryLabel) {
+      if (item && item.id === "milkshake") {
+        return categoryMarkup;
+      }
       const normalizedSection = normalizeLabel(sectionTitle);
       const normalizedCategory = normalizeLabel(categoryLabel);
       if (normalizedSection === normalizedCategory) {

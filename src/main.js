@@ -5716,6 +5716,10 @@ function renderDetailCategoryMarkup(item) {
     : "";
 
   if (sectionTitle && categoryLabel) {
+    if (item && item.id === "milkshake") {
+      return categoryMarkup;
+    }
+
     const normalizedSection = normalizeLabel(sectionTitle);
     const normalizedCategory = normalizeLabel(categoryLabel);
 
