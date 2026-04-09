@@ -573,8 +573,7 @@
               "type": "text-panel",
               "bodyLines": [
                 "Mexican Lager",
-                "con fresh lime,",
-                "spensierata e gioiosa."
+                "con fresh lime."
               ],
               "detailBodyFontFamily": "var(--font-beer-script)",
               "detailBodyFontWeight": "400",
@@ -587,22 +586,11 @@
             },
             {
               "type": "tasting-notes",
-              "heading": "Spensierata e gioiosa",
               "notes": [
                 {
                   "icon": "eye",
                   "title": "Alla vista",
                   "body": "Birra di colore giallo paglierino. Schiuma pannosa, fine e persistente. Di buona carbonazione consona allo stile."
-                },
-                {
-                  "icon": "nose",
-                  "title": "Al naso",
-                  "body": "Sentori di agrumi riconducibili al succo di lime, accostati a note di frutta tropicale matura."
-                },
-                {
-                  "icon": "mouth",
-                  "title": "In bocca",
-                  "body": "Ingresso sottile e delicato, con accenni limonosi che donano freschezza e refrigerio. Prosegue con passion fruit maltata e mango, chiudendo secca e aspra."
                 }
               ],
               "gradientStart": "#fcfbe9",
@@ -612,16 +600,30 @@
             },
             {
               "type": "tasting-notes",
-              "heading": "Accenni allo stile birraio",
               "notes": [
                 {
-                  "title": "Lo stile",
-                  "body": "Le Mexican Lager sono birre a bassa fermentazione di ispirazione tedesca, nate negli stati meridionali degli USA al confine con il Messico. Usano, oltre al malto d'orzo, anche mais e riso: bionde di moderata gradazione, scorrevoli e facili da bere."
+                  "icon": "nose",
+                  "title": "Al naso",
+                  "body": "Sentori di agrumi riconducibili al succo di lime, accostati a note di frutta tropicale matura."
                 }
               ],
-              "gradientStart": "#faf9ef",
-              "gradientEnd": "#f3f0dd",
-              "accentColor": "#d7e87a",
+              "gradientStart": "#fcfbe9",
+              "gradientEnd": "#f3f7d7",
+              "accentColor": "#9fddc9",
+              "inkColor": "#1e1f22"
+            },
+            {
+              "type": "tasting-notes",
+              "notes": [
+                {
+                  "icon": "mouth",
+                  "title": "In bocca",
+                  "body": "Ingresso sottile e delicato, con accenni limonosi che donano freschezza e refrigerio. Prosegue con passion fruit maltata e mango, chiudendo secca e aspra."
+                }
+              ],
+              "gradientStart": "#fcfbe9",
+              "gradientEnd": "#f3f7d7",
+              "accentColor": "#9fddc9",
               "inkColor": "#1e1f22"
             }
           ],
