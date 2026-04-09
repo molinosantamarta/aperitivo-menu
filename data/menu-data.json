@@ -630,9 +630,9 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "me-piass-floating.png",
-            "width": "64px",
-            "height": "224px",
-            "right": "4px",
+            "width": "68px",
+            "height": "236px",
+            "right": "14px",
             "bottom": "14px",
             "tilt": "10deg",
             "backgroundSize": "contain",
