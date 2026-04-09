@@ -632,7 +632,7 @@
             "asset": "me-piass-floating.png",
             "width": "68px",
             "height": "236px",
-            "right": "14px",
+            "right": "10px",
             "bottom": "14px",
             "tilt": "10deg",
             "backgroundSize": "contain",
