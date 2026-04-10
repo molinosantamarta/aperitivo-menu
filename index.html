@@ -513,6 +513,50 @@
       </div>
     </div>
 
+    <div class="service-call-lightbox" id="serviceCallLightbox" aria-hidden="true" hidden>
+      <button
+        class="service-call-lightbox__backdrop"
+        id="serviceCallLightboxBackdrop"
+        type="button"
+        aria-label="Chiudi chiamata operatore"
+      ></button>
+      <div
+        class="service-call-lightbox__dialog"
+        id="serviceCallLightboxDialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="serviceCallLightboxTitle"
+      >
+        <div class="service-call-lightbox__header">
+          <div class="service-call-lightbox__copy">
+            <span class="u-visually-hidden" id="serviceCallLightboxTitle">Chiama operatore</span>
+            <div class="service-call-lightbox__status-row">
+              <span class="service-call-lightbox__beta">Beta</span>
+              <span class="service-call-lightbox__status-note">funzione in test</span>
+            </div>
+            <p class="service-call-lightbox__subtitle">
+              Apri Command Assistant e inserisci il numero del tavolo.
+            </p>
+          </div>
+          <button
+            class="service-call-lightbox__close"
+            id="serviceCallLightboxClose"
+            type="button"
+          >
+            Chiudi
+          </button>
+        </div>
+        <iframe
+          class="service-call-lightbox__frame"
+          id="serviceCallLightboxFrame"
+          src="about:blank"
+          title="Chiama operatore"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+    </div>
+
     <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine" aria-hidden="true" inert>
       <span class="cart-fab__label">Riepilogo</span>
       <span class="cart-fab__count" id="cartCount" aria-live="polite">0</span>
