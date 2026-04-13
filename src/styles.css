@@ -2669,6 +2669,11 @@ a {
   padding-right: 104px;
 }
 
+#section-altre-bevande .item-card[data-item-id="kombucha-classica"].item-card--floating-bottle .item-card__content {
+  min-height: 150px;
+  padding-right: 122px;
+}
+
 #section-altre-bevande .item-card[data-item-id="frutta-bio"].item-card--floating-bottle .item-card__content {
   min-height: 154px;
   padding-right: 136px;

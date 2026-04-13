@@ -1994,6 +1994,85 @@
           ]
         },
         {
+          "id": "kombucha-classica",
+          "page": 2,
+          "name": "Kombucha",
+          "category": "Artigianale",
+          "description": "Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@mia_kombucha",
+            "href": "https://www.instagram.com/mia_kombucha/",
+            "ariaLabel": "Apri il profilo Instagram Mia Kombucha"
+          },
+          "detailLayout": "editorial",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "kombucha-original-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-original-back.webp",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "text-panel",
+              "bodyLines": [
+                "Bollicine vive, fermentazione lenta.",
+                "Fresca, secca, dissetante.",
+                "Artigianale e analcolica.",
+                "Ma che è? O' miracolo?",
+                "Non berti tutte le cose che ti dicono.",
+                "Beviti Mia.",
+                "Sai che c'è anche al limone?"
+              ],
+              "gradientStart": "#7f7c90",
+              "gradientEnd": "#727083",
+              "bodyColor": "#fffdfb"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "kombucha-original-floating.webp",
+            "deferAsset": true,
+            "width": "94px",
+            "height": "150px",
+            "right": "26px",
+            "bottom": "20px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "4deg"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            48,
+            442,
+            470,
+            526
+          ],
+          "cropRect": [
+            92,
+            462,
+            472,
+            526
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
           "id": "caffe",
           "page": 2,
           "name": "Caffè",
