@@ -2653,6 +2653,12 @@ a {
   padding-right: 120px;
 }
 
+#section-drink .item-card[data-item-id="negroni"].item-card--floating-bottle .item-card__content,
+#section-drink .item-card[data-item-id="sbagliato"].item-card--floating-bottle .item-card__content {
+  min-height: 156px;
+  padding-right: 150px;
+}
+
 .item-card--artisanal-beer.item-card--floating-bottle .item-card__content {
   min-height: 142px;
   padding-right: 126px;

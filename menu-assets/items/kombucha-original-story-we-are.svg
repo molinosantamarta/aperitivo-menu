@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-labelledby="title desc">
+  <title id="title">We Are What We Drink</title>
+  <desc id="desc">Grafica azzurra con claim bianco e piccoli segni decorativi.</desc>
+  <rect width="1080" height="1080" fill="#c9e5f7"/>
+  <g fill="#ffffff" text-anchor="middle" font-family="'Arial Rounded MT Bold', 'Arial Black', sans-serif" font-weight="900">
+    <text x="540" y="330" font-size="122">
+      <tspan x="540" dy="0">WE ARE</tspan>
+      <tspan x="540" dy="128">WHAT WE</tspan>
+      <tspan x="540" dy="128">DRINK</tspan>
+    </text>
+  </g>
+  <g fill="#ffffff" transform="translate(850 815)">
+    <path d="M78 0c7 33 13 39 46 46-33 7-39 13-46 46-7-33-13-39-46-46 33-7 39-13 46-46Z"/>
+    <circle cx="116" cy="-18" r="10"/>
+    <circle cx="145" cy="-46" r="18"/>
+    <circle cx="178" cy="-78" r="28"/>
+  </g>
+</svg>

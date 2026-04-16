@@ -6049,7 +6049,12 @@ function getSelectionOptionToneClass(item, group, selectionOption) {
 
   const normalizedLabel = normalizeLabel(selectionOption.label || "");
 
-  if (normalizedLabel === "bonarda" || normalizedLabel === "barbera" || normalizedLabel === "segrete") {
+  if (
+    normalizedLabel === "bonarda" ||
+    normalizedLabel === "barbera" ||
+    normalizedLabel === "segrete" ||
+    normalizedLabel === "casapaia"
+  ) {
     return "option-btn--wine-red";
   }
 

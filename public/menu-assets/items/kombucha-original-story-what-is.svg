@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Cos'e Mia Kombucha</title>
+  <desc id="desc">Grafica azzurra con testo bianco informativo su Mia Kombucha.</desc>
+  <rect width="1080" height="1080" fill="#c9e5f7"/>
+  <g fill="#ffffff" text-anchor="middle" font-family="'Arial Rounded MT Bold', 'Arial Black', sans-serif" font-weight="900">
+    <text x="540" y="165" font-size="68">
+      <tspan x="540" dy="0">Cos&#39;&#232; Mia Kombucha?</tspan>
+      <tspan x="540" dy="88">Semplice: il miglior t&#232;</tspan>
+      <tspan x="540" dy="88">biologico, batteri vivi per il</tspan>
+      <tspan x="540" dy="88">tuo organismo, zucchero di</tspan>
+      <tspan x="540" dy="88">canna biologico per attivare</tspan>
+      <tspan x="540" dy="88">la fermentazione (quasi</tspan>
+      <tspan x="540" dy="88">tutto mangiato dai batteri)</tspan>
+      <tspan x="540" dy="88">e un po&#39; di frizzantezza.</tspan>
+      <tspan x="540" dy="88">Viva, autentica, naturale.</tspan>
+      <tspan x="540" dy="88">That&#39;s Mia, alla Tua salute.</tspan>
+    </text>
+  </g>
+</svg>

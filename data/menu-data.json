@@ -999,6 +999,136 @@
           ]
         },
         {
+          "id": "negroni",
+          "page": 1,
+          "name": "Negroni",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Gin, Campari e Vermouth rosso per il negroni.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Negroni",
+            "gradientStart": "#56101a",
+            "gradientMid": "#8c1823",
+            "gradientEnd": "#d85a2a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "gin-floating.webp",
+            "width": "66px",
+            "height": "182px",
+            "right": "24px",
+            "bottom": "12px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "mulassano-vermouth-rosso-floating.webp",
+            "width": "52px",
+            "height": "188px",
+            "right": "78px",
+            "bottom": "10px",
+            "zIndex": "5",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "sbagliato",
+          "page": 1,
+          "name": "Sbagliato",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Pinot Brut, Campari e Vermouth rosso per lo sbagliato.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Sbagliato",
+            "gradientStart": "#7e2230",
+            "gradientMid": "#bf3741",
+            "gradientEnd": "#f2a35e",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.webp",
+            "width": "80px",
+            "height": "202px",
+            "right": "18px",
+            "bottom": "10px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "mulassano-vermouth-rosso-floating.webp",
+            "width": "50px",
+            "height": "182px",
+            "right": "72px",
+            "bottom": "10px",
+            "zIndex": "5",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
           "id": "gin-tonic",
           "page": 1,
           "name": "Gin Tonic",
@@ -1034,61 +1164,6 @@
             "right": "76px",
             "bottom": "10px",
             "zIndex": "5",
-            "tilt": "0deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
-          },
-          "options": [
-            {
-              "label": "1 drink",
-              "displayLabel": "",
-              "price": 6
-            }
-          ],
-          "rect": [
-            676,
-            868,
-            932,
-            982
-          ],
-          "cropRect": [
-            700,
-            900,
-            930,
-            980
-          ],
-          "cropPadding": [
-            8,
-            12,
-            8,
-            10
-          ]
-        },
-        {
-          "id": "gin-tonic-special",
-          "page": 1,
-          "name": "Gin Tropical",
-          "category": "Limited Edition",
-          "available": true,
-          "showDetailHint": false,
-          "description": "Mix esotico di sapori, mango maturato al sole, lime fresco per un gusto vibrante agrumato dei tropici.",
-          "visual": {
-            "type": "beer-script",
-            "label": "Gin",
-            "gradientStart": "#cc4e12",
-            "gradientMid": "#f39a18",
-            "gradientEnd": "#ffd74a",
-            "labelColor": "#fffdf8",
-            "textStyle": "display",
-            "script": "Tropical"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.webp",
-            "width": "86px",
-            "height": "218px",
-            "right": "16px",
-            "bottom": "12px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1183,6 +1258,61 @@
             8,
             10
           ]
+        },
+        {
+          "id": "gin-tonic-special",
+          "page": 1,
+          "name": "Gin Tropical",
+          "category": "Limited Edition",
+          "available": true,
+          "showDetailHint": false,
+          "description": "Mix esotico di sapori, mango maturato al sole, lime fresco per un gusto vibrante agrumato dei tropici.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Gin",
+            "gradientStart": "#cc4e12",
+            "gradientMid": "#f39a18",
+            "gradientEnd": "#ffd74a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Tropical"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.webp",
+            "width": "86px",
+            "height": "218px",
+            "right": "16px",
+            "bottom": "12px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
         }
       ]
     },
@@ -1199,7 +1329,7 @@
           "page": 1,
           "name": "Oltrepò Pavese",
           "category": "Vino",
-          "description": "Bonarda, Segrete, Chardonnay, Pinot Grigio.",
+          "description": "Bonarda, Casapaia, Chardonnay, Pinot Grigio.",
           "detailDescription": "Vini bianchi e rossi, fermi e vivaci. Az. Agricola Luciano Brega.",
           "cardVisual": {
             "type": "can-cluster",
@@ -1220,7 +1350,7 @@
                 "floatDelay": "-0.8s"
               },
               {
-                "asset": "oltrepo-segrete.webp",
+                "asset": "oltrepo-casapaia.webp",
                 "left": "41%",
                 "bottom": "-24%",
                 "height": "250px",
@@ -1261,7 +1391,7 @@
             "size": "cover",
             "selectionAssets": {
               "Bonarda": "oltrepo-bonarda.webp",
-              "Segrete": "oltrepo-segrete.webp",
+              "Casapaia": "oltrepo-casapaia.webp",
               "Chardonnay": "oltrepo-chardonnay.webp",
               "Pinot Grigio": "oltrepo-pinot-grigio.webp"
             },
@@ -1281,7 +1411,7 @@
                   "detailDescription": "Rosso vivace, secco e vellutato, con note di ciliegia."
                 },
                 {
-                  "label": "Segrete",
+                  "label": "Casapaia",
                   "detailDescription": "Rosso strutturato e persistente, con note fruttate e speziate."
                 },
                 {
@@ -1916,6 +2046,82 @@
           ]
         },
         {
+          "id": "kombucha-classica",
+          "page": 2,
+          "name": "Kombucha",
+          "category": "Artigianale",
+          "description": "Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",
+          "producerMention": {
+            "label": "Menzione",
+            "handle": "@mia_kombucha",
+            "href": "https://www.instagram.com/mia_kombucha/",
+            "ariaLabel": "Apri il profilo Instagram Mia Kombucha"
+          },
+          "detailLayout": "editorial",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "kombucha-original-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-original-back.webp",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-original-story-what-is.svg",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "kombucha-original-story-we-are.svg",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "kombucha-original-floating.webp",
+            "deferAsset": true,
+            "width": "94px",
+            "height": "150px",
+            "right": "26px",
+            "bottom": "20px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "4deg"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4.5
+            }
+          ],
+          "rect": [
+            48,
+            442,
+            470,
+            526
+          ],
+          "cropRect": [
+            92,
+            462,
+            472,
+            526
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
           "id": "kombucha",
           "page": 2,
           "name": "Kombucha limone",
@@ -1967,85 +2173,6 @@
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom",
             "tilt": "6deg"
-          },
-          "options": [
-            {
-              "label": "",
-              "price": 4.5
-            }
-          ],
-          "rect": [
-            48,
-            442,
-            470,
-            526
-          ],
-          "cropRect": [
-            92,
-            462,
-            472,
-            526
-          ],
-          "cropPadding": [
-            10,
-            10,
-            10,
-            10
-          ]
-        },
-        {
-          "id": "kombucha-classica",
-          "page": 2,
-          "name": "Kombucha",
-          "category": "Artigianale",
-          "description": "Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",
-          "producerMention": {
-            "label": "Menzione",
-            "handle": "@mia_kombucha",
-            "href": "https://www.instagram.com/mia_kombucha/",
-            "ariaLabel": "Apri il profilo Instagram Mia Kombucha"
-          },
-          "detailLayout": "editorial",
-          "visual": {
-            "type": "photo-panel",
-            "asset": "kombucha-original-back.webp",
-            "position": "center center",
-            "size": "cover"
-          },
-          "detailGallery": [
-            {
-              "type": "photo-panel",
-              "asset": "kombucha-original-back.webp",
-              "position": "center center",
-              "size": "cover"
-            },
-            {
-              "type": "text-panel",
-              "bodyLines": [
-                "Bollicine vive, fermentazione lenta.",
-                "Fresca, secca, dissetante.",
-                "Artigianale e analcolica.",
-                "Ma che è? O' miracolo?",
-                "Non berti tutte le cose che ti dicono.",
-                "Beviti Mia.",
-                "Sai che c'è anche al limone?"
-              ],
-              "gradientStart": "#7f7c90",
-              "gradientEnd": "#727083",
-              "bodyColor": "#fffdfb"
-            }
-          ],
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "kombucha-original-floating.webp",
-            "deferAsset": true,
-            "width": "94px",
-            "height": "150px",
-            "right": "26px",
-            "bottom": "20px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "tilt": "4deg"
           },
           "options": [
             {
