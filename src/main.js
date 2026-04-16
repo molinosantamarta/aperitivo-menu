@@ -91,6 +91,7 @@ const PROMO_AGRI_VIDEOS = [
   },
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
+const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set(["mulassano-vermouth-rosso-floating.webp"]);
 const SECTION_SURFACE_COLORS = {
   birre: "#c2a03d",
   drink: "#c97439",
@@ -2678,6 +2679,12 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
       }
     });
   });
+
+  if (!excludeSectionIds) {
+    CRITICAL_MENU_PRELOAD_ASSET_NAMES.forEach((assetName) => {
+      urls.add(getVisualAsset(assetName));
+    });
+  }
 
   return Array.from(urls);
 }

@@ -2525,6 +2525,29 @@
             10,
             10
           ]
+        },
+        {
+          "id": "milkshake",
+          "page": 2,
+          "name": "Agri-Milkshake KM0",
+          "category": "Novità",
+          "showDetailHint": false,
+          "description": "Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto. Con solo 1€ in più puoi esagerare: tutti i topping che vuoi!",
+          "availabilityState": "coming-soon",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "milkshake-km0.jpg",
+            "position": "center 62%",
+            "size": "82% auto",
+            "backgroundColor": "#ffffff"
+          },
+          "options": [
+            {
+              "label": "Milkshake",
+              "displayLabel": "",
+              "price": 4
+            }
+          ]
         }
       ]
     }
