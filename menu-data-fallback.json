@@ -784,10 +784,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "aperol-floating.png",
-            "width": "142px",
-            "height": "298px",
-            "right": "-10px",
-            "bottom": "8px",
+            "width": "128px",
+            "height": "268px",
+            "right": "-2px",
+            "bottom": "10px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1004,7 +1004,7 @@
           "name": "Negroni",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Gin, Campari e Vermouth rosso per il negroni.",
+          "description": "Gin, Campari e Vermouth rosso.",
           "visual": {
             "type": "beer-script",
             "label": "Negroni",
@@ -1069,7 +1069,7 @@
           "name": "Sbagliato",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Pinot Brut, Campari e Vermouth rosso per lo sbagliato.",
+          "description": "Pinot Brut, Campari e Vermouth rosso.",
           "visual": {
             "type": "beer-script",
             "label": "Sbagliato",
@@ -2012,9 +2012,9 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "aranciata-rossa-lurisia-floating.webp",
-            "width": "177px",
-            "height": "426px",
-            "right": "-18px",
+            "width": "164px",
+            "height": "394px",
+            "right": "-10px",
             "bottom": "18px",
             "tilt": "0deg",
             "backgroundSize": "contain",
