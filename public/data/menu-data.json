@@ -557,6 +557,8 @@
           "id": "me-piass",
           "page": 1,
           "name": "Mè Piáss",
+          "visible": false,
+          "available": false,
           "category": "Artigianali",
           "description": "Mexican Lager al lime, 5% vol, 33 cl.",
           "showDetailHint": false,
@@ -1016,11 +1018,11 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-floating.webp",
-            "width": "66px",
-            "height": "182px",
-            "right": "24px",
-            "bottom": "12px",
+            "asset": "gin-malfy-floating.png",
+            "width": "114px",
+            "height": "216px",
+            "right": "0px",
+            "bottom": "8px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1033,7 +1035,7 @@
             "right": "78px",
             "bottom": "10px",
             "zIndex": "5",
-            "tilt": "0deg",
+            "tilt": "3deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
@@ -1093,9 +1095,9 @@
           "accentVisual": {
             "type": "floating-bottle",
             "asset": "mulassano-vermouth-rosso-floating.webp",
-            "width": "50px",
-            "height": "182px",
-            "right": "72px",
+            "width": "53px",
+            "height": "191px",
+            "right": "70px",
             "bottom": "10px",
             "zIndex": "5",
             "tilt": "0deg",
@@ -1134,7 +1136,7 @@
           "name": "Gin Tonic",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Gin tonic.",
+          "description": "Gin Malfy original e acqua tonica.",
           "visual": {
             "type": "beer-script",
             "label": "Gin",
@@ -1147,11 +1149,11 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-floating.webp",
-            "width": "65px",
-            "height": "180px",
-            "right": "28px",
-            "bottom": "14px",
+            "asset": "gin-malfy-floating.png",
+            "width": "114px",
+            "height": "216px",
+            "right": "-4px",
+            "bottom": "10px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1213,11 +1215,11 @@
           },
           "sideVisual": {
             "type": "floating-bottle",
-            "asset": "gin-floating.webp",
-            "width": "65px",
-            "height": "180px",
-            "right": "28px",
-            "bottom": "14px",
+            "asset": "gin-malfy-floating.png",
+            "width": "114px",
+            "height": "216px",
+            "right": "-4px",
+            "bottom": "10px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -2002,7 +2004,7 @@
             "asset": "lurisia-logo-cutout.png",
             "width": "50px"
           },
-          "description": "Con succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, con un equilibrio rotondo tra dolcezza e nota acidula. 27,5 cl.",
+          "description": "Succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, un equilibrio rotondo tra dolcezza e acidita. 27,5 cl.",
           "visual": {
             "type": "photo-panel",
             "asset": "aranciata-rossa-lurisia-back.jpg",
@@ -2125,6 +2127,7 @@
           "id": "kombucha",
           "page": 2,
           "name": "Kombucha limone",
+          "availabilityState": "coming-soon",
           "category": "Artigianale",
           "description": "Tè fermentato frizzante analcolico con succo di limone bio, prodotto in Lombardia.",
           "producerMention": {
@@ -2255,6 +2258,7 @@
           "id": "iced-coffee",
           "page": 2,
           "name": "Iced Latte",
+          "availabilityState": "coming-soon",
           "category": "Altre bevande",
           "description": "Caffè shakerato freddo con latte nostrano, cremoso e dissetante.",
           "visual": {
@@ -2416,6 +2420,7 @@
           "id": "metro-del-molino",
           "page": 2,
           "name": "Metro del Molino",
+          "availabilityState": "coming-soon",
           "category": "Taglieri & sfiziosità",
           "description": "Il tagliere da 1 m con sfiziosità del Molino, salumi, affettati e altre golosità da condividere.",
           "options": [
@@ -2447,6 +2452,7 @@
           "id": "mezzo-metro",
           "page": 2,
           "name": "1/2 Metro",
+          "availabilityState": "coming-soon",
           "category": "Taglieri & sfiziosità",
           "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del Molino.",
           "options": [
@@ -2533,7 +2539,6 @@
           "category": "Novità",
           "showDetailHint": false,
           "description": "Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto. Con solo 1€ in più puoi esagerare: tutti i topping che vuoi!",
-          "availabilityState": "coming-soon",
           "visual": {
             "type": "photo-panel",
             "asset": "milkshake-km0.jpg",

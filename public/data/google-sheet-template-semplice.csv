@@ -4,7 +4,7 @@ Ghe Sem,ghe-sem,visibile,disponibile,6
 Tel Chi,tel-chi,visibile,disponibile,6
 Casciaball,casciaball,visibile,disponibile,6
 Ciapa Fià,ciapa-fia,visibile,disponibile,6
-Mè Piáss,me-piass,visibile,disponibile,6
+Mè Piáss,me-piass,nascosto,non disponibile,6
 Moretti,moretti,visibile,disponibile,4
 Birra alla spina,spina,visibile,non disponibile,5
 Aperol Spritz,aperol,visibile,disponibile,6
@@ -26,10 +26,10 @@ Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
 Aranciata rossa,frutta-bio,visibile,disponibile,"4,5"
 Kombucha,kombucha-classica,visibile,disponibile,"4,5"
-Kombucha limone,kombucha,visibile,disponibile,"4,5"
+Kombucha limone,kombucha,visibile,in arrivo,"4,5"
 Caffè,caffe,visibile,disponibile,"1,5"
-Iced Latte,iced-coffee,visibile,disponibile,4
+Iced Latte,iced-coffee,visibile,in arrivo,4
 Grappe e amari,grappe-amari,visibile,disponibile,4
-Metro del Molino,metro-del-molino,visibile,disponibile,18
-1/2 Metro,mezzo-metro,visibile,disponibile,12
-Agri-Milkshake KM0,milkshake,visibile,in arrivo,4
+Metro del Molino,metro-del-molino,visibile,in arrivo,18
+1/2 Metro,mezzo-metro,visibile,in arrivo,12
+Agri-Milkshake KM0,milkshake,visibile,disponibile,4
