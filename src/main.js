@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260327a";
+const APP_VERSION = "20260417a";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -92,6 +92,8 @@ const PROMO_AGRI_VIDEOS = [
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
 const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set(["mulassano-vermouth-rosso-floating.webp"]);
+const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
+const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
 const SECTION_SURFACE_COLORS = {
   birre: "#c2a03d",
   drink: "#c97439",
@@ -475,6 +477,7 @@ function trackAddToCart(item, option, quantity) {
 
 let sections = [];
 let itemLookup = {};
+const comingSoonCuriosityTimers = new WeakMap();
 let itemSectionLookup = {};
 let itemMenuOrderLookup = {};
 let sideVisualObserver;
@@ -2660,6 +2663,10 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
     }
 
     section.items.forEach((item) => {
+      if (!shouldIncludeItemInLoaderPreload(item)) {
+        return;
+      }
+
       if (!includeDeferredItems && shouldDeferLoaderAssetsForItem(item)) {
         return;
       }
@@ -2672,7 +2679,7 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
         collectSideVisualAssetUrls(visual, urls, { skipDeferredSideVisuals: true })
       );
 
-      if (Array.isArray(item.detailGallery)) {
+      if (shouldPreloadDetailAssetsForItem(item) && Array.isArray(item.detailGallery)) {
         item.detailGallery.forEach((visual) =>
           collectVisualAssetUrls(visual, urls, { skipDeferredPhotoPanels: true })
         );
@@ -2687,6 +2694,14 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
   }
 
   return Array.from(urls);
+}
+
+function shouldIncludeItemInLoaderPreload(item) {
+  return Boolean(item && item.visible !== false);
+}
+
+function shouldPreloadDetailAssetsForItem(item) {
+  return isItemAvailable(item);
 }
 
 function collectShellAssetUrls() {
@@ -3684,13 +3699,91 @@ function renderSections() {
   menuSections.innerHTML = sections.map((section, index) => renderSection(section, index === 0)).join("");
 
   menuSections.querySelectorAll("[data-item-id]").forEach((button) => {
-    button.addEventListener("click", () => openDetail(button.dataset.itemId));
+    button.addEventListener("pointerup", (event) => handleItemCardPointerUp(event, button));
+    button.addEventListener("click", (event) => handleItemCardClick(event, button));
   });
 
   setupSideVisualAnimations();
   setupDeferredSideVisuals();
   setupDeferredBottleBackgrounds();
   setupDeferredCanClusterVisuals();
+}
+
+function handleItemCardPointerUp(event, button) {
+  const itemId = button?.dataset?.itemId;
+  if (!itemId) {
+    return;
+  }
+
+  const item = itemLookup[itemId];
+  if (!item || getItemAvailabilityState(item) !== "coming-soon") {
+    return;
+  }
+
+  if (event.pointerType === "mouse" && event.button !== 0) {
+    return;
+  }
+
+  triggerComingSoonCuriosity(button);
+}
+
+function handleItemCardClick(event, button) {
+  const itemId = button?.dataset?.itemId;
+  if (!itemId) {
+    return;
+  }
+
+  const item = itemLookup[itemId];
+  if (!item) {
+    return;
+  }
+
+  const availabilityState = getItemAvailabilityState(item);
+  if (availabilityState === "coming-soon") {
+    event.preventDefault();
+    if (event.detail === 0) {
+      triggerComingSoonCuriosity(button);
+    }
+    button.blur();
+    return;
+  }
+
+  if (availabilityState !== "available") {
+    event.preventDefault();
+    return;
+  }
+
+  openDetail(itemId);
+}
+
+function triggerComingSoonCuriosity(button) {
+  const clickCount = Number(button.dataset.comingSoonClickCount || "0") + 1;
+  button.dataset.comingSoonClickCount = String(clickCount);
+
+  if (clickCount < COMING_SOON_CURIOSITY_TRIGGER_COUNT) {
+    return;
+  }
+
+  const nudge = button.querySelector(".item-card__coming-soon-nudge");
+  if (!nudge) {
+    return;
+  }
+
+  const activeTimer = comingSoonCuriosityTimers.get(nudge);
+  if (activeTimer) {
+    window.clearTimeout(activeTimer);
+  }
+
+  nudge.classList.remove("is-visible");
+  void nudge.offsetWidth;
+  nudge.classList.add("is-visible");
+
+  const timer = window.setTimeout(() => {
+    nudge.classList.remove("is-visible");
+    comingSoonCuriosityTimers.delete(nudge);
+  }, COMING_SOON_CURIOSITY_VISIBLE_MS);
+
+  comingSoonCuriosityTimers.set(nudge, timer);
 }
 
 function setupSideVisualAnimations() {
@@ -3988,6 +4081,7 @@ function renderItemCard(item) {
   const unavailableLabel = getItemUnavailableLabel(item);
   const shouldHideCardVisual = item.hideCardVisual === true;
   const cardStyle = getItemCardStyle(item, availabilityState);
+  const usesNativeDisabled = availabilityState === "unavailable";
 
   if (availabilityState === "self-service") {
     return renderSelfServiceItemCard(item, unavailableLabel);
@@ -4010,13 +4104,14 @@ function renderItemCard(item) {
       }"
       type="button"
       data-item-id="${item.id}"
+      data-availability-state="${availabilityState}"
       aria-haspopup="dialog"
       aria-label="${
         isSelectionBlocked ? `${item.name} ${unavailableLabel.toLowerCase()}` : `Apri dettagli per ${item.name}`
       }"
       aria-disabled="${isSelectionBlocked ? "true" : "false"}"
       ${cardStyle ? `style="${cardStyle}"` : ""}
-      ${isSelectionBlocked ? "disabled" : ""}
+      ${usesNativeDisabled ? "disabled" : ""}
     >
       ${
         shouldHideCardVisual
@@ -4055,6 +4150,14 @@ function renderItemCard(item) {
                 }`
           }
         </div>
+        ${
+          availabilityState === "coming-soon"
+            ? `<span class="item-card__coming-soon-nudge" aria-hidden="true">
+                <span class="item-card__coming-soon-nudge-emoji">👀</span>
+                <span class="item-card__coming-soon-nudge-text">Sei curioso, ci piaci!</span>
+              </span>`
+            : ""
+        }
         ${
           availabilityState === "self-service" && item.serviceNote
             ? `<p class="item-card__service-note">${item.serviceNote}</p>`

@@ -711,7 +711,7 @@
           "page": 1,
           "name": "Birra alla spina",
           "category": "Alla spina",
-          "available": false,
+          "available": true,
           "description": "Sonnenberg 4,8% vol. 0,4. Lager nata da acque sorgive, leggera e rinfrescante.",
           "showDetailHint": false,
           "visual": {
@@ -1019,10 +1019,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-malfy-floating.png",
-            "width": "114px",
-            "height": "216px",
-            "right": "0px",
-            "bottom": "8px",
+            "width": "126px",
+            "height": "238px",
+            "right": "-6px",
+            "bottom": "4px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1030,12 +1030,12 @@
           "accentVisual": {
             "type": "floating-bottle",
             "asset": "mulassano-vermouth-rosso-floating.webp",
-            "width": "52px",
-            "height": "188px",
-            "right": "78px",
-            "bottom": "10px",
+            "width": "53px",
+            "height": "191px",
+            "right": "70px",
+            "bottom": "4px",
             "zIndex": "5",
-            "tilt": "3deg",
+            "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
@@ -1150,10 +1150,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-malfy-floating.png",
-            "width": "114px",
-            "height": "216px",
-            "right": "-4px",
-            "bottom": "10px",
+            "width": "126px",
+            "height": "238px",
+            "right": "-10px",
+            "bottom": "6px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1216,10 +1216,10 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-malfy-floating.png",
-            "width": "114px",
-            "height": "216px",
-            "right": "-4px",
-            "bottom": "10px",
+            "width": "126px",
+            "height": "238px",
+            "right": "-10px",
+            "bottom": "6px",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
