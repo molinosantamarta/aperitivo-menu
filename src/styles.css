@@ -1975,6 +1975,12 @@ a {
   border-radius: 22px;
 }
 
+#section-taglieri .beer-script-visual--display {
+  min-height: 74px;
+  width: 100%;
+  border-radius: 22px;
+}
+
 .beer-script-visual--display .beer-script-visual__script {
   order: var(--beer-script-script-order, 1);
   align-self: center;

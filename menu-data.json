@@ -1004,6 +1004,7 @@
           "id": "negroni",
           "page": 1,
           "name": "Negroni",
+          "availabilityState": "coming-soon",
           "category": "Drink",
           "showDetailHint": false,
           "description": "Gin, Campari e Vermouth rosso.",
@@ -1069,6 +1070,7 @@
           "id": "sbagliato",
           "page": 1,
           "name": "Sbagliato",
+          "availabilityState": "coming-soon",
           "category": "Drink",
           "showDetailHint": false,
           "description": "Pinot Brut, Campari e Vermouth rosso.",
@@ -2420,7 +2422,7 @@
           "id": "metro-del-molino",
           "page": 2,
           "name": "Metro del Molino",
-          "availabilityState": "coming-soon",
+          "availabilityState": "available",
           "category": "Taglieri & sfiziosità",
           "description": "Il tagliere da 1 m con sfiziosità del Molino, salumi, affettati e altre golosità da condividere.",
           "options": [
@@ -2451,14 +2453,14 @@
         {
           "id": "mezzo-metro",
           "page": 2,
-          "name": "1/2 Metro",
-          "availabilityState": "coming-soon",
+          "name": "Pan & salam",
+          "availabilityState": "available",
           "category": "Taglieri & sfiziosità",
-          "description": "1 etto di salame nostrano, pane fatto in casa e golosità artigianali del Molino.",
+          "description": "1 etto di salame nostrano servito con fette di pagnotta multicereali fatta in casa.",
           "options": [
             {
               "label": "",
-              "price": 12
+              "price": 6
             }
           ],
           "rect": [
@@ -2472,6 +2474,33 @@
             936,
             1110,
             1006
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "pan-furmag",
+          "page": 2,
+          "name": "Pan & furmag",
+          "availabilityState": "coming-soon",
+          "category": "Taglieri & sfiziosità",
+          "description": "Pane fatto in casa e selezione di formaggi.",
+          "options": [],
+          "rect": [
+            48,
+            1010,
+            942,
+            1100
+          ],
+          "cropRect": [
+            90,
+            1052,
+            1110,
+            1122
           ],
           "cropPadding": [
             10,

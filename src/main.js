@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260417a";
+const APP_VERSION = "20260419c";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -4226,6 +4226,10 @@ function renderSelfServiceItemCard(item, unavailableLabel) {
 }
 
 function renderItemTitle(item) {
+  if (isTaglieriItem(item)) {
+    return "";
+  }
+
   if (!item || !item.titleLogo || !item.titleLogo.asset) {
     return `<h3>${item.name}</h3>`;
   }
@@ -4257,6 +4261,10 @@ function isBeerItem(item) {
 
 function isDrinkItem(item) {
   return findSectionTitleForItem(item.id).toLowerCase() === "drink";
+}
+
+function isTaglieriItem(item) {
+  return findSectionTitleForItem(item.id).toLowerCase() === "taglieri";
 }
 
 function isSpritzItem(item) {
@@ -6618,6 +6626,10 @@ function renderItemVisual(item, context) {
   }
 
   if (visualType === "placeholder-panel") {
+    if (context === "card" && isTaglieriItem(item)) {
+      return renderTaglieriTitleVisual(item);
+    }
+
     return renderPlaceholderPanelVisual(context);
   }
 
@@ -6647,6 +6659,29 @@ function renderPlaceholderPanelVisual(context) {
   }
 
   return `<div class="${classes.join(" ")}" aria-hidden="true"></div>`;
+}
+
+function renderTaglieriTitleVisual(item) {
+  return renderBeerScriptVisual(
+    {
+      label: item.name,
+      textStyle: "display",
+      gradientStart: "#7f3d20",
+      gradientMid: "#bf6f2a",
+      gradientEnd: "#f0bf7d",
+      labelColor: "#fff9f2",
+      radius: "22px",
+      width: "100%",
+      maxWidth: "none",
+      minHeight: "74px",
+      labelFontFamily: "var(--font-display)",
+      labelFontSize: "clamp(1.5rem, 7.1vw, 2.25rem)",
+      labelLineHeight: "0.9",
+      labelLetterSpacing: "var(--font-display-letter-spacing)",
+      labelOrder: "0",
+    },
+    "card"
+  );
 }
 
 function buildDetailEditorialSlide(item) {

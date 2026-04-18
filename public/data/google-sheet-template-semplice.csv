@@ -11,8 +11,8 @@ Aperol Spritz,aperol,visibile,disponibile,6
 Campari Spritz,campari,visibile,disponibile,6
 Sarti Spritz,sarti,visibile,disponibile,6
 Hugo Spritz,hugo,visibile,disponibile,6
-Negroni,negroni,visibile,disponibile,6
-Sbagliato,sbagliato,visibile,disponibile,6
+Negroni,negroni,visibile,in arrivo,6
+Sbagliato,sbagliato,visibile,in arrivo,6
 Gin Tonic,gin-tonic,visibile,disponibile,6
 Gin Lemon,gin-lemon,visibile,disponibile,6
 Gin Tropical,gin-tonic-special,visibile,disponibile,6
@@ -30,6 +30,7 @@ Kombucha limone,kombucha,visibile,in arrivo,"4,5"
 Caffè,caffe,visibile,disponibile,"1,5"
 Iced Latte,iced-coffee,visibile,in arrivo,4
 Grappe e amari,grappe-amari,visibile,disponibile,4
-Metro del Molino,metro-del-molino,visibile,in arrivo,18
-1/2 Metro,mezzo-metro,visibile,in arrivo,12
+Metro del Molino,metro-del-molino,visibile,disponibile,18
+Pan & salam,mezzo-metro,visibile,disponibile,6
+Pan & furmag,pan-furmag,visibile,in arrivo,
 Agri-Milkshake KM0,milkshake,visibile,disponibile,4
