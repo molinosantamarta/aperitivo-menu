@@ -2451,16 +2451,16 @@
           ]
         },
         {
-          "id": "mezzo-metro",
+          "id": "metro-gourmet-del-molino",
           "page": 2,
-          "name": "Pan & salam",
-          "availabilityState": "available",
+          "name": "Metro Gourmet del Molino",
+          "availabilityState": "coming-soon",
           "category": "Taglieri & sfiziosità",
-          "description": "1 etto di salame nostrano servito con fette di pagnotta multicereali fatta in casa.",
+          "description": "Versione premium del metro del Molino, con selezione gourmet.",
           "options": [
             {
               "label": "",
-              "price": 6
+              "price": 24
             }
           ],
           "rect": [
@@ -2483,13 +2483,18 @@
           ]
         },
         {
-          "id": "pan-furmag",
+          "id": "mezzo-metro",
           "page": 2,
-          "name": "Pan & furmag",
-          "availabilityState": "coming-soon",
+          "name": "Pan & salam",
+          "availabilityState": "available",
           "category": "Taglieri & sfiziosità",
-          "description": "Pane fatto in casa e selezione di formaggi.",
-          "options": [],
+          "description": "1 etto di salame nostrano servito con fette di pagnotta multicereali fatta in casa.",
+          "options": [
+            {
+              "label": "",
+              "price": 6
+            }
+          ],
           "rect": [
             48,
             1010,
@@ -2501,6 +2506,33 @@
             1052,
             1110,
             1122
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "pan-furmag",
+          "page": 2,
+          "name": "Pan & furmag",
+          "availabilityState": "coming-soon",
+          "category": "Taglieri & sfiziosità",
+          "description": "Pane fatto in casa e selezione di formaggi.",
+          "options": [],
+          "rect": [
+            48,
+            1126,
+            942,
+            1216
+          ],
+          "cropRect": [
+            90,
+            1168,
+            1110,
+            1238
           ],
           "cropPadding": [
             10,

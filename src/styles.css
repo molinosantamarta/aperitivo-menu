@@ -1809,6 +1809,15 @@ a {
   padding: 10px;
 }
 
+#section-taglieri .item-card {
+  padding: 10px;
+}
+
+#section-taglieri .item-card__visual--placeholder-panel {
+  min-height: 92px;
+  align-items: flex-start;
+}
+
 .item-card[data-item-id="iced-coffee"] {
   padding-top: 6px;
 }

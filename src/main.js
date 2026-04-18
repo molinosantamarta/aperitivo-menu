@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260419c";
+const APP_VERSION = "20260419m";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -4226,10 +4226,6 @@ function renderSelfServiceItemCard(item, unavailableLabel) {
 }
 
 function renderItemTitle(item) {
-  if (isTaglieriItem(item)) {
-    return "";
-  }
-
   if (!item || !item.titleLogo || !item.titleLogo.asset) {
     return `<h3>${item.name}</h3>`;
   }
@@ -6662,23 +6658,52 @@ function renderPlaceholderPanelVisual(context) {
 }
 
 function renderTaglieriTitleVisual(item) {
+  const isMetroDelMolino = item?.id === "metro-del-molino";
+  const isMetroGourmetDelMolino = item?.id === "metro-gourmet-del-molino";
+  const isPanFurmag = item?.id === "pan-furmag";
+
   return renderBeerScriptVisual(
     {
-      label: item.name,
+      label: isMetroDelMolino ? "Metro" : isMetroGourmetDelMolino ? "Metro Gourmet" : item.name,
+      script: isMetroDelMolino || isMetroGourmetDelMolino ? "del Molino" : "",
       textStyle: "display",
-      gradientStart: "#7f3d20",
-      gradientMid: "#bf6f2a",
-      gradientEnd: "#f0bf7d",
+      gradientStart: isMetroGourmetDelMolino
+        ? "#5c214f"
+        : isMetroDelMolino
+          ? "#8b2f22"
+          : isPanFurmag
+            ? "#b48712"
+            : "#7f3d20",
+      gradientMid: isMetroGourmetDelMolino
+        ? "#9c2f6b"
+        : isMetroDelMolino
+          ? "#cf6a2c"
+          : isPanFurmag
+            ? "#e2b82f"
+            : "#bf6f2a",
+      gradientEnd: isMetroGourmetDelMolino
+        ? "#d7686f"
+        : isMetroDelMolino
+          ? "#f0bf74"
+          : isPanFurmag
+            ? "#f6de8a"
+            : "#f0bf7d",
       labelColor: "#fff9f2",
       radius: "22px",
       width: "100%",
       maxWidth: "none",
       minHeight: "74px",
       labelFontFamily: "var(--font-display)",
-      labelFontSize: "clamp(1.5rem, 7.1vw, 2.25rem)",
+      labelFontSize: "clamp(1.4rem, 6.6vw, 2.08rem)",
       labelLineHeight: "0.9",
       labelLetterSpacing: "var(--font-display-letter-spacing)",
       labelOrder: "0",
+      scriptFontFamily: "var(--font-subtitle)",
+      scriptFontSize: "clamp(2.05rem, 7.7vw, 3rem)",
+      scriptLineHeight: "0.88",
+      scriptLetterSpacing: "0",
+      scriptTransform: "translate(0.02em, -0.02em)",
+      scriptOrder: "1",
     },
     "card"
   );
