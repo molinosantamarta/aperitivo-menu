@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.756";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.756";
+  var APP_BUILD_LABEL = "V.1.0.757";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.757";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260419m";
+  var APP_VERSION = "20260419n";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -115,6 +115,44 @@
   var CRITICAL_MENU_PRELOAD_ASSET_NAMES = /* @__PURE__ */ new Set(["mulassano-vermouth-rosso-floating.webp"]);
   var COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
   var COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
+  var COMING_SOON_CURIOSITY_MESSAGES = [
+    {
+      emoji: "\u{1F440}",
+      text: "Sei curioso, ci piaci!"
+    },
+    {
+      emoji: "\u2728",
+      text: "Ehi, questa ti ispira parecchio."
+    },
+    {
+      emoji: "\u{1F60F}",
+      text: "Lo sappiamo: la stai gi\xE0 puntando."
+    },
+    {
+      emoji: "\u{1FAF6}",
+      text: "Arriva presto, promesso."
+    },
+    {
+      emoji: "\u{1F525}",
+      text: "Qui c\u2019\xE8 interesse vero."
+    },
+    {
+      emoji: "\u{1F92D}",
+      text: "Ancora un click e la evochi."
+    },
+    {
+      emoji: "\u{1F377}",
+      text: "Hai buon gusto, si vede."
+    },
+    {
+      emoji: "\u{1F441}\uFE0F",
+      text: "Ti ha gi\xE0 conquistato, vero?"
+    },
+    {
+      emoji: "\u23F3",
+      text: "Un po' di pazienza, ne varr\xE0 la pena."
+    }
+  ];
   var SECTION_SURFACE_COLORS = {
     birre: "#c2a03d",
     drink: "#c97439",
@@ -3078,6 +3116,15 @@
     if (!nudge) {
       return;
     }
+    const emojiNode = nudge.querySelector(".item-card__coming-soon-nudge-emoji");
+    const textNode = nudge.querySelector(".item-card__coming-soon-nudge-text");
+    const nextMessage = pickComingSoonCuriosityMessage(button);
+    if (emojiNode) {
+      emojiNode.textContent = nextMessage.emoji;
+    }
+    if (textNode) {
+      textNode.textContent = nextMessage.text;
+    }
     const activeTimer = comingSoonCuriosityTimers.get(nudge);
     if (activeTimer) {
       window.clearTimeout(activeTimer);
@@ -3090,6 +3137,25 @@
       comingSoonCuriosityTimers.delete(nudge);
     }, COMING_SOON_CURIOSITY_VISIBLE_MS);
     comingSoonCuriosityTimers.set(nudge, timer);
+  }
+  function pickComingSoonCuriosityMessage(button) {
+    var _a2, _b;
+    if (!COMING_SOON_CURIOSITY_MESSAGES.length) {
+      return {
+        emoji: "\u{1F440}",
+        text: "Sei curioso, ci piaci!"
+      };
+    }
+    const previousIndex = Number.parseInt(((_a2 = button == null ? void 0 : button.dataset) == null ? void 0 : _a2.comingSoonNudgeIndex) || "-1", 10);
+    const candidateIndexes = COMING_SOON_CURIOSITY_MESSAGES.map((_, index) => index).filter(
+      (index) => index !== previousIndex
+    );
+    const pool = candidateIndexes.length ? candidateIndexes : COMING_SOON_CURIOSITY_MESSAGES.map((_, index) => index);
+    const nextIndex = (_b = pool[Math.floor(Math.random() * pool.length)]) != null ? _b : 0;
+    if (button == null ? void 0 : button.dataset) {
+      button.dataset.comingSoonNudgeIndex = String(nextIndex);
+    }
+    return COMING_SOON_CURIOSITY_MESSAGES[nextIndex];
   }
   function setupSideVisualAnimations() {
     if (sideVisualObserver) {
@@ -3289,7 +3355,7 @@
     }
     return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      data-availability-state="').concat(availabilityState, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(usesNativeDisabled ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
-    ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "coming-soon" ? '<span class="item-card__coming-soon-nudge" aria-hidden="true">\n                <span class="item-card__coming-soon-nudge-emoji">\u{1F440}</span>\n                <span class="item-card__coming-soon-nudge-text">Sei curioso, ci piaci!</span>\n              </span>' : "", "\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+    ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "coming-soon" ? '<span class="item-card__coming-soon-nudge" aria-hidden="true">\n                <span class="item-card__coming-soon-nudge-emoji">'.concat(COMING_SOON_CURIOSITY_MESSAGES[0].emoji, '</span>\n                <span class="item-card__coming-soon-nudge-text">').concat(COMING_SOON_CURIOSITY_MESSAGES[0].text, "</span>\n              </span>") : "", "\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
   }
   function getItemCardStyle(item, availabilityState) {
     if (availabilityState !== "coming-soon") {
@@ -3854,6 +3920,13 @@
     if (!detailPreview || !item) {
       return;
     }
+    if (shouldHideDetailPreview(item)) {
+      detailPreview.hidden = true;
+      detailPreview.className = "sheet-preview sheet-preview--hidden";
+      detailPreview.innerHTML = "";
+      return;
+    }
+    detailPreview.hidden = false;
     const hasGallery = hasDetailPreviewGallery(item);
     detailPreview.className = "sheet-preview".concat(getDetailPreviewClass(item)).concat(hasGallery ? " sheet-preview--gallery" : " sheet-preview--single").concat(state.detailEditorialSlide ? " sheet-preview--editorial-gallery" : "").concat(hasGallery && (isArtisanalBeerItem(item) || isDrinkItem(item)) ? " sheet-preview--beer-script-framed" : "");
     detailPreview.innerHTML = renderDetailPreview(item);
@@ -5149,6 +5222,27 @@
     const orderedBaseSlides = reorderDetailPreviewSlides(baseSlides, item == null ? void 0 : item.detailPreviewStartIndex);
     const editorialSlide = item.id === state.selectedItemId ? state.detailEditorialSlide : null;
     return editorialSlide ? [...orderedBaseSlides, editorialSlide] : orderedBaseSlides;
+  }
+  function shouldHideDetailPreview(item) {
+    if (!isTaglieriItem(item)) {
+      return false;
+    }
+    return !hasRenderableDetailPreview(item);
+  }
+  function hasRenderableDetailPreview(item) {
+    if (!item) {
+      return false;
+    }
+    const slides = getDetailPreviewSlides(item).filter(
+      (slide) => slide && slide.type && slide.type !== "none" && slide.type !== "placeholder-panel"
+    );
+    if (slides.length > 0) {
+      return true;
+    }
+    const detailVisual = getContextualVisual(item, "detail");
+    return Boolean(
+      detailVisual && detailVisual.type && detailVisual.type !== "none" && detailVisual.type !== "placeholder-panel"
+    );
   }
   function reorderDetailPreviewSlides(slides, startIndex) {
     if (!Array.isArray(slides) || slides.length <= 1) {

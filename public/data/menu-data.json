@@ -1456,6 +1456,7 @@
           "id": "rosso-del-lupo",
           "page": 1,
           "name": "Rosso del Lupo",
+          "availabilityState": "unavailable",
           "category": "Vino",
           "description": "Valcalepio rosso fermo DOC, BIO.",
           "detailDescription": "Valcalepio Rosso fermo DOC Bio.\nAz. Agricola Tosca.",
@@ -2424,7 +2425,7 @@
           "name": "Metro del Molino",
           "availabilityState": "available",
           "category": "Taglieri & sfiziosità",
-          "description": "Il tagliere da 1 m con sfiziosità del Molino, salumi, affettati e altre golosità da condividere.",
+          "description": "Ricco e autentico: il tagliere da 1 m con salumi, affettati e sfiziosità artigianali del Molino. Per un'esperienza da condividere!",
           "options": [
             {
               "label": "",

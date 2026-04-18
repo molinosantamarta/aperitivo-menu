@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260419m";
+const APP_VERSION = "20260419n";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -94,6 +94,44 @@ const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
 const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set(["mulassano-vermouth-rosso-floating.webp"]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
+const COMING_SOON_CURIOSITY_MESSAGES = [
+  {
+    emoji: "👀",
+    text: "Sei curioso, ci piaci!",
+  },
+  {
+    emoji: "✨",
+    text: "Ehi, questa ti ispira parecchio.",
+  },
+  {
+    emoji: "😏",
+    text: "Lo sappiamo: la stai già puntando.",
+  },
+  {
+    emoji: "🫶",
+    text: "Arriva presto, promesso.",
+  },
+  {
+    emoji: "🔥",
+    text: "Qui c’è interesse vero.",
+  },
+  {
+    emoji: "🤭",
+    text: "Ancora un click e la evochi.",
+  },
+  {
+    emoji: "🍷",
+    text: "Hai buon gusto, si vede.",
+  },
+  {
+    emoji: "👁️",
+    text: "Ti ha già conquistato, vero?",
+  },
+  {
+    emoji: "⏳",
+    text: "Un po' di pazienza, ne varrà la pena.",
+  },
+];
 const SECTION_SURFACE_COLORS = {
   birre: "#c2a03d",
   drink: "#c97439",
@@ -3769,6 +3807,18 @@ function triggerComingSoonCuriosity(button) {
     return;
   }
 
+  const emojiNode = nudge.querySelector(".item-card__coming-soon-nudge-emoji");
+  const textNode = nudge.querySelector(".item-card__coming-soon-nudge-text");
+  const nextMessage = pickComingSoonCuriosityMessage(button);
+
+  if (emojiNode) {
+    emojiNode.textContent = nextMessage.emoji;
+  }
+
+  if (textNode) {
+    textNode.textContent = nextMessage.text;
+  }
+
   const activeTimer = comingSoonCuriosityTimers.get(nudge);
   if (activeTimer) {
     window.clearTimeout(activeTimer);
@@ -3784,6 +3834,30 @@ function triggerComingSoonCuriosity(button) {
   }, COMING_SOON_CURIOSITY_VISIBLE_MS);
 
   comingSoonCuriosityTimers.set(nudge, timer);
+}
+
+function pickComingSoonCuriosityMessage(button) {
+  if (!COMING_SOON_CURIOSITY_MESSAGES.length) {
+    return {
+      emoji: "👀",
+      text: "Sei curioso, ci piaci!",
+    };
+  }
+
+  const previousIndex = Number.parseInt(button?.dataset?.comingSoonNudgeIndex || "-1", 10);
+  const candidateIndexes = COMING_SOON_CURIOSITY_MESSAGES.map((_, index) => index).filter(
+    (index) => index !== previousIndex
+  );
+  const pool = candidateIndexes.length
+    ? candidateIndexes
+    : COMING_SOON_CURIOSITY_MESSAGES.map((_, index) => index);
+  const nextIndex = pool[Math.floor(Math.random() * pool.length)] ?? 0;
+
+  if (button?.dataset) {
+    button.dataset.comingSoonNudgeIndex = String(nextIndex);
+  }
+
+  return COMING_SOON_CURIOSITY_MESSAGES[nextIndex];
 }
 
 function setupSideVisualAnimations() {
@@ -4153,8 +4227,8 @@ function renderItemCard(item) {
         ${
           availabilityState === "coming-soon"
             ? `<span class="item-card__coming-soon-nudge" aria-hidden="true">
-                <span class="item-card__coming-soon-nudge-emoji">👀</span>
-                <span class="item-card__coming-soon-nudge-text">Sei curioso, ci piaci!</span>
+                <span class="item-card__coming-soon-nudge-emoji">${COMING_SOON_CURIOSITY_MESSAGES[0].emoji}</span>
+                <span class="item-card__coming-soon-nudge-text">${COMING_SOON_CURIOSITY_MESSAGES[0].text}</span>
               </span>`
             : ""
         }
@@ -5053,6 +5127,14 @@ function refreshDetailPreview(item) {
     return;
   }
 
+  if (shouldHideDetailPreview(item)) {
+    detailPreview.hidden = true;
+    detailPreview.className = "sheet-preview sheet-preview--hidden";
+    detailPreview.innerHTML = "";
+    return;
+  }
+
+  detailPreview.hidden = false;
   const hasGallery = hasDetailPreviewGallery(item);
 
   detailPreview.className = `sheet-preview${getDetailPreviewClass(item)}${
@@ -6959,6 +7041,36 @@ function getDetailPreviewSlides(item) {
   const editorialSlide = item.id === state.selectedItemId ? state.detailEditorialSlide : null;
 
   return editorialSlide ? [...orderedBaseSlides, editorialSlide] : orderedBaseSlides;
+}
+
+function shouldHideDetailPreview(item) {
+  if (!isTaglieriItem(item)) {
+    return false;
+  }
+
+  return !hasRenderableDetailPreview(item);
+}
+
+function hasRenderableDetailPreview(item) {
+  if (!item) {
+    return false;
+  }
+
+  const slides = getDetailPreviewSlides(item).filter(
+    (slide) => slide && slide.type && slide.type !== "none" && slide.type !== "placeholder-panel"
+  );
+
+  if (slides.length > 0) {
+    return true;
+  }
+
+  const detailVisual = getContextualVisual(item, "detail");
+  return Boolean(
+    detailVisual &&
+      detailVisual.type &&
+      detailVisual.type !== "none" &&
+      detailVisual.type !== "placeholder-panel"
+  );
 }
 
 function reorderDetailPreviewSlides(slides, startIndex) {
