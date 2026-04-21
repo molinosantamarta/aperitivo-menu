@@ -1133,6 +1133,72 @@
           ]
         },
         {
+          "id": "americano",
+          "page": 1,
+          "name": "Americano",
+          "availabilityState": "coming-soon",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Vermouth rosso e Campari.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Americano",
+            "gradientStart": "#7e2230",
+            "gradientMid": "#bf3741",
+            "gradientEnd": "#f2a35e",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "campari-floating.webp",
+            "width": "99px",
+            "height": "209px",
+            "right": "2px",
+            "bottom": "10px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "mulassano-vermouth-rosso-floating.webp",
+            "width": "53px",
+            "height": "191px",
+            "right": "70px",
+            "bottom": "10px",
+            "zIndex": "5",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
           "id": "gin-tonic",
           "page": 1,
           "name": "Gin Tonic",
@@ -2104,7 +2170,7 @@
           "options": [
             {
               "label": "",
-              "price": 4.5
+              "price": 4
             }
           ],
           "rect": [

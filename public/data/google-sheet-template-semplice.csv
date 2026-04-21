@@ -13,6 +13,7 @@ Sarti Spritz,sarti,visibile,disponibile,6
 Hugo Spritz,hugo,visibile,disponibile,6
 Negroni,negroni,visibile,in arrivo,6
 Sbagliato,sbagliato,visibile,in arrivo,6
+Americano,americano,visibile,in arrivo,6
 Gin Tonic,gin-tonic,visibile,disponibile,6
 Gin Lemon,gin-lemon,visibile,disponibile,6
 Gin Tropical,gin-tonic-special,visibile,disponibile,6
@@ -25,7 +26,7 @@ Rosè n°5 Feral,rose-n5,visibile,disponibile,25
 Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
 Aranciata rossa,frutta-bio,visibile,disponibile,"4,5"
-Kombucha,kombucha-classica,visibile,disponibile,"4,5"
+Kombucha,kombucha-classica,visibile,disponibile,4
 Kombucha limone,kombucha,visibile,in arrivo,"4,5"
 Caffè,caffe,visibile,disponibile,"1,5"
 Iced Latte,iced-coffee,visibile,in arrivo,4

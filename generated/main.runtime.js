@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.757";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.757";
+  var APP_BUILD_LABEL = "V.1.0.758";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.758";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,11 +31,11 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260419n";
+  var APP_VERSION = "20260421h";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
-  var LOADER_MIN_DURATION = 6e3;
+  var LOADER_MIN_DURATION = 8e3;
   var LOADER_FONT_TIMEOUT = 12e3;
   var FONT_LOAD_TIMEOUT = 12e3;
   var STRICT_FONT_LOAD_TIMEOUT = 12e3;
@@ -59,8 +59,6 @@
     buildVersionedPath("./sheet-config.json"),
     buildVersionedPath("./sheet-config-fallback.json")
   ];
-  var COMANDA_MENU_URL = "https://www.comandaassistant.com/menu/";
-  var COMANDA_WUC_CODE = "OqAj4Sc3UupCLlYh";
   var LOADER_MESSAGE_INTERVAL = 1900;
   var LOADER_MESSAGE_FADE_DURATION = 420;
   var LOADER_PROGRESS_WEIGHTS = {
@@ -506,7 +504,6 @@
   var loaderStartedAt = null;
   var appHasRevealed = false;
   var lastFocusedElement = null;
-  var lastServiceCallTriggerButton = null;
   var loaderCardRevealPromise = null;
   var resolveLoaderClockStarted = () => {
   };
@@ -611,11 +608,6 @@
   var promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
   var promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
   var promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
-  var serviceCallLightbox = document.querySelector("#serviceCallLightbox");
-  var serviceCallLightboxBackdrop = document.querySelector("#serviceCallLightboxBackdrop");
-  var serviceCallLightboxClose = document.querySelector("#serviceCallLightboxClose");
-  var serviceCallLightboxFrame = document.querySelector("#serviceCallLightboxFrame");
-  var serviceCallLightboxDialog = document.querySelector("#serviceCallLightboxDialog");
   var formatCarousel = document.querySelector("#formatCarousel");
   var formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   var formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -739,8 +731,6 @@
     button.addEventListener("click", closeDetail);
   });
   closeCartButton.addEventListener("click", closeCart);
-  serviceCallLightboxBackdrop == null ? void 0 : serviceCallLightboxBackdrop.addEventListener("click", closeCallWaiterLightbox);
-  serviceCallLightboxClose == null ? void 0 : serviceCallLightboxClose.addEventListener("click", closeCallWaiterLightbox);
   detailSheet.addEventListener("click", (event) => {
     if (event.target === detailSheet) {
       closeDetail();
@@ -808,7 +798,6 @@
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-      closeCallWaiterLightbox();
       closeDetail();
       closeCart();
       return;
@@ -4186,7 +4175,7 @@
     renderCart();
   }
   function renderGeneratedCartSummary() {
-    var _a2, _b, _c;
+    var _a2, _b;
     const groupedEntries = groupGeneratedCartEntries(state.cart);
     groupedEntries.forEach((group) => {
       const groupSection = document.createElement("section");
@@ -4205,15 +4194,12 @@
     });
     const actions = document.createElement("div");
     actions.className = "cart-generated-actions";
-    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n    <button class="utility-btn utility-btn--call-waiter" type="button" data-generated-action="call-waiter">\n      <span class="utility-btn--call-waiter__label">Chiama operatore</span>\n      <span class="utility-btn--call-waiter__beta">Beta</span>\n    </button>\n  ');
+    actions.innerHTML = '\n    <button class="utility-btn utility-btn--secondary" type="button" data-generated-action="edit">\n      '.concat(editSummaryLabel, '\n    </button>\n    <button class="utility-btn utility-btn--tertiary" type="button" data-generated-action="close">\n      Chiudi\n    </button>\n  ');
     (_a2 = actions.querySelector('[data-generated-action="edit"]')) == null ? void 0 : _a2.addEventListener("click", () => {
       setCartSummaryView(false);
     });
     (_b = actions.querySelector('[data-generated-action="close"]')) == null ? void 0 : _b.addEventListener("click", () => {
       closeCart();
-    });
-    (_c = actions.querySelector('[data-generated-action="call-waiter"]')) == null ? void 0 : _c.addEventListener("click", (event) => {
-      openCallWaiterLightbox(event.currentTarget);
     });
     cartGenerated.append(actions);
   }
@@ -4502,38 +4488,7 @@
       }
     });
   }
-  function buildComandaCallWaiterUrl() {
-    const url = new URL(COMANDA_MENU_URL);
-    url.searchParams.set("wuc", COMANDA_WUC_CODE);
-    return url.toString();
-  }
-  function openCallWaiterLightbox(triggerButton = null) {
-    const targetUrl = buildComandaCallWaiterUrl();
-    if (!serviceCallLightbox || !serviceCallLightboxFrame) {
-      return;
-    }
-    lastServiceCallTriggerButton = triggerButton instanceof HTMLElement ? triggerButton : null;
-    serviceCallLightbox.hidden = false;
-    serviceCallLightbox.setAttribute("aria-hidden", "false");
-    serviceCallLightboxFrame.setAttribute("src", targetUrl);
-    pageBody.classList.add("modal-open");
-    serviceCallLightboxClose == null ? void 0 : serviceCallLightboxClose.focus();
-  }
-  function closeCallWaiterLightbox() {
-    if (!serviceCallLightbox || serviceCallLightbox.hidden) {
-      return;
-    }
-    serviceCallLightbox.hidden = true;
-    serviceCallLightbox.setAttribute("aria-hidden", "true");
-    serviceCallLightboxFrame == null ? void 0 : serviceCallLightboxFrame.setAttribute("src", "about:blank");
-    syncModalOpenState({ restoreFocus: false });
-    lastServiceCallTriggerButton == null ? void 0 : lastServiceCallTriggerButton.focus();
-    lastServiceCallTriggerButton = null;
-  }
   function getOpenModalPanel() {
-    if (serviceCallLightbox && !serviceCallLightbox.hidden && serviceCallLightboxDialog) {
-      return serviceCallLightboxDialog;
-    }
     if (detailSheet.classList.contains("is-open")) {
       return detailPanel;
     }
@@ -4543,7 +4498,7 @@
     return null;
   }
   function hasOpenModal() {
-    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(serviceCallLightbox == null ? void 0 : serviceCallLightbox.hidden) || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden);
+    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden);
   }
   function syncModalOpenState(options = {}) {
     const { restoreFocus = true } = options;
