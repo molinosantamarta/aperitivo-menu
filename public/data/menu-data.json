@@ -2446,13 +2446,11 @@
               "price": 4
             },
             {
-              "label": "Nanin",
-              "displayLabel": "Nanin",
-              "subtitle": "L'amaro alle erbe del Molino",
-              "subtitleStyle": "italic",
+              "label": "L'amaro alle erbe del Molino",
+              "displayLabel": "L'amaro alle erbe del Molino",
               "illustrations": [
                 {
-                  "asset": "nanin-rosemary.svg",
+                  "asset": "amaro-erbe-rosemary.svg",
                   "left": "10px",
                   "bottom": "-8px",
                   "width": "46px",
@@ -2460,7 +2458,7 @@
                   "opacity": "0.11"
                 },
                 {
-                  "asset": "nanin-sage.svg",
+                  "asset": "amaro-erbe-sage.svg",
                   "top": "-2px",
                   "right": "10px",
                   "width": "48px",
