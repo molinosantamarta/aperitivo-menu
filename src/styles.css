@@ -2428,6 +2428,7 @@ a {
 }
 
 .item-card--artisanal-beer .item-card__content {
+  grid-template-rows: auto auto 1fr auto auto;
   padding-top: 9px;
 }
 
@@ -2665,6 +2666,16 @@ a {
   line-height: 1.4;
   white-space: nowrap;
   text-wrap: nowrap;
+}
+
+.item-card--artisanal-beer .item-card__detail-hint {
+  margin-top: 7px;
+  color: rgba(92, 66, 39, 0.76);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.18;
+  text-wrap: balance;
+  white-space: normal;
 }
 
 .item-card__prices {

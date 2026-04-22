@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.758";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.758";
+  var APP_BUILD_LABEL = "V.1.0.759";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.759";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260421h";
+  var APP_VERSION = "20260422a";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -3342,9 +3342,15 @@
     if (availabilityState === "self-service") {
       return renderSelfServiceItemCard(item, unavailableLabel);
     }
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      data-availability-state="').concat(availabilityState, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(usesNativeDisabled ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, '</p>\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
+    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      data-availability-state="').concat(availabilityState, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(usesNativeDisabled ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, "</p>\n        ").concat(renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked), '\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
       (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
     ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "coming-soon" ? '<span class="item-card__coming-soon-nudge" aria-hidden="true">\n                <span class="item-card__coming-soon-nudge-emoji">'.concat(COMING_SOON_CURIOSITY_MESSAGES[0].emoji, '</span>\n                <span class="item-card__coming-soon-nudge-text">').concat(COMING_SOON_CURIOSITY_MESSAGES[0].text, "</span>\n              </span>") : "", "\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+  }
+  function renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked) {
+    if (!isArtisanalBeer || isSelectionBlocked || !item) {
+      return "";
+    }
+    return '<p class="item-card__detail-hint">Tocca per scoprire di pi\xF9</p>';
   }
   function getItemCardStyle(item, availabilityState) {
     if (availabilityState !== "coming-soon") {

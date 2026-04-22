@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260421h";
+const APP_VERSION = "20260422a";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -4192,6 +4192,7 @@ function renderItemCard(item) {
         </div>
         ${renderItemTitle(item)}
         <p>${item.description}</p>
+        ${renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked)}
         <div class="item-card__prices">
           ${
             showsOnlyStatusChip
@@ -4230,6 +4231,14 @@ function renderItemCard(item) {
       </div>
     </button>
   `;
+}
+
+function renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked) {
+  if (!isArtisanalBeer || isSelectionBlocked || !item) {
+    return "";
+  }
+
+  return `<p class="item-card__detail-hint">Tocca per scoprire di più</p>`;
 }
 
 function getItemCardStyle(item, availabilityState) {
