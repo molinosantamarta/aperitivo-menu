@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260423a";
+const APP_VERSION = "20260428i";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -89,7 +89,10 @@ const PROMO_AGRI_VIDEOS = [
   },
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
-const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set(["mulassano-vermouth-rosso-floating.webp"]);
+const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set([
+  "mulassano-vermouth-rosso-floating.webp",
+  "acqua-tonica-floating.webp",
+]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
 const COMING_SOON_CURIOSITY_MESSAGES = [
@@ -1657,7 +1660,9 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
       .map((item, index) => {
         const row = getManagedSheetRow(item, rowLookup);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
-        nextItem.__sheetPosition = getSheetRowPosition(row, index);
+        nextItem.__sheetPosition = row
+          ? getSheetRowPosition(row, index)
+          : getLocalSheetPosition(item, index);
         return nextItem;
       });
   });
@@ -1782,7 +1787,7 @@ function updateItemFromSheet(item, row, section) {
   if (nextName) {
     nextItem.name = nextName;
   }
-  if (nextDescription) {
+  if (nextDescription && nextItem.lockSheetDescription !== true) {
     nextItem.description = nextDescription;
   }
   if (nextCategory) {
@@ -1802,9 +1807,11 @@ function updateItemFromSheet(item, row, section) {
     applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
   }
 
-  const options = mergeSheetOptions(nextItem.options, row);
-  if (options) {
-    nextItem.options = options;
+  if (nextItem.lockSheetOptions !== true) {
+    const options = mergeSheetOptions(nextItem.options, row);
+    if (options) {
+      nextItem.options = options;
+    }
   }
 
   const visual = buildSheetVisual(row, section, nextItem.visual, nextItem.name);
@@ -2129,6 +2136,11 @@ function getFirstSheetValue(...values) {
 
 function getSheetPosition(item) {
   return item && item.__sheetPosition != null ? item.__sheetPosition : 0;
+}
+
+function getLocalSheetPosition(item, fallbackValue) {
+  const parsed = parseSheetNumber(getFirstSheetValue(item?.sheetSortOrder, item?.sheetPosition));
+  return Number.isFinite(parsed) ? parsed : fallbackValue;
 }
 
 function parseSheetBoolean(value, fallbackValue) {
@@ -2724,6 +2736,10 @@ function collectMenuVisualAssetUrls(menuData, options = {}) {
 }
 
 function shouldIncludeItemInLoaderPreload(item) {
+  return isItemVisible(item);
+}
+
+function isItemVisible(item) {
   return Boolean(item && item.visible !== false);
 }
 
@@ -4082,7 +4098,9 @@ function renderSection(section, isLeadSection) {
           <div class="menu-group-stack">
             ${section.groups
               .map((group) => {
-                const items = section.items.filter((item) => item.group === group.id);
+                const items = section.items.filter(
+                  (item) => item.group === group.id && isItemVisible(item)
+                );
                 return `
                   <section class="menu-group" id="section-${section.id}-${group.id}">
                     <div class="menu-group__header">
@@ -4122,7 +4140,10 @@ function renderSection(section, isLeadSection) {
           <p>${section.description}</p>
         </div>
         <div class="menu-section__items">
-          ${section.items.map((item) => renderItemCard(item)).join("")}
+          ${section.items
+            .filter((item) => isItemVisible(item))
+            .map((item) => renderItemCard(item))
+            .join("")}
         </div>
         ${
           sectionFooterNote
@@ -5873,13 +5894,23 @@ function formatDetailCategoryLabel(item) {
   return categoryLabel || sectionTitle;
 }
 
-function shouldShowRoseLimitedGlint(item) {
-  return item?.id === "rose-n5";
+function getLimitedGlintVariant(item) {
+  if (item?.id === "rose-n5") {
+    return "rose";
+  }
+
+  if (item?.id === "gin-tonic-special") {
+    return "tropical";
+  }
+
+  return "";
 }
 
-function renderRoseLimitedGlintMarkup() {
+function renderLimitedGlintMarkup(variant = "rose") {
+  const variantClass = variant ? ` limited-glint--${variant}` : "";
+
   return `
-    <span class="limited-glint" aria-hidden="true">
+    <span class="limited-glint${variantClass}" aria-hidden="true">
       <svg class="limited-glint__spark limited-glint__spark--primary" viewBox="0 0 12 12" focusable="false">
         <path d="M6 0.8 7.35 4.65 11.2 6 7.35 7.35 6 11.2 4.65 7.35 0.8 6 4.65 4.65Z" />
       </svg>
@@ -5896,10 +5927,12 @@ function renderItemCategoryMarkup(item) {
     return "";
   }
 
-  const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+  const glintVariant = getLimitedGlintVariant(item);
+  const sparkleMarkup = glintVariant ? renderLimitedGlintMarkup(glintVariant) : "";
+  const sparkleClass = sparkleMarkup ? ` item-card__label--${glintVariant}-glint` : "";
 
   return `
-    <span class="item-card__label${sparkleMarkup ? " item-card__label--rose-glint" : ""}">
+    <span class="item-card__label${sparkleClass}">
       ${escapeHtml(categoryLabel)}
       ${sparkleMarkup}
     </span>
@@ -5910,10 +5943,12 @@ function renderDetailCategoryMarkup(item) {
   const sectionTitle = findSectionTitleForItem(item.id).trim();
   const categoryLabel = getItemCategoryLabel(item).trim();
   const safeSection = escapeHtml(sectionTitle);
-  const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
+  const glintVariant = getLimitedGlintVariant(item);
+  const sparkleMarkup = glintVariant ? renderLimitedGlintMarkup(glintVariant) : "";
+  const sparkleClass = sparkleMarkup ? ` sheet-kicker__category--${glintVariant}-glint` : "";
   const categoryMarkup = categoryLabel
     ? `
-        <span class="sheet-kicker__category${sparkleMarkup ? " sheet-kicker__category--rose-glint" : ""}">
+        <span class="sheet-kicker__category${sparkleClass}">
           ${escapeHtml(categoryLabel)}
           ${sparkleMarkup}
         </span>
@@ -6694,6 +6729,7 @@ function renderPlaceholderPanelVisual(context) {
 
 function renderTaglieriTitleVisual(item) {
   const isMetroDelMolino = item?.id === "metro-del-molino";
+  const isMezzoMetroDelMolino = item?.id === "mezzo-metro-del-molino";
   const isMetroGourmetDelMolino = item?.id === "metro-gourmet-del-molino";
   const isPanFurmag = item?.id === "pan-furmag";
 
@@ -6706,6 +6742,8 @@ function renderTaglieriTitleVisual(item) {
         ? "#5c214f"
         : isMetroDelMolino
           ? "#8b2f22"
+          : isMezzoMetroDelMolino
+            ? "#214f45"
           : isPanFurmag
             ? "#b48712"
             : "#7f3d20",
@@ -6713,6 +6751,8 @@ function renderTaglieriTitleVisual(item) {
         ? "#9c2f6b"
         : isMetroDelMolino
           ? "#cf6a2c"
+          : isMezzoMetroDelMolino
+            ? "#5e8d58"
           : isPanFurmag
             ? "#e2b82f"
             : "#bf6f2a",
@@ -6720,6 +6760,8 @@ function renderTaglieriTitleVisual(item) {
         ? "#d7686f"
         : isMetroDelMolino
           ? "#f0bf74"
+          : isMezzoMetroDelMolino
+            ? "#d8bc6d"
           : isPanFurmag
             ? "#f6de8a"
             : "#f0bf7d",
@@ -7827,5 +7869,6 @@ function buildSideVisualStyle(sideVisual, shouldDeferAsset = false) {
 }
 
 function getAllSideVisuals(item) {
-  return [item.sideVisual, item.accentVisual].filter(Boolean);
+  const extraVisuals = Array.isArray(item.extraVisuals) ? item.extraVisuals : [];
+  return [item.sideVisual, item.accentVisual, ...extraVisuals].filter(Boolean);
 }

@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.761";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.761";
+  var APP_BUILD_LABEL = "V.1.0.805";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.805";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260423a";
+  var APP_VERSION = "20260428i";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -110,7 +110,10 @@
     }
   ];
   var CRITICAL_MENU_SECTION_IDS = /* @__PURE__ */ new Set(["birre", "drink"]);
-  var CRITICAL_MENU_PRELOAD_ASSET_NAMES = /* @__PURE__ */ new Set(["mulassano-vermouth-rosso-floating.webp"]);
+  var CRITICAL_MENU_PRELOAD_ASSET_NAMES = /* @__PURE__ */ new Set([
+    "mulassano-vermouth-rosso-floating.webp",
+    "acqua-tonica-floating.webp"
+  ]);
   var COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
   var COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
   var COMING_SOON_CURIOSITY_MESSAGES = [
@@ -1401,7 +1404,7 @@
       }).map((item, index) => {
         const row = getManagedSheetRow(item, rowLookup);
         const nextItem = row ? updateItemFromSheet(item, row, section) : item;
-        nextItem.__sheetPosition = getSheetRowPosition(row, index);
+        nextItem.__sheetPosition = row ? getSheetRowPosition(row, index) : getLocalSheetPosition(item, index);
         return nextItem;
       });
     });
@@ -1497,7 +1500,7 @@
     if (nextName) {
       nextItem.name = nextName;
     }
-    if (nextDescription) {
+    if (nextDescription && nextItem.lockSheetDescription !== true) {
       nextItem.description = nextDescription;
     }
     if (nextCategory) {
@@ -1515,9 +1518,11 @@
     if (nextItem.lockAvailabilityState !== true) {
       applySheetAvailabilityToItem(nextItem, row, getItemAvailabilityState(nextItem));
     }
-    const options = mergeSheetOptions(nextItem.options, row);
-    if (options) {
-      nextItem.options = options;
+    if (nextItem.lockSheetOptions !== true) {
+      const options = mergeSheetOptions(nextItem.options, row);
+      if (options) {
+        nextItem.options = options;
+      }
     }
     const visual = buildSheetVisual(row, section, nextItem.visual, nextItem.name);
     if (visual) {
@@ -1776,6 +1781,10 @@
   }
   function getSheetPosition(item) {
     return item && item.__sheetPosition != null ? item.__sheetPosition : 0;
+  }
+  function getLocalSheetPosition(item, fallbackValue) {
+    const parsed = parseSheetNumber(getFirstSheetValue(item == null ? void 0 : item.sheetSortOrder, item == null ? void 0 : item.sheetPosition));
+    return Number.isFinite(parsed) ? parsed : fallbackValue;
   }
   function parseSheetBoolean(value, fallbackValue) {
     if (!value) {
@@ -2249,6 +2258,9 @@
     return Array.from(urls);
   }
   function shouldIncludeItemInLoaderPreload(item) {
+    return isItemVisible(item);
+  }
+  function isItemVisible(item) {
     return Boolean(item && item.visible !== false);
   }
   function shouldPreloadDetailAssetsForItem(item) {
@@ -3322,11 +3334,13 @@
       return '\n      <section\n        class="menu-section menu-section--grouped'.concat(isLeadSection ? " menu-section--lead" : "", '"\n        id="section-').concat(section.id, '"\n        style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n      >\n        <div class="menu-section__inner">\n          <div class="menu-section__header menu-section__header--centered">\n            <h2>').concat(section.title, '</h2>\n            <div class="menu-section__group-pills" aria-label="Categorie ').concat(section.title, '">\n              ').concat(section.groups.map(
         (group) => '\n                    <a class="menu-section__group-pill" href="#section-'.concat(section.id, "-").concat(group.id, '">\n                      ').concat(group.label, "\n                    </a>\n                  ")
       ).join(""), '\n            </div>\n          </div>\n          <div class="menu-group-stack">\n            ').concat(section.groups.map((group) => {
-        const items = section.items.filter((item) => item.group === group.id);
+        const items = section.items.filter(
+          (item) => item.group === group.id && isItemVisible(item)
+        );
         return '\n                  <section class="menu-group" id="section-'.concat(section.id, "-").concat(group.id, '">\n                    <div class="menu-group__header">\n                      <span class="menu-group__pill">').concat(group.label, '</span>\n                      <p class="menu-group__description').concat(group.description ? "" : " menu-group__description--empty", '">\n                        ').concat(group.description || "&nbsp;", '\n                      </p>\n                    </div>\n                    <div class="menu-section__items">\n                      ').concat(items.map((item) => renderItemCard(item)).join(""), "\n                    </div>\n                  </section>\n                ");
       }).join(""), "\n          </div>\n          ").concat(sectionFooterNote ? '<p class="menu-section__footer-note">'.concat(escapeHtml(sectionFooterNote), "</p>") : "", "\n        </div>\n      </section>\n    ");
     }
-    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.map((item) => renderItemCard(item)).join(""), "\n        </div>\n        ").concat(sectionFooterNote ? '<p class="menu-section__footer-note">'.concat(escapeHtml(sectionFooterNote), "</p>") : "", "\n      </div>\n    </section>\n  ");
+    return '\n    <section\n      class="menu-section'.concat(isLeadSection ? " menu-section--lead" : "", '"\n      id="section-').concat(section.id, '"\n      style="--section-accent: ').concat(section.accent, "; --section-accent-soft: ").concat(section.accentSoft, "; --section-surface: ").concat(sectionSurface, ';"\n    >\n      <div class="menu-section__inner">\n        <div class="menu-section__header">\n          <h2>').concat(section.title, '</h2>\n          <span class="menu-section__kicker">').concat(section.kicker, "</span>\n          <p>").concat(section.description, '</p>\n        </div>\n        <div class="menu-section__items">\n          ').concat(section.items.filter((item) => isItemVisible(item)).map((item) => renderItemCard(item)).join(""), "\n        </div>\n        ").concat(sectionFooterNote ? '<p class="menu-section__footer-note">'.concat(escapeHtml(sectionFooterNote), "</p>") : "", "\n      </div>\n    </section>\n  ");
   }
   function renderItemCard(item) {
     const isArtisanalBeer = isArtisanalBeerItem(item);
@@ -4416,26 +4430,37 @@
   function findSectionTitleForItem(itemId) {
     return itemSectionLookup[itemId] || "";
   }
-  function shouldShowRoseLimitedGlint(item) {
-    return (item == null ? void 0 : item.id) === "rose-n5";
+  function getLimitedGlintVariant(item) {
+    if ((item == null ? void 0 : item.id) === "rose-n5") {
+      return "rose";
+    }
+    if ((item == null ? void 0 : item.id) === "gin-tonic-special") {
+      return "tropical";
+    }
+    return "";
   }
-  function renderRoseLimitedGlintMarkup() {
-    return '\n    <span class="limited-glint" aria-hidden="true">\n      <svg class="limited-glint__spark limited-glint__spark--primary" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 0.8 7.35 4.65 11.2 6 7.35 7.35 6 11.2 4.65 7.35 0.8 6 4.65 4.65Z" />\n      </svg>\n      <svg class="limited-glint__spark limited-glint__spark--soft" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 1.5 7 5 10.5 6 7 7 6 10.5 5 7 1.5 6 5 5Z" />\n      </svg>\n    </span>\n  ';
+  function renderLimitedGlintMarkup(variant = "rose") {
+    const variantClass = variant ? " limited-glint--".concat(variant) : "";
+    return '\n    <span class="limited-glint'.concat(variantClass, '" aria-hidden="true">\n      <svg class="limited-glint__spark limited-glint__spark--primary" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 0.8 7.35 4.65 11.2 6 7.35 7.35 6 11.2 4.65 7.35 0.8 6 4.65 4.65Z" />\n      </svg>\n      <svg class="limited-glint__spark limited-glint__spark--soft" viewBox="0 0 12 12" focusable="false">\n        <path d="M6 1.5 7 5 10.5 6 7 7 6 10.5 5 7 1.5 6 5 5Z" />\n      </svg>\n    </span>\n  ');
   }
   function renderItemCategoryMarkup(item) {
     const categoryLabel = getItemCategoryLabel(item).trim();
     if (!categoryLabel) {
       return "";
     }
-    const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
-    return '\n    <span class="item-card__label'.concat(sparkleMarkup ? " item-card__label--rose-glint" : "", '">\n      ').concat(escapeHtml(categoryLabel), "\n      ").concat(sparkleMarkup, "\n    </span>\n  ");
+    const glintVariant = getLimitedGlintVariant(item);
+    const sparkleMarkup = glintVariant ? renderLimitedGlintMarkup(glintVariant) : "";
+    const sparkleClass = sparkleMarkup ? " item-card__label--".concat(glintVariant, "-glint") : "";
+    return '\n    <span class="item-card__label'.concat(sparkleClass, '">\n      ').concat(escapeHtml(categoryLabel), "\n      ").concat(sparkleMarkup, "\n    </span>\n  ");
   }
   function renderDetailCategoryMarkup(item) {
     const sectionTitle = findSectionTitleForItem(item.id).trim();
     const categoryLabel = getItemCategoryLabel(item).trim();
     const safeSection = escapeHtml(sectionTitle);
-    const sparkleMarkup = shouldShowRoseLimitedGlint(item) ? renderRoseLimitedGlintMarkup() : "";
-    const categoryMarkup = categoryLabel ? '\n        <span class="sheet-kicker__category'.concat(sparkleMarkup ? " sheet-kicker__category--rose-glint" : "", '">\n          ').concat(escapeHtml(categoryLabel), "\n          ").concat(sparkleMarkup, "\n        </span>\n      ") : "";
+    const glintVariant = getLimitedGlintVariant(item);
+    const sparkleMarkup = glintVariant ? renderLimitedGlintMarkup(glintVariant) : "";
+    const sparkleClass = sparkleMarkup ? " sheet-kicker__category--".concat(glintVariant, "-glint") : "";
+    const categoryMarkup = categoryLabel ? '\n        <span class="sheet-kicker__category'.concat(sparkleClass, '">\n          ').concat(escapeHtml(categoryLabel), "\n          ").concat(sparkleMarkup, "\n        </span>\n      ") : "";
     if (sectionTitle && categoryLabel) {
       if (item && item.id === "milkshake") {
         return categoryMarkup;
@@ -4996,6 +5021,7 @@
   }
   function renderTaglieriTitleVisual(item) {
     const isMetroDelMolino = (item == null ? void 0 : item.id) === "metro-del-molino";
+    const isMezzoMetroDelMolino = (item == null ? void 0 : item.id) === "mezzo-metro-del-molino";
     const isMetroGourmetDelMolino = (item == null ? void 0 : item.id) === "metro-gourmet-del-molino";
     const isPanFurmag = (item == null ? void 0 : item.id) === "pan-furmag";
     return renderBeerScriptVisual(
@@ -5003,9 +5029,9 @@
         label: isMetroDelMolino ? "Metro" : isMetroGourmetDelMolino ? "Metro Gourmet" : item.name,
         script: isMetroDelMolino || isMetroGourmetDelMolino ? "del Molino" : "",
         textStyle: "display",
-        gradientStart: isMetroGourmetDelMolino ? "#5c214f" : isMetroDelMolino ? "#8b2f22" : isPanFurmag ? "#b48712" : "#7f3d20",
-        gradientMid: isMetroGourmetDelMolino ? "#9c2f6b" : isMetroDelMolino ? "#cf6a2c" : isPanFurmag ? "#e2b82f" : "#bf6f2a",
-        gradientEnd: isMetroGourmetDelMolino ? "#d7686f" : isMetroDelMolino ? "#f0bf74" : isPanFurmag ? "#f6de8a" : "#f0bf7d",
+        gradientStart: isMetroGourmetDelMolino ? "#5c214f" : isMetroDelMolino ? "#8b2f22" : isMezzoMetroDelMolino ? "#214f45" : isPanFurmag ? "#b48712" : "#7f3d20",
+        gradientMid: isMetroGourmetDelMolino ? "#9c2f6b" : isMetroDelMolino ? "#cf6a2c" : isMezzoMetroDelMolino ? "#5e8d58" : isPanFurmag ? "#e2b82f" : "#bf6f2a",
+        gradientEnd: isMetroGourmetDelMolino ? "#d7686f" : isMetroDelMolino ? "#f0bf74" : isMezzoMetroDelMolino ? "#d8bc6d" : isPanFurmag ? "#f6de8a" : "#f0bf7d",
         labelColor: "#fff9f2",
         radius: "22px",
         width: "100%",
@@ -5529,6 +5555,7 @@
     return styles.join("; ");
   }
   function getAllSideVisuals(item) {
-    return [item.sideVisual, item.accentVisual].filter(Boolean);
+    const extraVisuals = Array.isArray(item.extraVisuals) ? item.extraVisuals : [];
+    return [item.sideVisual, item.accentVisual, ...extraVisuals].filter(Boolean);
   }
 })();

@@ -44,8 +44,13 @@ await writeFile(outputPath, csv);
 console.log(`Creato ${outputPath}`);
 
 function getItemAvailabilityState(item) {
-  if (item?.availabilityState === "coming-soon") {
-    return "in arrivo";
+  switch (item?.availabilityState) {
+    case "coming-soon":
+      return "in arrivo";
+    case "unavailable":
+      return "non disponibile";
+    default:
+      break;
   }
 
   return item?.available === false ? "non disponibile" : "disponibile";

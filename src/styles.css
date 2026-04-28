@@ -2502,6 +2502,16 @@ a {
   padding-right: 136px;
 }
 
+#section-altre-bevande .item-card[data-item-id="crodino"].item-card--floating-bottle .item-card__content {
+  min-height: 150px;
+  padding-right: 124px;
+}
+
+#section-altre-bevande .item-card[data-item-id="acqua-tonica"].item-card--floating-bottle .item-card__content {
+  min-height: 132px;
+  padding-right: 104px;
+}
+
 .item-card__side-visual--floating-bottle {
   top: var(--side-visual-top, auto);
   bottom: var(--side-visual-bottom, 14px);
@@ -2582,6 +2592,11 @@ a {
 .item-card__label--rose-glint,
 .sheet-kicker__category--rose-glint {
   color: #bc7187;
+}
+
+.item-card__label--tropical-glint,
+.sheet-kicker__category--tropical-glint {
+  color: #d46a13;
 }
 
 .item-card h3 {
@@ -3807,6 +3822,11 @@ a {
   transform-origin: center;
   will-change: transform, opacity;
   z-index: 1;
+}
+
+.limited-glint--tropical .limited-glint__spark {
+  fill: rgba(255, 249, 205, 0.98);
+  stroke: rgba(214, 112, 18, 0.96);
 }
 
 .limited-glint__spark--primary {

@@ -4,27 +4,30 @@ Ghe Sem,ghe-sem,visibile,disponibile,6
 Tel Chi,tel-chi,visibile,disponibile,6
 Casciaball,casciaball,visibile,disponibile,6
 Ciapa Fià,ciapa-fia,visibile,disponibile,6
-Mè Piáss,me-piass,nascosto,non disponibile,6
-Moretti,moretti,visibile,disponibile,4
 Birra alla spina,spina,visibile,disponibile,5
+Panachè,panache,visibile,disponibile,5
+Moretti,moretti,visibile,disponibile,4
 Aperol Spritz,aperol,visibile,disponibile,6
 Campari Spritz,campari,visibile,disponibile,6
 Sarti Spritz,sarti,visibile,disponibile,6
 Hugo Spritz,hugo,visibile,disponibile,6
-Negroni,negroni,visibile,in arrivo,6
-Sbagliato,sbagliato,visibile,in arrivo,6
-Americano,americano,visibile,in arrivo,6
+Americano,americano,visibile,disponibile,6
+Negroni,negroni,visibile,disponibile,6
+Sbagliato,sbagliato,visibile,disponibile,6
 Gin Tonic,gin-tonic,visibile,disponibile,6
 Gin Lemon,gin-lemon,visibile,disponibile,6
-Gin Tropical,gin-tonic-special,visibile,disponibile,6
+Gin Tropical,gin-tonic-special,visibile,disponibile,8
+Analcolico del Molino,analcolico-del-molino,visibile,disponibile,6
 Oltrepò Pavese,oltrepo,visibile,disponibile,
 Rosso del Lupo,rosso-del-lupo,visibile,disponibile,26
 "Pinot, spumante extra dry",pinot-extra-dry,visibile,disponibile,
 Quarantalune,quarantalune,visibile,disponibile,35
 Spumante dealcolato,glera-zero,visibile,disponibile,18
-Rosè n°5 Feral,rose-n5,visibile,disponibile,25
+Rosè n°5 Feral,rose-n5,visibile,disponibile,24
 Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
+Crodino,crodino,visibile,disponibile,3
+Acqua tonica,acqua-tonica,visibile,disponibile,4
 Aranciata rossa,frutta-bio,visibile,disponibile,"4,5"
 Kombucha,kombucha-classica,visibile,disponibile,4
 Kombucha limone,kombucha,visibile,in arrivo,"4,5"
@@ -32,7 +35,8 @@ Caffè,caffe,visibile,disponibile,"1,5"
 Iced Latte,iced-coffee,visibile,in arrivo,4
 Grappe e amari,grappe-amari,visibile,disponibile,4
 Metro del Molino,metro-del-molino,visibile,disponibile,18
+Mezzo Metro,mezzo-metro-del-molino,visibile,disponibile,12
 Metro Gourmet del Molino,metro-gourmet-del-molino,visibile,in arrivo,24
 Pan & salam,mezzo-metro,visibile,disponibile,6
-Pan & furmag,pan-furmag,visibile,in arrivo,
-Agri-Milkshake KM0,milkshake,visibile,disponibile,4
+Pan & Furmagg,pan-furmag,visibile,disponibile,6
+Agri-Milkshake KM0,milkshake,nascosto,non disponibile,4

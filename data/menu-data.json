@@ -554,159 +554,6 @@
           ]
         },
         {
-          "id": "me-piass",
-          "page": 1,
-          "name": "Mè Piáss",
-          "visible": false,
-          "available": false,
-          "category": "Artigianali",
-          "description": "Mexican Lager al lime, 5% vol, 33 cl.",
-          "showDetailHint": false,
-          "visual": {
-            "type": "beer-script",
-            "label": "Mè Piáss",
-            "gradientStart": "#c8dd67",
-            "gradientMid": "#e7ef7f",
-            "gradientEnd": "#f8f176",
-            "labelColor": "#25301a"
-          },
-          "detailGallery": [
-            {
-              "type": "text-panel",
-              "bodyLines": [
-                "Mexican Lager",
-                "con lime."
-              ],
-              "detailBodyFontFamily": "var(--font-beer-script)",
-              "detailBodyFontWeight": "400",
-              "detailBodyLineHeight": "0.86",
-              "detailBodyFontSize": "clamp(1.22rem, 3.7vw, 1.42rem)",
-              "detailBodyMobileFontSize": "clamp(1.96rem, 7.55vw, 2.36rem)",
-              "gradientStart": "#b8cf57",
-              "gradientEnd": "#eef08a",
-              "bodyColor": "#263118"
-            },
-            {
-              "type": "tasting-notes",
-              "notes": [
-                {
-                  "icon": "eye",
-                  "title": "Alla vista",
-                  "body": "Birra di colore giallo paglierino. Schiuma pannosa, fine e persistente. Di buona carbonazione consona allo stile."
-                }
-              ],
-              "gradientStart": "#fcfbe9",
-              "gradientEnd": "#f3f7d7",
-              "accentColor": "#9fddc9",
-              "inkColor": "#1e1f22"
-            },
-            {
-              "type": "tasting-notes",
-              "notes": [
-                {
-                  "icon": "nose",
-                  "title": "Al naso",
-                  "body": "Sentori di agrumi riconducibili al succo di lime, accostati a note di frutta tropicale matura."
-                }
-              ],
-              "gradientStart": "#fcfbe9",
-              "gradientEnd": "#f3f7d7",
-              "accentColor": "#9fddc9",
-              "inkColor": "#1e1f22"
-            },
-            {
-              "type": "tasting-notes",
-              "notes": [
-                {
-                  "icon": "mouth",
-                  "title": "In bocca",
-                  "body": "Ingresso sottile e delicato, con accenni limonosi che donano freschezza e refrigerio. Prosegue con passion fruit maltata e mango, chiudendo secca e aspra."
-                }
-              ],
-              "gradientStart": "#fcfbe9",
-              "gradientEnd": "#f3f7d7",
-              "accentColor": "#9fddc9",
-              "inkColor": "#1e1f22"
-            }
-          ],
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "me-piass-floating.png",
-            "width": "68px",
-            "height": "236px",
-            "right": "10px",
-            "bottom": "14px",
-            "tilt": "10deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
-          },
-          "options": [
-            {
-              "label": "33 cl",
-              "displayLabel": "",
-              "price": 6
-            }
-          ]
-        },
-        {
-          "id": "moretti",
-          "page": 1,
-          "name": "Moretti",
-          "category": "Classiche",
-          "description": "In bottiglia, 33 cl.",
-          "showDetailHint": false,
-          "visual": {
-            "type": "photo-panel",
-            "asset": "moretti-back.webp",
-            "position": "center 36%",
-            "size": "28% auto",
-            "backgroundColor": "#ddc98b",
-            "detailCaption": "come piace a noi",
-            "detailCaptionFontFamily": "var(--font-subtitle)",
-            "detailCaptionFontSize": "clamp(2.04rem, 8.6vw, 2.32rem)",
-            "detailCaptionLineHeight": "1",
-            "detailCaptionLetterSpacing": "0",
-            "detailCaptionColor": "rgba(129, 87, 36, 0.96)",
-            "detailCaptionBottom": "24px"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "moretti-33.webp",
-            "width": "106px",
-            "height": "223px",
-            "right": "16px",
-            "bottom": "18px",
-            "tilt": "0deg",
-            "backgroundSize": "136% auto",
-            "backgroundPosition": "center bottom"
-          },
-          "options": [
-            {
-              "label": "33 cl",
-              "displayLabel": "",
-              "price": 4
-            }
-          ],
-          "rect": [
-            34,
-            542,
-            430,
-            624
-          ],
-          "cropRect": [
-            58,
-            556,
-            419,
-            622
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
           "id": "spina",
           "page": 1,
           "name": "Birra alla spina",
@@ -754,6 +601,94 @@
             12,
             10,
             14
+          ]
+        },
+        {
+          "id": "panache",
+          "page": 1,
+          "name": "Panachè",
+          "category": "Alla spina",
+          "available": true,
+          "description": "Birra alla spina e Lemon soda.",
+          "showDetailHint": false,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "panache-back.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "options": [
+            {
+              "label": "0,4 L",
+              "displayLabel": "",
+              "price": 5
+            }
+          ],
+          "rect": [
+            34,
+            744,
+            790,
+            842
+          ],
+          "cropRect": [
+            60,
+            764,
+            724,
+            839
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            14
+          ]
+        },
+        {
+          "id": "moretti",
+          "page": 1,
+          "name": "Moretti",
+          "category": "Classiche",
+          "description": "In bottiglia, 33 cl.",
+          "showDetailHint": false,
+          "hideCardVisual": true,
+          "visual": {
+            "type": "none"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "moretti-33.webp",
+            "width": "116px",
+            "height": "244px",
+            "right": "10px",
+            "bottom": "14px",
+            "tilt": "8deg",
+            "backgroundSize": "136% auto",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "33 cl",
+              "displayLabel": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            34,
+            542,
+            430,
+            624
+          ],
+          "cropRect": [
+            58,
+            556,
+            419,
+            622
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
           ]
         }
       ]
@@ -1001,6 +936,72 @@
           ]
         },
         {
+          "id": "americano",
+          "page": 1,
+          "name": "Americano",
+          "availabilityState": "available",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Vermouth rosso e Campari.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Americano",
+            "gradientStart": "#7e2230",
+            "gradientMid": "#bf3741",
+            "gradientEnd": "#f2a35e",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "campari-floating.webp",
+            "width": "99px",
+            "height": "209px",
+            "right": "2px",
+            "bottom": "10px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "mulassano-vermouth-rosso-floating.webp",
+            "width": "53px",
+            "height": "191px",
+            "right": "70px",
+            "bottom": "10px",
+            "zIndex": "5",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
           "id": "negroni",
           "page": 1,
           "name": "Negroni",
@@ -1020,10 +1021,11 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "gin-malfy-floating.png",
-            "width": "126px",
-            "height": "238px",
-            "right": "-6px",
+            "width": "102px",
+            "height": "218px",
+            "right": "-14px",
             "bottom": "4px",
+            "zIndex": "6",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1033,13 +1035,27 @@
             "asset": "mulassano-vermouth-rosso-floating.webp",
             "width": "53px",
             "height": "191px",
-            "right": "70px",
-            "bottom": "4px",
+            "right": "54px",
+            "bottom": "10px",
             "zIndex": "5",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
+          "extraVisuals": [
+            {
+              "type": "floating-bottle",
+              "asset": "campari-floating.webp",
+              "width": "99px",
+              "height": "209px",
+              "right": "2px",
+              "bottom": "10px",
+              "zIndex": "4",
+              "tilt": "0deg",
+              "backgroundSize": "contain",
+              "backgroundPosition": "center bottom"
+            }
+          ],
           "options": [
             {
               "label": "1 drink",
@@ -1086,10 +1102,11 @@
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "pinot-extra-dry-floating.webp",
-            "width": "80px",
+            "width": "76px",
             "height": "202px",
-            "right": "18px",
+            "right": "42px",
             "bottom": "10px",
+            "zIndex": "6",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
@@ -1099,79 +1116,27 @@
             "asset": "mulassano-vermouth-rosso-floating.webp",
             "width": "53px",
             "height": "191px",
-            "right": "70px",
+            "right": "80px",
             "bottom": "10px",
             "zIndex": "5",
             "tilt": "0deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
-          "options": [
+          "extraVisuals": [
             {
-              "label": "1 drink",
-              "displayLabel": "",
-              "price": 6
+              "type": "floating-bottle",
+              "asset": "campari-floating.webp",
+              "width": "99px",
+              "height": "209px",
+              "right": "10px",
+              "bottom": "10px",
+              "zIndex": "4",
+              "tilt": "0deg",
+              "backgroundSize": "contain",
+              "backgroundPosition": "center bottom"
             }
           ],
-          "rect": [
-            676,
-            868,
-            932,
-            982
-          ],
-          "cropRect": [
-            700,
-            900,
-            930,
-            980
-          ],
-          "cropPadding": [
-            8,
-            12,
-            8,
-            10
-          ]
-        },
-        {
-          "id": "americano",
-          "page": 1,
-          "name": "Americano",
-          "availabilityState": "available",
-          "category": "Drink",
-          "showDetailHint": false,
-          "description": "Vermouth rosso e Campari.",
-          "visual": {
-            "type": "beer-script",
-            "label": "Americano",
-            "gradientStart": "#7e2230",
-            "gradientMid": "#bf3741",
-            "gradientEnd": "#f2a35e",
-            "labelColor": "#fffdf8",
-            "textStyle": "display"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "campari-floating.webp",
-            "width": "99px",
-            "height": "209px",
-            "right": "2px",
-            "bottom": "10px",
-            "tilt": "0deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
-          },
-          "accentVisual": {
-            "type": "floating-bottle",
-            "asset": "mulassano-vermouth-rosso-floating.webp",
-            "width": "53px",
-            "height": "191px",
-            "right": "70px",
-            "bottom": "10px",
-            "zIndex": "5",
-            "tilt": "0deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
-          },
           "options": [
             {
               "label": "1 drink",
@@ -1270,7 +1235,8 @@
           "name": "Gin Lemon",
           "category": "Drink",
           "showDetailHint": false,
-          "description": "Gin e Lemon soda.",
+          "lockSheetDescription": true,
+          "description": "Gin Malfy, soda e limonata.",
           "visual": {
             "type": "beer-script",
             "label": "Gin",
@@ -1363,6 +1329,56 @@
               "label": "1 drink",
               "displayLabel": "",
               "price": 8
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "analcolico-del-molino",
+          "page": 1,
+          "name": "Analcolico del Molino",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "La nostra proposta di Mocktail alla frutta.",
+          "lockSheetDescription": true,
+          "visual": {
+            "type": "beer-script",
+            "label": "Analcolico",
+            "gradientStart": "#7e1723",
+            "gradientMid": "#c43a2f",
+            "gradientEnd": "#ef7256",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "del Molino",
+            "labelFontFamily": "var(--font-display)",
+            "labelFontSize": "clamp(1.85rem, 7vw, 2.7rem)",
+            "labelLetterSpacing": "-0.14em",
+            "scriptFontFamily": "var(--font-subtitle)",
+            "scriptFontSize": "clamp(2.05rem, 7.7vw, 3rem)",
+            "scriptTransform": "translate(0.05em, -0.06em)"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
             }
           ],
           "rect": [
@@ -1522,7 +1538,8 @@
           "id": "rosso-del-lupo",
           "page": 1,
           "name": "Rosso del Lupo",
-          "availabilityState": "unavailable",
+          "availabilityState": "available",
+          "lockAvailabilityState": true,
           "category": "Vino",
           "description": "Valcalepio rosso fermo DOC, BIO.",
           "detailDescription": "Valcalepio Rosso fermo DOC Bio.\nAz. Agricola Tosca.",
@@ -1824,7 +1841,7 @@
           ],
           "visual": {
             "type": "photo-panel",
-            "asset": "feral-back.webp",
+            "asset": "feral-2.webp",
             "position": "center center",
             "size": "cover"
           },
@@ -1857,9 +1874,10 @@
           "options": [
             {
               "label": "Bottiglia",
-              "price": 25
+              "price": 24
             }
           ],
+          "lockSheetOptions": true,
           "rect": [
             772,
             1424,
@@ -1955,20 +1973,20 @@
           "category": "Altre bevande",
           "compactDetailOptions": true,
           "detailMultiOptionQuantities": true,
-          "description": "Coca-Cola, Coca Zero, Estathè Limone o Pesca. 33 cl.",
+          "description": "Coca-Cola, Coca Zero, Coca Zero-Zero, Estathè Limone o Pesca. 33 cl.",
           "visual": {
             "type": "can-cluster",
             "backgroundColor": "#cfd7e4",
             "items": [
               {
                 "asset": "bibite-coca.webp",
-                "left": "25%",
-                "detailLeft": "22%",
+                "left": "18%",
+                "detailLeft": "18%",
                 "bottom": "-31%",
                 "height": "132px",
-                "cardScale": "0.814",
+                "cardScale": "0.76",
                 "detailShiftY": "20%",
-                "rotate": "-8deg",
+                "rotate": "-10deg",
                 "zIndex": 2,
                 "detailSelectedLift": "-2px",
                 "floatDistance": "4px",
@@ -1977,28 +1995,43 @@
               },
               {
                 "asset": "bibite-coca-zero.webp",
-                "left": "40%",
-                "detailLeft": "40%",
+                "left": "33%",
+                "detailLeft": "33%",
                 "bottom": "-29%",
                 "height": "132px",
-                "cardScale": "0.814",
+                "cardScale": "0.76",
                 "detailShiftY": "20%",
-                "rotate": "-2deg",
-                "zIndex": 4,
+                "rotate": "-4deg",
+                "zIndex": 5,
                 "detailSelectedLift": "-2px",
                 "floatDistance": "6px",
                 "floatDuration": "4.4s",
                 "floatDelay": "-1.2s"
               },
               {
+                "asset": "bibite-coca-zero-zero.webp",
+                "left": "49%",
+                "detailLeft": "49%",
+                "bottom": "-30%",
+                "height": "138px",
+                "cardScale": "0.76",
+                "detailShiftY": "20%",
+                "rotate": "2deg",
+                "zIndex": 6,
+                "detailSelectedLift": "-2px",
+                "floatDistance": "5px",
+                "floatDuration": "4.25s",
+                "floatDelay": "-1.55s"
+              },
+              {
                 "asset": "bibite-te-limone.webp",
-                "left": "57%",
-                "detailLeft": "57%",
+                "left": "65%",
+                "detailLeft": "65%",
                 "bottom": "-34%",
                 "height": "138px",
-                "cardScale": "0.814",
+                "cardScale": "0.76",
                 "detailShiftY": "20%",
-                "rotate": "4deg",
+                "rotate": "6deg",
                 "zIndex": 3,
                 "detailSelectedLift": "-2px",
                 "floatDistance": "5px",
@@ -2007,13 +2040,13 @@
               },
               {
                 "asset": "bibite-te-pesca.webp",
-                "left": "72%",
-                "detailLeft": "74%",
+                "left": "80%",
+                "detailLeft": "80%",
                 "bottom": "-32%",
                 "height": "138px",
-                "cardScale": "0.814",
+                "cardScale": "0.76",
                 "detailShiftY": "20%",
-                "rotate": "9deg",
+                "rotate": "11deg",
                 "zIndex": 1,
                 "selectedLift": "1px",
                 "detailSelectedLift": "-2px",
@@ -2031,6 +2064,11 @@
             },
             {
               "label": "Coca Zero",
+              "price": 4,
+              "layout": "full-row"
+            },
+            {
+              "label": "Coca Zero-Zero",
               "price": 4,
               "layout": "full-row"
             },
@@ -2056,6 +2094,102 @@
             268,
             250,
             330
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ],
+          "lockSheetDescription": true,
+          "lockSheetOptions": true
+        },
+        {
+          "id": "crodino",
+          "page": 2,
+          "name": "Crodino",
+          "category": "Altre bevande",
+          "showDetailHint": false,
+          "description": "L'analcolico biondo che fa impazzire il mondo.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "none"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "crodino-floating.webp",
+            "width": "104px",
+            "height": "228px",
+            "right": "10px",
+            "bottom": "12px",
+            "tilt": "12deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 3
+            }
+          ],
+          "rect": [
+            44,
+            350,
+            490,
+            438
+          ],
+          "cropRect": [
+            92,
+            372,
+            494,
+            435
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
+          "id": "acqua-tonica",
+          "page": 2,
+          "name": "Acqua tonica",
+          "category": "Altre bevande",
+          "showDetailHint": false,
+          "description": "Acqua tonica servita fresca con limone.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "none"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "acqua-tonica-floating.webp",
+            "width": "100px",
+            "height": "163px",
+            "right": "6px",
+            "bottom": "10px",
+            "tilt": "7deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            48,
+            536,
+            470,
+            620
+          ],
+          "cropRect": [
+            92,
+            556,
+            472,
+            620
           ],
           "cropPadding": [
             10,
@@ -2516,6 +2650,38 @@
           ]
         },
         {
+          "id": "mezzo-metro-del-molino",
+          "page": 2,
+          "name": "Mezzo Metro",
+          "availabilityState": "available",
+          "category": "Taglieri & sfiziosità",
+          "description": "Sfizioso e conviviale: assaggi delle sfiziosità artigianali del Molino e salame nostrano.",
+          "options": [
+            {
+              "label": "",
+              "price": 12
+            }
+          ],
+          "rect": [
+            48,
+            894,
+            942,
+            984
+          ],
+          "cropRect": [
+            90,
+            936,
+            1110,
+            1006
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
           "id": "metro-gourmet-del-molino",
           "page": 2,
           "name": "Metro Gourmet del Molino",
@@ -2582,11 +2748,17 @@
         {
           "id": "pan-furmag",
           "page": 2,
-          "name": "Pan & furmag",
-          "availabilityState": "coming-soon",
+          "name": "Pan & Furmagg",
+          "availabilityState": "available",
+          "lockSheetDescription": true,
           "category": "Taglieri & sfiziosità",
-          "description": "Pane fatto in casa e selezione di formaggi.",
-          "options": [],
+          "description": "Assaggi di formaggi selezionati, serviti con fette di pagnotta multicereali fatta in casa.",
+          "options": [
+            {
+              "label": "",
+              "price": 6
+            }
+          ],
           "rect": [
             48,
             1126,
@@ -2604,7 +2776,8 @@
             10,
             10,
             10
-          ]
+          ],
+          "lockAvailabilityState": true
         }
       ]
     },
@@ -2663,6 +2836,9 @@
           "page": 2,
           "name": "Agri-Milkshake KM0",
           "category": "Novità",
+          "visible": false,
+          "available": false,
+          "availabilityState": "unavailable",
           "showDetailHint": false,
           "description": "Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto. Con solo 1€ in più puoi esagerare: tutti i topping che vuoi!",
           "visual": {
