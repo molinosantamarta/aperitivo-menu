@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.805";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.805";
+  var APP_BUILD_LABEL = "V.1.0.814";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.814";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260428i";
+  var APP_VERSION = "20260428o";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -3348,17 +3348,66 @@
     const isDrink = isDrinkItem(item);
     const availabilityState = getItemAvailabilityState(item);
     const isSelectionBlocked = availabilityState !== "available";
-    const showsOnlyStatusChip = availabilityState === "coming-soon" || availabilityState === "unavailable";
     const unavailableLabel = getItemUnavailableLabel(item);
     const shouldHideCardVisual = item.hideCardVisual === true;
     const cardStyle = getItemCardStyle(item, availabilityState);
     const usesNativeDisabled = availabilityState === "unavailable";
+    const cardProducerResources = getCardProducerResources(item);
+    const hasInlineProducerResources = cardProducerResources.length > 0 && !isSelectionBlocked;
+    const cardClass = "item-card".concat(hasInlineProducerResources ? " item-card--with-inline-resource" : "").concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "");
+    const itemActionAttributes = '\n      data-item-id="'.concat(item.id, '"\n      data-availability-state="').concat(availabilityState, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"');
+    const contentClass = "item-card__content".concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "");
     if (availabilityState === "self-service") {
       return renderSelfServiceItemCard(item, unavailableLabel);
     }
-    return '\n    <button\n      class="item-card'.concat(hasSideVisual(item) ? " item-card--with-side-visual" : "").concat(hasFloatingBottle(item) ? " item-card--floating-bottle" : "").concat(isBeer ? " item-card--beer" : "").concat(isArtisanalBeer ? " item-card--artisanal-beer" : "").concat(isDrink ? " item-card--drink" : "").concat(availabilityState === "coming-soon" ? " item-card--coming-soon" : availabilityState === "self-service" ? " item-card--self-service" : isSelectionBlocked ? " item-card--unavailable" : "", '"\n      type="button"\n      data-item-id="').concat(item.id, '"\n      data-availability-state="').concat(availabilityState, '"\n      aria-haspopup="dialog"\n      aria-label="').concat(isSelectionBlocked ? "".concat(item.name, " ").concat(unavailableLabel.toLowerCase()) : "Apri dettagli per ".concat(item.name), '"\n      aria-disabled="').concat(isSelectionBlocked ? "true" : "false", '"\n      ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(usesNativeDisabled ? "disabled" : "", "\n    >\n      ").concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="item-card__content').concat(hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : "", '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, "</p>\n        ").concat(renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked), '\n        <div class="item-card__prices">\n          ').concat(showsOnlyStatusChip ? '<span class="price-chip '.concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>") : "".concat(getCardOptionsToDisplay(item).map(
-      (option) => '\n                      <span class="price-chip">'.concat(formatOptionChip(item, option), "</span>\n                    ")
-    ).join("")).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : ""), "\n        </div>\n        ").concat(availabilityState === "coming-soon" ? '<span class="item-card__coming-soon-nudge" aria-hidden="true">\n                <span class="item-card__coming-soon-nudge-emoji">'.concat(COMING_SOON_CURIOSITY_MESSAGES[0].emoji, '</span>\n                <span class="item-card__coming-soon-nudge-text">').concat(COMING_SOON_CURIOSITY_MESSAGES[0].text, "</span>\n              </span>") : "", "\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n    </button>\n  ");
+    const cardBodyMarkup = "\n      ".concat(shouldHideCardVisual ? "" : '\n      <div class="item-card__visual'.concat(getCardVisualClass(item), '">\n        ').concat(renderItemVisual(item, "card"), "\n      </div>"), '\n      <div class="').concat(contentClass, '">\n        <div class="item-card__topline">\n          ').concat(renderItemCategoryMarkup(item), "\n        </div>\n        ").concat(renderItemTitle(item), "\n        <p>").concat(item.description, "</p>\n        ").concat(renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked), "\n        ").concat(hasInlineProducerResources ? "" : renderItemCardPriceRow(item, availabilityState, unavailableLabel), "\n        ").concat(availabilityState === "coming-soon" ? '<span class="item-card__coming-soon-nudge" aria-hidden="true">\n                <span class="item-card__coming-soon-nudge-emoji">'.concat(COMING_SOON_CURIOSITY_MESSAGES[0].emoji, '</span>\n                <span class="item-card__coming-soon-nudge-text">').concat(COMING_SOON_CURIOSITY_MESSAGES[0].text, "</span>\n              </span>") : "", "\n        ").concat(availabilityState === "self-service" && item.serviceNote ? '<p class="item-card__service-note">'.concat(item.serviceNote, "</p>") : "", "\n        ").concat(renderItemSideVisual(item), "\n      </div>\n  ");
+    if (hasInlineProducerResources) {
+      return '\n      <article\n        class="'.concat(cardClass, '"\n        ').concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", '\n      >\n        <button\n          class="item-card__main-action"\n          type="button"\n          ').concat(itemActionAttributes, "\n        >\n          ").concat(cardBodyMarkup, "\n        </button>\n        ").concat(renderItemCardPriceRow(item, availabilityState, unavailableLabel, {
+        extraClassName: "item-card__prices--with-inline-resource",
+        trailingMarkup: renderItemCardProducerResources(cardProducerResources)
+      }), "\n      </article>\n    ");
+    }
+    return '\n    <button\n      class="'.concat(cardClass, '"\n      type="button"\n      ').concat(itemActionAttributes, "\n      ").concat(cardStyle ? 'style="'.concat(cardStyle, '"') : "", "\n      ").concat(usesNativeDisabled ? "disabled" : "", "\n    >\n      ").concat(cardBodyMarkup, "\n    </button>\n  ");
+  }
+  function renderItemCardPriceRow(item, availabilityState, unavailableLabel, options = {}) {
+    const { asButtons = false, extraClassName = "", trailingMarkup = "" } = options;
+    const rowClassName = "item-card__prices".concat(extraClassName ? " ".concat(extraClassName) : "");
+    if (availabilityState === "coming-soon" || availabilityState === "unavailable") {
+      return '\n      <div class="'.concat(rowClassName, '">\n        <span class="price-chip ').concat(availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable", '">').concat(unavailableLabel, "</span>\n        ").concat(trailingMarkup, "\n      </div>\n    ");
+    }
+    const optionChips = getCardOptionsToDisplay(item).map((option) => {
+      const chipLabel = formatOptionChip(item, option);
+      const safeChipLabel = escapeHtml(chipLabel);
+      const safeItemId = escapeHtml(item.id);
+      const safeItemName = escapeHtml(item.name);
+      if (!asButtons) {
+        return '<span class="price-chip">'.concat(safeChipLabel, "</span>");
+      }
+      return '\n        <button\n          class="price-chip price-chip--button"\n          type="button"\n          data-item-id="'.concat(safeItemId, '"\n          data-availability-state="').concat(availabilityState, '"\n          aria-haspopup="dialog"\n          aria-label="Apri dettagli per ').concat(safeItemName, ", ").concat(safeChipLabel, '"\n          aria-disabled="false"\n        >\n          ').concat(safeChipLabel, "\n        </button>\n      ");
+    }).join("");
+    return '\n    <div class="'.concat(rowClassName, '">\n      ').concat(optionChips).concat(availabilityState === "self-service" ? '<span class="price-chip price-chip--self-service">'.concat(unavailableLabel, "</span>") : "", "\n      ").concat(trailingMarkup, "\n    </div>\n  ");
+  }
+  function getProducerResources(item) {
+    return Array.isArray(item == null ? void 0 : item.producerResources) ? item.producerResources.filter((resource) => resource && resource.href && resource.label) : [];
+  }
+  function shouldShowProducerResourceOnCard(item, resource) {
+    return Boolean(item && resource && item.id === "rose-n5");
+  }
+  function getCardProducerResources(item) {
+    return getProducerResources(item).filter(
+      (resource) => shouldShowProducerResourceOnCard(item, resource)
+    );
+  }
+  function getDetailProducerResources(item) {
+    return getProducerResources(item).filter(
+      (resource) => !shouldShowProducerResourceOnCard(item, resource)
+    );
+  }
+  function renderItemCardProducerResources(resources) {
+    if (!resources.length) {
+      return "";
+    }
+    return '\n    <div class="item-card__producer-resources" aria-label="Approfondimenti produttore">\n      '.concat(resources.map((resource) => renderItemCardProducerResourceChip(resource)).join(""), "\n    </div>\n  ");
   }
   function renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked) {
     if (!isArtisanalBeer || isSelectionBlocked || !item) {
@@ -3498,7 +3547,7 @@
     }
     const tagline = typeof (item == null ? void 0 : item.detailTagline) === "string" ? item.detailTagline.trim() : "";
     const mention = item == null ? void 0 : item.producerMention;
-    const resources = Array.isArray(item == null ? void 0 : item.producerResources) ? item.producerResources.filter((resource) => resource && resource.href && resource.label) : [];
+    const resources = getDetailProducerResources(item);
     const hasMention = Boolean(mention && mention.handle && mention.href);
     const isTaglineOnly = Boolean(tagline) && !hasMention && resources.length === 0;
     if (!tagline && !hasMention && resources.length === 0) {
@@ -3521,17 +3570,27 @@
       parts.push('\n      <a\n        class="producer-mention"\n        href="'.concat(safeHref, '"\n        target="_blank"\n        rel="noreferrer noopener"\n        aria-label="').concat(safeAria, '"\n      >\n        <span class="producer-mention__at" aria-hidden="true">@</span>\n        <span class="producer-mention__handle">').concat(safeHandle, "</span>\n      </a>\n    "));
     }
     resources.forEach((resource) => {
-      const safeHref = escapeHtml(resource.href);
-      const safeLabel = escapeHtml(resource.label);
-      const safeAria = escapeHtml(resource.ariaLabel || "Apri ".concat(resource.label));
-      const resourceKindClass = resource.kind ? " producer-resource--".concat(escapeHtml(resource.kind)) : "";
-      const isVideoResource = resource.kind === "video";
-      const icon = resource.kind === "video" ? "\u25B6" : "\u2197";
-      parts.push('\n      <a\n        class="producer-resource'.concat(resourceKindClass, '"\n        href="').concat(safeHref, '"\n        target="_blank"\n        rel="noreferrer noopener"\n        aria-label="').concat(safeAria, '"\n      >\n        ').concat(isVideoResource ? '<span class="producer-resource__label">'.concat(safeLabel, '</span><span class="producer-resource__icon" aria-hidden="true">').concat(icon, "</span>") : '<span class="producer-resource__icon" aria-hidden="true">'.concat(icon, '</span><span class="producer-resource__label">').concat(safeLabel, "</span>"), "\n      </a>\n    "));
+      parts.push(renderProducerResourceLink(resource));
     });
     detailMeta.innerHTML = parts.join("");
     detailMeta.hidden = false;
     detailMeta.classList.toggle("detail-meta--tagline-only", isTaglineOnly);
+  }
+  function renderProducerResourceLink(resource, extraClassName = "") {
+    const safeHref = escapeHtml(resource.href);
+    const safeLabel = escapeHtml(resource.label);
+    const safeAria = escapeHtml(resource.ariaLabel || "Apri ".concat(resource.label));
+    const resourceKindClass = resource.kind ? " producer-resource--".concat(escapeHtml(resource.kind)) : "";
+    const extraClass = extraClassName ? " ".concat(extraClassName) : "";
+    const isVideoResource = resource.kind === "video";
+    const icon = resource.kind === "video" ? "\u25B6" : "\u2197";
+    return '\n    <a\n      class="producer-resource'.concat(resourceKindClass).concat(extraClass, '"\n      href="').concat(safeHref, '"\n      target="_blank"\n      rel="noreferrer noopener"\n      aria-label="').concat(safeAria, '"\n    >\n      ').concat(isVideoResource ? '<span class="producer-resource__label">'.concat(safeLabel, '</span><span class="producer-resource__icon" aria-hidden="true">').concat(icon, "</span>") : '<span class="producer-resource__icon" aria-hidden="true">'.concat(icon, '</span><span class="producer-resource__label">').concat(safeLabel, "</span>"), "\n    </a>\n  ");
+  }
+  function renderItemCardProducerResourceChip(resource) {
+    const safeHref = escapeHtml(resource.href);
+    const safeLabel = escapeHtml(resource.label);
+    const safeAria = escapeHtml(resource.ariaLabel || "Apri ".concat(resource.label));
+    return '\n    <a\n      class="price-chip item-card__producer-resource-chip"\n      href="'.concat(safeHref, '"\n      target="_blank"\n      rel="noreferrer noopener"\n      aria-label="').concat(safeAria, '"\n    >').concat(safeLabel, "</a>\n  ");
   }
   function openCart() {
     rememberLastFocusedElement();
@@ -5029,9 +5088,9 @@
         label: isMetroDelMolino ? "Metro" : isMetroGourmetDelMolino ? "Metro Gourmet" : item.name,
         script: isMetroDelMolino || isMetroGourmetDelMolino ? "del Molino" : "",
         textStyle: "display",
-        gradientStart: isMetroGourmetDelMolino ? "#5c214f" : isMetroDelMolino ? "#8b2f22" : isMezzoMetroDelMolino ? "#214f45" : isPanFurmag ? "#b48712" : "#7f3d20",
-        gradientMid: isMetroGourmetDelMolino ? "#9c2f6b" : isMetroDelMolino ? "#cf6a2c" : isMezzoMetroDelMolino ? "#5e8d58" : isPanFurmag ? "#e2b82f" : "#bf6f2a",
-        gradientEnd: isMetroGourmetDelMolino ? "#d7686f" : isMetroDelMolino ? "#f0bf74" : isMezzoMetroDelMolino ? "#d8bc6d" : isPanFurmag ? "#f6de8a" : "#f0bf7d",
+        gradientStart: isMetroGourmetDelMolino ? "#5c214f" : isMetroDelMolino ? "#8b2f22" : isMezzoMetroDelMolino ? "#842d2a" : isPanFurmag ? "#b48712" : "#7f3d20",
+        gradientMid: isMetroGourmetDelMolino ? "#9c2f6b" : isMetroDelMolino ? "#cf6a2c" : isMezzoMetroDelMolino ? "#c85d37" : isPanFurmag ? "#e2b82f" : "#bf6f2a",
+        gradientEnd: isMetroGourmetDelMolino ? "#d7686f" : isMetroDelMolino ? "#f0bf74" : isMezzoMetroDelMolino ? "#edb36d" : isPanFurmag ? "#f6de8a" : "#f0bf7d",
         labelColor: "#fff9f2",
         radius: "22px",
         width: "100%",

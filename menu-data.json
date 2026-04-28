@@ -1859,14 +1859,13 @@
               "size": "cover"
             }
           ],
-          "detailPreviewStartIndex": 1,
           "sideVisual": {
             "type": "floating-bottle",
             "asset": "rose-n5-floating.webp",
             "width": "134px",
             "height": "284px",
             "right": "8px",
-            "bottom": "12px",
+            "bottom": "38px",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom",
             "tilt": "0deg"
@@ -2157,7 +2156,8 @@
           "name": "Acqua tonica",
           "category": "Altre bevande",
           "showDetailHint": false,
-          "description": "Acqua tonica servita fresca con limone.",
+          "description": "Servita liscia o ghiaccio e limone.",
+          "lockSheetDescription": true,
           "hideCardVisual": true,
           "visual": {
             "type": "none"

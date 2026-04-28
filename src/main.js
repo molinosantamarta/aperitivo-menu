@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260428i";
+const APP_VERSION = "20260428o";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -4161,42 +4161,42 @@ function renderItemCard(item) {
   const isDrink = isDrinkItem(item);
   const availabilityState = getItemAvailabilityState(item);
   const isSelectionBlocked = availabilityState !== "available";
-  const showsOnlyStatusChip = availabilityState === "coming-soon" || availabilityState === "unavailable";
   const unavailableLabel = getItemUnavailableLabel(item);
   const shouldHideCardVisual = item.hideCardVisual === true;
   const cardStyle = getItemCardStyle(item, availabilityState);
   const usesNativeDisabled = availabilityState === "unavailable";
-
-  if (availabilityState === "self-service") {
-    return renderSelfServiceItemCard(item, unavailableLabel);
-  }
-
-  return `
-    <button
-      class="item-card${hasSideVisual(item) ? " item-card--with-side-visual" : ""}${
-        hasFloatingBottle(item) ? " item-card--floating-bottle" : ""
-      }${isBeer ? " item-card--beer" : ""}${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${
-        isDrink ? " item-card--drink" : ""
-      }${
-        availabilityState === "coming-soon"
-          ? " item-card--coming-soon"
-          : availabilityState === "self-service"
-            ? " item-card--self-service"
-            : isSelectionBlocked
-            ? " item-card--unavailable"
-            : ""
-      }"
-      type="button"
+  const cardProducerResources = getCardProducerResources(item);
+  const hasInlineProducerResources = cardProducerResources.length > 0 && !isSelectionBlocked;
+  const cardClass = `item-card${hasInlineProducerResources ? " item-card--with-inline-resource" : ""}${
+    hasSideVisual(item) ? " item-card--with-side-visual" : ""
+  }${hasFloatingBottle(item) ? " item-card--floating-bottle" : ""}${
+    isBeer ? " item-card--beer" : ""
+  }${isArtisanalBeer ? " item-card--artisanal-beer" : ""}${isDrink ? " item-card--drink" : ""}${
+    availabilityState === "coming-soon"
+      ? " item-card--coming-soon"
+      : availabilityState === "self-service"
+        ? " item-card--self-service"
+        : isSelectionBlocked
+          ? " item-card--unavailable"
+          : ""
+  }`;
+  const itemActionAttributes = `
       data-item-id="${item.id}"
       data-availability-state="${availabilityState}"
       aria-haspopup="dialog"
       aria-label="${
         isSelectionBlocked ? `${item.name} ${unavailableLabel.toLowerCase()}` : `Apri dettagli per ${item.name}`
       }"
-      aria-disabled="${isSelectionBlocked ? "true" : "false"}"
-      ${cardStyle ? `style="${cardStyle}"` : ""}
-      ${usesNativeDisabled ? "disabled" : ""}
-    >
+      aria-disabled="${isSelectionBlocked ? "true" : "false"}"`;
+  const contentClass = `item-card__content${
+    hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : ""
+  }`;
+
+  if (availabilityState === "self-service") {
+    return renderSelfServiceItemCard(item, unavailableLabel);
+  }
+
+  const cardBodyMarkup = `
       ${
         shouldHideCardVisual
           ? ""
@@ -4205,36 +4205,14 @@ function renderItemCard(item) {
         ${renderItemVisual(item, "card")}
       </div>`
       }
-      <div class="item-card__content${
-        hasSideVisual(item) && !hasFloatingBottle(item) ? " item-card__content--with-side-visual" : ""
-      }">
+      <div class="${contentClass}">
         <div class="item-card__topline">
           ${renderItemCategoryMarkup(item)}
         </div>
         ${renderItemTitle(item)}
         <p>${item.description}</p>
         ${renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked)}
-        <div class="item-card__prices">
-          ${
-            showsOnlyStatusChip
-              ? `<span class="price-chip ${
-                  availabilityState === "coming-soon"
-                    ? "price-chip--coming-soon"
-                    : "price-chip--unavailable"
-                }">${unavailableLabel}</span>`
-              : `${getCardOptionsToDisplay(item)
-                  .map(
-                    (option) => `
-                      <span class="price-chip">${formatOptionChip(item, option)}</span>
-                    `
-                  )
-                  .join("")}${
-                  availabilityState === "self-service"
-                    ? `<span class="price-chip price-chip--self-service">${unavailableLabel}</span>`
-                    : ""
-                }`
-          }
-        </div>
+        ${hasInlineProducerResources ? "" : renderItemCardPriceRow(item, availabilityState, unavailableLabel)}
         ${
           availabilityState === "coming-soon"
             ? `<span class="item-card__coming-soon-nudge" aria-hidden="true">
@@ -4250,7 +4228,127 @@ function renderItemCard(item) {
         }
         ${renderItemSideVisual(item)}
       </div>
+  `;
+
+  if (hasInlineProducerResources) {
+    return `
+      <article
+        class="${cardClass}"
+        ${cardStyle ? `style="${cardStyle}"` : ""}
+      >
+        <button
+          class="item-card__main-action"
+          type="button"
+          ${itemActionAttributes}
+        >
+          ${cardBodyMarkup}
+        </button>
+        ${renderItemCardPriceRow(item, availabilityState, unavailableLabel, {
+          extraClassName: "item-card__prices--with-inline-resource",
+          trailingMarkup: renderItemCardProducerResources(cardProducerResources),
+        })}
+      </article>
+    `;
+  }
+
+  return `
+    <button
+      class="${cardClass}"
+      type="button"
+      ${itemActionAttributes}
+      ${cardStyle ? `style="${cardStyle}"` : ""}
+      ${usesNativeDisabled ? "disabled" : ""}
+    >
+      ${cardBodyMarkup}
     </button>
+  `;
+}
+
+function renderItemCardPriceRow(item, availabilityState, unavailableLabel, options = {}) {
+  const { asButtons = false, extraClassName = "", trailingMarkup = "" } = options;
+  const rowClassName = `item-card__prices${extraClassName ? ` ${extraClassName}` : ""}`;
+
+  if (availabilityState === "coming-soon" || availabilityState === "unavailable") {
+    return `
+      <div class="${rowClassName}">
+        <span class="price-chip ${
+          availabilityState === "coming-soon" ? "price-chip--coming-soon" : "price-chip--unavailable"
+        }">${unavailableLabel}</span>
+        ${trailingMarkup}
+      </div>
+    `;
+  }
+
+  const optionChips = getCardOptionsToDisplay(item)
+    .map((option) => {
+      const chipLabel = formatOptionChip(item, option);
+      const safeChipLabel = escapeHtml(chipLabel);
+      const safeItemId = escapeHtml(item.id);
+      const safeItemName = escapeHtml(item.name);
+
+      if (!asButtons) {
+        return `<span class="price-chip">${safeChipLabel}</span>`;
+      }
+
+      return `
+        <button
+          class="price-chip price-chip--button"
+          type="button"
+          data-item-id="${safeItemId}"
+          data-availability-state="${availabilityState}"
+          aria-haspopup="dialog"
+          aria-label="Apri dettagli per ${safeItemName}, ${safeChipLabel}"
+          aria-disabled="false"
+        >
+          ${safeChipLabel}
+        </button>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="${rowClassName}">
+      ${optionChips}${
+        availabilityState === "self-service"
+          ? `<span class="price-chip price-chip--self-service">${unavailableLabel}</span>`
+          : ""
+      }
+      ${trailingMarkup}
+    </div>
+  `;
+}
+
+function getProducerResources(item) {
+  return Array.isArray(item?.producerResources)
+    ? item.producerResources.filter((resource) => resource && resource.href && resource.label)
+    : [];
+}
+
+function shouldShowProducerResourceOnCard(item, resource) {
+  return Boolean(item && resource && item.id === "rose-n5");
+}
+
+function getCardProducerResources(item) {
+  return getProducerResources(item).filter((resource) =>
+    shouldShowProducerResourceOnCard(item, resource)
+  );
+}
+
+function getDetailProducerResources(item) {
+  return getProducerResources(item).filter(
+    (resource) => !shouldShowProducerResourceOnCard(item, resource)
+  );
+}
+
+function renderItemCardProducerResources(resources) {
+  if (!resources.length) {
+    return "";
+  }
+
+  return `
+    <div class="item-card__producer-resources" aria-label="Approfondimenti produttore">
+      ${resources.map((resource) => renderItemCardProducerResourceChip(resource)).join("")}
+    </div>
   `;
 }
 
@@ -4463,9 +4561,7 @@ function renderDetailMeta(item) {
 
   const tagline = typeof item?.detailTagline === "string" ? item.detailTagline.trim() : "";
   const mention = item?.producerMention;
-  const resources = Array.isArray(item?.producerResources)
-    ? item.producerResources.filter((resource) => resource && resource.href && resource.label)
-    : [];
+  const resources = getDetailProducerResources(item);
 
   const hasMention = Boolean(mention && mention.handle && mention.href);
   const isTaglineOnly = Boolean(tagline) && !hasMention && resources.length === 0;
@@ -4506,33 +4602,54 @@ function renderDetailMeta(item) {
   }
 
   resources.forEach((resource) => {
-    const safeHref = escapeHtml(resource.href);
-    const safeLabel = escapeHtml(resource.label);
-    const safeAria = escapeHtml(resource.ariaLabel || `Apri ${resource.label}`);
-    const resourceKindClass = resource.kind
-      ? ` producer-resource--${escapeHtml(resource.kind)}`
-      : "";
-    const isVideoResource = resource.kind === "video";
-    const icon = resource.kind === "video" ? "▶" : "↗";
-
-    parts.push(`
-      <a
-        class="producer-resource${resourceKindClass}"
-        href="${safeHref}"
-        target="_blank"
-        rel="noreferrer noopener"
-        aria-label="${safeAria}"
-      >
-        ${isVideoResource
-          ? `<span class="producer-resource__label">${safeLabel}</span><span class="producer-resource__icon" aria-hidden="true">${icon}</span>`
-          : `<span class="producer-resource__icon" aria-hidden="true">${icon}</span><span class="producer-resource__label">${safeLabel}</span>`}
-      </a>
-    `);
+    parts.push(renderProducerResourceLink(resource));
   });
 
   detailMeta.innerHTML = parts.join("");
   detailMeta.hidden = false;
   detailMeta.classList.toggle("detail-meta--tagline-only", isTaglineOnly);
+}
+
+function renderProducerResourceLink(resource, extraClassName = "") {
+  const safeHref = escapeHtml(resource.href);
+  const safeLabel = escapeHtml(resource.label);
+  const safeAria = escapeHtml(resource.ariaLabel || `Apri ${resource.label}`);
+  const resourceKindClass = resource.kind
+    ? ` producer-resource--${escapeHtml(resource.kind)}`
+    : "";
+  const extraClass = extraClassName ? ` ${extraClassName}` : "";
+  const isVideoResource = resource.kind === "video";
+  const icon = resource.kind === "video" ? "▶" : "↗";
+
+  return `
+    <a
+      class="producer-resource${resourceKindClass}${extraClass}"
+      href="${safeHref}"
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label="${safeAria}"
+    >
+      ${isVideoResource
+        ? `<span class="producer-resource__label">${safeLabel}</span><span class="producer-resource__icon" aria-hidden="true">${icon}</span>`
+        : `<span class="producer-resource__icon" aria-hidden="true">${icon}</span><span class="producer-resource__label">${safeLabel}</span>`}
+    </a>
+  `;
+}
+
+function renderItemCardProducerResourceChip(resource) {
+  const safeHref = escapeHtml(resource.href);
+  const safeLabel = escapeHtml(resource.label);
+  const safeAria = escapeHtml(resource.ariaLabel || `Apri ${resource.label}`);
+
+  return `
+    <a
+      class="price-chip item-card__producer-resource-chip"
+      href="${safeHref}"
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label="${safeAria}"
+    >${safeLabel}</a>
+  `;
 }
 
 function openCart() {
@@ -6743,7 +6860,7 @@ function renderTaglieriTitleVisual(item) {
         : isMetroDelMolino
           ? "#8b2f22"
           : isMezzoMetroDelMolino
-            ? "#214f45"
+            ? "#842d2a"
           : isPanFurmag
             ? "#b48712"
             : "#7f3d20",
@@ -6752,7 +6869,7 @@ function renderTaglieriTitleVisual(item) {
         : isMetroDelMolino
           ? "#cf6a2c"
           : isMezzoMetroDelMolino
-            ? "#5e8d58"
+            ? "#c85d37"
           : isPanFurmag
             ? "#e2b82f"
             : "#bf6f2a",
@@ -6761,7 +6878,7 @@ function renderTaglieriTitleVisual(item) {
         : isMetroDelMolino
           ? "#f0bf74"
           : isMezzoMetroDelMolino
-            ? "#d8bc6d"
+            ? "#edb36d"
           : isPanFurmag
             ? "#f6de8a"
             : "#f0bf7d",

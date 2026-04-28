@@ -213,6 +213,10 @@ a {
 .format-carousel__slide-link:focus-visible,
 .site-brandmark:focus-visible,
 .item-card:focus-visible,
+.item-card__main-action:focus-visible,
+.item-card__producer-resource-chip:focus-visible,
+.price-chip--button:focus-visible,
+.producer-resource:focus-visible,
 .option-btn:focus-visible,
 .qty-btn:focus-visible,
 .cart-item__remove:focus-visible {
@@ -1598,6 +1602,23 @@ a {
   cursor: pointer;
 }
 
+.item-card--with-inline-resource {
+  cursor: default;
+}
+
+.item-card__main-action {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
 .item-card--artisanal-beer {
   --artisanal-card-radius: 36px;
   --artisanal-card-inset: 9px;
@@ -2726,6 +2747,12 @@ a {
   background: var(--section-accent-soft, #f4ead8);
 }
 
+.price-chip--button {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .price-chip--unavailable {
   color: rgba(53, 49, 45, 0.92);
   background: rgba(111, 108, 103, 0.18);
@@ -2799,6 +2826,34 @@ a {
     transform: none;
     opacity: 0.54;
   }
+}
+
+.item-card__prices--with-inline-resource {
+  align-items: center;
+  margin-top: 12px;
+  font-family: Arial, sans-serif;
+  font: -webkit-small-control;
+  letter-spacing: normal;
+}
+
+.item-card__prices--with-inline-resource .price-chip {
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 800;
+  line-height: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.item-card__producer-resources {
+  display: contents;
+}
+
+.item-card__producer-resource-chip {
+  flex: 0 0 auto;
+  text-decoration: none;
 }
 
 .item-card--unavailable {
