@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.814";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.814";
+  var APP_BUILD_LABEL = "V.1.0.816";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.816";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260428o";
+  var APP_VERSION = "20260428p";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -3407,7 +3407,7 @@
     if (!resources.length) {
       return "";
     }
-    return '\n    <div class="item-card__producer-resources" aria-label="Approfondimenti produttore">\n      '.concat(resources.map((resource) => renderItemCardProducerResourceChip(resource)).join(""), "\n    </div>\n  ");
+    return '\n    <div class="item-card__producer-resources" aria-label="Approfondimenti produttore">\n      '.concat(resources.map((resource) => renderProducerResourceLink(resource, "item-card__producer-resource")).join(""), "\n    </div>\n  ");
   }
   function renderItemCardDetailHint(item, isArtisanalBeer, isSelectionBlocked) {
     if (!isArtisanalBeer || isSelectionBlocked || !item) {
@@ -3585,12 +3585,6 @@
     const isVideoResource = resource.kind === "video";
     const icon = resource.kind === "video" ? "\u25B6" : "\u2197";
     return '\n    <a\n      class="producer-resource'.concat(resourceKindClass).concat(extraClass, '"\n      href="').concat(safeHref, '"\n      target="_blank"\n      rel="noreferrer noopener"\n      aria-label="').concat(safeAria, '"\n    >\n      ').concat(isVideoResource ? '<span class="producer-resource__label">'.concat(safeLabel, '</span><span class="producer-resource__icon" aria-hidden="true">').concat(icon, "</span>") : '<span class="producer-resource__icon" aria-hidden="true">'.concat(icon, '</span><span class="producer-resource__label">').concat(safeLabel, "</span>"), "\n    </a>\n  ");
-  }
-  function renderItemCardProducerResourceChip(resource) {
-    const safeHref = escapeHtml(resource.href);
-    const safeLabel = escapeHtml(resource.label);
-    const safeAria = escapeHtml(resource.ariaLabel || "Apri ".concat(resource.label));
-    return '\n    <a\n      class="price-chip item-card__producer-resource-chip"\n      href="'.concat(safeHref, '"\n      target="_blank"\n      rel="noreferrer noopener"\n      aria-label="').concat(safeAria, '"\n    >').concat(safeLabel, "</a>\n  ");
   }
   function openCart() {
     rememberLastFocusedElement();

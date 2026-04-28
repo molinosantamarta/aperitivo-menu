@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260428o";
+const APP_VERSION = "20260428p";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -4347,7 +4347,7 @@ function renderItemCardProducerResources(resources) {
 
   return `
     <div class="item-card__producer-resources" aria-label="Approfondimenti produttore">
-      ${resources.map((resource) => renderItemCardProducerResourceChip(resource)).join("")}
+      ${resources.map((resource) => renderProducerResourceLink(resource, "item-card__producer-resource")).join("")}
     </div>
   `;
 }
@@ -4633,22 +4633,6 @@ function renderProducerResourceLink(resource, extraClassName = "") {
         ? `<span class="producer-resource__label">${safeLabel}</span><span class="producer-resource__icon" aria-hidden="true">${icon}</span>`
         : `<span class="producer-resource__icon" aria-hidden="true">${icon}</span><span class="producer-resource__label">${safeLabel}</span>`}
     </a>
-  `;
-}
-
-function renderItemCardProducerResourceChip(resource) {
-  const safeHref = escapeHtml(resource.href);
-  const safeLabel = escapeHtml(resource.label);
-  const safeAria = escapeHtml(resource.ariaLabel || `Apri ${resource.label}`);
-
-  return `
-    <a
-      class="price-chip item-card__producer-resource-chip"
-      href="${safeHref}"
-      target="_blank"
-      rel="noreferrer noopener"
-      aria-label="${safeAria}"
-    >${safeLabel}</a>
   `;
 }
 

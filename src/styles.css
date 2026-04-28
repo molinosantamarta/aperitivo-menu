@@ -214,7 +214,6 @@ a {
 .site-brandmark:focus-visible,
 .item-card:focus-visible,
 .item-card__main-action:focus-visible,
-.item-card__producer-resource-chip:focus-visible,
 .price-chip--button:focus-visible,
 .producer-resource:focus-visible,
 .option-btn:focus-visible,
@@ -2851,9 +2850,17 @@ a {
   display: contents;
 }
 
-.item-card__producer-resource-chip {
-  flex: 0 0 auto;
-  text-decoration: none;
+.producer-resource.item-card__producer-resource {
+  min-height: 36px;
+  padding: 0 13px;
+  box-shadow:
+    inset 0 0 0 1px rgba(231, 124, 39, 0.16),
+    0 8px 14px rgba(42, 31, 18, 0.06);
+}
+
+.item-card__producer-resource .producer-resource__icon,
+.item-card__producer-resource .producer-resource__label {
+  min-height: 36px;
 }
 
 .item-card--unavailable {
