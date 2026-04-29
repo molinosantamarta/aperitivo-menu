@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.816";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.816";
+  var APP_BUILD_LABEL = "V.1.0.820";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.820";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
