@@ -18,17 +18,17 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#f7f1ea" />
     <meta name="format-detection" content="telephone=no" />
-    <link rel="manifest" href="./manifest.webmanifest?v=20260430j" />
+    <link rel="manifest" href="./manifest.webmanifest?v=20260430v" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="./pwa/apple-touch-icon.png?v=20260430j"
+      href="./pwa/apple-touch-icon.png?v=20260430v"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="./pwa/favicon-32.png?v=20260430j"
+      href="./pwa/favicon-32.png?v=20260430v"
     />
     <style>
       html[data-app-ready="false"],
@@ -77,6 +77,13 @@
     />
     <link
       rel="preload"
+      href="./src/fonts/mogathe-stamp.otf"
+      as="font"
+      type="font/otf"
+      crossorigin
+    />
+    <link
+      rel="preload"
       href="./src/fonts/housky-demo.woff2"
       as="font"
       type="font/woff2"
@@ -98,11 +105,11 @@
     />
     <link
       rel="preload"
-      href="./menu-assets/sgb-molino-black.png?v=20260430j"
+      href="./menu-assets/sgb-molino-black.png?v=20260430v"
       as="image"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./src/styles.css?v=20260430j" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260430v" />
   </head>
   <body
     class="is-loading fonts-critical-loading loader-fonts-loading"
@@ -115,7 +122,7 @@
         <img
           class="app-loader__intro-logo"
           data-shell-asset
-          src="./menu-assets/sgb-molino-black.png?v=20260430j"
+          src="./menu-assets/sgb-molino-black.png?v=20260430v"
           alt=""
           decoding="async"
           fetchpriority="high"
@@ -164,7 +171,7 @@
               <img
                 class="hero-butterfly__image"
                 data-shell-asset
-                src="./farfalla-bianca.webp?v=20260430j"
+                src="./farfalla-bianca.webp?v=20260430v"
                 alt=""
                 decoding="async"
                 fetchpriority="high"
@@ -210,7 +217,7 @@
               >
                 <span class="country-event-card__media" aria-hidden="true">
                   <img
-                    src="./format-carousel/country-2026.png?v=20260430j"
+                    src="./format-carousel/country-2026.png?v=20260430v"
                     alt=""
                     loading="lazy"
                     decoding="async"
@@ -245,7 +252,7 @@
                 <span class="utility-btn__icon" aria-hidden="true">
                   <img
                     data-shell-asset
-                    src="./menu-assets/instagram-logo.webp?v=20260430j"
+                    src="./menu-assets/instagram-logo.webp?v=20260430v"
                     alt=""
                   />
                 </span>
@@ -280,7 +287,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-picnic.png?v=20260430j"
+                      data-deferred-src="./format-carousel/bbq-picnic.png?v=20260430v"
                       alt="Format BBQ Picnic"
                       loading="lazy"
                       decoding="async"
@@ -301,7 +308,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-stelle.png?v=20260430j"
+                      data-deferred-src="./format-carousel/bbq-stelle.png?v=20260430v"
                       alt="Format BBQ sotto le stelle"
                       loading="lazy"
                       decoding="async"
@@ -322,7 +329,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/cinema.png?v=20260430j"
+                      data-deferred-src="./format-carousel/cinema.png?v=20260430v"
                       alt="Format Cinema"
                       loading="lazy"
                       decoding="async"
@@ -343,7 +350,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/country-2026.png?v=20260430j"
+                      data-deferred-src="./format-carousel/country-2026.png?v=20260430v"
                       alt="Format Country"
                       loading="lazy"
                       decoding="async"
@@ -364,7 +371,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/dam.png?v=20260430j"
+                      data-deferred-src="./format-carousel/dam.png?v=20260430v"
                       alt="Format Domenica al Molino"
                       loading="lazy"
                       decoding="async"
@@ -385,7 +392,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/ig-agrieventi.png?v=20260430j"
+                      data-deferred-src="./format-carousel/ig-agrieventi.png?v=20260430v"
                       alt="Instagram Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -406,7 +413,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/agrieventi-logo.png?v=20260430j"
+                      data-deferred-src="./format-carousel/agrieventi-logo.png?v=20260430v"
                       alt="Logo Agri Eventi"
                       loading="lazy"
                       decoding="async"
@@ -427,7 +434,7 @@
                   >
                     <img
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/bbq-hub.png?v=20260430j"
+                      data-deferred-src="./format-carousel/bbq-hub.png?v=20260430v"
                       alt="Format BBQ Hub"
                       loading="lazy"
                       decoding="async"
@@ -489,7 +496,7 @@
           >
             <img
               data-shell-asset
-              src="./menu-assets/sgb-molino-black.png?v=20260430j"
+              src="./menu-assets/sgb-molino-black.png?v=20260430v"
               alt="Agriturismo Molino Santa Marta"
             />
           </a>
@@ -556,7 +563,7 @@
       >
         <div class="country-spotlight__art" aria-hidden="true">
           <img
-            src="./format-carousel/country-2026.png?v=20260430j"
+            src="./format-carousel/country-2026.png?v=20260430v"
             alt=""
             decoding="async"
           />
@@ -564,11 +571,10 @@
         <div class="country-spotlight__copy">
           <p class="country-spotlight__eyebrow">Evento speciale</p>
           <h2 class="country-spotlight__title" id="countrySpotlightTitle">
-            <span>Molino</span>
-            <span>Country Party</span>
+            <span>Molino Country Party</span>
           </h2>
           <p class="country-spotlight__subtitle">Far West</p>
-          <p class="country-spotlight__date">12 giugno 2026 · Molino Santa Marta</p>
+          <p class="country-spotlight__date">12.06.26, 18:00-01:00</p>
           <p class="country-spotlight__text" id="countrySpotlightCopy">
             Il Far West arriva nel parco del Molino: musica live e show, atmosfera western
             e una notte sotto le stelle.
@@ -587,7 +593,7 @@
               id="countrySpotlightCta"
               href="https://www.molinosantamarta.it/country"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               Scopri l'evento
             </a>
@@ -711,10 +717,10 @@
             port === "8081");
         var moduleFallbackLoaded = false;
         var localModuleProbeStarted = false;
-        var moduleProbeUrl = "./src/main.js?v=20260430j";
+        var moduleProbeUrl = "./src/main.js?v=20260430v";
         var runtimeCandidates = [
-          { src: "./generated/main.runtime.20260430j.js" },
-          { src: "./generated/main.runtime.js?v=20260430j" }
+          { src: "./generated/main.runtime.20260430v.js" },
+          { src: "./generated/main.runtime.js?v=20260430v" }
         ];
         var candidateIndex = 0;
 

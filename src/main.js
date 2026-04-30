@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260430j";
+const APP_VERSION = "20260430v";
 const COUNTRY_EVENT_URL = "https://www.molinosantamarta.it/country";
 const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
   "country_event_enabled",
@@ -336,6 +336,13 @@ const FONT_BOOTSTRAP_PLAN = {
       sample: "Molino",
       selectors: "decorative fallback only",
       source: "self-hosted deferred",
+    },
+    {
+      family: "Mogathe Stamp",
+      descriptor: '400 1rem "Mogathe Stamp"',
+      sample: "MOLINO COUNTRY PARTY FAR WEST 12.06.2026",
+      selectors: "Country Party promotional headings",
+      source: "local deferred",
     },
   ],
 };
@@ -3497,9 +3504,13 @@ function syncCountryEventPromotion() {
   }
 
   if (!enabled && countrySpotlight) {
+    const wasSpotlightOpen = !countrySpotlight.hidden;
     countrySpotlight.classList.remove("is-open");
     countrySpotlight.hidden = true;
     countrySpotlight.setAttribute("aria-hidden", "true");
+    if (wasSpotlightOpen) {
+      syncModalOpenState({ restoreFocus: false });
+    }
   }
 }
 

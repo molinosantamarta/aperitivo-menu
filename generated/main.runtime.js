@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.847";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.847";
+  var APP_BUILD_LABEL = "V.1.0.862";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.862";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260430j";
+  var APP_VERSION = "20260430v";
   var COUNTRY_EVENT_URL = "https://www.molinosantamarta.it/country";
   var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
     "country_event_enabled",
@@ -352,6 +352,13 @@
         sample: "Molino",
         selectors: "decorative fallback only",
         source: "self-hosted deferred"
+      },
+      {
+        family: "Mogathe Stamp",
+        descriptor: '400 1rem "Mogathe Stamp"',
+        sample: "MOLINO COUNTRY PARTY FAR WEST 12.06.2026",
+        selectors: "Country Party promotional headings",
+        source: "local deferred"
       }
     ]
   };
@@ -2900,9 +2907,13 @@
       countryEventCard.setAttribute("aria-hidden", enabled ? "false" : "true");
     }
     if (!enabled && countrySpotlight) {
+      const wasSpotlightOpen = !countrySpotlight.hidden;
       countrySpotlight.classList.remove("is-open");
       countrySpotlight.hidden = true;
       countrySpotlight.setAttribute("aria-hidden", "true");
+      if (wasSpotlightOpen) {
+        syncModalOpenState({ restoreFocus: false });
+      }
     }
   }
   function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
