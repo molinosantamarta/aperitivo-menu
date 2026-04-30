@@ -50,6 +50,7 @@ var ITEM_COLUMNS = [
 
 var SETTINGS_COLUMNS = ['key', 'value', 'notes'];
 var AUDIT_COLUMNS = ['timestamp', 'actor_email', 'action', 'target_type', 'target_id', 'details_json'];
+var COUNTRY_EVENT_SETTING_KEY = 'country_event_enabled';
 
 function doGet(e) {
   var mode = sanitizeCell_(e && e.parameter ? e.parameter.mode : '').toLowerCase();
@@ -86,6 +87,7 @@ function buildPublicMenuPayload_() {
   return {
     version: 'admin-v2',
     generatedAt: new Date().toISOString(),
+    settings: getPublicSettings_(),
     sections: getAdminSections_().map(mapSectionToPublicPayload_),
     items: getAdminItems_().map(mapItemToPublicPayload_),
   };
@@ -102,6 +104,9 @@ function getBootstrapData() {
   if (!settings.brand_icon_url) {
     settings.brand_icon_url = MENUMAL_ICON_URL;
   }
+  if (!settings[COUNTRY_EVENT_SETTING_KEY]) {
+    settings[COUNTRY_EVENT_SETTING_KEY] = 'si';
+  }
 
   return {
     actorEmail: actor.email,
@@ -116,6 +121,43 @@ function getBootstrapData() {
       itemCount: liveMenuPayload.items.length,
       visibleItemCount: visibleItemCount,
       hiddenItemCount: liveMenuPayload.items.length - visibleItemCount,
+    },
+  };
+}
+
+function saveCountryEventSetting(enabled) {
+  var actor = assertAuthorized_();
+  var value = normalizeToggle_(enabled, true);
+  var settings;
+  var liveMenuPayload;
+
+  upsertSetting_(
+    COUNTRY_EVENT_SETTING_KEY,
+    value,
+    'Attiva o disattiva promo e spotlight Molino Country Party nel menu pubblico.'
+  );
+  tryLogAudit_(actor, 'save_setting', 'setting', COUNTRY_EVENT_SETTING_KEY, {
+    value: value,
+  });
+
+  settings = getSettingsObject_();
+  if (!settings[COUNTRY_EVENT_SETTING_KEY]) {
+    settings[COUNTRY_EVENT_SETTING_KEY] = value;
+  }
+  liveMenuPayload = buildPublicMenuPayload_();
+
+  return {
+    ok: true,
+    settings: settings,
+    publicSettings: liveMenuPayload.settings,
+    savedAt: new Date().toISOString(),
+    liveMenuSummary: {
+      generatedAt: liveMenuPayload.generatedAt,
+      sectionCount: liveMenuPayload.sections.length,
+      itemCount: liveMenuPayload.items.length,
+      visibleItemCount: liveMenuPayload.items.filter(function (item) {
+        return item.visibility_state !== 'nascosto';
+      }).length,
     },
   };
 }
@@ -267,6 +309,14 @@ function getSettingsObject_() {
     }
     return settings;
   }, {});
+}
+
+function getPublicSettings_() {
+  var settings = getSettingsObject_();
+
+  return {
+    country_event_enabled: normalizeToggle_(settings[COUNTRY_EVENT_SETTING_KEY], true),
+  };
 }
 
 function normalizeItemPayload_(payload) {

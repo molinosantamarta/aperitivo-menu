@@ -72,6 +72,18 @@
             </span>
           </button>
         </div>
+
+        <div class="entry-setting">
+          <div class="entry-setting__copy">
+            <strong>Promo Country Party</strong>
+            <span>Spotlight iniziale e card nella sezione Agri-Eventi.</span>
+          </div>
+          <label class="switch-field">
+            <input id="countryEventEnabledInput" type="checkbox" />
+            <span class="switch-field__track" aria-hidden="true"></span>
+            <span class="switch-field__label" id="countryEventEnabledText">Attiva</span>
+          </label>
+        </div>
       </section>
 
       <section class="screen-modal" id="browseModal" hidden>
@@ -332,7 +344,7 @@
               <ul class="utility-note__list">
                 <li><strong>Sezioni del menu</strong>: stanno in `admin_sections`.</li>
                 <li><strong>Prodotti del menu</strong>: stanno in `admin_items`.</li>
-                <li><strong>Impostazioni runtime</strong>: stanno in `admin_settings`.</li>
+                <li><strong>Impostazioni runtime</strong>: stanno in `admin_settings`, inclusa la promo Country Party.</li>
                 <li><strong>Storico operazioni</strong>: sta in `admin_audit_log`.</li>
                 <li>Il menu pubblico non usa piu il vecchio `database-semplice` e non usa piu il fallback CSV. La sorgente live e l endpoint JSON di Apps Script.</li>
               </ul>

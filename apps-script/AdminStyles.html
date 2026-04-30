@@ -383,6 +383,94 @@
     color: var(--text-soft);
   }
 
+  .entry-setting {
+    display: grid;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 15px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+  }
+
+  .entry-setting__copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .entry-setting__copy strong {
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+
+  .entry-setting__copy span {
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    line-height: 1.35;
+  }
+
+  .switch-field {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0.38rem 0.44rem 0.38rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--panel-soft);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .switch-field input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .switch-field__track {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: #d1d5db;
+    transition: background-color 160ms ease;
+  }
+
+  .switch-field__track::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18);
+    transition: transform 160ms ease;
+  }
+
+  .switch-field input:checked + .switch-field__track {
+    background: var(--success);
+  }
+
+  .switch-field input:checked + .switch-field__track::after {
+    transform: translateX(18px);
+  }
+
+  .switch-field input:focus-visible + .switch-field__track {
+    outline: 3px solid rgba(37, 99, 235, 0.18);
+    outline-offset: 2px;
+  }
+
+  .switch-field__label {
+    min-width: 76px;
+    font-size: 0.84rem;
+    font-weight: 650;
+  }
+
   .screen-modal,
   .utility-modal {
     position: fixed;
@@ -1029,6 +1117,10 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .entry-setting {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
     .catalog-toolbar {
       grid-template-columns: minmax(320px, 1fr) auto;
       align-items: end;
@@ -1089,6 +1181,10 @@
 
     .entry-card--chooser .entry-action {
       min-height: 100%;
+    }
+
+    .entry-card--chooser .entry-setting {
+      grid-column: 1 / -1;
     }
 
     .screen-modal__panel--catalog .screen-card {

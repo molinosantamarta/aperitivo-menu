@@ -140,6 +140,11 @@ const settings = [
     notes: "Compilare dopo il deploy pubblico dell endpoint JSON.",
   },
   {
+    key: "country_event_enabled",
+    value: "si",
+    notes: "Attiva o disattiva promo e spotlight Molino Country Party nel menu pubblico.",
+  },
+  {
     key: "seed_generated_at",
     value: now,
     notes: "Ultima generazione eseguita con scripts/sheets/export_admin_seed.mjs.",

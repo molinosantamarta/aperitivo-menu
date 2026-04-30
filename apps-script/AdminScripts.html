@@ -37,6 +37,8 @@
     els.entryPanel = document.getElementById("entryPanel");
     els.entryCreateButton = document.getElementById("entryCreateButton");
     els.entryBrowseButton = document.getElementById("entryBrowseButton");
+    els.countryEventEnabledInput = document.getElementById("countryEventEnabledInput");
+    els.countryEventEnabledText = document.getElementById("countryEventEnabledText");
     els.refreshButton = document.getElementById("refreshButton");
     els.liveSummary = document.getElementById("liveSummary");
     els.browseModal = document.getElementById("browseModal");
@@ -91,6 +93,7 @@
     els.closeHelpButton?.addEventListener("click", closeHelpModal);
     els.entryCreateButton?.addEventListener("click", enterCreateMode);
     els.entryBrowseButton?.addEventListener("click", enterBrowseMode);
+    els.countryEventEnabledInput?.addEventListener("change", handleCountryEventToggle);
     els.refreshButton?.addEventListener("click", () => loadBootstrap("Ricarico catalogo e impostazioni..."));
     els.browseBackButton?.addEventListener("click", returnToChooser);
     els.editorScreenBackButton?.addEventListener("click", handleEditorScreenBack);
@@ -146,6 +149,7 @@
 
           renderSectionOptions();
           renderLiveSummary();
+          syncCountryEventToggle();
           syncCurrentView();
           renderItemList();
           updateInterfaceState();
@@ -328,6 +332,50 @@
         els.helpPayloadLink.hidden = true;
       }
     }
+  }
+
+  function syncCountryEventToggle() {
+    if (!els.countryEventEnabledInput) {
+      return;
+    }
+
+    const enabled = isCountryEventEnabled();
+    els.countryEventEnabledInput.checked = enabled;
+    if (els.countryEventEnabledText) {
+      els.countryEventEnabledText.textContent = enabled ? "Attiva" : "Disattivata";
+    }
+  }
+
+  function isCountryEventEnabled() {
+    return normalizeToggle(state.settings?.country_event_enabled, true);
+  }
+
+  function handleCountryEventToggle(event) {
+    const enabled = Boolean(event.target.checked);
+    const previousEnabled = !enabled;
+
+    setBusy(true, enabled ? "Attivo la promo Country Party..." : "Disattivo la promo Country Party...");
+
+    google.script.run
+      .withSuccessHandler((result) => {
+        state.settings = result?.settings || {
+          ...state.settings,
+          country_event_enabled: enabled ? "si" : "no",
+        };
+        state.liveMenuSummary = result?.liveMenuSummary || state.liveMenuSummary;
+        syncCountryEventToggle();
+        setBusy(false);
+        showHeaderStatus(
+          enabled ? "Promo Country Party attiva nel menu pubblico." : "Promo Country Party disattivata nel menu pubblico.",
+          "success"
+        );
+      })
+      .withFailureHandler((error) => {
+        event.target.checked = previousEnabled;
+        syncCountryEventToggle();
+        handleFailure(error);
+      })
+      .saveCountryEventSetting(enabled);
   }
 
   function renderCatalogMeta(filteredItems = getFilteredItems()) {
@@ -697,6 +745,7 @@
       els.refreshButton,
       els.entryCreateButton,
       els.entryBrowseButton,
+      els.countryEventEnabledInput,
       els.helpButton,
       els.browseBackButton,
       els.editorScreenBackButton,

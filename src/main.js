@@ -9,7 +9,17 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260428p";
+const APP_VERSION = "20260430j";
+const COUNTRY_EVENT_URL = "https://www.molinosantamarta.it/country";
+const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
+  "country_event_enabled",
+  "country_party_enabled",
+  "molino_country_party_enabled",
+  "promo_country_event_enabled",
+];
+const COUNTRY_SPOTLIGHT_SESSION_KEY = `agriMenuCountrySpotlightSeen:${APP_VERSION}`;
+const COUNTRY_SPOTLIGHT_SCROLL_DELAY = 950;
+const COUNTRY_SPOTLIGHT_IDLE_DELAY = 6200;
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -80,6 +90,8 @@ const PROMO_AGRI_VIDEOS = [
   {
     title: "Video Agri-Eventi 2",
     eyebrow: "Molino Country Party",
+    posterPosition: "center center",
+    posterSize: "138% auto",
     src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1",
   },
   {
@@ -639,6 +651,12 @@ const promoAgriLightbox = document.querySelector("#promoAgriLightbox");
 const promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
 const promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
 const promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
+const countryEventCard = document.querySelector("#countryEventCard");
+const countrySpotlight = document.querySelector("#countrySpotlight");
+const countrySpotlightPanel = document.querySelector("#countrySpotlightPanel");
+const countrySpotlightBackdrop = document.querySelector("#countrySpotlightBackdrop");
+const countrySpotlightClose = document.querySelector("#countrySpotlightClose");
+const countrySpotlightCta = document.querySelector("#countrySpotlightCta");
 const formatCarousel = document.querySelector("#formatCarousel");
 const formatCarouselTrack = document.querySelector("#formatCarouselTrack");
 const formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -648,6 +666,8 @@ const formatShowcaseCopy = document.querySelector("#formatShowcaseCopy");
 const formatShowcaseLink = document.querySelector("#formatShowcaseLink");
 const fontGateStartedAt = performance.now();
 const fontGateDebugEnabled = shouldEnableFontGateDebug();
+let countryEventPromotionEnabled = true;
+let countrySpotlightInitialized = false;
 
 if (appLoaderBuild) {
   appLoaderBuild.textContent = APP_BUILD_LABEL;
@@ -948,6 +968,8 @@ async function init() {
         setLoaderTaskProgress("menuAssets", 1);
       });
     applyMenuData(menuData);
+    syncCountryEventPromotion();
+    initCountrySpotlight();
     try {
       await waitForMenuRender();
     } catch (error) {
@@ -1487,6 +1509,7 @@ function scrollNavLinkIntoView(link) {
 }
 
 async function loadMenuData() {
+  countryEventPromotionEnabled = true;
   const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json", {
     validate: isValidMenuDataPayload,
   });
@@ -1499,6 +1522,7 @@ async function loadMenuData() {
   if (sheetApiUrl) {
     try {
       const sheetPayload = await loadSheetApiPayload(sheetApiUrl);
+      applySheetRuntimeSettings(sheetPayload);
       const sheetRows = getSheetRowsFromPayload(sheetPayload);
       if (sheetRows.length || Array.isArray(sheetPayload?.sections)) {
         return applySheetPayloadToMenu(baseData, sheetPayload);
@@ -1577,11 +1601,50 @@ function isValidSheetApiPayload(payload) {
     return false;
   }
 
+  if (payload.settings && typeof payload.settings === "object") {
+    return true;
+  }
+
   if (Array.isArray(payload.rows)) {
     return true;
   }
 
   return Array.isArray(payload.items);
+}
+
+function applySheetRuntimeSettings(payload) {
+  const settings = getRuntimeSettingsFromPayload(payload);
+  const countryEventSettingValue = COUNTRY_EVENT_ENABLED_SETTING_KEYS
+    .map((key) => settings[key])
+    .find((value) => value != null && value !== "");
+
+  countryEventPromotionEnabled = parseSheetBoolean(countryEventSettingValue, true);
+}
+
+function getRuntimeSettingsFromPayload(payload) {
+  const rawSettings = payload?.settings;
+
+  if (!rawSettings || typeof rawSettings !== "object") {
+    return {};
+  }
+
+  if (Array.isArray(rawSettings)) {
+    return rawSettings.reduce((settings, row) => {
+      const key = normalizeSheetHeader(String(row?.key || ""));
+      if (key) {
+        settings[key] = row?.value ?? "";
+      }
+      return settings;
+    }, {});
+  }
+
+  return Object.entries(rawSettings).reduce((settings, [key, value]) => {
+    const normalizedKey = normalizeSheetHeader(String(key || ""));
+    if (normalizedKey) {
+      settings[normalizedKey] = value;
+    }
+    return settings;
+  }, {});
 }
 
 function getSheetRowsFromPayload(payload) {
@@ -2144,11 +2207,11 @@ function getLocalSheetPosition(item, fallbackValue) {
 }
 
 function parseSheetBoolean(value, fallbackValue) {
-  if (!value) {
+  if (value == null || value === "") {
     return fallbackValue;
   }
 
-  const normalized = value.trim().toLowerCase();
+  const normalized = String(value).trim().toLowerCase();
   if (["true", "1", "yes", "si", "sì", "y"].includes(normalized)) {
     return true;
   }
@@ -3067,24 +3130,35 @@ function initPromoAgriCarousel() {
   const swipeTarget = promoAgriViewport;
 
   promoAgriVideoTrack.innerHTML = PROMO_AGRI_VIDEOS.map(
-    (video, index) => `
+    (video, index) => {
+      const eventName = escapeHtml(video.eyebrow || video.title || "Agri-Eventi");
+      const posterStyle = [
+        `--promo-agri-video-poster: url('${getPromoAgriVideoPoster(video)}')`,
+        video.posterPosition ? `--promo-agri-video-position: ${video.posterPosition}` : "",
+        video.posterSize ? `--promo-agri-video-size: ${video.posterSize}` : "",
+      ]
+        .filter(Boolean)
+        .join("; ");
+
+      return `
       <button
         class="promo-agri__video-slide"
         type="button"
         data-slide-index="${index}"
-        aria-label="Guarda ${video.title}"
+        aria-label="Apri il video ${eventName}"
       >
         <span
           class="promo-agri__video-poster"
-          style="--promo-agri-video-poster: url('${getPromoAgriVideoPoster(video)}');"
+          style="${posterStyle};"
         >
           <span class="promo-agri__video-meta">
-            <span class="promo-agri__video-kicker">${video.eyebrow || "Agri-Eventi"}</span>
+            <span class="promo-agri__video-kicker">${eventName}</span>
           </span>
-          <span class="promo-agri__video-cta">Guarda il video</span>
+          <span class="promo-agri__video-play" aria-hidden="true">▶</span>
         </span>
       </button>
-    `
+    `;
+    }
   ).join("");
 
   promoAgriCarouselDots.innerHTML = PROMO_AGRI_VIDEOS.map(
@@ -3305,6 +3379,127 @@ function getPromoAgriEmbedSrc(video, options = {}) {
     return url.toString();
   } catch (error) {
     return video.src;
+  }
+}
+
+function initCountrySpotlight() {
+  syncCountryEventPromotion();
+
+  if (countrySpotlightInitialized || !isCountryEventPromotionEnabled()) {
+    return;
+  }
+
+  if (!countrySpotlight || !countrySpotlightPanel || !countrySpotlightClose) {
+    return;
+  }
+
+  countrySpotlightInitialized = true;
+  countryEventCard?.setAttribute("href", COUNTRY_EVENT_URL);
+  countrySpotlightCta?.setAttribute("href", COUNTRY_EVENT_URL);
+
+  let spotlightScheduled = false;
+  let spotlightClosed = false;
+
+  const hasSeenSpotlight = () => {
+    try {
+      return window.sessionStorage?.getItem(COUNTRY_SPOTLIGHT_SESSION_KEY) === "1";
+    } catch (error) {
+      return spotlightClosed;
+    }
+  };
+
+  const markSpotlightSeen = () => {
+    spotlightClosed = true;
+    try {
+      window.sessionStorage?.setItem(COUNTRY_SPOTLIGHT_SESSION_KEY, "1");
+    } catch (error) {
+      // Browsers with restricted storage still keep the in-memory guard above.
+    }
+  };
+
+  const closeSpotlight = ({ restoreFocus = true } = {}) => {
+    if (countrySpotlight.hidden) {
+      return;
+    }
+
+    markSpotlightSeen();
+    countrySpotlight.classList.remove("is-open");
+    countrySpotlight.setAttribute("aria-hidden", "true");
+    window.setTimeout(() => {
+      countrySpotlight.hidden = true;
+      syncModalOpenState({ restoreFocus });
+    }, 220);
+  };
+
+  const showSpotlight = () => {
+    if (!isCountryEventPromotionEnabled() || hasSeenSpotlight()) {
+      return;
+    }
+
+    if (!appHasRevealed || hasOpenModal()) {
+      scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+      return;
+    }
+
+    rememberLastFocusedElement(true);
+    countrySpotlight.hidden = false;
+    countrySpotlight.setAttribute("aria-hidden", "false");
+    syncModalOpenState({ restoreFocus: false });
+    window.requestAnimationFrame(() => {
+      countrySpotlight.classList.add("is-open");
+      focusElement(countrySpotlightCta || countrySpotlightClose);
+    });
+  };
+
+  function scheduleSpotlight(delay) {
+    if (spotlightScheduled || hasSeenSpotlight()) {
+      return;
+    }
+
+    spotlightScheduled = true;
+    window.setTimeout(() => {
+      spotlightScheduled = false;
+      showSpotlight();
+    }, delay);
+  }
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+    },
+    { once: true, passive: true }
+  );
+  window.setTimeout(() => {
+    scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+  }, COUNTRY_SPOTLIGHT_IDLE_DELAY);
+
+  countrySpotlightBackdrop?.addEventListener("click", () => closeSpotlight());
+  countrySpotlightClose.addEventListener("click", () => closeSpotlight());
+  countrySpotlightCta?.addEventListener("click", () => closeSpotlight({ restoreFocus: false }));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !countrySpotlight.hidden) {
+      closeSpotlight();
+    }
+  });
+}
+
+function isCountryEventPromotionEnabled() {
+  return countryEventPromotionEnabled !== false;
+}
+
+function syncCountryEventPromotion() {
+  const enabled = isCountryEventPromotionEnabled();
+
+  if (countryEventCard) {
+    countryEventCard.hidden = !enabled;
+    countryEventCard.setAttribute("aria-hidden", enabled ? "false" : "true");
+  }
+
+  if (!enabled && countrySpotlight) {
+    countrySpotlight.classList.remove("is-open");
+    countrySpotlight.hidden = true;
+    countrySpotlight.setAttribute("aria-hidden", "true");
   }
 }
 
@@ -6146,6 +6341,10 @@ function getOpenModalPanel() {
     return cartPanel;
   }
 
+  if (!countrySpotlight?.hidden) {
+    return countrySpotlightPanel;
+  }
+
   return null;
 }
 
@@ -6153,7 +6352,8 @@ function hasOpenModal() {
   return (
     detailSheet.classList.contains("is-open") ||
     cartSheet.classList.contains("is-open") ||
-    !promoAgriLightbox?.hidden
+    !promoAgriLightbox?.hidden ||
+    !countrySpotlight?.hidden
   );
 }
 

@@ -9,6 +9,10 @@ const PREVIEW_STYLE_ID = "menumal-preview-styles";
 const PREVIEW_SCRIPT_ID = "menumal-preview-runtime";
 
 const DEFAULT_PREVIEW_STATE = {
+  settings: {
+    allowed_editor_emails: PREVIEW_ACTOR_EMAIL,
+    country_event_enabled: "si",
+  },
   sections: [
     {
       section_id: "aperitivi",
@@ -194,6 +198,9 @@ function createRunner(handlers = {}) {
     deleteItem(itemId) {
       runAction(() => deletePreviewItem(itemId), handlers);
     },
+    saveCountryEventSetting(enabled) {
+      runAction(() => savePreviewCountryEventSetting(enabled), handlers);
+    },
   };
 }
 
@@ -219,9 +226,7 @@ function buildBootstrapData() {
     actorLabel: "preview locale",
     sections,
     items,
-    settings: {
-      allowed_editor_emails: PREVIEW_ACTOR_EMAIL,
-    },
+    settings: { ...state.settings, allowed_editor_emails: PREVIEW_ACTOR_EMAIL },
     publicMenuEndpoint: "preview://menu",
     liveMenuSummary: {
       generatedAt: new Date().toISOString(),
@@ -230,6 +235,21 @@ function buildBootstrapData() {
       visibleItemCount,
       hiddenItemCount: items.length - visibleItemCount,
     },
+  };
+}
+
+function savePreviewCountryEventSetting(enabled) {
+  const state = loadPreviewState();
+  state.settings = {
+    ...state.settings,
+    country_event_enabled: normalizeYesNo(enabled, true),
+  };
+  savePreviewState(state);
+  return {
+    ok: true,
+    settings: { ...state.settings, allowed_editor_emails: PREVIEW_ACTOR_EMAIL },
+    savedAt: new Date().toISOString(),
+    liveMenuSummary: buildBootstrapData().liveMenuSummary,
   };
 }
 
@@ -368,10 +388,14 @@ function loadPreviewState() {
     }
 
     const parsed = JSON.parse(raw);
-    return {
-      sections: Array.isArray(parsed.sections) ? parsed.sections : structuredClone(DEFAULT_PREVIEW_STATE.sections),
-      items: Array.isArray(parsed.items) ? parsed.items : structuredClone(DEFAULT_PREVIEW_STATE.items),
-    };
+      return {
+        settings:
+          parsed.settings && typeof parsed.settings === "object"
+            ? parsed.settings
+            : structuredClone(DEFAULT_PREVIEW_STATE.settings),
+        sections: Array.isArray(parsed.sections) ? parsed.sections : structuredClone(DEFAULT_PREVIEW_STATE.sections),
+        items: Array.isArray(parsed.items) ? parsed.items : structuredClone(DEFAULT_PREVIEW_STATE.items),
+      };
   } catch {
     return structuredClone(DEFAULT_PREVIEW_STATE);
   }
