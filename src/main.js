@@ -9,8 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260430v";
-const COUNTRY_EVENT_URL = "https://www.molinosantamarta.it/country";
+const APP_VERSION = "20260502e";
 const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
   "country_event_enabled",
   "country_party_enabled",
@@ -20,6 +19,7 @@ const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
 const COUNTRY_SPOTLIGHT_SESSION_KEY = `agriMenuCountrySpotlightSeen:${APP_VERSION}`;
 const COUNTRY_SPOTLIGHT_SCROLL_DELAY = 950;
 const COUNTRY_SPOTLIGHT_IDLE_DELAY = 6200;
+const COUNTRY_SPOTLIGHT_CLOSE_DELAY = 220;
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -3401,8 +3401,6 @@ function initCountrySpotlight() {
   }
 
   countrySpotlightInitialized = true;
-  countryEventCard?.setAttribute("href", COUNTRY_EVENT_URL);
-  countrySpotlightCta?.setAttribute("href", COUNTRY_EVENT_URL);
 
   let spotlightScheduled = false;
   let spotlightClosed = false;
@@ -3435,7 +3433,7 @@ function initCountrySpotlight() {
     window.setTimeout(() => {
       countrySpotlight.hidden = true;
       syncModalOpenState({ restoreFocus });
-    }, 220);
+    }, COUNTRY_SPOTLIGHT_CLOSE_DELAY);
   };
 
   const showSpotlight = () => {
@@ -3444,7 +3442,7 @@ function initCountrySpotlight() {
     }
 
     if (!appHasRevealed || hasOpenModal()) {
-      scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+      scheduleSpotlight();
       return;
     }
 
@@ -3458,7 +3456,7 @@ function initCountrySpotlight() {
     });
   };
 
-  function scheduleSpotlight(delay) {
+  function scheduleSpotlight() {
     if (spotlightScheduled || hasSeenSpotlight()) {
       return;
     }
@@ -3467,19 +3465,17 @@ function initCountrySpotlight() {
     window.setTimeout(() => {
       spotlightScheduled = false;
       showSpotlight();
-    }, delay);
+    }, COUNTRY_SPOTLIGHT_SCROLL_DELAY);
   }
 
   window.addEventListener(
     "scroll",
     () => {
-      scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+      scheduleSpotlight();
     },
     { once: true, passive: true }
   );
-  window.setTimeout(() => {
-    scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
-  }, COUNTRY_SPOTLIGHT_IDLE_DELAY);
+  window.setTimeout(scheduleSpotlight, COUNTRY_SPOTLIGHT_IDLE_DELAY);
 
   countrySpotlightBackdrop?.addEventListener("click", () => closeSpotlight());
   countrySpotlightClose.addEventListener("click", () => closeSpotlight());
@@ -3503,14 +3499,16 @@ function syncCountryEventPromotion() {
     countryEventCard.setAttribute("aria-hidden", enabled ? "false" : "true");
   }
 
-  if (!enabled && countrySpotlight) {
-    const wasSpotlightOpen = !countrySpotlight.hidden;
-    countrySpotlight.classList.remove("is-open");
-    countrySpotlight.hidden = true;
-    countrySpotlight.setAttribute("aria-hidden", "true");
-    if (wasSpotlightOpen) {
-      syncModalOpenState({ restoreFocus: false });
-    }
+  if (enabled || !countrySpotlight) {
+    return;
+  }
+
+  const wasSpotlightOpen = !countrySpotlight.hidden;
+  countrySpotlight.classList.remove("is-open");
+  countrySpotlight.hidden = true;
+  countrySpotlight.setAttribute("aria-hidden", "true");
+  if (wasSpotlightOpen) {
+    syncModalOpenState({ restoreFocus: false });
   }
 }
 

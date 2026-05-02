@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.862";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.862";
+  var APP_BUILD_LABEL = "V.1.0.869";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.869";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,8 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260430v";
-  var COUNTRY_EVENT_URL = "https://www.molinosantamarta.it/country";
+  var APP_VERSION = "20260502e";
   var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
     "country_event_enabled",
     "country_party_enabled",
@@ -42,6 +41,7 @@
   var COUNTRY_SPOTLIGHT_SESSION_KEY = "agriMenuCountrySpotlightSeen:".concat(APP_VERSION);
   var COUNTRY_SPOTLIGHT_SCROLL_DELAY = 950;
   var COUNTRY_SPOTLIGHT_IDLE_DELAY = 6200;
+  var COUNTRY_SPOTLIGHT_CLOSE_DELAY = 220;
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -2819,8 +2819,6 @@
       return;
     }
     countrySpotlightInitialized = true;
-    countryEventCard == null ? void 0 : countryEventCard.setAttribute("href", COUNTRY_EVENT_URL);
-    countrySpotlightCta == null ? void 0 : countrySpotlightCta.setAttribute("href", COUNTRY_EVENT_URL);
     let spotlightScheduled = false;
     let spotlightClosed = false;
     const hasSeenSpotlight = () => {
@@ -2849,14 +2847,14 @@
       window.setTimeout(() => {
         countrySpotlight.hidden = true;
         syncModalOpenState({ restoreFocus });
-      }, 220);
+      }, COUNTRY_SPOTLIGHT_CLOSE_DELAY);
     };
     const showSpotlight = () => {
       if (!isCountryEventPromotionEnabled() || hasSeenSpotlight()) {
         return;
       }
       if (!appHasRevealed || hasOpenModal()) {
-        scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+        scheduleSpotlight();
         return;
       }
       rememberLastFocusedElement(true);
@@ -2868,7 +2866,7 @@
         focusElement(countrySpotlightCta || countrySpotlightClose);
       });
     };
-    function scheduleSpotlight(delay) {
+    function scheduleSpotlight() {
       if (spotlightScheduled || hasSeenSpotlight()) {
         return;
       }
@@ -2876,18 +2874,16 @@
       window.setTimeout(() => {
         spotlightScheduled = false;
         showSpotlight();
-      }, delay);
+      }, COUNTRY_SPOTLIGHT_SCROLL_DELAY);
     }
     window.addEventListener(
       "scroll",
       () => {
-        scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
+        scheduleSpotlight();
       },
       { once: true, passive: true }
     );
-    window.setTimeout(() => {
-      scheduleSpotlight(COUNTRY_SPOTLIGHT_SCROLL_DELAY);
-    }, COUNTRY_SPOTLIGHT_IDLE_DELAY);
+    window.setTimeout(scheduleSpotlight, COUNTRY_SPOTLIGHT_IDLE_DELAY);
     countrySpotlightBackdrop == null ? void 0 : countrySpotlightBackdrop.addEventListener("click", () => closeSpotlight());
     countrySpotlightClose.addEventListener("click", () => closeSpotlight());
     countrySpotlightCta == null ? void 0 : countrySpotlightCta.addEventListener("click", () => closeSpotlight({ restoreFocus: false }));
@@ -2906,14 +2902,15 @@
       countryEventCard.hidden = !enabled;
       countryEventCard.setAttribute("aria-hidden", enabled ? "false" : "true");
     }
-    if (!enabled && countrySpotlight) {
-      const wasSpotlightOpen = !countrySpotlight.hidden;
-      countrySpotlight.classList.remove("is-open");
-      countrySpotlight.hidden = true;
-      countrySpotlight.setAttribute("aria-hidden", "true");
-      if (wasSpotlightOpen) {
-        syncModalOpenState({ restoreFocus: false });
-      }
+    if (enabled || !countrySpotlight) {
+      return;
+    }
+    const wasSpotlightOpen = !countrySpotlight.hidden;
+    countrySpotlight.classList.remove("is-open");
+    countrySpotlight.hidden = true;
+    countrySpotlight.setAttribute("aria-hidden", "true");
+    if (wasSpotlightOpen) {
+      syncModalOpenState({ restoreFocus: false });
     }
   }
   function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
