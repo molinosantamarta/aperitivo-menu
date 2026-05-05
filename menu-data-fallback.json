@@ -2254,6 +2254,8 @@
           "id": "kombucha-classica",
           "page": 2,
           "name": "Kombucha",
+          "availabilityState": "unavailable",
+          "available": false,
           "category": "Artigianale",
           "description": "Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",
           "producerMention": {
