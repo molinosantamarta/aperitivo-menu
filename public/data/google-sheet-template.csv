@@ -28,7 +28,7 @@ acqua,altre-bevande,0,si,si,Acqua,"Naturale o frizzante, bottiglia 50 cl.",Altre
 bibite,altre-bevande,1,si,si,Bibite,"Coca-Cola, Coca Zero, Coca Zero-Zero, Estathè Limone o Pesca. 33 cl.",Altre bevande,Coca-Cola,,4,Coca Zero,,4,Coca Zero-Zero,,4,si,inherit,,,,,,,
 crodino,altre-bevande,2,si,si,Crodino,L'analcolico biondo che fa impazzire il mondo.,Altre bevande,,,3,,,,,,,no,inherit,,,,,,,
 acqua-tonica,altre-bevande,3,si,si,Acqua tonica,Servita liscia o ghiaccio e limone.,Altre bevande,,,4,,,,,,,no,inherit,,,,,,,
-frutta-bio,altre-bevande,4,si,si,Aranciata rossa,"Succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, un equilibrio rotondo tra dolcezza e acidita. 27,5 cl.",Altre bevande,,,"4,5",,,,,,,si,inherit,,,,,,,
+frutta-bio,altre-bevande,4,si,si,Aranciata rossa,"Succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, un equilibrio rotondo tra dolcezza e acidita. 27,5 cl.",Altre bevande,,,5,,,,,,,si,inherit,,,,,,,
 kombucha-classica,altre-bevande,5,si,no,Kombucha,"Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",Artigianale,,,4,,,,,,,si,inherit,,,,,,,
 kombucha,altre-bevande,6,si,si,Kombucha limone,"Tè fermentato frizzante analcolico con succo di limone bio, prodotto in Lombardia.",Artigianale,,,"4,5",,,,,,,si,inherit,,,,,,,
 caffe,altre-bevande,7,si,si,Caffè,"Normale, lungo, deca o macchiato. (1,50€/cad.)",Altre bevande,Normale,,"1,5",Lungo,,"1,5",Deca,,"1,5",si,inherit,,,,,,,
