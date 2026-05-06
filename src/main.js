@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260506b";
+const APP_VERSION = "20260506c";
 const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
   "country_event_enabled",
   "country_party_enabled",
