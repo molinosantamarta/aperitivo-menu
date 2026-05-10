@@ -3328,7 +3328,8 @@ a {
 
 #section-drink .item-card[data-item-id="negroni"].item-card--floating-bottle .item-card__content,
 #section-drink .item-card[data-item-id="sbagliato"].item-card--floating-bottle .item-card__content,
-#section-drink .item-card[data-item-id="americano"].item-card--floating-bottle .item-card__content {
+#section-drink .item-card[data-item-id="americano"].item-card--floating-bottle .item-card__content,
+#section-drink .item-card[data-item-id="garibaldi"].item-card--floating-bottle .item-card__content {
   min-height: 156px;
   padding-right: 150px;
 }
@@ -3417,6 +3418,12 @@ a {
 .item-card__side-visual--floating-accent.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) rotate(var(--side-visual-tilt, -8deg));
+}
+
+@media (max-width: 640px) {
+  #section-drink .item-card[data-item-id="garibaldi"] .item-card__side-visual--floating-accent {
+    bottom: -10px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

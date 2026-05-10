@@ -810,6 +810,71 @@
           ]
         },
         {
+          "id": "garibaldi",
+          "page": 1,
+          "name": "Garibaldi",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Campari e succo d'arancia.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Garibaldi",
+            "gradientStart": "#9c0f1e",
+            "gradientMid": "#d9401f",
+            "gradientEnd": "#ffa126",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "campari-floating.webp",
+            "width": "99px",
+            "height": "209px",
+            "right": "2px",
+            "bottom": "14px",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-accent",
+            "asset": "garibaldi-arancia.png",
+            "width": "118px",
+            "height": "161px",
+            "right": "48px",
+            "bottom": "34px",
+            "zIndex": "5",
+            "tilt": "-6deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center center"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            262,
+            874,
+            480,
+            982
+          ],
+          "cropRect": [
+            300,
+            904,
+            496,
+            980
+          ],
+          "cropPadding": [
+            8,
+            10,
+            8,
+            10
+          ]
+        },
+        {
           "id": "sarti",
           "page": 1,
           "name": "Sarti Spritz",
