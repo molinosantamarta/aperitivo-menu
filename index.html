@@ -109,6 +109,13 @@
       as="image"
       fetchpriority="high"
     />
+    <link
+      rel="preload"
+      href="./menu-assets/items/granita-photo.webp?v=20260511a"
+      as="image"
+      type="image/webp"
+      fetchpriority="high"
+    />
     <link rel="stylesheet" href="./src/styles.css?v=20260511a" />
   </head>
   <body
@@ -207,30 +214,6 @@
                 Esperienze pensate per emozionare, sorprendere e far riscoprire il piacere
                 di condividere tempo di qualità, all'aria aperta.
               </p>
-              <a
-                id="countryEventCard"
-                class="country-event-card"
-                href="https://www.molinosantamarta.it/country"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Scopri Molino Country Party Far West, 12 giugno 18:00-01:00"
-              >
-                <span class="country-event-card__media" aria-hidden="true">
-                  <img
-                    src="./format-carousel/country-2026.png?v=20260511a"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </span>
-                <span class="country-event-card__copy">
-                  <span class="country-event-card__eyebrow">Evento speciale</span>
-                  <span class="country-event-card__title">Molino Country Party</span>
-                  <span class="country-event-card__subtitle">Far West</span>
-                  <span class="country-event-card__date">12 giugno 18:00-01:00</span>
-                  <span class="country-event-card__cta">Scopri l'evento</span>
-                </span>
-              </a>
             </div>
             <aside class="promo-agri__visual" aria-label="Anteprima Agri-Eventi">
               <div class="promo-agri__video-carousel" id="promoAgriCarousel">
@@ -331,27 +314,6 @@
                       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
                       data-deferred-src="./format-carousel/cinema.png?v=20260511a"
                       alt="Format Cinema"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </a>
-                  </figure>
-                  <figure class="format-carousel__slide format-carousel__slide--country">
-                  <a
-                    class="format-carousel__slide-link"
-                    href="https://www.molinosantamarta.it/event-details/molino-country-party-far-west"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="Apri Country Party"
-                    data-format-kicker="Country Party"
-                    data-format-title="Molino Country Party"
-                    data-format-description="Una notte a tema tra musica, ballo e atmosfera far west nel parco."
-                    data-format-cta="Scopri Molino Country Party"
-                  >
-                    <img
-                      src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                      data-deferred-src="./format-carousel/country-2026.png?v=20260511a"
-                      alt="Format Country"
                       loading="lazy"
                       decoding="async"
                     />
@@ -544,71 +506,6 @@
           allowfullscreen
         ></iframe>
       </div>
-    </div>
-
-    <div class="country-spotlight" id="countrySpotlight" aria-hidden="true" hidden>
-      <button
-        class="country-spotlight__backdrop"
-        id="countrySpotlightBackdrop"
-        type="button"
-        aria-label="Chiudi Molino Country Party"
-      ></button>
-      <section
-        class="country-spotlight__panel"
-        id="countrySpotlightPanel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="countrySpotlightTitle"
-        aria-describedby="countrySpotlightCopy"
-      >
-        <div class="country-spotlight__art" aria-hidden="true">
-          <div class="country-spotlight__poster-stage">
-            <div class="country-spotlight__poster-card">
-              <img
-                class="country-spotlight__poster-face country-spotlight__poster-face--front"
-                src="./format-carousel/country-2026.png?v=20260511a"
-                alt=""
-                decoding="async"
-              />
-              <img
-                class="country-spotlight__poster-face country-spotlight__poster-face--back"
-                src="./format-carousel/country-party-photo.webp?v=20260511a"
-                alt=""
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="country-spotlight__copy">
-          <p class="country-spotlight__eyebrow">Evento speciale</p>
-          <h2 class="country-spotlight__title" id="countrySpotlightTitle">Molino Country Party</h2>
-          <p class="country-spotlight__subtitle">Far West</p>
-          <p class="country-spotlight__date">12.06.26, 18:00-01:00</p>
-          <p class="country-spotlight__text" id="countrySpotlightCopy">
-            Il Far West arriva nel parco del Molino: musica live e show, atmosfera western
-            e una notte sotto le stelle.
-          </p>
-          <div class="country-spotlight__actions">
-            <button
-              class="country-spotlight__close"
-              id="countrySpotlightClose"
-              type="button"
-              aria-label="Chiudi Molino Country Party"
-            >
-              Chiudi
-            </button>
-            <a
-              class="country-spotlight__cta"
-              id="countrySpotlightCta"
-              href="https://www.molinosantamarta.it/country"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Scopri l'evento
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
 
     <button class="cart-fab" id="cartFab" type="button" aria-label="Apri riepilogo ordine" aria-hidden="true" inert>

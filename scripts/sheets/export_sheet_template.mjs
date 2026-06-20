@@ -47,7 +47,8 @@ const rows = menu.sections.flatMap((section) =>
         section_id: section.id,
       position: index,
       visible: "si",
-      available: item.available === false ? "no" : "si",
+      available:
+        item.available === false || item.availabilityState === "unavailable" ? "no" : "si",
       name: item.name ?? "",
       description: item.description ?? "",
       category: item.category ?? "",

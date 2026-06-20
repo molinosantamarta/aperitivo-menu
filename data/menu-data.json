@@ -12,6 +12,7 @@
           "id": "bianchina",
           "page": 1,
           "name": "Bianchina",
+          "availabilityState": "unavailable",
           "category": "Artigianali",
           "description": "Blanche 4% vol. 33 cl.",
           "visual": {
@@ -120,6 +121,7 @@
           "id": "ghe-sem",
           "page": 1,
           "name": "Ghe Sem",
+          "availabilityState": "unavailable",
           "category": "Artigianali",
           "description": "Märzen 6% vol. 33 cl.",
           "visual": {
@@ -229,6 +231,7 @@
           "id": "tel-chi",
           "page": 1,
           "name": "Tel Chi",
+          "availabilityState": "unavailable",
           "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol. 33 cl.",
           "visual": {
@@ -842,7 +845,7 @@
             "width": "118px",
             "height": "161px",
             "right": "48px",
-            "bottom": "34px",
+            "bottom": "14px",
             "zIndex": "5",
             "tilt": "-6deg",
             "backgroundSize": "contain",
@@ -2267,6 +2270,7 @@
           "id": "frutta-bio",
           "page": 2,
           "name": "Aranciata rossa",
+          "availabilityState": "unavailable",
           "category": "Altre bevande",
           "titleLogo": {
             "asset": "lurisia-logo-cutout.png",
@@ -2529,6 +2533,7 @@
           "page": 2,
           "name": "Iced Latte",
           "availabilityState": "coming-soon",
+          "visible": false,
           "category": "Altre bevande",
           "description": "Caffè shakerato freddo con latte nostrano, cremoso e dissetante.",
           "visual": {
@@ -2866,7 +2871,7 @@
           "lockAvailabilityState": true,
           "availabilityState": "self-service",
           "unavailableLabel": "Al carretto",
-          "serviceNote": "Ordina e ritira in autonomia al carretto nel parco.",
+          "serviceNote": "Fai lo scontrino alla cassa e ritira al carretto nel parco.",
           "visual": {
             "type": "photo-panel",
             "asset": "agri-gelato-photo.webp",
@@ -2896,6 +2901,30 @@
             10,
             10,
             10
+          ]
+        },
+        {
+          "id": "granita",
+          "page": 2,
+          "name": "Granita",
+          "category": "Gelateria",
+          "visible": true,
+          "availabilityState": "self-service",
+          "showDetailHint": false,
+          "description": "Fresca e dissetante, disponibile nei gusti del giorno al carretto nel parco.",
+          "unavailableLabel": "Al carretto",
+          "serviceNote": "Fai lo scontrino alla cassa e ritira al carretto nel parco.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "granita-photo.webp",
+            "position": "center 68%",
+            "size": "cover"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 3
+            }
           ]
         },
         {

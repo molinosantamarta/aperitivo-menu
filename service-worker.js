@@ -15,6 +15,7 @@ const APP_SHELL = [
   "./src/fonts/sign-painter.woff2",
   "./menu-assets/sgb-molino-black.png?v=20260511a",
   "./menu-assets/instagram-logo.webp?v=20260511a",
+  "./menu-assets/items/granita-photo.webp?v=20260511a",
   "./farfalla-bianca.webp?v=20260511a",
   "./format-carousel/bbq-picnic.png?v=20260511a",
   "./format-carousel/bbq-stelle.png?v=20260511a",

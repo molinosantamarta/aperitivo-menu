@@ -7,7 +7,7 @@ const rootDir = path.resolve(__dirname, "..", "..");
 const inputPath = path.join(rootDir, "public", "data", "menu-data.json");
 const outputPath = path.join(rootDir, "public", "data", "google-sheet-template-semplice.csv");
 const VISIBILITY_HEADER = "visibilita (visibile/nascosto)";
-const AVAILABILITY_HEADER = "disponibilita (disponibile/non disponibile/in arrivo)";
+const AVAILABILITY_HEADER = "disponibilita (disponibile/non disponibile/in arrivo/al carretto)";
 
 const columns = [
   "nome attuale (solo riferimento)",
@@ -49,6 +49,8 @@ function getItemAvailabilityState(item) {
       return "in arrivo";
     case "unavailable":
       return "non disponibile";
+    case "self-service":
+      return "al carretto";
     default:
       break;
   }

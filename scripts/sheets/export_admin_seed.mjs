@@ -191,7 +191,9 @@ async function loadLegacyOverrides(csvPath) {
         {
           visibility_state: normalizeVisibilityState(row.visibilita || row.visibilita_visibile_nascosto),
           availability_state: normalizeAvailabilityState(
-            row.disponibilita || row.disponibilita_disponibile_non_disponibile_in_arrivo
+            row.disponibilita ||
+              row.disponibilita_disponibile_non_disponibile_in_arrivo_al_carretto ||
+              row.disponibilita_disponibile_non_disponibile_in_arrivo
           ),
           prezzo: parseSheetNumber(row.prezzo),
         },

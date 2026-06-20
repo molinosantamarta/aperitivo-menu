@@ -104,6 +104,7 @@ const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);
 const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set([
   "mulassano-vermouth-rosso-floating.webp",
   "acqua-tonica-floating.webp",
+  "granita-photo.webp",
 ]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;

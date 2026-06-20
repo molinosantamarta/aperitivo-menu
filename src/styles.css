@@ -3422,7 +3422,7 @@ a {
 
 @media (max-width: 640px) {
   #section-drink .item-card[data-item-id="garibaldi"] .item-card__side-visual--floating-accent {
-    bottom: -10px;
+    bottom: 14px;
   }
 }
 

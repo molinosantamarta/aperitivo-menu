@@ -1,7 +1,7 @@
-nome attuale (solo riferimento),id,visibilita (visibile/nascosto),disponibilita (disponibile/non disponibile/in arrivo),prezzo
-Bianchina,bianchina,visibile,disponibile,6
-Ghe Sem,ghe-sem,visibile,disponibile,6
-Tel Chi,tel-chi,visibile,disponibile,6
+nome attuale (solo riferimento),id,visibilita (visibile/nascosto),disponibilita (disponibile/non disponibile/in arrivo/al carretto),prezzo
+Bianchina,bianchina,visibile,non disponibile,6
+Ghe Sem,ghe-sem,visibile,non disponibile,6
+Tel Chi,tel-chi,visibile,non disponibile,6
 Casciaball,casciaball,visibile,disponibile,6
 Ciapa Fià,ciapa-fia,visibile,disponibile,6
 Birra alla spina,spina,visibile,disponibile,5
@@ -29,15 +29,16 @@ Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
 Crodino,crodino,visibile,disponibile,3
 Acqua tonica,acqua-tonica,visibile,disponibile,4
-Aranciata rossa,frutta-bio,visibile,disponibile,5
+Aranciata rossa,frutta-bio,visibile,non disponibile,5
 Kombucha,kombucha-classica,visibile,non disponibile,4
 Kombucha limone,kombucha,visibile,in arrivo,"4,5"
 Caffè,caffe,visibile,disponibile,"1,5"
-Iced Latte,iced-coffee,visibile,in arrivo,4
+Iced Latte,iced-coffee,nascosto,in arrivo,4
 Grappe e amari,grappe-amari,visibile,disponibile,4
 Metro del Molino,metro-del-molino,visibile,disponibile,18
 Mezzo Metro,mezzo-metro-del-molino,visibile,disponibile,12
 Metro Gourmet del Molino,metro-gourmet-del-molino,visibile,in arrivo,24
 Pan & salam,mezzo-metro,visibile,disponibile,6
 Pan & Furmagg,pan-furmag,visibile,disponibile,6
+Granita,granita,visibile,al carretto,3
 Agri-Milkshake KM0,milkshake,visibile,disponibile,4
