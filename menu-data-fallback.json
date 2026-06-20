@@ -1663,6 +1663,56 @@
           ]
         },
         {
+          "id": "pinot-extra-dry",
+          "page": 1,
+          "name": "Pinot, spumante extra dry",
+          "category": "Bollicine",
+          "description": "Metodo Charmat-Martinotti, Brega, Oltrepò Pavese.",
+          "compactDetailOptions": true,
+          "detailOptionStyle": "wine-format",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "photo-panel",
+            "backgroundColor": "#efe8de"
+          },
+          "detailVisual": {
+            "type": "none"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.webp",
+            "width": "101px",
+            "height": "251px",
+            "right": "8px",
+            "bottom": "0px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 15
+            },
+            {
+              "label": "Calice",
+              "price": 5
+            }
+          ],
+          "rect": [
+            390,
+            1186,
+            746,
+            1348
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
           "id": "rosso-del-lupo",
           "page": 1,
           "name": "Rosso del Lupo",
@@ -1779,56 +1829,6 @@
             1424,
             356,
             1582
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
-          "id": "pinot-extra-dry",
-          "page": 1,
-          "name": "Pinot, spumante extra dry",
-          "category": "Bollicine",
-          "description": "Metodo Charmat-Martinotti, Brega, Oltrepò Pavese.",
-          "compactDetailOptions": true,
-          "detailOptionStyle": "wine-format",
-          "hideCardVisual": true,
-          "visual": {
-            "type": "photo-panel",
-            "backgroundColor": "#efe8de"
-          },
-          "detailVisual": {
-            "type": "none"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "pinot-extra-dry-floating.webp",
-            "width": "101px",
-            "height": "251px",
-            "right": "8px",
-            "bottom": "0px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "tilt": "0deg"
-          },
-          "options": [
-            {
-              "label": "Bottiglia",
-              "price": 15
-            },
-            {
-              "label": "Calice",
-              "price": 5
-            }
-          ],
-          "rect": [
-            390,
-            1186,
-            746,
-            1348
           ],
           "cropPadding": [
             10,
