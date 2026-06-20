@@ -13,6 +13,7 @@
           "page": 1,
           "name": "Bianchina",
           "availabilityState": "unavailable",
+          "visible": false,
           "category": "Artigianali",
           "description": "Blanche 4% vol. 33 cl.",
           "visual": {
@@ -122,6 +123,7 @@
           "page": 1,
           "name": "Ghe Sem",
           "availabilityState": "unavailable",
+          "visible": false,
           "category": "Artigianali",
           "description": "Märzen 6% vol. 33 cl.",
           "visual": {
@@ -232,6 +234,7 @@
           "page": 1,
           "name": "Tel Chi",
           "availabilityState": "unavailable",
+          "visible": false,
           "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol. 33 cl.",
           "visual": {
@@ -1479,120 +1482,177 @@
       "accentSoft": "#f1d7dc",
       "items": [
         {
-          "id": "oltrepo",
+          "id": "rose-n5",
           "page": 1,
-          "name": "Oltrepò Pavese",
-          "category": "Vino",
-          "description": "Bonarda, Casapaia, Chardonnay, Pinot Grigio.",
-          "detailDescription": "Vini bianchi e rossi, fermi e vivaci. Az. Agricola Luciano Brega.",
-          "cardVisual": {
-            "type": "can-cluster",
-            "asset": "oltrepo-back.webp",
-            "backgroundColor": "#eadcdf",
-            "position": "center center",
-            "size": "cover",
-            "items": [
-              {
-                "asset": "oltrepo-bonarda.webp",
-                "left": "24%",
-                "bottom": "-27%",
-                "height": "246px",
-                "rotate": "0deg",
-                "zIndex": 2,
-                "floatDistance": "4px",
-                "floatDuration": "4s",
-                "floatDelay": "-0.8s"
-              },
-              {
-                "asset": "oltrepo-casapaia.webp",
-                "left": "41%",
-                "bottom": "-24%",
-                "height": "250px",
-                "rotate": "0deg",
-                "zIndex": 4,
-                "floatDistance": "6px",
-                "floatDuration": "4.5s",
-                "floatDelay": "-1.3s"
-              },
-              {
-                "asset": "oltrepo-chardonnay.webp",
-                "left": "58%",
-                "bottom": "-24%",
-                "height": "248px",
-                "rotate": "0deg",
-                "zIndex": 3,
-                "floatDistance": "5px",
-                "floatDuration": "4.2s",
-                "floatDelay": "-0.5s"
-              },
-              {
-                "asset": "oltrepo-pinot-grigio.webp",
-                "left": "75%",
-                "bottom": "-27%",
-                "height": "244px",
-                "rotate": "0deg",
-                "zIndex": 1,
-                "floatDistance": "4px",
-                "floatDuration": "4.8s",
-                "floatDelay": "-1.7s"
-              }
-            ]
-          },
-          "visual": {
-            "type": "photo-panel",
-            "asset": "oltrepo-back.webp",
-            "position": "center center",
-            "size": "cover",
-            "selectionAssets": {
-              "Bonarda": "oltrepo-bonarda.webp",
-              "Casapaia": "oltrepo-casapaia.webp",
-              "Chardonnay": "oltrepo-chardonnay.webp",
-              "Pinot Grigio": "oltrepo-pinot-grigio.webp"
-            },
-            "selectionImageWidth": "clamp(96px, 28.5vw, 126px)",
-            "selectionImageBottom": "calc(var(--photo-panel-selection-image-width) * -1.08)",
-            "selectionImageLeft": "50%",
-            "selectionImageTranslateX": "-50%",
-            "selectionImageShadow": "drop-shadow(0 20px 28px rgba(0, 0, 0, 0.54)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22))"
-          },
-          "selectionGroups": [
+          "name": "Rosè n°5 Feral",
+          "category": "Limited Edition",
+          "description": "Rosè di piante ribelli, fermentazione ancestrale (0 alcol), bollicina elegante, dalle Dolomiti.",
+          "producerResources": [
             {
-              "id": "wine-style",
-              "label": "Tipologia",
-              "options": [
-                {
-                  "label": "Bonarda",
-                  "detailDescription": "Rosso vivace, secco e vellutato, con note di ciliegia."
-                },
-                {
-                  "label": "Casapaia",
-                  "detailDescription": "Rosso strutturato e persistente, con note fruttate e speziate."
-                },
-                {
-                  "label": "Chardonnay",
-                  "detailDescription": "Bianco vivace, morbido ed elegante, con note di mela."
-                },
-                {
-                  "label": "Pinot Grigio",
-                  "detailDescription": "Bianco secco e vellutato, floreale, con note di ginepro."
-                }
-              ]
+              "kind": "video",
+              "label": "Cos'è?",
+              "href": "https://www.instagram.com/p/DMpWjPdKsuW/",
+              "ariaLabel": "Apri il video esterno di presentazione del prodotto"
             }
           ],
+          "visual": {
+            "type": "photo-panel",
+            "asset": "feral-2.webp",
+            "position": "center center",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "feral-back.webp",
+              "position": "center center",
+              "size": "cover"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "feral-2.webp",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "rose-n5-floating.webp",
+            "width": "134px",
+            "height": "284px",
+            "right": "8px",
+            "bottom": "38px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
           "options": [
             {
               "label": "Bottiglia",
-              "price": 12
+              "price": 24
+            }
+          ],
+          "lockSheetOptions": true,
+          "rect": [
+            772,
+            1424,
+            1096,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "quarantalune",
+          "page": 1,
+          "name": "Quarantalune",
+          "category": "Bollicine",
+          "description": "Brut metodo classico, 40 mesi sui lieviti, millesimato, Lombardia.",
+          "visual": {
+            "type": "photo-panel",
+            "asset": "40lune-back.webp",
+            "position": "center 18%",
+            "size": "cover"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "40lune-back.webp",
+              "position": "center 18%",
+              "size": "cover"
             },
             {
-              "label": "Calice",
-              "price": 4
+              "type": "photo-panel",
+              "asset": "quarantalune-tonneau.jpg",
+              "position": "center center",
+              "size": "cover"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "quarantalune-floating.webp",
+            "width": "98px",
+            "height": "256px",
+            "right": "10px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 35
             }
           ],
           "rect": [
-            40,
+            390,
+            1424,
+            746,
+            1582
+          ],
+          "cropPadding": [
+            10,
+            12,
+            10,
+            12
+          ]
+        },
+        {
+          "id": "glera-zero",
+          "page": 1,
+          "name": "Spumante dealcolato",
+          "category": "Selezione Zero",
+          "description": "Uve Glera, spumante dry, Borgo Molino, 75 cl.",
+          "hideCardVisual": true,
+          "visual": {
+            "type": "photo-panel",
+            "asset": "borgo-molino-back.jpg",
+            "position": "center center",
+            "size": "cover",
+            "backgroundColor": "#efe8de"
+          },
+          "detailGallery": [
+            {
+              "type": "photo-panel",
+              "asset": "borgo-molino-back.jpg",
+              "position": "center center",
+              "size": "cover",
+              "backgroundColor": "#efe8de"
+            },
+            {
+              "type": "photo-panel",
+              "asset": "glera-zero-alt.jpg",
+              "position": "center center",
+              "size": "90% auto",
+              "backgroundColor": "#ffffff"
+            }
+          ],
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "glera-zero-floating.webp",
+            "width": "74px",
+            "height": "201px",
+            "right": "24px",
+            "bottom": "12px",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom",
+            "tilt": "0deg"
+          },
+          "options": [
+            {
+              "label": "Bottiglia",
+              "price": 18
+            }
+          ],
+          "rect": [
+            772,
             1186,
-            356,
+            1096,
             1348
           ],
           "cropPadding": [
@@ -1778,178 +1838,121 @@
           ]
         },
         {
-          "id": "quarantalune",
+          "id": "oltrepo",
           "page": 1,
-          "name": "Quarantalune",
-          "category": "Bollicine",
-          "description": "Brut metodo classico, 40 mesi sui lieviti, millesimato, Lombardia.",
-          "visual": {
-            "type": "photo-panel",
-            "asset": "40lune-back.webp",
-            "position": "center 18%",
-            "size": "cover"
-          },
-          "detailGallery": [
-            {
-              "type": "photo-panel",
-              "asset": "40lune-back.webp",
-              "position": "center 18%",
-              "size": "cover"
-            },
-            {
-              "type": "photo-panel",
-              "asset": "quarantalune-tonneau.jpg",
-              "position": "center center",
-              "size": "cover"
-            }
-          ],
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "quarantalune-floating.webp",
-            "width": "98px",
-            "height": "256px",
-            "right": "10px",
-            "bottom": "12px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "tilt": "0deg"
-          },
-          "options": [
-            {
-              "label": "Bottiglia",
-              "price": 35
-            }
-          ],
-          "rect": [
-            390,
-            1424,
-            746,
-            1582
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
-          "id": "glera-zero",
-          "page": 1,
-          "name": "Spumante dealcolato",
-          "category": "Selezione Zero",
-          "description": "Uve Glera, spumante dry, Borgo Molino, 75 cl.",
-          "hideCardVisual": true,
-          "visual": {
-            "type": "photo-panel",
-            "asset": "borgo-molino-back.jpg",
+          "name": "Oltrepò Pavese",
+          "category": "Vino",
+          "description": "Bonarda, Casapaia, Chardonnay, Pinot Grigio.",
+          "detailDescription": "Vini bianchi e rossi, fermi e vivaci. Az. Agricola Luciano Brega.",
+          "cardVisual": {
+            "type": "can-cluster",
+            "asset": "oltrepo-back.webp",
+            "backgroundColor": "#eadcdf",
             "position": "center center",
             "size": "cover",
-            "backgroundColor": "#efe8de"
+            "items": [
+              {
+                "asset": "oltrepo-bonarda.webp",
+                "left": "24%",
+                "bottom": "-27%",
+                "height": "246px",
+                "rotate": "0deg",
+                "zIndex": 2,
+                "floatDistance": "4px",
+                "floatDuration": "4s",
+                "floatDelay": "-0.8s"
+              },
+              {
+                "asset": "oltrepo-casapaia.webp",
+                "left": "41%",
+                "bottom": "-24%",
+                "height": "250px",
+                "rotate": "0deg",
+                "zIndex": 4,
+                "floatDistance": "6px",
+                "floatDuration": "4.5s",
+                "floatDelay": "-1.3s"
+              },
+              {
+                "asset": "oltrepo-chardonnay.webp",
+                "left": "58%",
+                "bottom": "-24%",
+                "height": "248px",
+                "rotate": "0deg",
+                "zIndex": 3,
+                "floatDistance": "5px",
+                "floatDuration": "4.2s",
+                "floatDelay": "-0.5s"
+              },
+              {
+                "asset": "oltrepo-pinot-grigio.webp",
+                "left": "75%",
+                "bottom": "-27%",
+                "height": "244px",
+                "rotate": "0deg",
+                "zIndex": 1,
+                "floatDistance": "4px",
+                "floatDuration": "4.8s",
+                "floatDelay": "-1.7s"
+              }
+            ]
           },
-          "detailGallery": [
-            {
-              "type": "photo-panel",
-              "asset": "borgo-molino-back.jpg",
-              "position": "center center",
-              "size": "cover",
-              "backgroundColor": "#efe8de"
-            },
-            {
-              "type": "photo-panel",
-              "asset": "glera-zero-alt.jpg",
-              "position": "center center",
-              "size": "90% auto",
-              "backgroundColor": "#ffffff"
-            }
-          ],
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "glera-zero-floating.webp",
-            "width": "74px",
-            "height": "201px",
-            "right": "24px",
-            "bottom": "12px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "tilt": "0deg"
-          },
-          "options": [
-            {
-              "label": "Bottiglia",
-              "price": 18
-            }
-          ],
-          "rect": [
-            772,
-            1186,
-            1096,
-            1348
-          ],
-          "cropPadding": [
-            10,
-            12,
-            10,
-            12
-          ]
-        },
-        {
-          "id": "rose-n5",
-          "page": 1,
-          "name": "Rosè n°5 Feral",
-          "category": "Limited Edition",
-          "description": "Rosè di piante ribelli, fermentazione ancestrale (0 alcol), bollicina elegante, dalle Dolomiti.",
-          "producerResources": [
-            {
-              "kind": "video",
-              "label": "Cos'è?",
-              "href": "https://www.instagram.com/p/DMpWjPdKsuW/",
-              "ariaLabel": "Apri il video esterno di presentazione del prodotto"
-            }
-          ],
           "visual": {
             "type": "photo-panel",
-            "asset": "feral-2.webp",
+            "asset": "oltrepo-back.webp",
             "position": "center center",
-            "size": "cover"
-          },
-          "detailGallery": [
-            {
-              "type": "photo-panel",
-              "asset": "feral-back.webp",
-              "position": "center center",
-              "size": "cover"
+            "size": "cover",
+            "selectionAssets": {
+              "Bonarda": "oltrepo-bonarda.webp",
+              "Casapaia": "oltrepo-casapaia.webp",
+              "Chardonnay": "oltrepo-chardonnay.webp",
+              "Pinot Grigio": "oltrepo-pinot-grigio.webp"
             },
+            "selectionImageWidth": "clamp(96px, 28.5vw, 126px)",
+            "selectionImageBottom": "calc(var(--photo-panel-selection-image-width) * -1.08)",
+            "selectionImageLeft": "50%",
+            "selectionImageTranslateX": "-50%",
+            "selectionImageShadow": "drop-shadow(0 20px 28px rgba(0, 0, 0, 0.54)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.22))"
+          },
+          "selectionGroups": [
             {
-              "type": "photo-panel",
-              "asset": "feral-2.webp",
-              "position": "center center",
-              "size": "cover"
+              "id": "wine-style",
+              "label": "Tipologia",
+              "options": [
+                {
+                  "label": "Bonarda",
+                  "detailDescription": "Rosso vivace, secco e vellutato, con note di ciliegia."
+                },
+                {
+                  "label": "Casapaia",
+                  "detailDescription": "Rosso strutturato e persistente, con note fruttate e speziate."
+                },
+                {
+                  "label": "Chardonnay",
+                  "detailDescription": "Bianco vivace, morbido ed elegante, con note di mela."
+                },
+                {
+                  "label": "Pinot Grigio",
+                  "detailDescription": "Bianco secco e vellutato, floreale, con note di ginepro."
+                }
+              ]
             }
           ],
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "rose-n5-floating.webp",
-            "width": "134px",
-            "height": "284px",
-            "right": "8px",
-            "bottom": "38px",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom",
-            "tilt": "0deg"
-          },
           "options": [
             {
               "label": "Bottiglia",
-              "price": 24
+              "price": 12
+            },
+            {
+              "label": "Calice",
+              "price": 4
             }
           ],
-          "lockSheetOptions": true,
           "rect": [
-            772,
-            1424,
-            1096,
-            1582
+            40,
+            1186,
+            356,
+            1348
           ],
           "cropPadding": [
             10,
@@ -2271,6 +2274,7 @@
           "page": 2,
           "name": "Aranciata rossa",
           "availabilityState": "unavailable",
+          "visible": false,
           "category": "Altre bevande",
           "titleLogo": {
             "asset": "lurisia-logo-cutout.png",
@@ -2324,6 +2328,7 @@
           "page": 2,
           "name": "Kombucha",
           "availabilityState": "unavailable",
+          "visible": false,
           "available": false,
           "category": "Artigianale",
           "description": "Tè fermentato frizzante analcolico artigianale, prodotto in Lombardia.",

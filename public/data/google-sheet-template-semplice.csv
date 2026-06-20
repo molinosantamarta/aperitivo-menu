@@ -1,7 +1,7 @@
 nome attuale (solo riferimento),id,visibilita (visibile/nascosto),disponibilita (disponibile/non disponibile/in arrivo/al carretto),prezzo
-Bianchina,bianchina,visibile,non disponibile,6
-Ghe Sem,ghe-sem,visibile,non disponibile,6
-Tel Chi,tel-chi,visibile,non disponibile,6
+Bianchina,bianchina,nascosto,non disponibile,6
+Ghe Sem,ghe-sem,nascosto,non disponibile,6
+Tel Chi,tel-chi,nascosto,non disponibile,6
 Casciaball,casciaball,visibile,disponibile,6
 Ciapa Fià,ciapa-fia,visibile,disponibile,6
 Birra alla spina,spina,visibile,disponibile,5
@@ -19,18 +19,18 @@ Gin Tonic,gin-tonic,visibile,disponibile,6
 Gin Lemon,gin-lemon,visibile,disponibile,6
 Gin Tropical,gin-tonic-special,visibile,disponibile,8
 Analcolico del Molino,analcolico-del-molino,visibile,disponibile,6
-Oltrepò Pavese,oltrepo,visibile,disponibile,
-Rosso del Lupo,rosso-del-lupo,visibile,disponibile,26
-"Pinot, spumante extra dry",pinot-extra-dry,visibile,disponibile,
+Rosè n°5 Feral,rose-n5,visibile,disponibile,24
 Quarantalune,quarantalune,visibile,disponibile,35
 Spumante dealcolato,glera-zero,visibile,disponibile,18
-Rosè n°5 Feral,rose-n5,visibile,disponibile,24
+Rosso del Lupo,rosso-del-lupo,visibile,disponibile,26
+"Pinot, spumante extra dry",pinot-extra-dry,visibile,disponibile,
+Oltrepò Pavese,oltrepo,visibile,disponibile,
 Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
 Crodino,crodino,visibile,disponibile,3
 Acqua tonica,acqua-tonica,visibile,disponibile,4
-Aranciata rossa,frutta-bio,visibile,non disponibile,5
-Kombucha,kombucha-classica,visibile,non disponibile,4
+Aranciata rossa,frutta-bio,nascosto,non disponibile,5
+Kombucha,kombucha-classica,nascosto,non disponibile,4
 Kombucha limone,kombucha,visibile,in arrivo,"4,5"
 Caffè,caffe,visibile,disponibile,"1,5"
 Iced Latte,iced-coffee,nascosto,in arrivo,4
