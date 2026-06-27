@@ -2258,6 +2258,54 @@
           ]
         },
         {
+          "id": "tonica-cedro",
+          "page": 2,
+          "name": "Tonica al cedro",
+          "category": "Altre bevande",
+          "showDetailHint": false,
+          "description": "Tonica al cedro: fresca e agrumata, servita liscia o con ghiaccio.",
+          "lockSheetDescription": true,
+          "hideCardVisual": true,
+          "visual": {
+            "type": "none"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "tonica-cedro-floating.webp",
+            "width": "clamp(84px, 7.5vw, 96px)",
+            "height": "clamp(168px, 16.5vw, 210px)",
+            "right": "12px",
+            "bottom": "8px",
+            "tilt": "-7deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            48,
+            536,
+            470,
+            620
+          ],
+          "cropRect": [
+            92,
+            556,
+            472,
+            620
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
+        },
+        {
           "id": "frutta-bio",
           "page": 2,
           "name": "Chinotto",
@@ -2844,6 +2892,38 @@
             10
           ],
           "lockAvailabilityState": true
+        },
+        {
+          "id": "patatine-fritte",
+          "page": 2,
+          "name": "Patatine fritte",
+          "availabilityState": "available",
+          "category": "Taglieri & sfiziosità",
+          "description": "",
+          "options": [
+            {
+              "label": "",
+              "price": 4
+            }
+          ],
+          "rect": [
+            48,
+            1242,
+            942,
+            1332
+          ],
+          "cropRect": [
+            90,
+            1284,
+            1110,
+            1354
+          ],
+          "cropPadding": [
+            10,
+            10,
+            10,
+            10
+          ]
         }
       ]
     },

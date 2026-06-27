@@ -29,6 +29,7 @@ Acqua,acqua,visibile,disponibile,"1,5"
 Bibite,bibite,visibile,disponibile,4
 Crodino,crodino,visibile,disponibile,3
 Acqua tonica,acqua-tonica,visibile,disponibile,4
+Tonica al cedro,tonica-cedro,visibile,disponibile,4
 Chinotto,frutta-bio,visibile,disponibile,5
 Kombucha,kombucha-classica,nascosto,non disponibile,4
 Kombucha limone,kombucha,nascosto,in arrivo,"4,5"
@@ -40,5 +41,6 @@ Mezzo Metro,mezzo-metro-del-molino,visibile,disponibile,12
 Metro Gourmet del Molino,metro-gourmet-del-molino,visibile,in arrivo,24
 Pan & salam,mezzo-metro,visibile,disponibile,6
 Pan & Furmagg,pan-furmag,visibile,disponibile,6
+Patatine fritte,patatine-fritte,visibile,disponibile,4
 Granita,granita,visibile,al carretto,3
 Agri-Milkshake KM0,milkshake,visibile,disponibile,4

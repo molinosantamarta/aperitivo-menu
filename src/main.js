@@ -107,6 +107,7 @@ const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set([
   "granita-photo.webp",
   "ginjune-tropical.webp",
   "chinotto-lurisia-floating.webp",
+  "tonica-cedro-floating.webp",
 ]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
