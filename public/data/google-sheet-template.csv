@@ -43,4 +43,4 @@ mezzo-metro,taglieri,3,si,si,Pan & salam,1 etto di salame nostrano servito con f
 pan-furmag,taglieri,4,si,si,Pan & Furmagg,"Assaggi di formaggi selezionati, serviti con fette di pagnotta multicereali fatta in casa.",Taglieri & sfiziosità,,,6,,,,,,,si,inherit,,,,,,,
 patatine-fritte,taglieri,5,si,si,Patatine fritte,,Taglieri & sfiziosità,,,4,,,,,,,no,inherit,,,,,,,
 granita,gelato,0,si,si,Granita,"Fresca e dissetante, disponibile nei gusti del giorno al carretto nel parco.",Gelateria,,,3,,,,,,,no,inherit,,,,,,,
-milkshake,gelato,1,si,si,Agri-Milkshake KM0,"Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto.",Novità,Milkshake,,4,,,,,,,no,inherit,,,,,,,
+milkshake,gelato,1,no,si,Agri-Milkshake KM0,"Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto.",Novità,Milkshake,,4,,,,,,,no,inherit,,,,,,,
