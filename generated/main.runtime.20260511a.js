@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.899";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.899";
+  var APP_BUILD_LABEL = "V.1.0.902";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.902";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -127,7 +127,7 @@
     "acqua-tonica-floating.webp",
     "granita-photo.webp",
     "ginjune-tropical.webp",
-    "chinotto-lurisia.jpg"
+    "chinotto-lurisia-floating.webp"
   ]);
   var COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
   var COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
