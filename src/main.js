@@ -105,6 +105,8 @@ const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set([
   "mulassano-vermouth-rosso-floating.webp",
   "acqua-tonica-floating.webp",
   "granita-photo.webp",
+  "ginjune-tropical.webp",
+  "chinotto-lurisia.jpg",
 ]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
@@ -1861,7 +1863,7 @@ function updateItemFromSheet(item, row, section) {
   if (nextDescription && nextItem.lockSheetDescription !== true) {
     nextItem.description = nextDescription;
   }
-  if (nextCategory) {
+  if (nextCategory && nextItem.lockSheetCategory !== true) {
     nextItem.category = nextCategory;
   }
   if (nextDetailLayout) {

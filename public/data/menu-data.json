@@ -12,8 +12,8 @@
           "id": "bianchina",
           "page": 1,
           "name": "Bianchina",
-          "availabilityState": "unavailable",
-          "visible": false,
+          "availabilityState": "available",
+          "visible": true,
           "category": "Artigianali",
           "description": "Blanche 4% vol. 33 cl.",
           "visual": {
@@ -122,8 +122,8 @@
           "id": "ghe-sem",
           "page": 1,
           "name": "Ghe Sem",
-          "availabilityState": "unavailable",
-          "visible": false,
+          "availabilityState": "available",
+          "visible": true,
           "category": "Artigianali",
           "description": "Märzen 6% vol. 33 cl.",
           "visual": {
@@ -233,8 +233,8 @@
           "id": "tel-chi",
           "page": 1,
           "name": "Tel Chi",
-          "availabilityState": "unavailable",
-          "visible": false,
+          "availabilityState": "available",
+          "visible": true,
           "category": "Artigianali",
           "description": "IPA gluten free 4,5% vol. 33 cl.",
           "visual": {
@@ -1370,30 +1370,18 @@
           "id": "gin-tonic-special",
           "page": 1,
           "name": "Gin Tropical",
-          "category": "Limited Edition",
+          "category": "New Limited Edition",
           "available": true,
           "showDetailHint": false,
-          "description": "Mix esotico di sapori, mango maturato al sole, lime fresco per un gusto vibrante agrumato dei tropici.",
+          "lockSheetDescription": true,
+          "lockSheetCategory": true,
+          "description": "G’Vine Mango & Passion Fruit: un gin tropicale fresco e morbido, con note di mango e frutto della passione, bilanciate dal ginepro e dall’eleganza del distillato d’uva G’Vine. Perfetto per un Gin Tonic esotico, profumato e rinfrescante.",
           "visual": {
-            "type": "beer-script",
-            "label": "Gin",
-            "gradientStart": "#cc4e12",
-            "gradientMid": "#f39a18",
-            "gradientEnd": "#ffd74a",
-            "labelColor": "#fffdf8",
-            "textStyle": "display",
-            "script": "Tropical"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "gin-whitley-neill-mango-lime-limited-edition-cl70-cutout.webp",
-            "width": "86px",
-            "height": "218px",
-            "right": "16px",
-            "bottom": "12px",
-            "tilt": "0deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
+            "type": "photo-panel",
+            "asset": "ginjune-tropical.webp",
+            "position": "center center",
+            "size": "cover",
+            "backgroundColor": "#f5bb22"
           },
           "options": [
             {
@@ -1529,7 +1517,7 @@
           "options": [
             {
               "label": "Bottiglia",
-              "price": 24
+              "price": 25
             }
           ],
           "lockSheetOptions": true,
@@ -2272,31 +2260,22 @@
         {
           "id": "frutta-bio",
           "page": 2,
-          "name": "Aranciata rossa",
-          "availabilityState": "unavailable",
-          "visible": false,
+          "name": "Chinotto",
+          "availabilityState": "available",
+          "visible": true,
+          "excludeFromSheet": true,
           "category": "Altre bevande",
           "titleLogo": {
             "asset": "lurisia-logo-cutout.png",
             "width": "50px"
           },
-          "description": "Succo di Arancia Rossa di Sicilia IGP: elegante, agrumata e succosa, un equilibrio rotondo tra dolcezza e acidita. 27,5 cl.",
+          "description": "Chinotto Lurisia: con chinotto del Presìdio Slow Food di Savona, intenso ed elegante, leggermente amaro, con note agrumate, speziate e caramellate. 27,5 cl.",
           "visual": {
             "type": "photo-panel",
-            "asset": "aranciata-rossa-lurisia-back.jpg",
-            "position": "center 54%",
-            "size": "cover"
-          },
-          "sideVisual": {
-            "type": "floating-bottle",
-            "asset": "aranciata-rossa-lurisia-floating.webp",
-            "width": "164px",
-            "height": "394px",
-            "right": "-10px",
-            "bottom": "18px",
-            "tilt": "0deg",
-            "backgroundSize": "contain",
-            "backgroundPosition": "center bottom"
+            "asset": "chinotto-lurisia.jpg",
+            "position": "center center",
+            "size": "contain",
+            "backgroundColor": "#f6f0e6"
           },
           "options": [
             {
@@ -2406,6 +2385,8 @@
           "id": "kombucha",
           "page": 2,
           "name": "Kombucha limone",
+          "visible": false,
+          "excludeFromSheet": true,
           "availabilityState": "coming-soon",
           "category": "Artigianale",
           "description": "Tè fermentato frizzante analcolico con succo di limone bio, prodotto in Lombardia.",

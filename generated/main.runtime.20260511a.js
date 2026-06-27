@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.890";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.890";
+  var APP_BUILD_LABEL = "V.1.0.899";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.899";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -125,7 +125,9 @@
   var CRITICAL_MENU_PRELOAD_ASSET_NAMES = /* @__PURE__ */ new Set([
     "mulassano-vermouth-rosso-floating.webp",
     "acqua-tonica-floating.webp",
-    "granita-photo.webp"
+    "granita-photo.webp",
+    "ginjune-tropical.webp",
+    "chinotto-lurisia.jpg"
   ]);
   var COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
   var COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
@@ -1592,7 +1594,7 @@
     if (nextDescription && nextItem.lockSheetDescription !== true) {
       nextItem.description = nextDescription;
     }
-    if (nextCategory) {
+    if (nextCategory && nextItem.lockSheetCategory !== true) {
       nextItem.category = nextCategory;
     }
     if (nextDetailLayout) {
