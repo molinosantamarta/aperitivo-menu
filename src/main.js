@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260511a";
+const APP_VERSION = "20260630d";
 const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
   "country_event_enabled",
   "country_party_enabled",
@@ -1729,6 +1729,9 @@ function applySheetRowsToMenu(baseMenu, sheetRows) {
     section.items = section.items
       .filter((item) => {
         const row = getManagedSheetRow(item, rowLookup);
+        if (item?.lockSheetVisibility === true) {
+          return item.visible !== false;
+        }
         return row ? resolveSheetVisibility(row, true) : true;
       })
       .map((item, index) => {

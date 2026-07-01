@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.908";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.908";
+  var APP_BUILD_LABEL = "V.1.0.915";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.915";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260511a";
+  var APP_VERSION = "20260630d";
   var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
     "country_event_enabled",
     "country_party_enabled",
@@ -1492,6 +1492,9 @@
     nextMenu.sections.forEach((section) => {
       section.items = section.items.filter((item) => {
         const row = getManagedSheetRow(item, rowLookup);
+        if ((item == null ? void 0 : item.lockSheetVisibility) === true) {
+          return item.visible !== false;
+        }
         return row ? resolveSheetVisibility(row, true) : true;
       }).map((item, index) => {
         const row = getManagedSheetRow(item, rowLookup);

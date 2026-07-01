@@ -615,6 +615,8 @@
           "name": "Panachè",
           "category": "Alla spina",
           "available": true,
+          "visible": true,
+          "lockSheetVisibility": true,
           "description": "Birra alla spina e Lemon soda.",
           "showDetailHint": false,
           "visual": {
@@ -1043,6 +1045,73 @@
             "bottom": "10px",
             "zIndex": "5",
             "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
+          "id": "paloma",
+          "page": 1,
+          "name": "Paloma",
+          "availabilityState": "available",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Mezcal, lime e tonica al pompelmo rosa.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Paloma",
+            "gradientStart": "#d9365f",
+            "gradientMid": "#f07d72",
+            "gradientEnd": "#ffd0a3",
+            "labelColor": "#fffdf8",
+            "textStyle": "display"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "mezcal-floating.png",
+            "width": "63px",
+            "height": "225px",
+            "right": "8px",
+            "bottom": "4px",
+            "zIndex": "6",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "tonica-pompelmo-rosa-floating.png",
+            "width": "46px",
+            "height": "148px",
+            "right": "52px",
+            "bottom": "12px",
+            "zIndex": "7",
+            "tilt": "-3deg",
             "backgroundSize": "contain",
             "backgroundPosition": "center bottom"
           },
