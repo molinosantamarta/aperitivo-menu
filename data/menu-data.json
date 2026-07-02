@@ -612,11 +612,12 @@
         {
           "id": "panache",
           "page": 1,
-          "name": "Panachè",
+          "name": "Panachè (Radler)",
           "category": "Alla spina",
           "available": true,
           "visible": true,
           "lockSheetVisibility": true,
+          "lockSheetName": true,
           "description": "Birra alla spina e Lemon soda.",
           "showDetailHint": false,
           "visual": {

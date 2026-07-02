@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260630d";
+const APP_VERSION = "20260702a";
 const COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
   "country_event_enabled",
   "country_party_enabled",
@@ -1861,7 +1861,7 @@ function updateItemFromSheet(item, row, section) {
   const nextCategory = getSheetRowCategory(row);
   const nextDetailLayout = resolveSheetDetailLayout(row, nextItem.detailLayout || "");
 
-  if (nextName) {
+  if (nextName && nextItem.lockSheetName !== true) {
     nextItem.name = nextName;
   }
   if (nextDescription && nextItem.lockSheetDescription !== true) {

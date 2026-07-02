@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.915";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.915";
+  var APP_BUILD_LABEL = "V.1.0.916";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.916";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260630d";
+  var APP_VERSION = "20260702a";
   var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
     "country_event_enabled",
     "country_party_enabled",
@@ -1592,7 +1592,7 @@
     const nextDescription = getSheetRowDescription(row);
     const nextCategory = getSheetRowCategory(row);
     const nextDetailLayout = resolveSheetDetailLayout(row, nextItem.detailLayout || "");
-    if (nextName) {
+    if (nextName && nextItem.lockSheetName !== true) {
       nextItem.name = nextName;
     }
     if (nextDescription && nextItem.lockSheetDescription !== true) {
