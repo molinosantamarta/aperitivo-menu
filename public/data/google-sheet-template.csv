@@ -42,6 +42,6 @@ mezzo-metro-del-molino,taglieri,1,si,si,Mezzo Metro,Sfizioso e conviviale: assag
 metro-gourmet-del-molino,taglieri,2,si,si,Metro Gourmet del Molino,"Versione premium del metro del Molino, con selezione gourmet.",Taglieri & sfiziosità,,,24,,,,,,,si,inherit,,,,,,,
 mezzo-metro,taglieri,3,si,si,Pan & salam,1 etto di salame nostrano servito con fette di pagnotta multicereali fatta in casa.,Taglieri & sfiziosità,,,6,,,,,,,si,inherit,,,,,,,
 pan-furmag,taglieri,4,si,si,Pan & Furmagg,"Assaggi di formaggi selezionati, serviti con fette di pagnotta multicereali fatta in casa.",Taglieri & sfiziosità,,,6,,,,,,,si,inherit,,,,,,,
-patatine-fritte,taglieri,5,si,si,Patatine fritte,,Taglieri & sfiziosità,,,4,,,,,,,no,inherit,,,,,,,
+patatine-fritte,taglieri,5,no,si,Patatine fritte,,Taglieri & sfiziosità,,,4,,,,,,,no,inherit,,,,,,,
 granita,gelato,0,si,si,Granita,"Gusti disponibili: menta, limone, ciliegia e granatina. Ordina al tavolo o ritira al Bar",Gelateria,,,3,,,,,,,no,inherit,,,,,,,
 milkshake,gelato,1,no,si,Agri-Milkshake KM0,"Super cremoso, fresco e avvolgente: fatto col nostro agri-gelato e latte fresco della cascina, disponibile in tutti i gusti nel carretto.",Novità,Milkshake,,4,,,,,,,no,inherit,,,,,,,

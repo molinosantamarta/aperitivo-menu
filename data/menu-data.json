@@ -2969,6 +2969,8 @@
           "id": "patatine-fritte",
           "page": 2,
           "name": "Patatine fritte",
+          "visible": false,
+          "lockSheetVisibility": true,
           "availabilityState": "available",
           "category": "Taglieri & sfiziosità",
           "description": "",

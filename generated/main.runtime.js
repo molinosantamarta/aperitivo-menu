@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.920";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.920";
+  var APP_BUILD_LABEL = "V.1.0.921";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.921";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260702e";
+  var APP_VERSION = "20260705a";
   var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
     "country_event_enabled",
     "country_party_enabled",
