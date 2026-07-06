@@ -9,6 +9,7 @@
     editorReturnView: "chooser",
     filters: {
       search: "",
+      visibility: "all",
     },
     publicMenuEndpoint: "",
     liveMenuSummary: null,
@@ -29,6 +30,8 @@
   function cacheElements() {
     els.headerStatus = document.getElementById("headerStatus");
     els.headerStatusText = document.getElementById("headerStatusText");
+    els.busyModal = document.getElementById("busyModal");
+    els.busyModalText = document.getElementById("busyModalText");
     els.helpButton = document.getElementById("helpButton");
     els.helpModal = document.getElementById("helpModal");
     els.helpBackdrop = document.getElementById("helpBackdrop");
@@ -37,8 +40,6 @@
     els.entryPanel = document.getElementById("entryPanel");
     els.entryCreateButton = document.getElementById("entryCreateButton");
     els.entryBrowseButton = document.getElementById("entryBrowseButton");
-    els.countryEventEnabledInput = document.getElementById("countryEventEnabledInput");
-    els.countryEventEnabledText = document.getElementById("countryEventEnabledText");
     els.refreshButton = document.getElementById("refreshButton");
     els.liveSummary = document.getElementById("liveSummary");
     els.browseModal = document.getElementById("browseModal");
@@ -47,7 +48,7 @@
     els.editorScreenBackButton = document.getElementById("editorScreenBackButton");
     els.editorScreenBackLabel = document.getElementById("editorScreenBackLabel");
     els.searchInput = document.getElementById("searchInput");
-    els.catalogMeta = document.getElementById("catalogMeta");
+    els.visibilityFilterButtons = Array.from(document.querySelectorAll("[data-visibility-filter]"));
     els.itemList = document.getElementById("itemList");
     els.editorTitle = document.getElementById("editorTitle");
     els.editorMeta = document.getElementById("editorMeta");
@@ -93,7 +94,6 @@
     els.closeHelpButton?.addEventListener("click", closeHelpModal);
     els.entryCreateButton?.addEventListener("click", enterCreateMode);
     els.entryBrowseButton?.addEventListener("click", enterBrowseMode);
-    els.countryEventEnabledInput?.addEventListener("change", handleCountryEventToggle);
     els.refreshButton?.addEventListener("click", () => loadBootstrap("Ricarico catalogo e impostazioni..."));
     els.browseBackButton?.addEventListener("click", returnToChooser);
     els.editorScreenBackButton?.addEventListener("click", handleEditorScreenBack);
@@ -101,6 +101,26 @@
     els.searchInput?.addEventListener("input", (event) => {
       state.filters.search = normalizeSearchText(event.target.value);
       renderItemList();
+    });
+    els.searchInput?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      const filteredItems = getFilteredItems();
+      if (filteredItems.length !== 1) {
+        return;
+      }
+
+      event.preventDefault();
+      openItemEditor(filteredItems[0]);
+    });
+    els.visibilityFilterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        state.filters.visibility = button.dataset.visibilityFilter || "all";
+        syncVisibilityFilterButtons();
+        renderItemList();
+      });
     });
     els.itemForm?.addEventListener("submit", handleSave);
     els.nameInput?.addEventListener("input", () => {
@@ -149,7 +169,6 @@
 
           renderSectionOptions();
           renderLiveSummary();
-          syncCountryEventToggle();
           syncCurrentView();
           renderItemList();
           updateInterfaceState();
@@ -194,9 +213,10 @@
     }
 
     const wasCreating = state.isCreating;
+    const returnToView = state.editorReturnView;
     if (wasCreating) {
-      state.view = "chooser";
-      state.editorReturnView = "chooser";
+      state.view = "browse";
+      state.editorReturnView = "browse";
       updateInterfaceState();
     }
 
@@ -204,17 +224,20 @@
 
     google.script.run
       .withSuccessHandler((result) => {
-        state.currentItemId = "";
+        const savedItemId = result?.item?.id || payload.id || "";
+        state.currentItemId = savedItemId;
         state.isCreating = false;
-        state.view = "chooser";
-        state.editorReturnView = "chooser";
+        state.view = returnToView === "browse" || wasCreating ? "browse" : "chooser";
+        state.editorReturnView = state.view === "browse" ? "browse" : "chooser";
+        state.filters.search = "";
+        state.filters.visibility = "all";
         const isVerified = Boolean(result?.liveVerification?.found);
         state.lastMessage = wasCreating
           ? isVerified
-            ? "Prodotto salvato e verificato nel payload live."
+            ? "Prodotto salvato e verificato. Lo trovi evidenziato nel catalogo."
             : "Prodotto salvato, ma non trovato nel payload live."
           : isVerified
-            ? "Prodotto aggiornato e verificato nel payload live."
+            ? "Prodotto aggiornato e verificato. Lo trovi evidenziato nel catalogo."
             : "Prodotto aggiornato, ma non trovato nel payload live.";
         state.lastMessageTone = isVerified ? "success" : "error";
         loadBootstrap("Rileggo Google Sheet e menu live...");
@@ -256,8 +279,8 @@
         const isRemoved = !result?.liveVerification?.found;
         state.currentItemId = "";
         state.isCreating = false;
-        state.view = "chooser";
-        state.editorReturnView = "chooser";
+        state.view = previousReturnView === "browse" ? "browse" : "chooser";
+        state.editorReturnView = state.view === "browse" ? "browse" : "chooser";
         state.lastMessage = isRemoved
           ? "Prodotto eliminato e verificato fuori dal payload live."
           : "Prodotto eliminato dal foglio, ma ancora presente nel payload live.";
@@ -323,82 +346,110 @@
   }
 
   function renderLiveSummary() {
+    const endpoint = String(state.publicMenuEndpoint || "");
+    const hasOpenableEndpoint = Boolean(endpoint && !endpoint.startsWith("preview://"));
+
     if (els.helpPayloadLink) {
-      if (state.publicMenuEndpoint) {
-        els.helpPayloadLink.href = state.publicMenuEndpoint;
+      if (hasOpenableEndpoint) {
+        els.helpPayloadLink.href = endpoint;
         els.helpPayloadLink.hidden = false;
       } else {
         els.helpPayloadLink.href = "#";
         els.helpPayloadLink.hidden = true;
       }
     }
-  }
 
-  function syncCountryEventToggle() {
-    if (!els.countryEventEnabledInput) {
+    if (!els.liveSummary) {
       return;
     }
 
-    const enabled = isCountryEventEnabled();
-    els.countryEventEnabledInput.checked = enabled;
-    if (els.countryEventEnabledText) {
-      els.countryEventEnabledText.textContent = enabled ? "Attiva" : "Disattivata";
-    }
-  }
+    const summary = state.liveMenuSummary || {};
+    const itemCount = Number(summary.itemCount || state.items.length || 0);
+    const visibleFallbackCount = state.items.filter((item) => item.visibility_state !== "nascosto").length;
+    const visibleItemCount = Number(
+      summary.visibleItemCount == null ? visibleFallbackCount : summary.visibleItemCount
+    );
+    const hiddenItemCount = Number(
+      summary.hiddenItemCount == null ? Math.max(0, itemCount - visibleItemCount) : summary.hiddenItemCount
+    );
+    const generatedAt = formatDateTime(summary.generatedAt);
+    const isPreviewEndpoint = endpoint.startsWith("preview://");
+    const sourceLabel = isPreviewEndpoint ? "Preview locale" : "Google Sheet live";
+    const visibleLabel = visibleItemCount === 1 ? "1 visibile" : `${visibleItemCount} visibili`;
+    const hiddenLabel = hiddenItemCount === 1 ? "1 nascosto" : `${hiddenItemCount} nascosti`;
+    const endpointLabel = hasOpenableEndpoint
+      ? "Endpoint pubblico attivo"
+      : isPreviewEndpoint
+        ? "Preview locale"
+        : "Endpoint pubblico non configurato";
+    const badgeLabel = hasOpenableEndpoint ? "Live" : isPreviewEndpoint ? "Preview" : "Da configurare";
+    const badgeClass = hasOpenableEndpoint || isPreviewEndpoint
+      ? "entry-status__badge"
+      : "entry-status__badge entry-status__badge--warning";
 
-  function isCountryEventEnabled() {
-    return normalizeToggle(state.settings?.country_event_enabled, true);
-  }
-
-  function handleCountryEventToggle(event) {
-    const enabled = Boolean(event.target.checked);
-    const previousEnabled = !enabled;
-
-    setBusy(true, enabled ? "Attivo la promo Country Party..." : "Disattivo la promo Country Party...");
-
-    google.script.run
-      .withSuccessHandler((result) => {
-        state.settings = result?.settings || {
-          ...state.settings,
-          country_event_enabled: enabled ? "si" : "no",
-        };
-        state.liveMenuSummary = result?.liveMenuSummary || state.liveMenuSummary;
-        syncCountryEventToggle();
-        setBusy(false);
-        showHeaderStatus(
-          enabled ? "Promo Country Party attiva nel menu pubblico." : "Promo Country Party disattivata nel menu pubblico.",
-          "success"
-        );
-      })
-      .withFailureHandler((error) => {
-        event.target.checked = previousEnabled;
-        syncCountryEventToggle();
-        handleFailure(error);
-      })
-      .saveCountryEventSetting(enabled);
-  }
-
-  function renderCatalogMeta(filteredItems = getFilteredItems()) {
-    if (!els.catalogMeta) {
-      return;
-    }
-
-    const hiddenItemsCount = filteredItems.filter((item) => item.visibility_state === "nascosto").length;
-    const hasActiveSearch = Boolean(state.filters.search);
-    const itemsLabel = hasActiveSearch
-      ? `${filteredItems.length} di ${state.items.length} prodotti`
-      : `${state.items.length} prodotti`;
-
-    els.catalogMeta.innerHTML = `
-      <span class="catalog-pill catalog-pill--strong">${escapeHtml(itemsLabel)}</span>
-      <span class="catalog-pill">${escapeHtml(String(state.sections.length))} sezioni</span>
-      <span class="catalog-pill">${escapeHtml(String(hiddenItemsCount))} nascosti</span>
+    els.liveSummary.innerHTML = `
+      <div class="entry-status__header">
+        <div class="entry-status__title">
+          <strong>Menu collegato</strong>
+          <span>${escapeHtml(endpointLabel)}</span>
+        </div>
+        <span class="${badgeClass}">${escapeHtml(badgeLabel)}</span>
+      </div>
+      <div class="entry-status__list">
+        <div class="entry-status__row">
+          <span>Sorgente</span>
+          <strong>${escapeHtml(sourceLabel)}</strong>
+        </div>
+        <div class="entry-status__row">
+          <span>Ultima lettura</span>
+          <strong>${generatedAt ? escapeHtml(generatedAt) : "Non disponibile"}</strong>
+        </div>
+        <div class="entry-status__row">
+          <span>Menu pubblico</span>
+          <strong>${escapeHtml(visibleLabel)}, ${escapeHtml(hiddenLabel)}</strong>
+        </div>
+      </div>
+      ${
+        hasOpenableEndpoint
+          ? `<div class="entry-status__actions"><a class="entry-status__link" href="${escapeHtml(endpoint)}" target="_blank" rel="noopener noreferrer">Apri JSON live</a></div>`
+          : ""
+      }
     `;
+  }
+
+  function renderCatalogFilterCounts() {
+    if (!els.visibilityFilterButtons?.length) {
+      return;
+    }
+
+    const searchMatchedItems = getSearchMatchedItems();
+    const counts = {
+      all: searchMatchedItems.length,
+      visible: searchMatchedItems.filter((item) => item.visibility_state !== "nascosto").length,
+      hidden: searchMatchedItems.filter((item) => item.visibility_state === "nascosto").length,
+    };
+    const labels = {
+      all: "Tutti",
+      visible: "Visibili",
+      hidden: "Nascosti",
+    };
+
+    els.visibilityFilterButtons.forEach((button) => {
+      const filterKey = button.dataset.visibilityFilter || "all";
+      const label = labels[filterKey] || labels.all;
+      const count = counts[filterKey] == null ? counts.all : counts[filterKey];
+      const countLabel = count === 1 ? "1 prodotto" : `${count} prodotti`;
+      button.innerHTML = `
+        <span class="catalog-filter__label">${escapeHtml(label)}</span>
+        <span class="catalog-filter__count">${escapeHtml(String(count))}</span>
+      `;
+      button.setAttribute("aria-label", `${label}, ${countLabel}`);
+    });
   }
 
   function renderItemList() {
     const filteredItems = getFilteredItems();
-    renderCatalogMeta(filteredItems);
+    renderCatalogFilterCounts();
 
     if (!filteredItems.length) {
       els.itemList.innerHTML = `<div class="item-list__empty">Nessun prodotto trovato.</div>`;
@@ -415,6 +466,7 @@
             item.visibility_state === "nascosto" ? "hidden" : "success"
           ),
           renderBadge(item.availability_state || "disponibile", getAvailabilityBadgeTone(item.availability_state)),
+          renderBadge(normalizeToggle(item.legacy_sheet_managed, false) ? "Legacy" : "Standard", "source"),
         ].join("");
 
         return `
@@ -435,28 +487,44 @@
     Array.from(els.itemList.querySelectorAll("[data-item-id]")).forEach((button) => {
       button.addEventListener("click", () => {
         const item = state.items.find((entry) => entry.id === button.dataset.itemId);
-        if (!item) {
-          return;
-        }
-
-        fillForm(item);
-        state.view = "edit";
-        state.currentItemId = item.id;
-        state.isCreating = false;
-        state.editorReturnView = "browse";
-        renderItemList();
-        updateInterfaceState();
-        focusEditorPrimaryField();
+        openItemEditor(item);
       });
     });
   }
 
-  function getFilteredItems() {
-    return state.items.filter((item) => {
-      if (!state.filters.search) {
-        return true;
-      }
+  function openItemEditor(item) {
+    if (!item) {
+      return;
+    }
 
+    fillForm(item);
+    state.view = "edit";
+    state.currentItemId = item.id;
+    state.isCreating = false;
+    state.editorReturnView = "browse";
+    renderItemList();
+    updateInterfaceState();
+    focusEditorPrimaryField();
+  }
+
+  function getFilteredItems() {
+    return getSearchMatchedItems().filter((item) => {
+      if (state.filters.visibility === "visible" && item.visibility_state === "nascosto") {
+        return false;
+      }
+      if (state.filters.visibility === "hidden" && item.visibility_state !== "nascosto") {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  function getSearchMatchedItems() {
+    if (!state.filters.search) {
+      return state.items;
+    }
+
+    return state.items.filter((item) => {
       const haystack = normalizeSearchText([item.id, item.name, item.description, item.category].join(" "));
       return haystack.includes(state.filters.search);
     });
@@ -557,9 +625,11 @@
     state.isCreating = false;
     state.editorReturnView = "browse";
     state.filters.search = "";
+    state.filters.visibility = "all";
     if (els.searchInput) {
       els.searchInput.value = "";
     }
+    syncVisibilityFilterButtons();
     updateDeleteButton();
     updateInterfaceState();
     window.setTimeout(() => {
@@ -584,6 +654,14 @@
       }
     }
 
+    if (state.view === "browse") {
+      if (state.currentItemId && !state.items.some((item) => item.id === state.currentItemId)) {
+        state.currentItemId = "";
+      }
+      state.isCreating = false;
+      return;
+    }
+
     state.currentItemId = "";
     state.isCreating = false;
 
@@ -606,7 +684,20 @@
     els.entryPanel.hidden = state.view !== "chooser";
     els.browseModal.hidden = state.view !== "browse";
     els.editorModal.hidden = !(state.view === "create" || state.view === "edit");
+    syncVisibilityFilterButtons();
     updateEditorScreenBackLabel();
+  }
+
+  function syncVisibilityFilterButtons() {
+    if (!els.visibilityFilterButtons?.length) {
+      return;
+    }
+
+    els.visibilityFilterButtons.forEach((button) => {
+      const isActive = button.dataset.visibilityFilter === state.filters.visibility;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
   }
 
   function collectFormPayload() {
@@ -740,12 +831,12 @@
 
   function setBusy(isBusy, message = "") {
     document.body.style.cursor = isBusy ? "progress" : "";
+    document.body.classList.toggle("is-busy-modal-open", isBusy);
 
     [
       els.refreshButton,
       els.entryCreateButton,
       els.entryBrowseButton,
-      els.countryEventEnabledInput,
       els.helpButton,
       els.browseBackButton,
       els.editorScreenBackButton,
@@ -759,14 +850,33 @@
 
     els.itemForm?.querySelectorAll("input, select, textarea, button, summary").forEach((element) => {
       element.disabled = isBusy;
-    });
+      });
 
     if (isBusy && message) {
+      showBusyModal(message);
+      return;
+    }
+
+    hideBusyModal();
+    clearHeaderStatus();
+  }
+
+  function showBusyModal(message) {
+    if (!els.busyModal || !els.busyModalText) {
       showHeaderStatus(message, "info", { persistent: true });
       return;
     }
 
-    clearHeaderStatus();
+    els.busyModalText.textContent = message || "Sto aggiornando Menumal...";
+    els.busyModal.hidden = false;
+  }
+
+  function hideBusyModal() {
+    if (!els.busyModal) {
+      return;
+    }
+
+    els.busyModal.hidden = true;
   }
 
   function updateDeleteButton() {

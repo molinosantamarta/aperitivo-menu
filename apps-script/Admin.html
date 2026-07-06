@@ -39,21 +39,30 @@
         </div>
       </header>
 
+      <div class="busy-modal" id="busyModal" role="dialog" aria-modal="true" aria-labelledby="busyModalTitle" aria-describedby="busyModalText" hidden>
+        <div class="busy-modal__backdrop" aria-hidden="true"></div>
+        <div class="busy-modal__dialog">
+          <div class="busy-modal__cursor-track" aria-hidden="true">
+            <span class="busy-modal__cursor"></span>
+          </div>
+          <div class="busy-modal__content">
+            <p class="busy-modal__eyebrow">MENUMAL</p>
+            <h2 id="busyModalTitle">Aggiornamento in corso</h2>
+            <p id="busyModalText">Sto preparando i dati...</p>
+          </div>
+          <div class="busy-modal__bar" aria-hidden="true">
+            <span class="busy-modal__bar-fill"></span>
+          </div>
+        </div>
+      </div>
+
       <section class="entry-card entry-card--chooser" id="entryPanel">
         <div class="entry-card__header">
           <h2>Cosa vuoi fare?</h2>
         </div>
 
         <div class="entry-card__actions">
-          <button class="entry-action entry-action--primary" id="entryCreateButton" type="button">
-            <span class="entry-action__icon" aria-hidden="true">+</span>
-            <span class="entry-action__content">
-              <strong>Nuovo prodotto</strong>
-              <span>Aggiungi un prodotto.</span>
-            </span>
-          </button>
-
-          <button class="entry-action" id="entryBrowseButton" type="button">
+          <button class="entry-action entry-action--primary" id="entryBrowseButton" type="button">
             <span class="entry-action__icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false">
                 <path
@@ -68,22 +77,20 @@
             </span>
             <span class="entry-action__content">
               <strong>Modifica prodotto</strong>
-              <span>Cerca un prodotto esistente.</span>
+              <span>Cerca, nascondi o aggiorna.</span>
+            </span>
+          </button>
+
+          <button class="entry-action" id="entryCreateButton" type="button">
+            <span class="entry-action__icon" aria-hidden="true">+</span>
+            <span class="entry-action__content">
+              <strong>Nuovo prodotto</strong>
+              <span>Aggiungi una voce semplice.</span>
             </span>
           </button>
         </div>
 
-        <div class="entry-setting">
-          <div class="entry-setting__copy">
-            <strong>Promo Country Party</strong>
-            <span>Spotlight iniziale e card nella sezione Agri-Eventi.</span>
-          </div>
-          <label class="switch-field">
-            <input id="countryEventEnabledInput" type="checkbox" />
-            <span class="switch-field__track" aria-hidden="true"></span>
-            <span class="switch-field__label" id="countryEventEnabledText">Attiva</span>
-          </label>
-        </div>
+        <div class="entry-status" id="liveSummary" aria-live="polite"></div>
       </section>
 
       <section class="screen-modal" id="browseModal" hidden>
@@ -104,8 +111,13 @@
             <div class="catalog-toolbar">
               <label class="field catalog-toolbar__search">
                 <span>Cerca</span>
-                <input id="searchInput" type="search" placeholder="Nome prodotto" />
+                <input id="searchInput" type="search" placeholder="Nome, categoria o ID" />
               </label>
+              <div class="catalog-filters" role="group" aria-label="Filtra per visibilita">
+                <button class="catalog-filter is-active" type="button" data-visibility-filter="all">Tutti</button>
+                <button class="catalog-filter" type="button" data-visibility-filter="visible">Visibili</button>
+                <button class="catalog-filter" type="button" data-visibility-filter="hidden">Nascosti</button>
+              </div>
             </div>
 
             <div class="item-list" id="itemList" aria-live="polite"></div>
@@ -344,7 +356,7 @@
               <ul class="utility-note__list">
                 <li><strong>Sezioni del menu</strong>: stanno in `admin_sections`.</li>
                 <li><strong>Prodotti del menu</strong>: stanno in `admin_items`.</li>
-                <li><strong>Impostazioni runtime</strong>: stanno in `admin_settings`, inclusa la promo Country Party.</li>
+                <li><strong>Impostazioni runtime</strong>: stanno in `admin_settings`.</li>
                 <li><strong>Storico operazioni</strong>: sta in `admin_audit_log`.</li>
                 <li>Il menu pubblico non usa piu il vecchio `database-semplice` e non usa piu il fallback CSV. La sorgente live e l endpoint JSON di Apps Script.</li>
               </ul>

@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.921";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.921";
+  var APP_BUILD_LABEL = "V.1.0.936";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.936";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,17 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260705a";
-  var COUNTRY_EVENT_ENABLED_SETTING_KEYS = [
-    "country_event_enabled",
-    "country_party_enabled",
-    "molino_country_party_enabled",
-    "promo_country_event_enabled"
-  ];
-  var COUNTRY_SPOTLIGHT_SESSION_KEY = "agriMenuCountrySpotlightSeen:".concat(APP_VERSION);
-  var COUNTRY_SPOTLIGHT_SCROLL_DELAY = 950;
-  var COUNTRY_SPOTLIGHT_IDLE_DELAY = 6200;
-  var COUNTRY_SPOTLIGHT_CLOSE_DELAY = 220;
+  var APP_VERSION = "20260706i";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -110,14 +100,19 @@
     },
     {
       title: "Video Agri-Eventi 2",
-      eyebrow: "Molino Country Party",
+      eyebrow: "Molino Country Party 2025",
       posterPosition: "center center",
       posterSize: "138% auto",
       src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1"
     },
     {
       title: "Video Agri-Eventi 3",
-      eyebrow: "Molino Apr\xE8s-Ski",
+      eyebrow: "Molino Country Party - Far West 2026",
+      src: "https://www.youtube-nocookie.com/embed/x95rBQcgFkk?rel=0&playsinline=1"
+    },
+    {
+      title: "Video Agri-Eventi 4",
+      eyebrow: "Molino Apr\xE8s-Ski 2026",
       src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     }
   ];
@@ -356,13 +351,6 @@
         sample: "Molino",
         selectors: "decorative fallback only",
         source: "self-hosted deferred"
-      },
-      {
-        family: "Mogathe Stamp",
-        descriptor: '400 1rem "Mogathe Stamp"',
-        sample: "MOLINO COUNTRY PARTY FAR WEST 12.06.2026",
-        selectors: "Country Party promotional headings",
-        source: "local deferred"
       }
     ]
   };
@@ -634,12 +622,6 @@
   var promoAgriLightboxBackdrop = document.querySelector("#promoAgriLightboxBackdrop");
   var promoAgriLightboxClose = document.querySelector("#promoAgriLightboxClose");
   var promoAgriLightboxFrame = document.querySelector("#promoAgriLightboxFrame");
-  var countryEventCard = document.querySelector("#countryEventCard");
-  var countrySpotlight = document.querySelector("#countrySpotlight");
-  var countrySpotlightPanel = document.querySelector("#countrySpotlightPanel");
-  var countrySpotlightBackdrop = document.querySelector("#countrySpotlightBackdrop");
-  var countrySpotlightClose = document.querySelector("#countrySpotlightClose");
-  var countrySpotlightCta = document.querySelector("#countrySpotlightCta");
   var formatCarousel = document.querySelector("#formatCarousel");
   var formatCarouselTrack = document.querySelector("#formatCarouselTrack");
   var formatCarouselDots = document.querySelector("#formatCarouselDots");
@@ -649,8 +631,6 @@
   var formatShowcaseLink = document.querySelector("#formatShowcaseLink");
   var fontGateStartedAt = performance.now();
   var fontGateDebugEnabled = shouldEnableFontGateDebug();
-  var countryEventPromotionEnabled = true;
-  var countrySpotlightInitialized = false;
   if (appLoaderBuild) {
     appLoaderBuild.textContent = APP_BUILD_LABEL;
   }
@@ -903,8 +883,6 @@
         setLoaderTaskProgress("menuAssets", 1);
       });
       applyMenuData(menuData);
-      syncCountryEventPromotion();
-      initCountrySpotlight();
       try {
         await waitForMenuRender();
       } catch (error) {
@@ -1331,7 +1309,6 @@
     });
   }
   async function loadMenuData() {
-    countryEventPromotionEnabled = true;
     const baseData = await fetchJsonFromCandidates(MENU_DATA_URLS, "data/menu-data.json", {
       validate: isValidMenuDataPayload
     });
@@ -1340,7 +1317,6 @@
     if (sheetApiUrl) {
       try {
         const sheetPayload = await loadSheetApiPayload(sheetApiUrl);
-        applySheetRuntimeSettings(sheetPayload);
         const sheetRows = getSheetRowsFromPayload(sheetPayload);
         if (sheetRows.length || Array.isArray(sheetPayload == null ? void 0 : sheetPayload.sections)) {
           return applySheetPayloadToMenu(baseData, sheetPayload);
@@ -1411,34 +1387,6 @@
     }
     return Array.isArray(payload.items);
   }
-  function applySheetRuntimeSettings(payload) {
-    const settings = getRuntimeSettingsFromPayload(payload);
-    const countryEventSettingValue = COUNTRY_EVENT_ENABLED_SETTING_KEYS.map((key) => settings[key]).find((value) => value != null && value !== "");
-    countryEventPromotionEnabled = parseSheetBoolean(countryEventSettingValue, true);
-  }
-  function getRuntimeSettingsFromPayload(payload) {
-    const rawSettings = payload == null ? void 0 : payload.settings;
-    if (!rawSettings || typeof rawSettings !== "object") {
-      return {};
-    }
-    if (Array.isArray(rawSettings)) {
-      return rawSettings.reduce((settings, row) => {
-        var _a2;
-        const key = normalizeSheetHeader(String((row == null ? void 0 : row.key) || ""));
-        if (key) {
-          settings[key] = (_a2 = row == null ? void 0 : row.value) != null ? _a2 : "";
-        }
-        return settings;
-      }, {});
-    }
-    return Object.entries(rawSettings).reduce((settings, [key, value]) => {
-      const normalizedKey = normalizeSheetHeader(String(key || ""));
-      if (normalizedKey) {
-        settings[normalizedKey] = value;
-      }
-      return settings;
-    }, {});
-  }
   function getSheetRowsFromPayload(payload) {
     if (!payload || typeof payload !== "object") {
       return [];
@@ -1458,32 +1406,6 @@
       return withSections;
     }
     return applySheetRowsToMenu(withSections, rows);
-  }
-  function normalizeSheetHeader(value) {
-    const normalized = value.trim().toLowerCase().replace(/\s+/g, "_").replace(/[()]/g, "").replace(/[\/,-]+/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-    const aliases = {
-      sezione: "section_id",
-      ordine: "position",
-      sort_order: "position",
-      posizione: "position",
-      visibilita: "visibility_state",
-      visibilita_visibile_nascosto: "visibility_state",
-      visibile: "visibility_state",
-      mostra: "visibility_state",
-      stato: "availability_state",
-      stato_disponibilita: "availability_state",
-      disponibilita: "availability_state",
-      disponibilita_disponibile_non_disponibile_in_arrivo: "availability_state",
-      disponibile: "availability_state",
-      nome: "name",
-      descrizione: "description",
-      categoria: "category",
-      immagine: "image_url",
-      immagine_url: "image_url",
-      variante: "variante_1",
-      prezzo: "prezzo_1"
-    };
-    return aliases[normalized] || normalized;
   }
   function applySheetRowsToMenu(baseMenu, sheetRows) {
     const nextMenu = JSON.parse(JSON.stringify(baseMenu));
@@ -2815,109 +2737,6 @@
       return url.toString();
     } catch (error) {
       return video.src;
-    }
-  }
-  function initCountrySpotlight() {
-    syncCountryEventPromotion();
-    if (countrySpotlightInitialized || !isCountryEventPromotionEnabled()) {
-      return;
-    }
-    if (!countrySpotlight || !countrySpotlightPanel || !countrySpotlightClose) {
-      return;
-    }
-    countrySpotlightInitialized = true;
-    let spotlightScheduled = false;
-    let spotlightClosed = false;
-    const hasSeenSpotlight = () => {
-      var _a2;
-      try {
-        return ((_a2 = window.sessionStorage) == null ? void 0 : _a2.getItem(COUNTRY_SPOTLIGHT_SESSION_KEY)) === "1";
-      } catch (error) {
-        return spotlightClosed;
-      }
-    };
-    const markSpotlightSeen = () => {
-      var _a2;
-      spotlightClosed = true;
-      try {
-        (_a2 = window.sessionStorage) == null ? void 0 : _a2.setItem(COUNTRY_SPOTLIGHT_SESSION_KEY, "1");
-      } catch (error) {
-      }
-    };
-    const closeSpotlight = ({ restoreFocus = true } = {}) => {
-      if (countrySpotlight.hidden) {
-        return;
-      }
-      markSpotlightSeen();
-      countrySpotlight.classList.remove("is-open");
-      countrySpotlight.setAttribute("aria-hidden", "true");
-      window.setTimeout(() => {
-        countrySpotlight.hidden = true;
-        syncModalOpenState({ restoreFocus });
-      }, COUNTRY_SPOTLIGHT_CLOSE_DELAY);
-    };
-    const showSpotlight = () => {
-      if (!isCountryEventPromotionEnabled() || hasSeenSpotlight()) {
-        return;
-      }
-      if (!appHasRevealed || hasOpenModal()) {
-        scheduleSpotlight();
-        return;
-      }
-      rememberLastFocusedElement(true);
-      countrySpotlight.hidden = false;
-      countrySpotlight.setAttribute("aria-hidden", "false");
-      syncModalOpenState({ restoreFocus: false });
-      window.requestAnimationFrame(() => {
-        countrySpotlight.classList.add("is-open");
-        focusElement(countrySpotlightCta || countrySpotlightClose);
-      });
-    };
-    function scheduleSpotlight() {
-      if (spotlightScheduled || hasSeenSpotlight()) {
-        return;
-      }
-      spotlightScheduled = true;
-      window.setTimeout(() => {
-        spotlightScheduled = false;
-        showSpotlight();
-      }, COUNTRY_SPOTLIGHT_SCROLL_DELAY);
-    }
-    window.addEventListener(
-      "scroll",
-      () => {
-        scheduleSpotlight();
-      },
-      { once: true, passive: true }
-    );
-    window.setTimeout(scheduleSpotlight, COUNTRY_SPOTLIGHT_IDLE_DELAY);
-    countrySpotlightBackdrop == null ? void 0 : countrySpotlightBackdrop.addEventListener("click", () => closeSpotlight());
-    countrySpotlightClose.addEventListener("click", () => closeSpotlight());
-    countrySpotlightCta == null ? void 0 : countrySpotlightCta.addEventListener("click", () => closeSpotlight({ restoreFocus: false }));
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && !countrySpotlight.hidden) {
-        closeSpotlight();
-      }
-    });
-  }
-  function isCountryEventPromotionEnabled() {
-    return countryEventPromotionEnabled !== false;
-  }
-  function syncCountryEventPromotion() {
-    const enabled = isCountryEventPromotionEnabled();
-    if (countryEventCard) {
-      countryEventCard.hidden = !enabled;
-      countryEventCard.setAttribute("aria-hidden", enabled ? "false" : "true");
-    }
-    if (enabled || !countrySpotlight) {
-      return;
-    }
-    const wasSpotlightOpen = !countrySpotlight.hidden;
-    countrySpotlight.classList.remove("is-open");
-    countrySpotlight.hidden = true;
-    countrySpotlight.setAttribute("aria-hidden", "true");
-    if (wasSpotlightOpen) {
-      syncModalOpenState({ restoreFocus: false });
     }
   }
   function bindSwipeZone(element, onSwipeRight, onSwipeLeft) {
@@ -4785,13 +4604,10 @@
     if (cartSheet.classList.contains("is-open")) {
       return cartPanel;
     }
-    if (!(countrySpotlight == null ? void 0 : countrySpotlight.hidden)) {
-      return countrySpotlightPanel;
-    }
     return null;
   }
   function hasOpenModal() {
-    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden) || !(countrySpotlight == null ? void 0 : countrySpotlight.hidden);
+    return detailSheet.classList.contains("is-open") || cartSheet.classList.contains("is-open") || !(promoAgriLightbox == null ? void 0 : promoAgriLightbox.hidden);
   }
   function syncModalOpenState(options = {}) {
     const { restoreFocus = true } = options;

@@ -11,7 +11,6 @@ const PREVIEW_SCRIPT_ID = "menumal-preview-runtime";
 const DEFAULT_PREVIEW_STATE = {
   settings: {
     allowed_editor_emails: PREVIEW_ACTOR_EMAIL,
-    country_event_enabled: "si",
   },
   sections: [
     {
@@ -198,9 +197,6 @@ function createRunner(handlers = {}) {
     deleteItem(itemId) {
       runAction(() => deletePreviewItem(itemId), handlers);
     },
-    saveCountryEventSetting(enabled) {
-      runAction(() => savePreviewCountryEventSetting(enabled), handlers);
-    },
   };
 }
 
@@ -235,21 +231,6 @@ function buildBootstrapData() {
       visibleItemCount,
       hiddenItemCount: items.length - visibleItemCount,
     },
-  };
-}
-
-function savePreviewCountryEventSetting(enabled) {
-  const state = loadPreviewState();
-  state.settings = {
-    ...state.settings,
-    country_event_enabled: normalizeYesNo(enabled, true),
-  };
-  savePreviewState(state);
-  return {
-    ok: true,
-    settings: { ...state.settings, allowed_editor_emails: PREVIEW_ACTOR_EMAIL },
-    savedAt: new Date().toISOString(),
-    liveMenuSummary: buildBootstrapData().liveMenuSummary,
   };
 }
 

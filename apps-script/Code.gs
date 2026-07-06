@@ -50,7 +50,6 @@ var ITEM_COLUMNS = [
 
 var SETTINGS_COLUMNS = ['key', 'value', 'notes'];
 var AUDIT_COLUMNS = ['timestamp', 'actor_email', 'action', 'target_type', 'target_id', 'details_json'];
-var COUNTRY_EVENT_SETTING_KEY = 'country_event_enabled';
 
 function doGet(e) {
   var mode = sanitizeCell_(e && e.parameter ? e.parameter.mode : '').toLowerCase();
@@ -104,9 +103,6 @@ function getBootstrapData() {
   if (!settings.brand_icon_url) {
     settings.brand_icon_url = MENUMAL_ICON_URL;
   }
-  if (!settings[COUNTRY_EVENT_SETTING_KEY]) {
-    settings[COUNTRY_EVENT_SETTING_KEY] = 'si';
-  }
 
   return {
     actorEmail: actor.email,
@@ -121,43 +117,6 @@ function getBootstrapData() {
       itemCount: liveMenuPayload.items.length,
       visibleItemCount: visibleItemCount,
       hiddenItemCount: liveMenuPayload.items.length - visibleItemCount,
-    },
-  };
-}
-
-function saveCountryEventSetting(enabled) {
-  var actor = assertAuthorized_();
-  var value = normalizeToggle_(enabled, true);
-  var settings;
-  var liveMenuPayload;
-
-  upsertSetting_(
-    COUNTRY_EVENT_SETTING_KEY,
-    value,
-    'Attiva o disattiva promo e spotlight Molino Country Party nel menu pubblico.'
-  );
-  tryLogAudit_(actor, 'save_setting', 'setting', COUNTRY_EVENT_SETTING_KEY, {
-    value: value,
-  });
-
-  settings = getSettingsObject_();
-  if (!settings[COUNTRY_EVENT_SETTING_KEY]) {
-    settings[COUNTRY_EVENT_SETTING_KEY] = value;
-  }
-  liveMenuPayload = buildPublicMenuPayload_();
-
-  return {
-    ok: true,
-    settings: settings,
-    publicSettings: liveMenuPayload.settings,
-    savedAt: new Date().toISOString(),
-    liveMenuSummary: {
-      generatedAt: liveMenuPayload.generatedAt,
-      sectionCount: liveMenuPayload.sections.length,
-      itemCount: liveMenuPayload.items.length,
-      visibleItemCount: liveMenuPayload.items.filter(function (item) {
-        return item.visibility_state !== 'nascosto';
-      }).length,
     },
   };
 }
@@ -312,11 +271,7 @@ function getSettingsObject_() {
 }
 
 function getPublicSettings_() {
-  var settings = getSettingsObject_();
-
-  return {
-    country_event_enabled: normalizeToggle_(settings[COUNTRY_EVENT_SETTING_KEY], true),
-  };
+  return {};
 }
 
 function normalizeItemPayload_(payload) {
@@ -375,7 +330,7 @@ function normalizeItemPayload_(payload) {
     option_3_display_label: optionValues.option_3_display_label,
     option_3_price: optionValues.option_3_price,
     image_url: imageUrl,
-    image_asset_id: sanitizeCell_(payload.image_asset_id),
+    image_asset_id: normalizeDriveAssetId_(payload.image_asset_id),
     show_detail_hint: normalizeToggle_(payload.show_detail_hint, true),
     notes: notes,
   };
@@ -389,7 +344,7 @@ function resolveItemImageAsset_(payload, item, previousItem) {
   var folder;
   var file;
   var previousImageUrl = previousItem ? sanitizeCell_(previousItem.image_url) : '';
-  var previousAssetId = previousItem ? sanitizeCell_(previousItem.image_asset_id) : '';
+  var previousAssetId = previousItem ? normalizeDriveAssetId_(previousItem.image_asset_id) : '';
 
   if (!uploadedImageDataUrl) {
     if (previousAssetId && item.image_url !== previousImageUrl) {
@@ -889,8 +844,12 @@ function buildDriveImageUrl_(fileId) {
 }
 
 function resolveStoredImageUrl_(imageAssetId, imageUrl) {
-  var normalizedAssetId = sanitizeCell_(imageAssetId);
+  var normalizedAssetId = normalizeDriveAssetId_(imageAssetId);
   var normalizedImageUrl = sanitizeCell_(imageUrl);
+
+  if (isPlaceholderDriveImageUrl_(normalizedImageUrl)) {
+    normalizedImageUrl = '';
+  }
 
   if (!normalizedAssetId) {
     return normalizedImageUrl;
@@ -908,8 +867,34 @@ function resolveStoredImageUrl_(imageAssetId, imageUrl) {
   return normalizedImageUrl;
 }
 
+function normalizeDriveAssetId_(value) {
+  var normalized = sanitizeCell_(value);
+
+  if (!normalized || isBooleanLikePlaceholder_(normalized)) {
+    return '';
+  }
+
+  return normalized;
+}
+
+function isBooleanLikePlaceholder_(value) {
+  var normalized = normalizeLabel_(value || '');
+  return ['si', 's', 'yes', 'true', '1', 'no', 'n', 'false', '0'].indexOf(normalized) !== -1;
+}
+
+function isPlaceholderDriveImageUrl_(value) {
+  var normalized = sanitizeCell_(value);
+
+  return (
+    normalized === 'https://lh3.googleusercontent.com/d/si' ||
+    normalized === 'https://lh3.googleusercontent.com/d/no' ||
+    normalized === 'https://drive.google.com/uc?export=view&id=si' ||
+    normalized === 'https://drive.google.com/uc?export=view&id=no'
+  );
+}
+
 function safeRemoveDriveFile_(fileId) {
-  var normalizedId = sanitizeCell_(fileId);
+  var normalizedId = normalizeDriveAssetId_(fileId);
   var file;
 
   if (!normalizedId) {

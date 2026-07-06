@@ -96,7 +96,6 @@ Contiene chiavi di configurazione e stato migrazione, per esempio:
 - allowlist email per l admin
 - eventuale cartella Drive per gli upload immagine
 - URL del deployment pubblico
-- attivazione/disattivazione della promo Molino Country Party (`country_event_enabled`)
 - timestamp dell'ultimo seed
 
 ### `admin_audit_log`
