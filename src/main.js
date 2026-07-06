@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260706k";
+const APP_VERSION = "20260707b";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -74,13 +74,25 @@ const SLOW_FONT_LOADER_MESSAGES = [
 const PROMO_AGRI_VIDEOS = [
   {
     title: "Video Agri-Eventi 1",
-    eyebrow: "BBQ sotto le Stelle",
+    eyebrow: "BBQ sotto le Stelle 2025",
     src: "https://www.youtube-nocookie.com/embed/HIj8MBQlARg?rel=0&playsinline=1",
   },
   {
     title: "Video Agri-Eventi 2",
+    eyebrow: "Molino Country Party 2025",
+    posterPosition: "center center",
+    posterSize: "138% auto",
+    src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1",
+  },
+  {
+    title: "Video Agri-Eventi 3",
     eyebrow: "Molino Après-Ski 2026",
     src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1",
+  },
+  {
+    title: "Video Agri-Eventi 4",
+    eyebrow: "Molino Country Party - Far West 2026",
+    src: "https://www.youtube-nocookie.com/embed/x95rBQcgFkk?rel=0&playsinline=1",
   },
 ];
 const CRITICAL_MENU_SECTION_IDS = new Set(["birre", "drink"]);

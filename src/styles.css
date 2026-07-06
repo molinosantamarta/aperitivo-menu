@@ -1150,9 +1150,9 @@ a {
 .promo-agri__video-carousel {
   position: relative;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  max-width: 392px;
+  max-width: 372px;
   margin-inline: auto;
 }
 
@@ -1160,31 +1160,16 @@ a {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  padding: 5px;
-  border: 1px solid rgba(68, 52, 38, 0.2);
-  border-radius: 25px;
-  background:
-    linear-gradient(145deg, rgba(42, 31, 24, 0.96), rgba(118, 88, 60, 0.84) 52%, rgba(34, 25, 20, 0.96)),
-    #2d221b;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
   touch-action: pan-y;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
-    0 16px 34px rgba(42, 31, 18, 0.16),
-    0 4px 10px rgba(42, 31, 18, 0.08);
+  box-shadow: none;
 }
 
 .promo-agri__video-viewport::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  z-index: 2;
-  border-radius: 20px;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset 0 46px 72px rgba(255, 246, 228, 0.06),
-    inset 0 -64px 86px rgba(14, 10, 8, 0.34);
-  pointer-events: none;
+  content: none;
 }
 
 .promo-agri__video-track {
@@ -1202,7 +1187,7 @@ a {
   border: 0;
   background: none;
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 18px;
 }
 
 .promo-agri__video-slide.is-active .promo-agri__video-poster {
@@ -1216,7 +1201,8 @@ a {
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(16, 12, 10, 0.02) 0%, rgba(16, 12, 10, 0.08) 42%, rgba(16, 12, 10, 0.68) 100%),
     radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0) 36%),
@@ -1224,7 +1210,7 @@ a {
     var(--promo-agri-video-poster) var(--promo-agri-video-position, center center) /
       var(--promo-agri-video-size, cover) no-repeat;
   transform: scale(1);
-  box-shadow: none;
+  box-shadow: 0 16px 30px rgba(42, 31, 18, 0.14);
   transition:
     filter 220ms ease,
     transform 260ms ease;
