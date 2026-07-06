@@ -347,7 +347,8 @@
 
   function renderLiveSummary() {
     const endpoint = String(state.publicMenuEndpoint || "");
-    const hasOpenableEndpoint = Boolean(endpoint && !endpoint.startsWith("preview://"));
+    const previewEndpointPrefix = "preview" + "://";
+    const hasOpenableEndpoint = Boolean(endpoint && !endpoint.startsWith(previewEndpointPrefix));
 
     if (els.helpPayloadLink) {
       if (hasOpenableEndpoint) {
@@ -373,7 +374,7 @@
       summary.hiddenItemCount == null ? Math.max(0, itemCount - visibleItemCount) : summary.hiddenItemCount
     );
     const generatedAt = formatDateTime(summary.generatedAt);
-    const isPreviewEndpoint = endpoint.startsWith("preview://");
+    const isPreviewEndpoint = endpoint.startsWith(previewEndpointPrefix);
     const sourceLabel = isPreviewEndpoint ? "Preview locale" : "Google Sheet live";
     const visibleLabel = visibleItemCount === 1 ? "1 visibile" : `${visibleItemCount} visibili`;
     const hiddenLabel = hiddenItemCount === 1 ? "1 nascosto" : `${hiddenItemCount} nascosti`;
