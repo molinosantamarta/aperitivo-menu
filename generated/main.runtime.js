@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.936";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.936";
+  var APP_BUILD_LABEL = "V.1.0.938";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.938";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260706i";
+  var APP_VERSION = "20260706j";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -100,18 +100,6 @@
     },
     {
       title: "Video Agri-Eventi 2",
-      eyebrow: "Molino Country Party 2025",
-      posterPosition: "center center",
-      posterSize: "138% auto",
-      src: "https://www.youtube-nocookie.com/embed/EHJjUmRYWKU?rel=0&playsinline=1"
-    },
-    {
-      title: "Video Agri-Eventi 3",
-      eyebrow: "Molino Country Party - Far West 2026",
-      src: "https://www.youtube-nocookie.com/embed/x95rBQcgFkk?rel=0&playsinline=1"
-    },
-    {
-      title: "Video Agri-Eventi 4",
       eyebrow: "Molino Apr\xE8s-Ski 2026",
       src: "https://www.youtube-nocookie.com/embed/ybJPaALHaHE?rel=0&playsinline=1"
     }
