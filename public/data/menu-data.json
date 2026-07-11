@@ -1439,6 +1439,87 @@
           ]
         },
         {
+          "id": "japanese-slipper",
+          "page": 1,
+          "name": "Japanese Slipper",
+          "category": "Drink",
+          "showDetailHint": false,
+          "description": "Midori, Pinot Extra Dry e succo di limone in parti uguali.",
+          "visual": {
+            "type": "beer-script",
+            "label": "Japanese",
+            "gradientStart": "#2f8c3a",
+            "gradientMid": "#77c44d",
+            "gradientEnd": "#f1e97a",
+            "labelColor": "#fffdf8",
+            "textStyle": "display",
+            "script": "Slipper"
+          },
+          "sideVisual": {
+            "type": "floating-bottle",
+            "asset": "midori-floating.webp",
+            "width": "58px",
+            "height": "205px",
+            "right": "4px",
+            "bottom": "6px",
+            "zIndex": "6",
+            "tilt": "0deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "accentVisual": {
+            "type": "floating-bottle",
+            "asset": "pinot-extra-dry-floating.webp",
+            "width": "54px",
+            "height": "184px",
+            "right": "52px",
+            "bottom": "8px",
+            "zIndex": "4",
+            "tilt": "-3deg",
+            "backgroundSize": "contain",
+            "backgroundPosition": "center bottom"
+          },
+          "extraVisuals": [
+            {
+              "type": "floating-accent",
+              "asset": "lemon-floating.webp",
+              "width": "58px",
+              "height": "53px",
+              "right": "78px",
+              "bottom": "42px",
+              "zIndex": "7",
+              "tilt": "-8deg",
+              "backgroundSize": "contain",
+              "backgroundPosition": "center center"
+            }
+          ],
+          "options": [
+            {
+              "label": "1 drink",
+              "displayLabel": "",
+              "price": 6
+            }
+          ],
+          "rect": [
+            676,
+            868,
+            932,
+            982
+          ],
+          "cropRect": [
+            700,
+            900,
+            930,
+            980
+          ],
+          "cropPadding": [
+            8,
+            12,
+            8,
+            10
+          ]
+        },
+        {
           "id": "gin-tonic-special",
           "page": 1,
           "name": "Gin Tropical",

@@ -1,6 +1,6 @@
 # MENUMAL / Agri-menu Update Runbook
 
-Ultimo audit locale: 2026-07-07.
+Ultimo audit locale: 2026-07-12.
 
 ## Mappa del sistema
 
@@ -55,9 +55,10 @@ Dopo il deploy:
 
 Controlli dati attesi nell'ultimo audit:
 
-- item totali: `49`
+- item totali: `50`
 - `patatine-fritte`: assente
 - `gin-lemon`: sezione `drink`, visibile, disponibile, descrizione `Gin Malfy, soda al limone.`
+- `japanese-slipper`: sezione `drink`, visibile, disponibile, descrizione `Midori, Pinot Extra Dry e succo di limone in parti uguali.`
 - `granita`: sezione `gelato`, visibile, disponibile, descrizione `Gusti disponibili: menta, limone, ciliegia e granatina. Ordina al tavolo o ritira al Bar`
 - `panache`: nome `Panachè (Radler)`, sezione `birre`, nascosto, disponibile
 
@@ -106,5 +107,5 @@ rg -n "Country Party|Mogathe|Far West|country-2026|country-party" src index.html
 
 - MENUMAL live: deploy raggiungibile e script admin parse OK.
 - Google Sheet: tab admin presenti e dati prodotto coerenti con MENUMAL.
-- Endpoint JSON: `patatine-fritte` assente, `gin-lemon`, `granita`, `panache` coerenti.
+- Endpoint JSON: `patatine-fritte` assente, `gin-lemon`, `japanese-slipper`, `granita`, `panache` coerenti.
 - Agri-menu: versione locale `20260707c`; promo Country/Far West/Mogathe rimossa dal carosello Agri-Eventi.

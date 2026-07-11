@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260707c";
+const APP_VERSION = "20260712a";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;

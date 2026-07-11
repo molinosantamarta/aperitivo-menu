@@ -2581,7 +2581,8 @@ a {
 #section-drink .item-card[data-item-id="negroni"].item-card--floating-bottle .item-card__content,
 #section-drink .item-card[data-item-id="sbagliato"].item-card--floating-bottle .item-card__content,
 #section-drink .item-card[data-item-id="americano"].item-card--floating-bottle .item-card__content,
-#section-drink .item-card[data-item-id="garibaldi"].item-card--floating-bottle .item-card__content {
+#section-drink .item-card[data-item-id="garibaldi"].item-card--floating-bottle .item-card__content,
+#section-drink .item-card[data-item-id="japanese-slipper"].item-card--floating-bottle .item-card__content {
   min-height: 156px;
   padding-right: 150px;
 }
