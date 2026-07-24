@@ -1,6 +1,6 @@
 # MENUMAL / Agri-menu Update Runbook
 
-Ultimo audit locale: 2026-07-12.
+Ultimo audit locale: 2026-07-24.
 
 ## Mappa del sistema
 
@@ -61,6 +61,7 @@ Controlli dati attesi nell'ultimo audit:
 - `japanese-slipper`: sezione `drink`, visibile, disponibile, descrizione `Midori, Pinot Extra Dry e succo di limone in parti uguali.`
 - `granita`: sezione `gelato`, visibile, disponibile, descrizione `Gusti disponibili: menta, limone, ciliegia e granatina. Ordina al tavolo o ritira al Bar`
 - `panache`: nome `Panachè (Radler)`, sezione `birre`, nascosto, disponibile
+- `tonica-cedro`: rimossa dal menu pubblico locale e impostata `nascosto` in `admin_items`
 
 ## Procedura Agri-menu / GitHub Pages
 
@@ -107,5 +108,5 @@ rg -n "Country Party|Mogathe|Far West|country-2026|country-party" src index.html
 
 - MENUMAL live: deploy raggiungibile e script admin parse OK.
 - Google Sheet: tab admin presenti e dati prodotto coerenti con MENUMAL.
-- Endpoint JSON: `patatine-fritte` assente, `gin-lemon`, `japanese-slipper`, `granita`, `panache` coerenti.
-- Agri-menu: versione locale `20260707c`; promo Country/Far West/Mogathe rimossa dal carosello Agri-Eventi.
+- Endpoint JSON: `patatine-fritte` assente; `gin-lemon`, `japanese-slipper`, `granita`, `panache` coerenti; `tonica-cedro` nascosta.
+- Agri-menu: versione locale `20260724a`; promo Country/Far West/Mogathe rimossa dal carosello Agri-Eventi.

@@ -20,8 +20,8 @@
   var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   // src/generated/build-meta.js
-  var APP_BUILD_LABEL = "V.1.0.945";
-  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.945";
+  var APP_BUILD_LABEL = "V.1.0.946";
+  var APP_BUILD_FOOTER_LABEL = "VERSIONE 1.0.946";
 
   // src/main.js
   window.__agriMenuRuntimeLoaded = true;
@@ -31,7 +31,7 @@
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
-  var APP_VERSION = "20260712a";
+  var APP_VERSION = "20260724a";
   var CLARITY_PROJECT_ID = "vxdq0wbbte";
   var LOADER_CARD_DELAY = 1500;
   var LOADER_INTRO_OUTRO_DURATION = 520;
@@ -110,8 +110,7 @@
     "acqua-tonica-floating.webp",
     "granita-photo.webp",
     "ginjune-tropical.webp",
-    "chinotto-lurisia-floating.webp",
-    "tonica-cedro-floating.webp"
+    "chinotto-lurisia-floating.webp"
   ]);
   var COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
   var COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;

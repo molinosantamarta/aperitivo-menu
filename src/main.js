@@ -9,7 +9,7 @@ const priceFormatter = new Intl.NumberFormat("it-IT", {
   maximumFractionDigits: 2,
 });
 
-const APP_VERSION = "20260712a";
+const APP_VERSION = "20260724a";
 const CLARITY_PROJECT_ID = "vxdq0wbbte";
 const LOADER_CARD_DELAY = 1500;
 const LOADER_INTRO_OUTRO_DURATION = 520;
@@ -90,7 +90,6 @@ const CRITICAL_MENU_PRELOAD_ASSET_NAMES = new Set([
   "granita-photo.webp",
   "ginjune-tropical.webp",
   "chinotto-lurisia-floating.webp",
-  "tonica-cedro-floating.webp",
 ]);
 const COMING_SOON_CURIOSITY_TRIGGER_COUNT = 2;
 const COMING_SOON_CURIOSITY_VISIBLE_MS = 2200;
